@@ -1,0 +1,55 @@
+start default;
+
+chars a [a-zA-Z]; #определяет наборы символов со своими названиями (для удобства)
+chars d [0-9];
+chars s [\t\ ];
+
+state default {
+	rule	</\*>	{ state=comment_1; color=COMMENT; };
+	rule	<//>	{ state=comment_2; color=COMMENT; };
+	rule	<#>	{ state=comment_2; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	rule <[{}():;,=\-\<\>\[\]\+\*\/&.]> { color = KEYWORD; };
+	
+	rule	<[$(a)$(d)_]+>	{ 
+		words(KEYWORD) = {
+			'break', 'case', 'class', 'continue', 'declare', 
+			'default', 'define', 'do', 'echo', 'else', 
+			'elseif', 'endif', 'endwhile', 'extends', 'false', 
+			'for', 'foreach', 'function', 'global', 'if', 
+			'include', 'include_once', 'new', 'require', 
+			'require_once', 'return', 'static', 'switch', 
+			'true', 'while',
+			'const','public', 'try', 'catch'
+		};
+	};
+	
+	rule 	<...> { color = KEYWORD; };
+};
+	
+state comment_1	{
+	color=COMMENT;
+	rule	<\*/>	{ state=default; };
+};
+	
+state comment_2	{
+	color=COMMENT;
+	rule	<\\\n>	{state=comment_2;};
+	rule	<\n>	{state=default;};
+};
+	
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=default;};
+};
+
+state char {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};

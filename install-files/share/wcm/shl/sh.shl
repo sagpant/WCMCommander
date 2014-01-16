@@ -1,0 +1,58 @@
+start default;
+
+state default {
+	rule	<#>	{ state=comment; color=COMMENT; };
+	
+	rule	<\">	{ state=string1; color=STRING; };
+	rule	<\'>	{ state=string2; color=STRING; };
+	rule	<\`>	{ state=string3; color=STRING; };
+
+	rule <[:.\[{}|&]> { color=KEYWORD; };
+	rule <;;> { color=KEYWORD; };
+	
+	rule	<[a-z]+>	{ 
+		words(KEYWORD) = 
+			{
+				'break', 'cd', 'continue', 'eval', 'exec', 'exit', 'export', 'getopts', 'hash', 'pwd', 'readonly', 'return', 
+				'set', 'shift', 'test',  'times', 'trap', 'umask', 'unset',
+				'alias', 'bind', 'builtin', 'command', 'declare', 'echo', 'enable', 'help', 'let', 'local', 'logout', 'printf', 
+				'read', 'shopt', 'type', 'typeset', 'ulimit', 'unalias'
+			};
+			
+		words(KEYWORD) = 
+			{
+				'if','then','else','elif','fi',
+				'case', 'in', 'esac',
+				'while', 'do', 'done',
+				'for'
+			};
+		};
+
+};
+
+state comment	{
+	color=COMMENT;
+	rule	<\\\n>	{state=comment;};
+	rule	<\n>	{state=default;};
+};
+	
+state string1 {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=default;};
+};
+
+state string2 {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};
+
+state string3 {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\`>;
+	rule	<\`>	{state=default;};
+};

@@ -1,0 +1,31 @@
+start default;
+
+chars a [a-zA-Z]; 
+chars d [0-9];
+chars s [\t\ ];
+
+state default {
+	rule	<\n>;
+	rule	<$(s)+> ;
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	
+	rule	<0x[0-9a-fA-F]+>	{ state = default; color = NUM; };
+	rule	<0o[0-7]+>	{ state = default; color = NUM; };
+	rule	<$(d)+[\.]*$(d)*[eE]*$(d)*>	{ state = default; color = NUM; };
+	
+	rule <[!~*+\-=|\>\<&\^?%\/\#]+> { state = default; color = OPER; };
+	rule <[\[\]{}():;,\.]> { state = default;  color = KEYWORD; };
+};
+	
+state string {
+	color = STRING;
+	rule	<\n>	{state=default;};
+	rule	<\">	{state=default;};
+};
+
+state char {
+	color = STRING;
+	rule	<\n>	{state=default;};
+	rule	<\'>	{state=default;};
+};

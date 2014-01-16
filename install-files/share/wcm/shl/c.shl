@@ -1,0 +1,69 @@
+start newline;
+
+chars a [a-zA-Z];
+chars d [0-9];
+chars s [\t\ ];
+
+state newline default {
+	rule	<\n>	{ state = newline; };
+	rule	</\*>	{ state=comment_1; color=COMMENT; };
+	rule	<//>	{ state=comment_2; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	
+	rule	<0x[0-9a-fA-F]+>	{ state = default; color = NUM; };
+	rule	<$(d)+[\.]*$(d)*[eE]*$(d)*>	{ state = default; color = NUM; };
+	
+	
+	rule <[{}():;,]> { state = default;  color = KEYWORD; };
+	
+	rule	<[$(a)$(d)_]+>	{ 
+		state = default;  
+		words (KEYWORD) = {
+			'auto', 'break', 'case', 'char', 'const', 'continue', 'do', 'double', 'else', 'enum', 'extern', 'float', 'for',
+			'goto', 'if', 'int', 'long', 'register', 'return', 'short', 'signed', 'sizeof', 'static', 'struct', 'switch',
+			'typedef', 'union', 'unsigned', 'void', 'volatile', 'while', 'asm', 'inline', 'wchar_t'
+		};
+	};
+	
+	rule 	<...> { color = KEYWORD; };
+};
+
+state newline {;
+	rule	<\#>	 {state=pre;	color=PRE; };
+	rule 	<[^$(s)]> { state=default; };
+};
+	
+state comment_1	{
+	color=COMMENT;
+	rule	<\*/>	{ state=default; };
+};
+	
+state comment_2	{
+	color=COMMENT;
+	rule	<\\\n>;
+	rule	<\n>	{state=newline;};
+};
+	
+state pre {
+	color = PRE;
+	rule	</\*>	{ state=comment_1; color=COMMENT; };
+	rule	<//>	{ state=comment_2; color=COMMENT; };
+	rule	<\\\n>;
+	rule	<\n>	{state=newline; };
+};
+	
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=default;};
+};
+
+state char {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};

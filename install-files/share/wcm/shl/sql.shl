@@ -1,0 +1,69 @@
+start default;
+
+chars a [a-zA-Z]; #определяет наборы символов со своими названиями (для удобства)
+chars d [0-9];
+chars s [\t\ ];
+
+state default {
+	rule	</\*>	{ state=comment_1; color=COMMENT; };
+	rule	<-->	{ state=comment_2; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	
+	rule <[\<\>\+\-\*\/%=(),;]> { color = KEYWORD; };
+	
+	rule	<[$(a)$(d)_]+>	{ 
+		ns_words(KEYWORD) = {
+			'abort','absolute','action','ada','add','all','allocate','alter','and','any','are','as','asc','assertion','at',
+			'authorization','auto_increment','begin','between','bigint','bit','bit_length','blob','both','by','cascade',
+			'cascaded','case','cast','catalog','char','char_length','character','character_length','check','close',
+			'coalesce','collate','collation','column','commit','compile','connect','connection','constraint',
+			'constraint','constraints','continue','copy','corresponding','create','cross','current','current_date',
+			'current_time','current_timestamp','current_user','cursor','database','date','datetime','day','deallocate',
+			'dec','decimal','declare','default','deferrable','deferred','delete','desc','describe','descriptor',
+			'diagnostics','disconnect','distinct','domain','double','drop','else','encoding','end','end-exec',
+			'enum','escape','except','exception','exec','execute','exists','external','extract','false','fetch',
+			'first','float','for','foreign','fortran','found','from','full','get','global','go','goto','grant',
+			'group','having','hour','identity','if','immediate','in','include','index','indicator','initially',
+			'inner','input','insensitive','insert','int','integer','intersect','interval','into','is','isolation',
+			'join','key','key','language','last','leading','left','level','like','local','lock','longblob','longtext',
+			'loop','match','mediumblob','mediumint','mediumtext','merge','minute','minus','module','month','names',
+			'national','natural','nchar','next','no','none','not','null','nullif','numeric','octet_length','of',
+			'offline','on','online','only','open','option','or','order','outer','output','overlaps','pad','partial',
+			'pascal','position','precision','prepare','preserve','primary','primary','prior','privileges','procedure',
+			'public','read','real','rebuild','references','relative','replace','restrict','revoke','right','rollback',
+			'rows','schema','scroll','second','section','select','sequence','session','session_user','set','size',
+			'smallint','some','space','sql','sqlca','sqlstate','sqlwarning','substring','system_user','table','tablespace',
+			'template','temporary','text','then','time','truncate','timestamp','timezone_hour','timezone_minute',
+			'tinyblob','tinyint','tinytext','to','trailing','transaction','translation','trigger','trim','true',
+			'type','union','unique','unknown','unsigned','update','usage','use','user','using','value','values',
+			'varchar','varying','view','when','whenever','where','while','with','work','write','year','zone'
+		};
+	};
+};
+	
+state comment_1	{
+	color=COMMENT;
+	rule	<\*/>	{ state=default; };
+};
+	
+state comment_2	{
+	color=COMMENT;
+	rule	<\\\n>;
+	rule	<\n>	{state=default;};
+};
+	
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=default;};
+};
+
+state char {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};

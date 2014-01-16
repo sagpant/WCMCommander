@@ -1,0 +1,67 @@
+start default;
+
+chars a [a-zA-Z]; #определяет наборы символов со своими названиями (для удобства)
+chars d [0-9];
+chars s [\t\ ];
+
+state default {
+	rule	<\#>	{ state=comment_1; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\\\">	; #skip \" in regexp
+	rule	<\\\'>	; #skip \' in regexp
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	
+	rule	<[a-zA-Z]+>	{ 
+		state = default;  
+		words (KEYWORD) = {
+			'and','bless','break','caller','do','else','elsif','foreach','for','goto','if','import',
+			'last','next','not','or','package','require','return','unless','untie','until','use','while',
+			'diagnostics','integer','less','lib','ops','overload','sigtrap','strict','vars','warnings',
+			'abs','atan2','chr','cos','exp','gmtime','hex','int','localtime','log','oct','ord','pack','
+			rand','sin','sqrt','srand','time','unpack','vec','chomp','chop','crypt','eval','index','lc',
+			'lcfirst','length','quotemeta','rindex','substr','uc','ucfirst','delete','each','exists','grep',
+			'join','keys','map','pop','push','reverse','scalar','shift','sort','splice','split','unshift',
+			'values','chmod','chown','link','lstat','mkdir','readlink','rename','rmdir','stat','symlink',
+			'truncate','unlink','utime','binmode','close','dbmclose','dbmopen','eof','fcntl','fileno',
+			'flock','getc','ioctl','open','pipe','print','printf','read','seek','select','sprintf',
+			'sysopen','sysread','syswrite','tell','formline','write','closedir','opendir','readdir',
+			'rewinddir','seekdir','telldir','alarm','chdir','chroot','die','exec','exit','fork','getlogin',
+			'getpgrp','getppid','getpriority','glob','kill','setpgrp','setpriority','sleep','syscall','system',
+			'times','umask','waitpid','wait','warn','accept','bind','connect','getpeername','getsockname',
+			'getsockopt','listen','recv','send','setsockopt','shutdown','socketpair','socket','msgctl','msgget',
+			'msgrcv','msgsnd','semctl','semget','semop','shmctl','shmget','shmread','shmwrite','defined',
+			'dump','eval','local','my','our','ref','reset','scalar','undef','wantarray','endgrent','endpwent',
+			'getgrent','getgrgid','getgrnam','getpwent','getpwnam','getpwuid','setgrent','setpwent','endhostent',
+			'gethostbyaddr','gethostbyname','gethostent','sethostent','endnetent','endprotoent','endservent',
+			'getnetbyaddr','getnetbyname','getnetent','getprotobyname','getprotobynumber','getprotoent',
+			'getservbyname','getservbyport','getservent','serservent','setnetent','setprotoent',
+			'sub'
+		};
+		
+		words ( PRE ) = {'ge','le','gt','lt','eq','ne','cmp','STDIN','STDOUT','STDERR','STDARGV','DATA' };
+	};
+	
+	rule	<[{}()\[\]:;,.]+>	{ color = KEYWORD;  };
+	rule	<[\<\>\-\+=\*/&|!%]+>	{ color = OPER;  };
+};
+	
+state comment_1	{
+	color = COMMENT;
+	rule	<\\\n>;
+	rule	<\n>	{state=default;};
+};
+	
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=default;};
+};
+
+state char {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};

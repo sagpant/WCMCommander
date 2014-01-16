@@ -1,0 +1,51 @@
+start default;
+
+chars a [a-zA-Z]; #определяет наборы символов со своими названиями (для удобства)
+chars d [0-9];
+chars s [\t\ ];
+
+state default {
+	rule	<\<!-->	{ state = def_comment; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\<>	{ state = tag; color = KEYWORD; };
+	
+	rule	<&$(a);> { color=PRE; };
+	rule	<&$(a)$(a);> { color=PRE; };
+	rule	<&$(a)$(a)$(a);> { color=PRE; };
+	rule	<&$(a)$(a)$(a)$(a);> { color=PRE; };
+	rule	<&$(a)$(a)$(a)$(a)$(a);> { color=PRE; };
+};
+
+state tag {
+	color = KEYWORD;
+	rule	<\<!-->	{ state = tag_comment; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<[:=]>	{ color = OPER; };
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	rule	<\>>	{ state = default; color = KEYWORD; };
+};
+	
+state def_comment	{
+	color=COMMENT;
+	rule	<--\>>	{ state = default; };
+};
+
+state tag_comment	{
+	color=COMMENT;
+	rule	<--\>>	{ state = tag; };
+};
+	
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state = tag;};
+};
+
+state char {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state = tag;};
+};

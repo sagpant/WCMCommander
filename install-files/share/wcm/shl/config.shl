@@ -1,0 +1,76 @@
+#for wcm ver <= 0.15.9
+
+"0-wcm-shl-main-config" { #0 т.к. проверяются в алфовитном порядке (кто первый тот пободил), иначе "wcm-shl" тоже соотвнтствует
+	mask = "*\\shl\\config.shl", "*/shl/config.shl";
+	cfg = "shlconfig.shl";
+};
+
+"wcm-shl" {
+	mask = "*\\shl\\*.shl", "*/shl/*.shl";
+	cfg = "shl.shl";
+};
+
+
+"C" {
+	mask="*.c";
+	cfg = "c.shl";
+};
+
+"C++" {
+	mask="*.cc","*.cpp","*.h","*.hpp","*.C";
+	cfg = "cpp.shl";
+};
+
+"sh" {
+	first = "#!*/sh","#!*/bash";
+	cfg = "sh.shl";
+};
+
+"perl" {
+	first = "#!*/perl";
+	mask="*.pl";
+	cfg = "perl.shl";
+};
+
+"php" {
+	first = "#!*/php";
+	mask="*.php";
+	cfg = "php.shl";
+};
+
+"xml" {
+	first = "*<?xml*version*=*>*";
+	mask="*.xml";
+	cfg = "xml.shl";
+};
+
+"html" {
+	mask="*.htm", "*.html", "*.HTML";
+	cfg = "xml.shl";
+};
+
+"sql" {
+	mask="*.sql";
+	cfg = "sql.shl";
+};
+
+"pascal" {
+	mask="*.pas";
+	cfg = "pas.shl";
+};
+
+"java" {
+	mask = "*.java", "*.JAVA", "*.Java", "*.jav";
+	cfg = "java.shl";
+};
+
+"python" {
+	mask = "*.py", "*.PY";
+	first = "#!*/python*";
+	cfg = "python.shl";
+};
+
+#"zzzzz" {
+#	first = ";*", "//*";
+#	cfg = "zz.shl";
+#};

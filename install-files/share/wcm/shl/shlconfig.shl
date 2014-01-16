@@ -1,0 +1,43 @@
+start default;
+
+chars a [a-zA-Z];
+chars d [0-9];
+chars s [\t\ ];
+
+state default {
+	rule	<#>	{ state=comment; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=string1; color=STRING; };
+	
+	rule	<$(d)+>	{ state = default; };
+	rule <[\=\{\};,]> { state = default;  color = KEYWORD; };
+	
+	rule	<[$(a)$(d)_]+>	{ 
+		state = default;  
+		words (KEYWORD) = {
+			'mime', 'first', 'mask', 'cfg'
+		};
+	};
+};
+
+state comment	{
+	color=COMMENT;
+	rule	<\n>	{state=default;};
+};
+	
+
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=default;};
+};
+
+state string1 {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};
+

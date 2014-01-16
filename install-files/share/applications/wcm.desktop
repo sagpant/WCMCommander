@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Wal Commander
+GenericName=File manager
+Comment=Dual pane file manager 
+Exec=wcm
+TryExec=wcm
+Terminal=false
+Categories=Utility;FileManager;
+Icon=/usr/share/wcm/icon/wcm.png
+StartupNotify=true

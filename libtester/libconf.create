@@ -1,0 +1,40 @@
+echo "#ifndef LIBCONF_UX_H" >../libconf_ux.h
+echo "" >../info.txt
+echo "" >../makelib.mk
+echo "#define LIBCONF_UX_H" >>../libconf_ux.h
+
+#smb
+if gcc -I /usr/local/include -L /usr/local/lib libsmb_test.cpp -lstdc++ -lsmbclient -o libsmbtest >/dev/null 2>/dev/null && ./libsmbtest >/dev/null 2>/dev/null
+then
+	echo "#define LIBSMBCLIENT_EXIST" >>../libconf_ux.h
+	echo "LIBSMB = -l smbclient" >>../makelib.mk
+else
+	echo "!!! (Info)  libsmbclient (dev) not found, and not used" >>../info.txt
+fi
+
+
+#libssh2
+if gcc -I /usr/local/include -L /usr/local/lib libssh2_test.cpp -lstdc++  -lssh2 -o libssh2test >/dev/null 2>/dev/null && ./libssh2test >/dev/null 2>/dev/null
+then
+	echo "#define LIBSSH2_EXIST" >>../libconf_ux.h
+	echo "LIBSSH = -l ssh2 " >>../makelib.mk
+else
+	echo "!!! (Info)  libssh2 (dev) and libssh (dev) not found, and not used" >>../info.txt
+fi
+
+#freetype
+if gcc -I /usr/local/include -L /usr/local/lib -I /usr/include/freetype2 libfreetype_test.cpp  -lstdc++ -l freetype -o libfreetype_test >/dev/null 2>/dev/null && ./libfreetype_test >/dev/null 2>/dev/null
+then
+	echo "CFLAGS_FREETYPE = -I /usr/include/freetype2 -D USEFREETYPE" >>../makelib.mk
+	echo "LIBFREETYPE = -l freetype" >>../makelib.mk
+else
+	echo "!!! (Info)  freetype (dev) not found, and not used" >>../info.txt
+fi
+
+
+echo "#endif" >>../libconf_ux.h
+
+
+
+
+

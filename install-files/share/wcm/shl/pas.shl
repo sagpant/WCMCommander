@@ -1,0 +1,55 @@
+start default;
+
+chars a [a-zA-Z]; #определяет наборы символов со своими названиями (для удобства)
+chars d [0-9];
+chars s [\t\ ];
+
+state default {
+	rule	<{>	{ state=comment_1; color=COMMENT; };
+	rule	<\(\*>	{ state=comment_2; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	rule <[():;,=\-\<\>\[\]\+\*\/&.]> { color = KEYWORD; };
+	
+	rule	<[$(a)$(d)_]+>	{ 
+		ns_words(KEYWORD) = {
+			'absolute','abstract','and','array','as','asm','assembler','begin','break','case','cdecl',
+			'class','const','continue','constructor','destructor','dispid','dispinterface','dispose',
+			'div','do','downto','dynamic','else','end','except','exit','export','exports','external',
+			'fail','far','false','file','finalisation','finally','for','forward','function','goto',
+			'if','implementation','in','inherited','initialization','inline','interface','interrupt',
+			'is','label','library','mod','near','new','nil','not','object','of','on','operator','or',
+			'otherwise','overload','override','packed','pascal','private','procedure','program','property',
+			'protected','public','published','raise','read','readonly','record','register','repeat',
+			'safecall','self','set','shl','shr','stdcall','string','then','to','true','try','type',
+			'unit','until','uses','var','virtual','while','with','write','writeln','xor','..'
+		};
+	};
+	
+	rule 	<...> { color = KEYWORD; };
+};
+	
+state comment_1	{
+	color=COMMENT;
+	rule	<}>	{ state=default; };
+};
+	
+state comment_2	{
+	color=COMMENT;
+	rule	<\*)>	{ state=default; };
+};
+	
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=default;};
+};
+
+state char {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};
