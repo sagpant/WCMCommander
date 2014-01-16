@@ -1,7 +1,7 @@
 Wal Commander
 =============
 
-Copyright (c) Wal (Горячев Валерий)
+Copyright (c) Wal (Р“РѕСЂСЏС‡РµРІ Р’Р°Р»РµСЂРёР№)
 walcommander.info@gmail.com
 
 Maintained by Sergey Kosarevsky
