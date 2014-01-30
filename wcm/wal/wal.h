@@ -8,6 +8,10 @@
 #include "wal_tmpls.h"
 #include "wal_sys_api.h"
 
+#if defined(_MSC_VER)
+#	pragma warning(disable : 4200) // nonstandard extension used : zero-sized array in struct/union
+#endif
+
 #include <string>
 
 namespace wal {
