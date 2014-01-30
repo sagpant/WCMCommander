@@ -131,6 +131,10 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 	
 	wchar_t c = pEvent->Char();
 	if (c && c>=0x20) return false;
+
+	const int K_SHIFT   = 16;
+	const int K_CONTROL = 17;
+	const int K_ALT     = 18;
 	
 	switch (pEvent->Key()) {
 		case VK_LCONTROL:
@@ -141,6 +145,9 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 		case VK_RMENU:
 		case VK_BACK: 
 		case VK_DELETE:
+		case K_CONTROL:
+		case K_SHIFT:
+		case K_ALT:
 			return false;
 	}
 	
