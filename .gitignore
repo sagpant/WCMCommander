@@ -11,3 +11,12 @@
 *.lai
 *.la
 *.a
+
+*.opensdf
+*.sdf
+*.suo
+*.user
+
+wcm/Debug/
+wcm/Release/
+ipch/
