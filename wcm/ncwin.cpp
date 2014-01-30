@@ -1882,7 +1882,19 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case VK_F8: Delete(); break;
 		case VK_F9: _menu.SetFocus();	break;
 		case VK_F10: QuitQuestion(); 	break;
-			
+
+		case VK_BACK:
+			if ( wcmConfig.systemBackSpaceUpDir )
+			{
+				carray<unicode_t> txt = _edit.GetText();
+				unicode_t *p = txt.ptr();
+				if ( !_edit.IsVisible() || !*p )
+				{
+					_panel->DirUp();
+					return true;
+				}
+			}
+			return false;
 		default: 
 			return false;
 		}

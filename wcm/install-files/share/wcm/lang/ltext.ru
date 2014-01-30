@@ -453,9 +453,13 @@ txt "Настройки редактора"
 id "Editor"
 txt "Редактор"
 
-#wcm-config.cpp:1382
+#wcm-config.cpp:1389
 id "Enable ESC key to show/hide panels"
 txt "Разрешить ESC для открытия/закрия панелей"
+
+#wcm-config.cpp:1390
+id "Enable BACKSPACE key to go up dir"
+txt "Разрешить BACKSPACE для перехода в родительскую папку"
 
 #wcm-config.cpp:1225
 #wcm-config.cpp:1360

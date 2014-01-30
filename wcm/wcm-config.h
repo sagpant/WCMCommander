@@ -28,6 +28,7 @@ struct WcmConfig {
 
 	bool systemAskOpenExec;
 	bool systemEscPanel;
+	bool systemBackSpaceUpDir;
 	carray<char> systemLang; //"+" - auto "-" -internal eng. 
 	
 	bool showToolBar;

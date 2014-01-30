@@ -539,6 +539,7 @@ const char *sectionFonts = "fonts";
 WcmConfig::WcmConfig()
 :	systemAskOpenExec(false),
 	systemEscPanel(false),
+	systemBackSpaceUpDir(false),
 	systemLang(new_char_str("+")),
 	showToolBar(true),
 	showButtonBar(true),
@@ -572,6 +573,7 @@ WcmConfig::WcmConfig()
 	MapBool(sectionSystem, "ask_open_exec", &systemAskOpenExec, systemAskOpenExec);
 #endif
 	MapBool(sectionSystem, "esc_panel", &systemEscPanel, systemEscPanel);
+	MapBool(sectionSystem, "back_updir", &systemBackSpaceUpDir, systemBackSpaceUpDir);
 	MapStr(sectionSystem,  "lang", &systemLang);
 	
 	MapBool(sectionSystem, "show_toolbar", &showToolBar, showToolBar);
@@ -1345,6 +1347,7 @@ public:
 
 	SButton  askOpenExecButton;
 	SButton  escPanelButton;
+	SButton  backUpDirButton;
 //	SButton  intLocale;
 	
 	StaticLine langStatic;
@@ -1384,6 +1387,7 @@ SysOptDialog::SysOptDialog(NCDialogParent *parent)
 
 	,askOpenExecButton(this, utf8_to_unicode( _LT("Ask user if Exec/Open conflict") ).ptr(), 0, wcmConfig.systemAskOpenExec)
 	,escPanelButton(this, utf8_to_unicode( _LT("Enable ESC key to show/hide panels") ).ptr(), 0, wcmConfig.systemEscPanel)
+	,backUpDirButton(this, utf8_to_unicode( _LT("Enable BACKSPACE key to go up dir") ).ptr(), 0, wcmConfig.systemBackSpaceUpDir)
 //	,intLocale(this, utf8_to_unicode( _LT("Interface localisation (save config and restart)") ).ptr(), 0, wcmConfig.systemIntLocale)
 	,langStatic(this, utf8_to_unicode( _LT("Language:") ).ptr())
 	,langVal(this, utf8_to_unicode( "______________________" ).ptr())
@@ -1393,8 +1397,9 @@ SysOptDialog::SysOptDialog(NCDialogParent *parent)
 #ifndef _WIN32
 	iL.AddWin(&askOpenExecButton,	0, 0, 0, 2); askOpenExecButton.Enable();  askOpenExecButton.Show(); 
 #endif
-	iL.AddWin(&escPanelButton,	1, 0, 1, 2); escPanelButton.Enable();  escPanelButton.Show(); 
-//	iL.AddWin(&intLocale,		2, 0, 2, 2); intLocale.Enable();  intLocale.Show(); 
+	iL.AddWin(&escPanelButton,	1, 0, 1, 2); escPanelButton.Enable();  escPanelButton.Show();
+	iL.AddWin(&backUpDirButton,2, 0, 2, 2); backUpDirButton.Enable(); backUpDirButton.Show();
+//	iL.AddWin(&intLocale,		3, 0, 3, 2); intLocale.Enable();  intLocale.Show();
 	
 	iL.AddWin(&langStatic, 		3, 0);	langStatic.Enable();	langStatic.Show();
 	iL.AddWin(&langVal,		3, 2);	langVal.Enable();	langVal.Show();
@@ -1457,6 +1462,7 @@ bool DoSystemConfigDialog(NCDialogParent *parent)
 	{
 		wcmConfig.systemAskOpenExec = dlg.askOpenExecButton.IsSet(); 
 		wcmConfig.systemEscPanel = dlg.escPanelButton.IsSet();
+		wcmConfig.systemBackSpaceUpDir = dlg.backUpDirButton.IsSet();
 		const char *s = wcmConfig.systemLang.ptr();
 		if (!s) s = "+";
 		bool langChanged = strcmp(dlg.curLangId.ptr(), s) != 0;
