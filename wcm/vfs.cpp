@@ -73,7 +73,7 @@ time_t FSTime::GetTimeT()
 	if (flags & TIME_T_OK) return tt;
 	if ((flags & FILETIME_OK) == 0) return 0;
 	tt = FILETIME_to_TT(ft);
-	flags != TIME_T_OK;
+	flags |= TIME_T_OK;
 	return tt;
 }
 
@@ -83,7 +83,7 @@ FILETIME FSTime::GetFileTime()
 	static FILETIME t0={0,0};
 	if ((flags & TIME_T_OK)==0) return t0;
 	TT_to_FILETIME(tt, ft);
-	flags != FILETIME_OK;
+	flags |= FILETIME_OK;
 	return ft;
 }
 

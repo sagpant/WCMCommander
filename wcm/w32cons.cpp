@@ -399,14 +399,14 @@ void W32Cons::Key(cevent_key* pEvent)
 
 	BYTE keyState[0x100];
 	::GetKeyboardState(keyState);
-	if (keyState[VK_LSHIFT] || keyState[VK_RSHIFT]) rec.Event.KeyEvent.dwControlKeyState != SHIFT_PRESSED;
-	if (keyState[VK_LCONTROL]) rec.Event.KeyEvent.dwControlKeyState != LEFT_CTRL_PRESSED;
-	if (keyState[VK_RCONTROL]) rec.Event.KeyEvent.dwControlKeyState != RIGHT_CTRL_PRESSED;
-	if (keyState[VK_LMENU]) rec.Event.KeyEvent.dwControlKeyState != LEFT_ALT_PRESSED;
-	if (keyState[VK_RMENU]) rec.Event.KeyEvent.dwControlKeyState != RIGHT_ALT_PRESSED;
-	if (keyState[VK_NUMLOCK]) rec.Event.KeyEvent.dwControlKeyState != NUMLOCK_ON;
-	if (keyState[VK_SCROLL]) rec.Event.KeyEvent.dwControlKeyState != SCROLLLOCK_ON;
-//???	if (keyState[]) rec.Event.KeyEvent.dwControlKeyState != ;
+	if (keyState[VK_LSHIFT] || keyState[VK_RSHIFT]) rec.Event.KeyEvent.dwControlKeyState |= SHIFT_PRESSED;
+	if (keyState[VK_LCONTROL]) rec.Event.KeyEvent.dwControlKeyState |= LEFT_CTRL_PRESSED;
+	if (keyState[VK_RCONTROL]) rec.Event.KeyEvent.dwControlKeyState |= RIGHT_CTRL_PRESSED;
+	if (keyState[VK_LMENU]) rec.Event.KeyEvent.dwControlKeyState |= LEFT_ALT_PRESSED;
+	if (keyState[VK_RMENU]) rec.Event.KeyEvent.dwControlKeyState |= RIGHT_ALT_PRESSED;
+	if (keyState[VK_NUMLOCK]) rec.Event.KeyEvent.dwControlKeyState |= NUMLOCK_ON;
+	if (keyState[VK_SCROLL]) rec.Event.KeyEvent.dwControlKeyState |= SCROLLLOCK_ON;
+//???	if (keyState[]) rec.Event.KeyEvent.dwControlKeyState |= ;
 	/*
 CAPSLOCK_ON
  */
