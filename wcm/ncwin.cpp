@@ -1640,6 +1640,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 				_panel->KeyPrior(shift, &_shiftSelectType);	return true;
 
 			case FC(VK_PRIOR, KM_CTRL):  _panel->DirUp(); return true;
+			case FC(VK_NEXT,  KM_CTRL):  _panel->DirEnter(); return true;
 
 			case FC(VK_NEXT, KM_SHIFT):
 			case VK_NEXT:	
