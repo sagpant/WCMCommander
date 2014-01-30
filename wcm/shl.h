@@ -11,10 +11,10 @@ typedef int StateId;
 
 class Chars;
 class Words;
-class RuleNode;
 class Rule;
 class State;
 class Shl;
+struct RuleNode;
 
 class Chars {
 
