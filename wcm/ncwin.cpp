@@ -1050,6 +1050,12 @@ void NCWin::CtrlEnter()
 	if (_panel->IsVisible()) 
 	{
 		const unicode_t *p = _panel->GetCurrentFileName();
+		
+		if ( strcmp( (const char*)p, (const char*)utf8_to_unicode("..").ptr() ) == 0 )
+		{
+			p = _panel->GetPath().GetUnicode();
+		}
+
 		bool spaces = StrHaveSpace(p);
 		if (spaces) _edit.Insert('"');
 		_edit.Insert(p);
