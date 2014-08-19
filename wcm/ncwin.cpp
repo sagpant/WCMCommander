@@ -1704,10 +1704,19 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case VK_INSERT:	_panel->KeyIns(); break;
 
 		case VK_ESCAPE:
-			if (wcmConfig.systemEscPanel)
 			{
-				ShowPanels(!_panelVisible);
-				break;
+				carray<unicode_t> txt = _edit.GetText();
+				unicode_t *p = txt.ptr();
+				if ( _edit.IsVisible() && *p )
+				{
+					// if the command line is not empty - clear it
+					_edit.Clear();
+				}
+				else if (wcmConfig.systemEscPanel)
+				{
+					ShowPanels(!_panelVisible);
+					break;
+				}
 			}
 			//! no break
 		case FC(VK_ESCAPE, KM_SHIFT):
