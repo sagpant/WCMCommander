@@ -254,7 +254,7 @@ private:
 	void CtrlEnter();
 	void CtrlF();
 	void HistoryDialog();
-	void SelectDrive(PanelWin *p);
+	void SelectDrive(PanelWin *p, FSPath &OtherPanelPath);
 	void SaveSetup();
 	void Search();
 	void Tab(bool forceShellTab);

@@ -652,7 +652,7 @@ void NCWin::StartExecute(const unicode_t *cmd, FS *fs,  FSPath &path)
 }
 
 
-void NCWin::SelectDrive(PanelWin *p)
+void NCWin::SelectDrive(PanelWin *p, FSPath &OtherPanelPath)
 {
 	if (_mode != PANEL) return;
 
@@ -661,6 +661,11 @@ void NCWin::SelectDrive(PanelWin *p)
 	UxMntList(&mntList);
 #endif
 	DlgMenuData mData;
+
+	const unicode_t *path = OtherPanelPath.GetUnicode();
+	
+	mData.Add(path, 0, ID_DEV_OTHER_PANEL); 
+	mData.AddSplitter();
 
 #ifdef _WIN32
 	carray<unicode_t> homeUri;
@@ -758,6 +763,13 @@ void NCWin::SelectDrive(PanelWin *p)
 	
 	int res = RunDldMenu(p, "Drive", &mData);
 	_edit.SetFocus();
+
+	if ( res == ID_DEV_OTHER_PANEL )
+	{
+		FSPtr fs = _panel->GetFSPtr();
+		p->LoadPath(fs, OtherPanelPath, 0, 0, PanelWin::SET); 
+		return;
+	}
 
 #ifdef _WIN32
 	if (res >= ID_DEV_MS0 && res < ID_DEV_MS0 + ('z'-'a'+1))
@@ -1672,10 +1684,10 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 			case FC(VK_6, KM_CTRL):  _panel->SetViewMode(PanelWin::FULL_ACCESS); return true;
 			
 			case FC(VK_F1, KM_SHIFT):
-			case FC(VK_F1, KM_ALT): SelectDrive(&_leftPanel); return true;
+			case FC(VK_F1, KM_ALT): SelectDrive(&_leftPanel, _rightPanel.GetPath()); return true;
 			
 			case FC(VK_F2, KM_SHIFT):
-			case FC(VK_F2, KM_ALT): SelectDrive(&_rightPanel); return true;
+			case FC(VK_F2, KM_ALT): SelectDrive(&_rightPanel, _leftPanel.GetPath()); return true;
 
 			case FC(VK_F7, KM_SHIFT):
 			case FC(VK_F7, KM_ALT): Search(); return true;
@@ -2112,8 +2124,8 @@ bool NCWin::Command(int id, int subId, Win *win, void *data)
 		case ID_PANEL_FULL_ST_R:	_rightPanel.SetViewMode(PanelWin::FULL_ST); return true;
 		case ID_PANEL_FULL_ACCESS_R:	_rightPanel.SetViewMode(PanelWin::FULL_ACCESS); return true;
 		
-		case ID_DEV_SELECT_LEFT: SelectDrive(&_leftPanel); return true;
-		case ID_DEV_SELECT_RIGHT: SelectDrive(&_rightPanel); return true;
+		case ID_DEV_SELECT_LEFT: SelectDrive(&_leftPanel, _rightPanel.GetPath()); return true;
+		case ID_DEV_SELECT_RIGHT: SelectDrive(&_rightPanel, _leftPanel.GetPath()); return true;
 		
 		case ID_CONFIG_SYSTEM: if (DoSystemConfigDialog(this)) SendConfigChanged(); break;
 		case ID_CONFIG_PANEL: if (DoPanelConfigDialog(this)) SendConfigChanged(); break;
