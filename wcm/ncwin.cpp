@@ -1063,7 +1063,8 @@ void NCWin::CtrlEnter()
 	{
 		const unicode_t *p = _panel->GetCurrentFileName();
 		
-		if ( strcmp( (const char*)p, (const char*)utf8_to_unicode("..").ptr() ) == 0 )
+		// check for '..'
+		if ( p && p[0] == '.' && p[1] == '.' )
 		{
 			p = _panel->GetPath().GetUnicode();
 		}
