@@ -8,7 +8,12 @@
 #ifdef LIBSMBCLIENT_EXIST
 
 #include "string-util.h"
+
+#ifdef LIBSMB40
+#include <samba-4.0/libsmbclient.h>
+#else
 #include <libsmbclient.h>
+#endif
 
 #include <sys/types.h>
 #include <dirent.h>

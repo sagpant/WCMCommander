@@ -26,3 +26,4 @@ wcm/makelib.mk
 wcm/wcm
 wcm/libtester/libfreetype_test
 wcm/libtester/libssh2test
+wcm/libtester/libsmb40test
