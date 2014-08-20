@@ -7,57 +7,18 @@
 #define WINBASE_H
 
 
-
 namespace wal {
 
-//Class IDs
-#define CI_BUTTON	1	
-#define CI_SBUTTON	2
-#define CI_STATIC_LINE	3
-#define CI_EDIT_LINE	4
-#define CI_SCROLL_BAR	5
-#define CI_VLIST	6
-#define CI_TEXT_LIST	7
-#define CI_MENUBAR	8
-#define CI_POPUPMENU	9
-#define CI_TOOLTIP	10
-
-//Color IDs
-#define IC_BG		0
-#define	IC_FG		1
-#define IC_TEXT		2
-#define IC_GRAY_TEXT	3
-#define IC_FOCUS_MARK	4
-
-//Edit colors
-#define IC_EDIT_TEXT_BG		10
-#define IC_EDIT_TEXT		11
-#define IC_EDIT_STEXT_BG	12
-#define IC_EDIT_STEXT		13
-#define IC_EDIT_DTEXT_BG	14
-#define IC_EDIT_DTEXT		15
-
-//Menu 
-#define IC_MENUBOX_BG		20
-#define IC_MENUBOX_BORDER	21
-#define IC_MENUBOX_TEXT		22
-#define IC_MENUBOX_SELECT_BG	23
-#define IC_MENUBOX_SELECT_TEXT	24
-#define IC_MENUBOX_SELECT_FRAME	25
-
-//PopupMenu
-#define IC_MENUPOPUP_BG		30
-#define IC_MENUPOPUP_LEFT	31
-#define IC_MENUPOPUP_BORDER	32
-#define IC_MENUPOPUP_LINE	33
-#define IC_MENUPOPUP_TEXT	34
-#define IC_MENUPOPUP_SELECT_TEXT	35
-#define IC_MENUPOPUP_SELECTBG	36
-#define IC_MENUPOPUP_POINTER	37
-
-#define IC_SCROLL_BORDER	40
-#define IC_SCROLL_BG		41
-#define IC_SCROLL_BUTTON	42
+extern int uiClassButton;
+extern int uiClassEditLine;
+extern int uiClassMenuBar;
+extern int uiClassPopupMenu;
+extern int uiClassSButton;
+extern int uiClassScrollBar;
+extern int uiClassTextList;
+extern int uiClassVListWin;
+extern int uiClassStatic;
+extern int uiClassToolTip;
 
 enum BASE_COMMANDS {
 	_CMD_BASE_BEGIN_POINT_ = -99,
@@ -84,7 +45,7 @@ class Button: public Win {
 
 	void SendCommand(){ Command(commandId, 0, this, 0); }
 public:
-	Button(Win *parent, const unicode_t *txt,  int id, crect *rect = 0, int iconX = 16, int iconY = 16);
+	Button(int nId, Win *parent, const unicode_t *txt,  int id, crect *rect = 0, int iconX = 16, int iconY = 16);
 	void Set(const unicode_t *txt, int id, int iconX = 16, int iconY = 16);
 	int CommandId() const { return commandId; }
 	virtual void Paint(GC &gc, const crect &paintRect);
@@ -92,7 +53,7 @@ public:
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual bool EventKey(cevent_key* pEvent);
 	virtual void OnChangeStyles();
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual ~Button();
 };
 
@@ -108,7 +69,7 @@ class SButton: public Win {
 	carray<unicode_t> text;
 	int group;
 public:
-	SButton(Win *parent, unicode_t *txt, int _group, bool _isSet=false, crect *rect = 0);
+	SButton(int nId, Win *parent, unicode_t *txt, int _group, bool _isSet=false, crect *rect = 0);
 
 	bool IsSet(){ return isSet; }
 	void Change(bool _isSet);
@@ -117,7 +78,7 @@ public:
 	virtual bool EventKey(cevent_key* pEvent);
 	virtual bool EventFocus(bool recv);
 	virtual bool Broadcast(int id, int subId, Win *win, void *data);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual ~SButton();
 };
 
@@ -195,7 +156,7 @@ class EditLine: public Win {
 	int GetCharPos(cpoint p);
 	void Changed(){ if (Parent()) Parent()->Command(CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0); }
 public:
-	EditLine(Win *parent, const crect *rect, const unicode_t *txt, int chars = 10, bool frame = true);
+	EditLine(int nId, Win *parent, const crect *rect, const unicode_t *txt, int chars = 10, bool frame = true);
 	virtual void Paint(GC &gc, const crect &paintRect);
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual bool EventKey(cevent_key* pEvent);
@@ -210,7 +171,7 @@ public:
 	void SetCursorPos(int c, bool mark = false){ text.SetCursor(c, mark); }
 	carray<unicode_t> GetText();
 	void SetPasswordMode(bool enable = true){ passwordMode = enable; Invalidate(); }
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual void OnChangeStyles();
 	virtual ~EditLine();
 };
@@ -220,10 +181,10 @@ extern cpoint GetStaticTextExtent(GC &gc, const unicode_t *s, cfont *font);
 class StaticLine: public Win {
 	wal::carray<unicode_t> text;
 public:
-	StaticLine(Win *parent, const unicode_t *txt, crect *rect = 0);
+	StaticLine(int nId, Win *parent, const unicode_t *txt, crect *rect = 0);
 	virtual void Paint(GC &gc, const crect &paintRect);
 	void SetText(const unicode_t *txt){ text = wal::new_unicode_str(txt); Invalidate(); }
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual ~StaticLine();
 };
 
@@ -273,7 +234,7 @@ class ScrollBar: public Win {
 	void Recalc(cpoint *newSize=0);
 	void SendManagedCmd(int subId, void *data);
 public:
-	ScrollBar(Win *parent, bool _vertical, bool _autoHide = true,  crect *rect = 0);
+	ScrollBar(int nId, Win *parent, bool _vertical, bool _autoHide = true,  crect *rect = 0);
 	void SetScrollInfo(ScrollInfo *s);
 	void SetManagedWin(Win *w = 0){ managedWin =w; SetScrollInfo(0); }
 	virtual void Paint(GC &gc, const crect &paintRect);
@@ -281,7 +242,7 @@ public:
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual void EventTimer(int tid);
 	virtual void EventSize(cevent_size *pEvent);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual ~ScrollBar();
 };
 
@@ -330,7 +291,7 @@ protected:
 
 	void SetCurrent(int);
 public:
-	VListWin(WTYPE t, unsigned hints, Win *_parent, SelectType st, BorderType bt, crect *rect);
+	VListWin(WTYPE t, unsigned hints, int nId, Win *_parent, SelectType st, BorderType bt, crect *rect);
 	virtual void DrawItem(GC &gc, int n, crect rect);
 	
 	void MoveCurrent(int n, bool mustVisible=true);
@@ -354,7 +315,7 @@ public:
 	virtual bool EventFocus(bool recv);
 	virtual bool Command(int id, int subId, Win *win, void *data);
 	virtual void EventTimer(int tid);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 };
 
 
@@ -376,7 +337,7 @@ class TextList: public VListWin {
 	int fontH;
 	int fontW;
 public:
-	TextList(WTYPE t, unsigned hints, Win *_parent, SelectType st, BorderType bt, crect *rect);
+	TextList(WTYPE t, unsigned hints, int nId, Win *_parent, SelectType st, BorderType bt, crect *rect);
 	virtual void DrawItem(GC &gc, int n, crect rect);
 	void Clear();
 	void Append(const unicode_t *txt, int i=0, void *p=0);
@@ -388,7 +349,7 @@ public:
 	
 	void SetHeightRange(LSRange range); //in characters
 	void SetWidthRange(LSRange range); //in characters
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual ~TextList();
 };
 
@@ -460,16 +421,16 @@ class PopupMenu: public Win {
 
 	void DrawItem(GC &gc, int n);
 public:
-	PopupMenu(Win*parent, MenuData *d, int x, int y, Win *_cmdOwner=0);
+	PopupMenu(int nId, Win*parent, MenuData *d, int x, int y, Win *_cmdOwner=0);
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual bool EventKey(cevent_key* pEvent);
 	virtual void Paint(GC &gc, const crect &paintRect);
 	virtual bool Command(int id, int subId, Win *win, void *data);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual ~PopupMenu();
 };
 
-int DoPopupMenu(Win *parent, MenuData *d, int x, int y);
+int DoPopupMenu(int nId, Win *parent, MenuData *d, int x, int y);
 
 class MenuBar: public Win {
 	struct Node {
@@ -492,7 +453,7 @@ class MenuBar: public Win {
 	void Right() { SetSelect( select == list.count()-1  ? 0 : select + 1 ); }
 	int GetPointItem(cpoint p);
 public:
-	MenuBar(Win *parent, crect *rect = 0);
+	MenuBar(int nId, Win *parent, crect *rect = 0);
 	void Paint(GC &gc, const crect &paintRect);
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual bool EventKey(cevent_key* pEvent);
@@ -500,7 +461,7 @@ public:
 	virtual bool EventFocus(bool recv);
 	virtual void EventEnterLeave(cevent *pEvent);
 	virtual void EventSize(cevent_size *pEvent);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual void OnChangeStyles();
 
 	void Clear(){ list.clear(); InvalidateRectList(); }

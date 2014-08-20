@@ -9,6 +9,7 @@
 
 using namespace wal;
 
+extern int uiClassViewer;
 
 enum NCViewerInfo {
 	CMD_NCVIEW_INFO		= -101,
@@ -87,6 +88,19 @@ struct VFPos {
 
 class ViewerThreadData;
 
+struct ViewerColors {
+	int bg;
+	int fg;
+	int ctrl;
+	int markFg;
+	int markBg;
+	int lnFg; //line number foreground (in hex mode)
+	int hid;
+	int loadBg;
+	int loadFg;
+};
+
+
 class ViewWin : public Win {
 	Layout _lo;
 	ViewerThreadData *threadData;
@@ -98,6 +112,7 @@ class ViewWin : public Win {
 	crect emptyRect;
 	int charW, charH;
 	charset_struct *charset;
+	ViewerColors colors;
 
 	bool CalcSize();
 
@@ -125,12 +140,7 @@ public:
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual bool Command(int id, int subId, Win *win, void *data);
 	virtual void EventTimer(int tid);
-	virtual int GetClassId();
-/*
-	virtual void EventTimer(int tid);
-	virtual bool Broadcast(int id, int subId, Win *win, void *data); 
-	virtual int GetClassId();
-*/
+	virtual int UiGetClassId();
 	virtual void ThreadSignal(int id, int data);
 	virtual void OnChangeStyles();
 

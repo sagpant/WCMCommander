@@ -2,6 +2,8 @@
 
 #ifndef _WIN32
 #include "bfile.h"
+#include <wal.h>
+using namespace wal;
 
 static int  GetNWords(char *str, char **a, int n)
 {

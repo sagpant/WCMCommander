@@ -468,17 +468,6 @@ void Win::StylesChanged(Win *w)
 	w->Invalidate();
 }
 
-
-int Win::GetClassId()
-{
-	return CI_WIN;
-}
-
-unsigned Win::GetChildColor(Win *w, int colorId)
-{
-	return parent ? parent->GetChildColor(w, colorId):SysGetColor(w, colorId);
-}
-
 cfont* Win::GetChildFont(Win *w, int fontId)
 {
 	return parent ? parent->GetChildFont(w, fontId) : SysGetFont(w, fontId); 
@@ -1387,6 +1376,6 @@ void MakeDisabledImage32(Image32 *dest, const Image32 &src)
 	for (;n>0; n--, p++)
 		*p = Dis(*p);
 }
-
-
 }; //namespace wal
+
+#include "swl_wincore_ui_inc.h"

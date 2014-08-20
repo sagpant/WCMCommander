@@ -340,7 +340,7 @@ public:
 	OperCFData threadData;
 	
 	SimpleCFThreadWin(NCDialogParent *parent, const char * name)
-		:	NCDialog(::createDialogAsChild, parent, utf8_to_unicode(name).ptr(), bListCancel), threadData(parent) {}
+		:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(name).ptr(), bListCancel), threadData(parent) {}
 	virtual void OperThreadStopped();
 	virtual ~SimpleCFThreadWin();
 };
@@ -596,9 +596,9 @@ bool OperCFThread::SendProgressInfo(int64 size, int64 progress)
 void OperFileNameWin::Paint(wal::GC &gc, const crect &paintRect)
 {
 	crect rect = ClientRect();
-	gc.SetFillColor(GetColor(0));
-	gc.FillRect(rect); //CCC
-	gc.SetTextColor(GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)); //CCC
+	gc.SetFillColor(UiGetColor(uiBackground,0,0,0xFFFFFF));
+	gc.FillRect(rect); 
+	gc.SetTextColor(UiGetColor(uiColor,0,0,0));
 	gc.Set(GetFont());
 	
 	unicode_t *p = text.ptr();
@@ -642,9 +642,9 @@ public:
 void NCNumberWin::Paint(wal::GC &gc, const crect &paintRect)
 {
 	crect rect = ClientRect();
-	gc.SetFillColor(GetColor(0));
-	gc.FillRect(rect); //CCC
-	gc.SetTextColor(GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)); //CCC
+	gc.SetFillColor(UiGetColor(uiBackground,0,0,0xFFFFFF));
+	gc.FillRect(rect);
+	gc.SetTextColor(UiGetColor(uiColor,0,0,0));
 	gc.Set(GetFont());
 
 	unicode_t c[32];
@@ -784,9 +784,9 @@ public:
 	CopyDialog(NCDialogParent *parent, bool move = false)
 	:	SimpleCFThreadWin(parent, move ? _LT("Move") : _LT("Copy") ),
 		_layout(7,2), 
-		_text1(this, utf8_to_unicode(move ? _LT("Moving the file") : _LT("Copying the file") ).ptr()),
-		_text2(this, utf8_to_unicode( _LT("to") ).ptr()),
-		_text3(this, utf8_to_unicode( _LT("Files processed") ).ptr()),
+		_text1(0, this, utf8_to_unicode(move ? _LT("Moving the file") : _LT("Copying the file") ).ptr()),
+		_text2(0, this, utf8_to_unicode( _LT("to") ).ptr()),
+		_text3(0, this, utf8_to_unicode( _LT("Files processed") ).ptr()),
 		_from(this),
 		_to(this),
 		_countWin(this), 

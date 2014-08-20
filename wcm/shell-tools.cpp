@@ -84,9 +84,9 @@ ShellLoadDirDialog::~ShellLoadDirDialog()
 }
 
 ShellLoadDirDialog::ShellLoadDirDialog(NCDialogParent *parent, FSPtr fs, FSPath &path)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode("TAB").ptr(), bListCancel),
+:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode("TAB").ptr(), bListCancel),
 	data(0),
-	_text(this, utf8_to_unicode("Read ...").ptr()),
+	_text(0, this, utf8_to_unicode("Read ...").ptr()),
 	_fs(fs),
 	_path(path)
 {
@@ -117,7 +117,7 @@ class ShellFileListWin: public VListWin {
 	int fontH;
 public:
 	ShellFileListWin(Win *parent, int H)
-	:	VListWin(Win::WT_CHILD, 0 /*WH_TABFOCUS | WH_CLICKFOCUS*/, parent,VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
+	:	VListWin(Win::WT_CHILD, 0 /*WH_TABFOCUS | WH_CLICKFOCUS*/, 0, parent,VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
 	{
 		wal::GC gc(this);
 		gc.Set(GetFont());
@@ -147,19 +147,23 @@ public:
 	virtual ~ShellFileListWin();
 };
 
+
+static int uiDir = GetUiID("dir");
+
 void ShellFileListWin::DrawItem(wal::GC &gc, int n, crect rect)
 {
 	if (pList.ptr() && n >= 0 && n < pList->count())
 	{
 		FSNode *p = pList->get(n);
-		int fg, bg;
-		if (n == GetCurrent()) {
-			fg = 0;
-			bg = 0x808080;
-		} else {
-			fg = p->IsDir() ? 0xFFFFFF : 0x808080;
-			bg = 0;
-		}
+		
+		
+		UiCondList ucl;
+		if ( (n % 2) == 0 ) ucl.Set(uiOdd, true);
+		if (n == GetCurrent())	ucl.Set(uiCurrentItem, true);
+		if (p->IsDir()) ucl.Set(uiDir, true);
+		
+		unsigned bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
+		unsigned fg = UiGetColor(uiColor, uiItem, &ucl, 0);
 
 		gc.Set(GetFont());
 		gc.SetFillColor(bg);
@@ -172,8 +176,8 @@ void ShellFileListWin::DrawItem(wal::GC &gc, int n, crect rect)
 			gc.TextOutF(rect.left, rect.top, &dirChar, 1);
 		gc.TextOutF(rect.left+fontW, rect.top, p->Name().GetUnicode());
 	} else {
-		gc.SetFillColor(0);
-		gc.FillRect(rect); //CCC
+		gc.SetFillColor(UiGetColor(uiBackground, uiItem, 0, 0xFFFFFF));
+		gc.FillRect(rect); 
 	}
 }
 
@@ -276,8 +280,9 @@ void ShellFileDlgData::RefreshList(carray<unicode_t> m)
 	}
 }
 
-#define BGCOLOR 0x505050 //0xA8B9BC //0xD8E9EC
-#define FGCOLOR 0xFFFFFF
+//#define BGCOLOR 0x505050 //0xA8B9BC //0xD8E9EC
+//#define FGCOLOR 0xFFFFFF
+
 
 class ShellFileDlg: public NCDialog {
 	Layout layout;
@@ -286,10 +291,10 @@ class ShellFileDlg: public NCDialog {
 	ShellFileDlgData *data;
 public:
 	ShellFileDlg(NCDialogParent *parent, ShellFileDlgData *d)
-	:	NCDialog(createDialogAsChild, parent, utf8_to_unicode(" TAB ").ptr(), bListOkCancel, BGCOLOR), 
+	:	NCDialog(createDialogAsChild, 0, parent, utf8_to_unicode(" TAB ").ptr(), bListOkCancel), //BGCOLOR), 
 		layout(10,10),
 		list(this, 15),
-		line(this, 0, 0, 20),
+		line(0, this, 0, 0, 20),
 		data(d)
 	{ 
 		layout.AddWin(&list,0,0); list.Enable(); list.Show(); 
@@ -305,13 +310,12 @@ public:
 	};
 	virtual bool Command(int id, int subId, Win *win, void *data);
 	virtual bool EventChildKey(Win* child, cevent_key* pEvent);
-	virtual unsigned GetChildColor(Win *w, int id);
-	virtual int GetClassId(); 
+	virtual int UiGetClassId();
 	FSNode *GetCurrent(){ return list.GetCurrentNode(); }
 	virtual ~ShellFileDlg();
 };
 
-int ShellFileDlg::GetClassId(){ return CI_SHELLWIN; }
+int ShellFileDlg::UiGetClassId(){ return GetUiID("TabDialog"); }
 
 bool ShellFileDlg::Command(int id, int subId, Win *win, void *d)
 {
@@ -329,21 +333,6 @@ bool ShellFileDlg::Command(int id, int subId, Win *win, void *d)
 
 	return NCDialog::Command(id, subId, win, data);
 }
-
-unsigned ShellFileDlg::GetChildColor(Win *w, int id)
-{
-	switch (id) {
-	case IC_SCROLL_BORDER: return BGCOLOR;
-	case IC_SCROLL_BG: return BGCOLOR;
-	case IC_SCROLL_BUTTON: return BGCOLOR;
-	case IC_EDIT_TEXT_BG: return 0;
-	case IC_EDIT_TEXT: return 0xFFFFFF;
-	case IC_BG: return BGCOLOR;
-	case IC_FG:
-	case IC_TEXT: return FGCOLOR;
-	};
-	return NCDialog::GetChildColor(w, id);
-};
 
 bool ShellFileDlg::EventChildKey(Win* child, cevent_key* pEvent)
 {

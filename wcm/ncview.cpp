@@ -1409,10 +1409,10 @@ static const int tabSize = 8;
 
 
 ViewWin::ViewWin(Win *parent)
-:	 Win(WT_CHILD, 0, parent),
+:	 Win(WT_CHILD, 0, parent, 0, 0),
 	_lo(5,5),
-	vscroll(this, true, false),
-	hscroll(this, false, true),
+	vscroll(0, this, true, false),
+	hscroll(0, this, false, true),
 	threadData(0),
 	charset(charset_table[GetFirstOperCharsetId()]),
 	wrap(true),
@@ -1446,7 +1446,8 @@ ViewWin::ViewWin(Win *parent)
 	SetTimer(1,1000);
 }
 
-int ViewWin::GetClassId(){ return CI_VIEWER; }
+int uiClassViewer = GetUiID("Viewer");
+int ViewWin::UiGetClassId(){ return uiClassViewer; }
 
 void ViewWin::EventTimer(int tid)
 {
@@ -1649,9 +1650,23 @@ bool ViewWin::EventMouse(cevent_mouse* pEvent)
 	return false;
 }
 
+static int uiColorCtrl = GetUiID("ctrl-color");
+static int uiLoadColor = GetUiID("load-color");
+static int uiLoadBackground = GetUiID("load-background");
+static int uiHid = GetUiID("hid");
 
 void ViewWin::OnChangeStyles()
 {
+	colors.bg	= UiGetColor(uiBackground, 0, 0, 0xFFFFFF);
+	colors.fg	= UiGetColor(uiColor, 0, 0, 0);
+	colors.ctrl	= UiGetColor(uiColorCtrl, 0, 0, 0xD00000);
+	colors.markFg	= UiGetColor(uiMarkColor, 0, 0, 0xFFFFFF);
+	colors.markBg	= UiGetColor(uiMarkBackground, 0, 0, 0);
+	colors.lnFg	= UiGetColor(uiLineColor, 0, 0, 0);//line number foreground (in hex mode)
+	colors.hid	= UiGetColor(uiHid, 0, 0, 0xD00000);
+	colors.loadBg	= UiGetColor(uiLoadBackground, 0, 0, 0xFFFFFF);
+	colors.loadFg	= UiGetColor(uiLoadColor, 0, 0, 0xFF);
+
 	wal::GC gc(this);
 	gc.Set(GetFont());
 	cpoint p = gc.GetTextExtents(ABCString);
@@ -1738,7 +1753,7 @@ static void ViewPreparHexModeText(unicode_t *inStr, char *inAttr, unicode_t *u, 
 	}
 }
 
-static void ViewDrawPreparedText(wal::GC &gc, int x, int y, unicode_t *s, char *type, int count, int charH, int charW)
+static void ViewDrawPreparedText(ViewerColors *viewerColors,  wal::GC &gc, int x, int y, unicode_t *s, char *type, int count, int charH, int charW)
 {
 	while (count > 0) 
 	{
@@ -1749,7 +1764,7 @@ static void ViewDrawPreparedText(wal::GC &gc, int x, int y, unicode_t *s, char *
 		int bg;
 		switch (t) {
 		case 0: fg = viewerColors->fg; bg = viewerColors->bg; break;
-		case 1: fg = viewerColors->sym; bg = viewerColors->bg; break;
+		case 1: fg = viewerColors->ctrl; bg = viewerColors->bg; break;
 		case 3: fg = viewerColors->hid; bg = viewerColors->bg; break;
 		default: fg = viewerColors->markFg; bg = viewerColors->markBg; break;
 		}
@@ -1764,7 +1779,7 @@ static void ViewDrawPreparedText(wal::GC &gc, int x, int y, unicode_t *s, char *
 }
 
 
-static void ViewDrawText(wal::GC &gc, unicode_t *s, char *attr, /*unicode_t *sPrev, char *attrPrev,*/ int count, 
+static void ViewDrawText(ViewerColors *viewerColors, wal::GC &gc, unicode_t *s, char *attr, /*unicode_t *sPrev, char *attrPrev,*/ int count, 
 	int x, int y, int charH, int charW)
 {
 	unicode_t buf[0x100];
@@ -1773,7 +1788,7 @@ static void ViewDrawText(wal::GC &gc, unicode_t *s, char *attr, /*unicode_t *sPr
 	while (count > 0) 
 	{
 		int n = PrepareText(buf, typeBuf, 0x100, s, attr, count);
-		ViewDrawPreparedText(gc, x, y, buf, typeBuf, n, charH, charW);
+		ViewDrawPreparedText(viewerColors, gc, x, y, buf, typeBuf, n, charH, charW);
 		count -= n;
 		s += n;
 		attr += n;
@@ -1793,7 +1808,7 @@ void ViewWin::Paint(wal::GC &gc, const crect &paintRect)
 
 	if (!emptyRect.IsEmpty())
 	{
-		gc.SetFillColor(viewerColors->bg);
+		gc.SetFillColor(colors.bg);
 		gc.FillRect(emptyRect);
 	}
 
@@ -1801,7 +1816,7 @@ void ViewWin::Paint(wal::GC &gc, const crect &paintRect)
 
 	if (mode.hex) 
 	{
-		gc.SetFillColor(viewerColors->bg);
+		gc.SetFillColor(colors.bg);
 		//gc.SetTextColor(0xFFFFFF);
 		int y = viewRect.top;
 		int x = viewRect.left;
@@ -1830,7 +1845,7 @@ void ViewWin::Paint(wal::GC &gc, const crect &paintRect)
 				continue;
 			}
 
-			gc.SetTextColor(viewerColors->lnFg);
+			gc.SetTextColor(colors.lnFg);
 			int i;
 			int lx = x;
 			unicode_t buf[64], *s;
@@ -1839,7 +1854,7 @@ void ViewWin::Paint(wal::GC &gc, const crect &paintRect)
 			*s = 0;
 			gc.TextOutF(x, y, buf);
 
-			gc.SetTextColor(viewerColors->fg);
+			gc.SetTextColor(colors.fg);
 			lx += 10*charW;
 			crect rect(lx, y, lx+charW*2, y+charH);
 			gc.FillRect(rect);
@@ -1874,7 +1889,7 @@ void ViewWin::Paint(wal::GC &gc, const crect &paintRect)
 			for (i=0; i<size.cols; i++)
 				if (p[i] == 0x100) break;
 				
-			ViewDrawPreparedText(gc, lx, y, txt, txtAttr, size.cols, charH, charW);
+			ViewDrawPreparedText(&colors, gc, lx, y, txt, txtAttr, size.cols, charH, charW);
 			//ViewDrawText(gc, txt, attr, i , lx, y,   charH, charW);
 
 			lx += i*charW;
@@ -1903,8 +1918,8 @@ void ViewWin::Paint(wal::GC &gc, const crect &paintRect)
 		}
 
 	} else {
-		gc.SetFillColor(viewerColors->bg);
-		gc.SetTextColor(viewerColors->fg);
+		gc.SetFillColor(colors.bg);
+		gc.SetTextColor(colors.fg);
 
 		int y = viewRect.top;
 		int x = viewRect.left;
@@ -1913,7 +1928,7 @@ void ViewWin::Paint(wal::GC &gc, const crect &paintRect)
 		
 		for (int i = 0; i<size.rows; i++, p += size.cols, attr += size.cols, y+=charH)
 		{
-			ViewDrawText(gc, p, attr, size.cols, x, y,  charH, charW );
+			ViewDrawText(&colors, gc, p, attr, size.cols, x, y,  charH, charW );
 		}
 		
 		if (y < viewRect.Height())
@@ -1934,8 +1949,8 @@ void ViewWin::Paint(wal::GC &gc, const crect &paintRect)
 	if (drawLoading && loadingText.ptr()) 
 	{
 		cpoint pt = gc.GetTextExtents(loadingText.ptr());
-		gc.SetFillColor(viewerColors->loadBg);
-		gc.SetTextColor(viewerColors->loadFg);
+		gc.SetFillColor(colors.loadBg);
+		gc.SetTextColor(colors.loadFg);
 		int x = (rect.Width()-pt.x)/2;
 		int y = (rect.Height()-pt.y)/2;
 		gc.FillRect(crect(x,y-pt.y, x+pt.x, y));
@@ -2207,7 +2222,7 @@ class VSearchDialog: public NCDialog {
 public:
 	VSTData *data;
 	VSearchDialog(NCDialogParent *parent, VFilePtr file, const unicode_t *str, bool sensitive, charset_struct *charset, bool hex, seek_t from)
-	:	NCDialog(::createDialogAsChild, parent, utf8_to_unicode(_LT("Search")).ptr(), bListCancel, 0xD8E9EC, 0)
+	:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Search")).ptr(), bListCancel)//, 0xD8E9EC, 0)
 	{
 		SetPosition();
 		data = new VSTData(file,str,sensitive,charset,hex,from);

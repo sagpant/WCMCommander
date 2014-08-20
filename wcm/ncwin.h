@@ -27,12 +27,12 @@ class StringWin: public Win {
 	carray<unicode_t> text;
 	cpoint textSize;
 public:
-	StringWin(Win *parent)
-		:Win(WT_CHILD,0,parent),textSize(0,0){}
+	StringWin(Win *parent);
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
 	const unicode_t*Get(){ return text.ptr(); }
 	void Set(const unicode_t *txt);
 	virtual void OnChangeStyles();
+	virtual int UiGetClassId();
 	virtual  ~StringWin();
 };
 
@@ -63,7 +63,7 @@ public:
 	ButtonWin(Win *parent);
 	void Set(ButtonWinData *list);
 	ButtonWinData *GetLastData(){ return lastData; }
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
 	virtual void OnChangeStyles();
 	virtual ~ButtonWin();
@@ -119,7 +119,7 @@ public:
 	virtual bool Broadcast(int id, int subId, Win *win, void *data);
 	virtual void EventSize(cevent_size *pEvent);
 	virtual bool EventMouse(cevent_mouse* pEvent);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual void OnChangeStyles();
 };
 
@@ -164,7 +164,7 @@ public:
 	virtual bool Broadcast(int id, int subId, Win *win, void *data);
 	virtual void EventSize(cevent_size *pEvent);
 	virtual bool EventMouse(cevent_mouse* pEvent);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual void OnChangeStyles();
 };
 
@@ -230,7 +230,7 @@ private:
 	void StartExecute(const unicode_t *cmd, FS *fs, FSPath &path);
 	void ReturnToDefaultSysDir(); // !!! 
 	
-	void Home();
+	void Home(PanelWin *p);
 		
 	void CreateDirectory();
 	void View();
@@ -291,7 +291,6 @@ public:
 	virtual void ThreadStopped(int id, void* data);
 	virtual void ThreadSignal(int id, int data);
 	virtual bool Command(int id, int subId, Win *win, void *data);
-	virtual int GetClassId();
 	virtual bool EventClose();
 	
 	int SendConfigChanged(){ return SendBroadcast(ID_CHANGED_CONFIG_BROADCAST, 0, this, 0, 10); };

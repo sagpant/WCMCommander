@@ -171,7 +171,7 @@ class DirCalcThreadWin: public NCDialog {
 	void RefreshCounters();
 public:
 	DirCalcThreadWin(NCDialogParent *parent, const char * name, OperDirCalcData *pD, const unicode_t *dirName)
-	:	NCDialog(::createDialogAsChild, parent, utf8_to_unicode(name).ptr(), bListOk),
+	:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(name).ptr(), bListOk),
 		pData(pD),
 		lo(12,10),
 		cPathWin(this),
@@ -179,15 +179,15 @@ public:
 		curFolderCount(-1),
 		curSumSize(-1),
 		curBadDirs(-1),
-		dirString(this, ScanedDirString(dirName).ptr()), 
-		fileCountName(this, utf8_to_unicode( _LT("Files:") ).ptr()), 
-		fileCountNum(this, utf8_to_unicode("AAAAAAAAAA").ptr()), 
-		folderCountName(this, utf8_to_unicode(_LT("Folders:") ).ptr()), 
-		folderCountNum(this, utf8_to_unicode("AAAAAAAAAA").ptr()), 
-		sumSizeName(this, utf8_to_unicode( _LT("Files size:") ).ptr()), 
-		sumSizeNum(this, utf8_to_unicode("AAAAAAAAAAAAAAAAAAAA").ptr()),
-		badDirsName(this, utf8_to_unicode( _LT("Not readable folders:") ).ptr()), 
-		badDirsNum(this, utf8_to_unicode("AAAAAAAAAA").ptr())
+		dirString(0, this, ScanedDirString(dirName).ptr()), 
+		fileCountName(0, this, utf8_to_unicode( _LT("Files:") ).ptr()), 
+		fileCountNum(0, this, utf8_to_unicode("AAAAAAAAAA").ptr()), 
+		folderCountName(0, this, utf8_to_unicode(_LT("Folders:") ).ptr()), 
+		folderCountNum(0, this, utf8_to_unicode("AAAAAAAAAA").ptr()), 
+		sumSizeName(0, this, utf8_to_unicode( _LT("Files size:") ).ptr()), 
+		sumSizeNum(0, this, utf8_to_unicode("AAAAAAAAAAAAAAAAAAAA").ptr()),
+		badDirsName(0, this, utf8_to_unicode( _LT("Not readable folders:") ).ptr()), 
+		badDirsNum(0, this, utf8_to_unicode("AAAAAAAAAA").ptr())
 	{
 		lo.AddWin(&dirString, 0, 0, 0, 3);
 		lo.AddWin(&cPathWin, 9, 0, 9, 3);

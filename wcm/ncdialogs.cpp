@@ -19,10 +19,11 @@ NCShadowWin::NCShadowWin(Win *parent)
 
 }
 
+
 void NCShadowWin::Paint(wal::GC &gc, const crect &paintRect)
 {
 	crect cr = ClientRect();
-	gc.SetFillColor(::wcmConfig.whiteStyle ? 0x404040 : 0x01);
+	gc.SetFillColor(0); //::wcmConfig.whiteStyle ? 0x404040 : 0x01);
 	gc.FillRect(cr);
 }
 
@@ -40,33 +41,9 @@ cfont* NCDialog::GetChildFont(Win *w, int fontId)
 	return dialogFont.ptr();	
 }
 
-unsigned NCDialog::GetChildColor(Win *w, int id)
-{
-	if (w->GetClassId() != CI_BUTTON) 
-	{
-		if (/*w == &_header && */id == IC_BG) return _bcolor;
-		if (/*w == &_header && */id == IC_TEXT) return _fcolor;
-	}
-
-	if (w && w->GetClassId() == CI_EDIT_LINE)
-	{
-		switch (id) {
-		case IC_EDIT_TEXT_BG: return (w && w->IsEnabled()) ? (wcmConfig.whiteStyle ? 0xFFFFFF: 0x909000) : _bcolor; //0xA0A000;
-		case IC_EDIT_TEXT: return  (w && w->IsEnabled()) ? 0 : 0x808080;
-		}
-
-		/*IC_EDIT_STEXT_BG
-		IC_EDIT_STEXT
-		IC_EDIT_DTEXT_BG
-		IC_EDIT_DTEXT*/
-	}
-
-	return Win::GetChildColor(w, id);
-}
-
 bool NCDialog::Command(int id, int subId, Win *win, void *data)
 {
-	if (id && win && win->GetClassId() == CI_BUTTON) 
+	if (id && win && win->UiGetClassId() == uiClassButton) 
 	{
 		CloseDialog(id);
 		return true;
@@ -74,13 +51,15 @@ bool NCDialog::Command(int id, int subId, Win *win, void *data)
 	return false;
 }
 
+int uiClassNCDialog = GetUiID("NCDialog");
+int NCDialog::UiGetClassId(){ return uiClassNCDialog; }
 
-NCDialog::NCDialog(bool asChild, NCDialogParent *parent, const unicode_t *headerText, ButtonDataNode *blist, unsigned bcolor, unsigned fcolor)
-: OperThreadWin(asChild ? Win::WT_CHILD : WT_MAIN /*WT_POPUP*/,0, parent), //, &crect(0,0,300,100)),
+NCDialog::NCDialog(bool asChild, int nId, NCDialogParent *parent, const unicode_t *headerText, ButtonDataNode *blist) //, unsigned bcolor, unsigned fcolor)
+: OperThreadWin(asChild ? Win::WT_CHILD : WT_MAIN /*WT_POPUP*/, 0, nId, parent), //, &crect(0,0,300,100)),
 	_shadow(parent),
-	_fcolor(fcolor),
-	_bcolor(bcolor),
-	_header(this, headerText),
+//	_fcolor(fcolor),
+//	_bcolor(bcolor),
+	_header(nId, this, headerText),
 	_lo(9,9),
 	_buttonLo(3,16),
 	_headerLo(3,3),
@@ -152,7 +131,7 @@ NCDialog::NCDialog(bool asChild, NCDialogParent *parent, const unicode_t *header
 		for ( ;blist->utf8text && n<7; blist++, n++)
 		{
 
-			cptr<Button> p = new Button(this, utf8_to_unicode( _LT(carray_cat<char>("DB>",blist->utf8text).ptr(), blist->utf8text) ).ptr(), blist->cmd);
+			cptr<Button> p = new Button(0, this, utf8_to_unicode( _LT(carray_cat<char>("DB>",blist->utf8text).ptr(), blist->utf8text) ).ptr(), blist->cmd);
 			
 			p->Show();
 			p->Enable();
@@ -379,12 +358,13 @@ bool NCDialog::EventShow(bool show)
 
 void NCDialog::Paint(wal::GC &gc, const crect &paintRect)
 {
-	gc.SetFillColor(_bcolor);
+	int bcolor = UiGetColor(uiBackground, 0, 0, 0x808080);
+	
+	gc.SetFillColor(bcolor);
 	gc.FillRect(_borderRect);
-	Draw3DButtonW2(gc, _borderRect, _bcolor, true);
+	Draw3DButtonW2(gc, _borderRect, bcolor, true);
 	crect rect = _frameRect;
-	Draw3DButtonW2(gc, _frameRect, _bcolor, false);
-//	DrawBorder(gc, rect, 0);
+	Draw3DButtonW2(gc, _frameRect, bcolor, false);
 	rect.Dec();
 	rect.Dec();
 	DrawBorder(gc, rect, 0);
@@ -454,6 +434,8 @@ char cmdKill9Txt[] = " kill -9 ";
 
 ButtonDataNode bListKill[] = { {CancelButtonText,CMD_CANCEL}, {cmdKillTxt,CMD_KILL}, {cmdKill9Txt,CMD_KILL_9}, {0,0}};
 
+int uiNCMessageBox = GetUiID("messagebox");
+int uiNCRedMessageBox = GetUiID("messagebox-red");
 
 int NCMessageBox(NCDialogParent *parent, const char *utf8head, const char *utf8txt, bool red, ButtonDataNode *buttonList)
 {
@@ -478,8 +460,8 @@ int NCMessageBox(NCDialogParent *parent, const char *utf8head, const char *utf8t
 	buf.append(0);
 	
 	
-	NCDialog d(::createDialogAsChild, parent, utf8_to_unicode(utf8head).ptr(), buttonList, red ? 0xFF:0xD8E9EC, red ? 0xFFFFFF :0x1);
-	StaticLine text(&d, buf.ptr());
+	NCDialog d(::createDialogAsChild, red ? uiNCRedMessageBox : uiNCMessageBox, parent, utf8_to_unicode(utf8head).ptr(), buttonList); //, red ? 0xFF:0xD8E9EC, red ? 0xFFFFFF :0x1);
+	StaticLine text(0, &d, buf.ptr());
 
 	text.Show();
 	text.Enable();
@@ -495,12 +477,13 @@ int NCMessageBox(NCDialogParent *parent, const char *utf8head, const char *utf8t
 	return d.DoModal();
 }
 
+
 class GoToDialog: public NCVertDialog {
 	EditLine edit;
 public:
-	GoToDialog(NCDialogParent *parent)
-	:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode("Go to line").ptr(), bListOkCancel, 0xD8E9EC, 0), 
-		edit((Win*)this, 0, 0)
+	GoToDialog(int nId, NCDialogParent *parent)
+	:	NCVertDialog(::createDialogAsChild, nId, parent, utf8_to_unicode("Go to line").ptr(), bListOkCancel), //0xD8E9EC, 0), 
+		edit(0, (Win*)this, 0, 0)
 	{
 		edit.Enable();
 		edit.Show();
@@ -520,7 +503,7 @@ GoToDialog::~GoToDialog(){}
 
 int GoToLineDialog(NCDialogParent *parent)
 {
-	GoToDialog d(parent);
+	GoToDialog d(0, parent);
 	d.SetEnterCmd(CMD_OK);
 	int r = d.DoModal();
 	if (r != CMD_OK) return -1;
@@ -537,8 +520,8 @@ class InputStrDialog: public NCVertDialog {
 	EditLine edit;
 public:
 	InputStrDialog(NCDialogParent *parent, const unicode_t *message, const unicode_t *str)
-	:	NCVertDialog(::createDialogAsChild, parent, message, bListOkCancel, 0xD8E9EC, 0),
-		edit((Win*)this, 0, 0, 50)
+	:	NCVertDialog(::createDialogAsChild, 0, parent, message, bListOkCancel), // 0xD8E9EC, 0),
+		edit(0, (Win*)this, 0, 0, 50)
 	{
 		edit.Enable();
 		edit.Show();
@@ -569,10 +552,12 @@ carray<unicode_t> InputStringDialog(NCDialogParent *parent, const unicode_t *mes
 	return ret;
 }
 
+int uiKillCmdDialog = GetUiID("KillCmdDialog");
+
 int KillCmdDialog(NCDialogParent *parent, const unicode_t *cmd)
 {
-	NCDialog d(::createDialogAsChild, parent, utf8_to_unicode("Kill command").ptr(), bListKill, 0xD8E9EC, 0);
-	StaticLine text(&d, cmd);
+	NCDialog d(::createDialogAsChild, uiKillCmdDialog, parent, utf8_to_unicode("Kill command").ptr(), bListKill); //,  0xD8E9EC, 0);
+	StaticLine text(0, &d, cmd);
 
 	text.Show();
 	text.Enable();
@@ -591,6 +576,33 @@ int KillCmdDialog(NCDialogParent *parent, const unicode_t *cmd)
 
 ////////////////////////////////////////////////////////////////////////////
 
+CmdHistoryDialog::CmdHistoryDialog(int nId, NCDialogParent *parent, NCHistory &history)
+:	NCDialog(createDialogAsChild, nId, parent, utf8_to_unicode(" History ").ptr(), bListOkCancel), 
+	_history(history), 
+	_selected(history.Count()-1),
+	_list(Win::WT_CHILD,Win::WH_TABFOCUS|WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
+{ 
+	for (int i = _history.Count()-1; i>=0; i--) _list.Append(_history[i]); 
+	_list.Enable();
+	_list.Show();
+	_list.SetFocus();
+	LSRange h(10, 1000, 10);
+	LSRange w(50, 1000, 30);
+	_list.SetHeightRange(h); //in characters
+	_list.SetWidthRange(w); //in characters
+	
+	if (_history.Count()>0) {
+		_list.MoveFirst(0);
+		_list.MoveCurrent(_history.Count()-1);
+	}
+
+		
+	AddWin(&_list);
+	SetEnterCmd(CMD_OK);
+	SetPosition();
+};
+
+
 bool CmdHistoryDialog::Command(int id, int subId, Win *win, void *data)
 {
 	if (id == CMD_ITEM_CLICK && win == &_list)
@@ -601,6 +613,15 @@ bool CmdHistoryDialog::Command(int id, int subId, Win *win, void *data)
 CmdHistoryDialog::~CmdHistoryDialog(){}
 
 ////////////////////////////////////////////////////////////////////////////
+NCDialogParent::NCDialogParent(Win::WTYPE t, unsigned hints, int nId , Win *_parent , const crect *rect)
+:	OperThreadWin(t, hints, nId, _parent, rect), _layout(1,1)
+{
+	_layout.SetLineGrowth(0);
+	_layout.SetColGrowth(0);
+	_layout.ColSet(0,32,100000);
+	_layout.LineSet(0,32,100000);
+	SetLayout(&_layout); 
+}
 
 NCDialogParent::~NCDialogParent(){}
 
@@ -645,13 +666,6 @@ class DlgMenu: public Win {
 	int _nameW, _commentW;
 	int _splitterH;
 public:
-	unsigned bgColor;
-	unsigned textColor;
-	unsigned sBgColor;
-	unsigned sTextColor;
-	unsigned fcColor;
-	unsigned commentColor;
-	
 	DlgMenu(Win *parent, DlgMenuData *data);
 
 	void SetCurrent(int n, bool searchUp);
@@ -660,7 +674,7 @@ public:
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual bool EventShow(bool show);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual ~DlgMenu();
 };
 
@@ -680,10 +694,9 @@ void DlgMenu::SetCurrent(int n, bool searchUp)
 	_current = n;
 }
 
-int DlgMenu::GetClassId()
-{
-	return CI_BUTTON; //
-}
+//int uiDlgMenu = GetUiID("DlgMenu");
+int DlgMenu::UiGetClassId(){	return uiClassButton/*DlgMenu*/; } //чтоб диалог его востринимал как кнопку
+
 
 bool DlgMenu::EventShow(bool show)
 {
@@ -699,13 +712,7 @@ DlgMenu::DlgMenu(Win *parent, DlgMenuData *data)
 	_itemH(16),
 	_width(50),
 	_nameW(10), _commentW(0),
-	_splitterH(5),
-	bgColor(::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000),
-	textColor(::wcmConfig.whiteStyle ? 0 : 0xFFFFFF),
-	sBgColor(0),
-	sTextColor(0xFFFFFF),
-	fcColor(::wcmConfig.whiteStyle ? 0xFF : 0xFFFF),
-	commentColor(::wcmConfig.whiteStyle ? 0x808000 : 0xFFFF00)
+	_splitterH(5)
 {
 	wal::GC gc(this);
 	gc.Set(GetFont());
@@ -860,13 +867,17 @@ bool DlgMenu::EventMouse(cevent_mouse* pEvent)
 	return true;
 }
 
+static int uiFcColor = GetUiID("first-char-color");
+static int uiCommentColor = GetUiID("comment-color");
 
 void DlgMenu::Paint(wal::GC &gc, const crect &paintRect)
 {
 	cfont *font = GetFont();
 	gc.Set(font);
 	int y = 0;
-
+	
+	int bgColor = UiGetColor(uiBackground, 0, 0, 0xB0B000);
+	
 	int count = _data->Count();
 
 	for (int i=0; i < count; i++)
@@ -884,13 +895,21 @@ void DlgMenu::Paint(wal::GC &gc, const crect &paintRect)
 			gc.FillRect(rect);
 			y += _splitterH;
 		} else {
-			gc.SetFillColor( i==_current ? sBgColor : bgColor);
+			UiCondList ucl;
+			if (i == _current) ucl.Set(uiCurrentItem, true);
+		
+			unsigned bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
+			unsigned textColor = UiGetColor(uiColor, uiItem, &ucl, 0);
+			unsigned fcColor = UiGetColor(uiFcColor, uiItem, &ucl, 0xFF);
+			unsigned commentColor = UiGetColor(uiCommentColor, uiItem, &ucl, 0);
+		
+			gc.SetFillColor(bg);
 			gc.FillRect(crect(0, y, _width, y+_itemH));
 
 			cicon icon;
 			icon.Load(_data->list[i].cmd, 16, 16);
 			gc.DrawIcon(0, y, &icon);
-			gc.SetTextColor(i==_current ? sTextColor : textColor);
+			gc.SetTextColor(textColor);
 			int x = 16 + 5;
 
 			const unicode_t *name = _data->list[i].name.ptr();
@@ -898,14 +917,12 @@ void DlgMenu::Paint(wal::GC &gc, const crect &paintRect)
 
 			if (name) {
 				gc.TextOutF(x, y, name);
-				if (i!=_current) {
-					gc.SetTextColor(fcColor);
-					gc.TextOutF(x, y, name, 1);
-				}
+				gc.SetTextColor(fcColor);
+				gc.TextOutF(x, y, name, 1);
 			}
 
 			if (comment) {
-				gc.SetTextColor(i==_current ? sTextColor : commentColor);
+				gc.SetTextColor(commentColor);
 				gc.TextOutF(x + _nameW + 5, y, comment);
 			}
 			y += _itemH;
@@ -916,12 +933,11 @@ void DlgMenu::Paint(wal::GC &gc, const crect &paintRect)
 DlgMenu::~DlgMenu(){}
 
 
-int RunDldMenu(NCDialogParent *parent, const char *header, DlgMenuData *data)
+int RunDldMenu(int nUi, NCDialogParent *parent, const char *header, DlgMenuData *data)
 {
 	if (!data || data->Count()<=0) return CMD_CANCEL;
 
-	NCDialog dlg(true, parent, utf8_to_unicode(header).ptr(), 0, 
-		::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000, 0xFFFFFF);
+	NCDialog dlg(true, nUi, parent, utf8_to_unicode(header).ptr(), 0); //, ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000, 0xFFFFFF);
 	DlgMenu mtable(&dlg, data);
 	mtable.Show(); 
 	mtable.Enable(); 

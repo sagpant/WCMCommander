@@ -8,7 +8,8 @@
 namespace wal {
 
 
-int MenuBar::GetClassId(){ return CI_MENUBAR; }
+int uiClassMenuBar = GetUiID("MenuBar");
+int MenuBar::UiGetClassId(){	return uiClassMenuBar; }
 
 void MenuBar::OnChangeStyles()
 {
@@ -26,8 +27,8 @@ void MenuBar::OnChangeStyles()
 	SetLSize(ls);
 }
 
-MenuBar::MenuBar(Win *parent, crect *rect)
-:	Win(Win::WT_CHILD,0 /*Win::WH_CLICKFOCUS*/,parent, rect),
+MenuBar::MenuBar(int nId, Win *parent, crect *rect)
+:	Win(Win::WT_CHILD,0 /*Win::WH_CLICKFOCUS*/,parent, rect, nId ),
 	select(-1),
 	lastMouseSelect(-1)
 {
@@ -45,7 +46,7 @@ void MenuBar::OpenSub()
 		crect itemRect = ItemRect(select);
 		int x = rect.left+itemRect.left;
 		int y = rect.top+itemRect.bottom;
-		sub = new PopupMenu(this, list[select].data, x, y, this ); //Parent() ? Parent() : 0);
+		sub = new PopupMenu(0, this, list[select].data, x, y, this ); //Parent() ? Parent() : 0);
 		sub->Show(Win::SHOW_INACTIVE);
 		sub->Enable(true);
 		SetCapture();
@@ -186,24 +187,28 @@ void MenuBar::Add(MenuData *data, const unicode_t *text)
 	if (IsVisible()) Invalidate();
 }
 
+
 void MenuBar::DrawItem(GC &gc, int n)
 {
 	if (n<0 || n>=list.count()) return;
+	
+	UiCondList ucl;
+	if (n == select && InFocus()) ucl.Set(uiCurrentItem, true);
+		
+	int color_text = UiGetColor(uiColor, uiItem, &ucl, 0x0);
+	int color_bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
 
 	gc.Set(GetFont());
 	crect itemRect = ItemRect(n);
 
-	if (n == select && InFocus()) {
-		gc.SetFillColor(GetColor((n==select && InFocus()) ? IC_MENUBOX_SELECT_BG : IC_MENUBOX_BG));
-		gc.FillRect(itemRect);	
-	} else 
-		gc.SetFillColor(GetColor(IC_MENUBOX_BG));
-	
+	gc.SetFillColor(color_bg);
+	if (n == select && InFocus()) gc.FillRect(itemRect);	
 
-	if (n == select)
-		DrawBorder(gc,itemRect,GetColor(IC_MENUBOX_SELECT_FRAME));
+	if (n == select) {
+		DrawBorder(gc, itemRect, UiGetColor(uiCurrentItemFrame, uiItem, &ucl, 0xFFFFFF));
+	}
 
-	gc.SetTextColor( GetColor( IsEnabled() ? (n==select ? IC_MENUBOX_SELECT_TEXT : IC_MENUBOX_TEXT) : IC_GRAY_TEXT));
+	gc.SetTextColor( color_text );
 	
 	const unicode_t *text = list[n].text.ptr();
 	cpoint tsize = gc.GetTextExtents(text);
@@ -282,12 +287,9 @@ void MenuBar::Paint(GC &gc, const crect &paintRect)
 {
 	crect rect = ClientRect();
 
-	unsigned color = GetColor(IC_MENUBOX_BG);
+	unsigned color  = UiGetColor(uiBackground, 0, 0, 0xFFFFFF);
 	unsigned bColor = ColorTone(color, -50), aColor = ColorTone(color,+50);
 	FillHorisontalRect(gc, rect, aColor, bColor);
-
-//	gc.SetFillColor(color);
-//	gc.FillRect(rect);
 
 	for (int i = 0; i<list.count(); i++)
 		DrawItem(gc,i);

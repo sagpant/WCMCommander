@@ -117,12 +117,14 @@ static void smbcAuth(const char *srv, const char *shr,  char *wg, int wglen, cha
 	
 	if (!currentFsParam->isSet)
 	{
-		FSSmbParam param =(!currentFsParam->user[0] || strcmp(const_cast<char*>(currentFsParam->user), const_cast<char*>(lastFsParam.user))) ? lastFsParam : *currentFsParam;
+		FSSmbParam param = 	(!currentFsParam->user[0] || !strcmp(const_cast<char*>(currentFsParam->user), const_cast<char*>(lastFsParam.user))) &&
+					(!currentFsParam->domain[0] || !strcmp(const_cast<char*>(currentFsParam->domain), const_cast<char*>(lastFsParam.domain)))
+					? lastFsParam : *currentFsParam;
 		strcpy(const_cast<char*>(param.server), const_cast<char*>(currentFsParam->server));
-		
+
 		if (!param.user[0] && unlen>0) SetString(const_cast<char*>(param.user), sizeof(param.user), un);
 		if (!param.domain[0] && wglen>0) SetString(const_cast<char*>(param.domain), sizeof(param.domain), wg);
-		
+
 		if (fscInfo && fscInfo->SmbLogon(&param))
 		{
 			lastFsParam = *currentFsParam = param;

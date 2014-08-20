@@ -105,7 +105,7 @@ class CharsetListWin: public VListWin {
 	int fontH;
 public:
 	CharsetListWin(Win *parent, int H)
-	:	VListWin(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, parent,VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0),
+	:	VListWin(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0),
 		cList(0),
 		cCount(0)
 	{
@@ -143,29 +143,19 @@ void CharsetListWin::DrawItem(wal::GC &gc, int n, crect rect)
 {
 	if (cList && n >= 0 && n < cCount)
 	{
-		unsigned bg, textColor;
-		bool frame=false;
-		static unsigned frameColor=0xFFE0E0; //CCC
-		if (!IsEnabled())
-		{
-			bg = GetColor(IC_BG);
-			textColor = GetColor(IC_GRAY_TEXT); //CCC
-		} else 
-		if (n == this->GetCurrent())
-		{
-			bg = InFocus() ? 0xFF4040 : 0xA0A0A0 ;//CCC
-			textColor = 0xFFFFFF;//CCC
-			frame = true;
-		} else 
-		if (IsSelected(n)) {
-			bg = InFocus() ? 0xFF4040 : 0xA0A0A0 ;//CCC
-			//bg = 0xFF4040;//CCC
-			textColor = 0xFFFFFF;//CCC
-		} else {
-			bg = (n%2)?0xFFFFFF:0xE0FFE0;
-			textColor = 0;
-		}
+		bool frame = false;
+		
+		UiCondList ucl;
+		if ((n % 2)==0) ucl.Set(uiOdd, true);
+		if (n == this->GetCurrent()) ucl.Set(uiCurrentItem, true);
+		
+		unsigned bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
+		unsigned textColor = UiGetColor(uiColor, uiItem, &ucl, 0);
+		unsigned frameColor = UiGetColor(uiFrameColor, uiItem, &ucl, 0);;
 
+		if (n == this->GetCurrent())
+			frame = true;
+			
 		gc.SetFillColor(bg);
 		gc.FillRect(rect);
 		gc.Set(GetFont());
@@ -177,8 +167,8 @@ void CharsetListWin::DrawItem(wal::GC &gc, int n, crect rect)
 		gc.TextOutF(rect.left+10, rect.top+2, utf8_to_unicode(cList[n]->name).ptr());
 		gc.TextOutF(rect.left+10+15*fontW, rect.top+2, utf8_to_unicode(cList[n]->comment).ptr() );
 	} else {
-		gc.SetFillColor(0xFFFFFF);
-		gc.FillRect(rect); //CCC
+		gc.SetFillColor(UiGetColor(uiBackground, uiItem, 0, 0xFFFFFF));
+		gc.FillRect(rect);
 	}
 }
 
@@ -198,12 +188,12 @@ class CharsetDlg1: public NCDialog {
 	Button delButton;
 public:
 	CharsetDlg1(NCDialogParent *parent, int curCharset)
-	:	NCDialog(createDialogAsChild, parent, utf8_to_unicode( _LT("Charset") ).ptr(), bListOkCancel), 
+	:	NCDialog(createDialogAsChild, 0, parent, utf8_to_unicode( _LT("Charset") ).ptr(), bListOkCancel), 
 		layout(10,10),
 		list(this, 7),
-		otherButton(this, utf8_to_unicode( _LT("Other...") ).ptr(), CMD_OTHER),
-		addButton(this, utf8_to_unicode( carray_cat<char>(_LT("Add..."), "(Ins)").ptr() ).ptr(), CMD_ADD),
-		delButton(this, utf8_to_unicode( carray_cat<char>(_LT("Del..."), "(Del)").ptr() ).ptr(), CMD_DEL)
+		otherButton(0, this, utf8_to_unicode( _LT("Other...") ).ptr(), CMD_OTHER),
+		addButton(0, this, utf8_to_unicode( carray_cat<char>(_LT("Add..."), "(Ins)").ptr() ).ptr(), CMD_ADD),
+		delButton(0, this, utf8_to_unicode( carray_cat<char>(_LT("Del..."), "(Del)").ptr() ).ptr(), CMD_DEL)
 	{ 
 		int i;
 
@@ -318,7 +308,7 @@ class CharsetDialog: public NCDialog {
 	CharsetListWin _list;
 public:
 	CharsetDialog(NCDialogParent *parent, int curCharset, const char *headerText, charset_struct **cslist, int csCount)
-	:	NCDialog(createDialogAsChild, parent, utf8_to_unicode(headerText).ptr(), bListOkCancel), 
+	:	NCDialog(createDialogAsChild, 0, parent, utf8_to_unicode(headerText).ptr(), bListOkCancel), 
 		_list(this, 15)
 	{ 
 		_list.SetList(cslist, csCount);

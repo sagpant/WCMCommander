@@ -1901,7 +1901,7 @@ GC::~GC(){ XFreeGC(display, gc); }
 
 
 
-Win::Win(WTYPE t, unsigned hints, Win *_parent, const crect *rect)
+Win::Win(WTYPE t, unsigned hints, Win *_parent, const crect *rect, int uiNId)
 :	
 	parent(_parent),
 	type(t),
@@ -1914,6 +1914,8 @@ Win::Win(WTYPE t, unsigned hints, Win *_parent, const crect *rect)
 	lastFocusChild(0),
 	upLayout(0), 
 	layout(0),
+	uiNameId(uiNId),
+	
 	exposeRect(0,0,0,0),
 	reparent(0)
 {

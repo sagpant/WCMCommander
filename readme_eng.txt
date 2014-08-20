@@ -1,4 +1,4 @@
-				Wal commander 0.15.0
+				Wal commander 0.16.1
 
 
 	Dual pane file manager 

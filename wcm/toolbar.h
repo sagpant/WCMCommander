@@ -38,6 +38,7 @@ public:
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual void EventEnterLeave(cevent *pEvent);
 	virtual void EventTimer(int tid);
+	virtual int UiGetClassId();
 	void Clear();
 	void AddCmd(int cmd, const char* tipText);
 	void AddSplitter();

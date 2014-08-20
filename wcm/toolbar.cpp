@@ -16,6 +16,10 @@ ToolBar::ToolBar(Win *parent, const crect *rect, int iconSize)
 	OnChangeStyles();
 }
 
+int uiClassToolBar = GetUiID("ToolBar");
+
+int ToolBar::UiGetClassId(){ return uiClassToolBar; }
+
 void ToolBar::RecalcItems()
 {
 	crect cr = ClientRect();
@@ -109,7 +113,7 @@ void ToolBar::DrawNode(wal::GC &gc, Node *pNode, int state)
 	int x = pNode->rect.left + 1 + XSPACE;
 	int y = pNode->rect.top + 1 + YSPACE;
 
-	unsigned bgColor = GetColor(0);
+	unsigned bgColor = UiGetColor(uiBackground, uiItem, 0, 0x808080);//GetColor(0);
 	unsigned frameColor = ColorTone(bgColor, -150);
 	if (state == DRAW_PRESSED) 
 		bgColor = ColorTone(bgColor, -50);
@@ -138,7 +142,7 @@ void ToolBar::Paint(wal::GC &gc, const crect &paintRect)
 {
 	crect cr = ClientRect();
 	crect rect = cr;
-	unsigned colorBg = GetColor(0);
+	unsigned colorBg = UiGetColor(uiBackground, 0, 0, 0x808080); //GetColor(0);
 
 	unsigned splitColor1 = ColorTone(colorBg, -70);
 	unsigned splitColor2 = ColorTone(colorBg, 70);

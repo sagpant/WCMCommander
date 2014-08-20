@@ -7,14 +7,12 @@
 
 namespace wal {
 
-int VListWin::GetClassId()
-{
-	return CI_VLIST;
-}
+int uiClassVListWin = GetUiID("VListWin");
+int VListWin::UiGetClassId(){	return uiClassVListWin; }
 
 
-VListWin::VListWin(WTYPE wt, unsigned hints, Win *parent, SelectType st, BorderType bt, crect *rect)
-:Win(wt,hints,parent,rect),
+VListWin::VListWin(WTYPE wt, unsigned hints, int nId, Win *parent, SelectType st, BorderType bt, crect *rect)
+:Win(wt, hints, parent, rect, nId),
 	selectType(st),
 	borderType(bt),
 	itemHeight(1),
@@ -26,8 +24,8 @@ VListWin::VListWin(WTYPE wt, unsigned hints, Win *parent, SelectType st, BorderT
 	captureDelta(0),
 	borderColor(0),
 	bgColor(0x808080),
-	vScroll(this,true,true),
-	hScroll(this,false),
+	vScroll(0, this,true,true),
+	hScroll(0, this,false),
 	layout(4,4)
 
 {

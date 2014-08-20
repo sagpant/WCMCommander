@@ -28,83 +28,38 @@ cptr<wal::GC> defaultGC;
 
 const char *appName = "Wal Commander";
 
-
-unsigned (*OldSysGetColor)(Win *w, int id)=0;
-unsigned MSysGetColor(Win *w, int id)
-{
-	switch (id) {
-	case IC_MENUBOX_BG: return ::wcmConfig.whiteStyle ? 0xD8E9EC :0xB0B000;
-	case IC_MENUBOX_BORDER: return 0xB0B000;
-	case IC_MENUBOX_TEXT:   return 0x01;
-	case IC_MENUBOX_SELECT_BG: return 0x01;
-	case IC_MENUBOX_SELECT_TEXT: return 0xFFFFFF;
-	case IC_MENUBOX_SELECT_FRAME: return 0x00FF00;
-
-	case IC_MENUPOPUP_BG: return ::wcmConfig.whiteStyle ? /*0xD8E9EC*/0xFFFFFF : 0xA0A000;
-	case IC_MENUPOPUP_LEFT: return ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xC0C000;	
-	case IC_MENUPOPUP_BORDER: return ::wcmConfig.whiteStyle ? 0x808080 : 0xFFFFFF;
-	case IC_MENUPOPUP_LINE:	return 0;
-	case IC_MENUPOPUP_TEXT:	return ::wcmConfig.whiteStyle ? 0 :0xFFFFFF; //0;
-	case IC_MENUPOPUP_SELECT_TEXT: return ::wcmConfig.whiteStyle ? 0 :0xFFFFFF;
-	case IC_MENUPOPUP_SELECTBG: return ::wcmConfig.whiteStyle ? 0xB0C0C0 : 0x404000;
-	case IC_MENUPOPUP_POINTER: return 0;
-	
-	case IC_SCROLL_BORDER: return ::wcmConfig.whiteStyle ? 0xD8E9EC : 0x606000; //0xFFD0D0;
-	case IC_SCROLL_BG: return ::wcmConfig.whiteStyle ? 0xE8F9FC :0xA0A000; //0xA00000; //0xD0D000;
-	case IC_SCROLL_BUTTON: return ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xFFFF00;
-	};
-
-	if (w && w->Parent() && w->Parent()->GetClassId() == CI_BUTTON_WIN)
-	{
-		switch(id) {
-		case IC_BG: return ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
-		}
-	}
-	
-	if (id==IC_EDIT_TEXT_BG) return ::wcmConfig.whiteStyle ? 0xFFFFFF : 1;
-	if (id==IC_EDIT_TEXT) return ::wcmConfig.whiteStyle ? 0 : 0xFFFFFF;
-	
-	if (w &&  w->GetClassId() == CI_TOOLTIP)
-	{
-		switch(id) {
-		case IC_BG: return 0x80FFFF;
-		case IC_TEXT: return 0;
-		}
-	}
-
-	return OldSysGetColor(w,id);
-}
-
 cfont* (*OldSysGetFont)(Win *w, int id)=0;
 cfont* MSysGetFont(Win *w, int id)
 {
 	if (w) {
-		if (w->GetClassId() ==  CI_PANEL)
+		if (w->UiGetClassId() ==  uiClassPanel)
 			return panelFont.ptr();
 
-		if (w->GetClassId() == CI_VLIST)
+		if (w->UiGetClassId() == uiClassVListWin)
 			return  panelFont.ptr();
 			
-		if (w->GetClassId() == CI_TERMINAL)
+		if (w->UiGetClassId() == uiClassTerminal)
 			return  terminalFont.ptr();
 			
-		if (w->GetClassId() == CI_EDITOR)
+		if (w->UiGetClassId() == uiClassEditor)
 			return  editorFont.ptr();
 			
-		if (w->GetClassId() == CI_VIEWER)
+		if (w->UiGetClassId() == uiClassViewer)
 			return  viewerFont.ptr();
 
-		if (	w->GetClassId() ==  CI_MENUBAR || 
-			w->GetClassId() ==  CI_POPUPMENU || 
-			w->GetClassId() ==  CI_TOOLTIP ||
-//			w->GetClassId() ==  CI_EDITORHEADWIN || 
-			w->Parent() && w->GetClassId() == CI_BUTTON)
+		if (	w->UiGetClassId() ==  uiClassMenuBar || 
+			w->UiGetClassId() ==  uiClassPopupMenu || 
+			w->UiGetClassId() ==  uiClassToolTip ||
+			w->Parent() && w->UiGetClassId() == uiClassButton)
 		{
 			return dialogFont.ptr();
 		}
 	}
 	return editorFont.ptr();
 }
+
+
+
 
 #ifdef _WIN32
 namespace wal {
@@ -142,7 +97,7 @@ int main(int argc, char **argv)
 #endif
 {	
 	try {
-
+		
 		#ifndef _WIN32
 			for (int i = 1; i<argc; i++)
 			{
@@ -182,9 +137,9 @@ int main(int argc, char **argv)
 				InitLocale(UNIX_CONFIG_DIR_PATH "/lang", langId);
 #endif
 
-			SetPanelColorStyle(wcmConfig.panelColorMode);
-			SetEditorColorStyle(wcmConfig.editColorMode);
-			SetViewerColorStyle(wcmConfig.viewColorMode);
+			
+//			SetEditorColorStyle(wcmConfig.editColorMode);
+//			SetViewerColorStyle(wcmConfig.viewColorMode);
 		} catch (cexception *ex) {
 			fprintf(stderr, "%s\n", ex->message());
 			ex->destroy();
@@ -193,12 +148,11 @@ int main(int argc, char **argv)
 		InitSSH();
 
 		AppInit();
-		OldSysGetColor =SysGetColor;
-		SysGetColor=MSysGetColor;
-
+		
+		SetColorStyle(wcmConfig.panelColorMode);
+		
 		OldSysGetFont =SysGetFont;
 		SysGetFont=MSysGetFont;
-
 
 		cfont *defaultFont = SysGetFont(0,0);
 		defaultGC = new wal::GC((Win*)0);

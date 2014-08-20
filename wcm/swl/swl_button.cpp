@@ -11,9 +11,11 @@ namespace wal {
 #define RIGHTSPACE 5
 #define ICONX_RIGHTSPACE 1
 
-int Button::GetClassId()
+int uiClassButton = GetUiID("Button");
+
+int Button::UiGetClassId()
 {
-	return CI_BUTTON;
+	return uiClassButton;
 }
 
 void Button::OnChangeStyles()
@@ -40,8 +42,8 @@ void Button::OnChangeStyles()
 
 static unicode_t spaceUnicodeStr[]={' ', 0};
 
-Button::Button(Win *parent, const unicode_t *txt, int id, crect *rect, int iconX, int iconY)
-:	Win(Win::WT_CHILD,Win::WH_TABFOCUS|WH_CLICKFOCUS,parent, rect),
+Button::Button(int nId, Win *parent, const unicode_t *txt, int id, crect *rect, int iconX, int iconY)
+:	Win(Win::WT_CHILD,Win::WH_TABFOCUS|WH_CLICKFOCUS,parent, rect, nId),
 	pressed(false), 
 	icon(new cicon(id, iconX, iconY)),
 	commandId(id)
@@ -141,7 +143,7 @@ bool Button::EventKey(cevent_key* pEvent)
 
 void Button::Paint(GC &gc, const crect &paintRect)
 {
-	unsigned colorBg = GetColor(0);
+	unsigned colorBg = UiGetColor(uiBackground, 0, 0, 0x808080); //GetColor(0);
 	crect cr = this->ClientRect();
 	crect rect = cr;
 	DrawBorder(gc, rect, ColorTone(colorBg, +20));
@@ -158,14 +160,14 @@ void Button::Paint(GC &gc, const crect &paintRect)
 		Draw3DButtonW2(gc, rect, colorBg, true);
 		rect.Dec();
 		if (InFocus()) {
-			DrawBorder(gc, rect, GetColor(IC_FOCUS_MARK)); 
+			DrawBorder(gc, rect, /*GetColor(IC_FOCUS_MARK)*/ UiGetColor(uiFocusFrameColor, 0, 0, 0)); 
 		}
 		rect.Dec();
 	}
 
 	gc.SetFillColor(colorBg);
 	gc.FillRect(rect);
-	gc.SetTextColor(GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT));
+	gc.SetTextColor(/*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ UiGetColor(uiColor, 0, 0, 0) );
 	gc.Set(GetFont());
 	cpoint tsize = gc.GetTextExtents(text.ptr());
 

@@ -9,6 +9,7 @@
 
 #include "terminal.h"
 
+extern int uiClassTerminal;
 
 struct ScreenMarker {
 	EmulatorScreenPoint a, b;
@@ -73,7 +74,7 @@ class TerminalWin : public Win {
 	
 	EmulatorScreenPoint lastMousePoint;
 public:
-	TerminalWin(Win *parent);
+	TerminalWin(int nId, Win *parent);
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
 	virtual void ThreadSignal(int id, int data);
 	virtual void EventSize(cevent_size *pEvent);
@@ -97,7 +98,7 @@ public:
 	bool GetMarked(ClipboardText &ct);
 	void MarkerClear();
 	virtual bool Command(int id, int subId, Win *win, void *data);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual void OnChangeStyles();
 };
 

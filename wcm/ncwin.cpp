@@ -44,8 +44,6 @@ carray<unicode_t> searchTextString;
 SearchParams textSearchParams;
 ReplaceEditParams textReplaceParams;
 
-int NCWin::GetClassId(){ return 100; }
-
 static crect acWinRect(0,0,850,500);
 
 static unicode_t panelButtonStr[] = {'*',0};
@@ -87,11 +85,13 @@ void NCWin::SetToolbarView()
 	_toolBar.Invalidate();
 }
 
+int uiClassNCWin = GetUiID("NCWin");
+int uiCommandLine = GetUiID("command-line");
 
 NCWin::NCWin()
-:	NCDialogParent(WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, 0, &acWinRect),
+:	NCDialogParent(WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect),
 	_lo(5,1),
-	_terminal(this),
+	_terminal(0, this),
 	_lpanel(1,2),
 	_ledit(1,2),
 	_buttonWin(this),
@@ -99,11 +99,11 @@ NCWin::NCWin()
 	_leftPanel(this, &wcmConfig.panelModeLeft),
 	_rightPanel(this, &wcmConfig.panelModeRight),
 	
-	_edit(this, 0, 0, 10, false),
+	_edit(uiCommandLine, this, 0, 0, 10, false),
 	_editPref(this),
 	_panel(&_leftPanel),
-	_menu(this),
-	_toolBar(this,0, 16),
+	_menu(0, this),
+	_toolBar(this, 0, 16),
 	_mode(PANEL),
 	_panelVisible(true),
 	_viewer(this),
@@ -371,7 +371,8 @@ void NCWin::ExecuteFile()
 
 		
 #ifdef _WIN32
-		StartExecute(_panel->UriOfCurrent().GetUnicode(), _panel->GetFS(), _panel->GetPath());
+		static unicode_t w[2]={'"',0};
+		StartExecute(carray_cat<unicode_t>(w, _panel->UriOfCurrent().GetUnicode(),w).ptr(), _panel->GetFS(), _panel->GetPath());
 		return;
 #else
 		const unicode_t	*fName = p->GetUnicodeName();
@@ -418,6 +419,7 @@ void NCWin::PanelEnter()
 	
 	if (p->IsExe())
 	{
+#ifndef _WIN32
 		if (wcmConfig.systemAskOpenExec && cmd.ptr())
 		{
 			
@@ -446,7 +448,7 @@ void NCWin::PanelEnter()
 				return;
 			}
 		}
-		
+#endif		
 		ExecuteFile();
 		return;
 	}
@@ -528,7 +530,7 @@ void NCWin::RightButtonPressed(cpoint point)
 
 	if (!md->Count()) return;
 
-	int ret = DoPopupMenu(this, md, point.x, point.y);
+	int ret = DoPopupMenu(0, this, md, point.x, point.y);
 
 	_edit.SetFocus();
 	
@@ -566,7 +568,7 @@ void NCWin::ReturnToDefaultSysDir()
 #endif
 }
 
-void NCWin::Home()
+void NCWin::Home(PanelWin *p)
 {
 #ifdef _WIN32	
 		carray<unicode_t> homeUri;
@@ -584,8 +586,8 @@ void NCWin::Home()
 		if (homeUri.ptr()) 
 		{
 			FSPtr checkFS[2];
-			checkFS[0] = _panel->GetFSPtr();
-			checkFS[1] = _panel == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
+			checkFS[0] = p->GetFSPtr();
+			checkFS[1] = p == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
 								
 			FSPath path;
 			FSPtr fs = ParzeURI(homeUri.ptr(), path, checkFS, 2);
@@ -596,7 +598,7 @@ void NCWin::Home()
 				snprintf(buf, sizeof(buf), "bad home path: %s\n", name.GetUtf8());
 				NCMessageBox(this, "Home", buf, true);
 			} else {
-				_panel->LoadPath(fs, path, 0, 0, PanelWin::SET);
+				p->LoadPath(fs, path, 0, 0, PanelWin::SET);
 			}
 		}
 
@@ -604,7 +606,7 @@ void NCWin::Home()
 		const sys_char_t *home = (sys_char_t*) getenv("HOME");
 		if (!home) return;
 		FSPath path(sys_charset_id, home);
-		_panel->LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
+		p->LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
 #endif
 }
 
@@ -651,6 +653,8 @@ void NCWin::StartExecute(const unicode_t *cmd, FS *fs,  FSPath &path)
 	ReturnToDefaultSysDir(); //!!!
 }
 
+
+static int uiDriveDlg = GetUiID("drive-dlg");
 
 void NCWin::SelectDrive(PanelWin *p, FSPath &OtherPanelPath)
 {
@@ -761,7 +765,7 @@ void NCWin::SelectDrive(PanelWin *p, FSPath &OtherPanelPath)
 	}
 #endif	
 	
-	int res = RunDldMenu(p, "Drive", &mData);
+	int res = RunDldMenu(uiDriveDlg, p, "Drive", &mData);
 	_edit.SetFocus();
 
 	if ( res == ID_DEV_OTHER_PANEL )
@@ -822,7 +826,7 @@ void NCWin::SelectDrive(PanelWin *p, FSPath &OtherPanelPath)
 #endif	
 	case ID_DEV_HOME: 
 		{
-			Home();
+			Home(p);
 		}
 		break;
 
@@ -1077,7 +1081,7 @@ const unicode_t* NCWin::GetCurrentFileName() const
 void NCWin::CtrlEnter()
 {
 	if (_mode != PANEL) return;
-	if (_panel->IsVisible())
+	if (_panel->IsVisible()) 
 	{
 		const unicode_t *p = GetCurrentFileName();
 		if (p)
@@ -1110,7 +1114,7 @@ void NCWin::CtrlF()
 void NCWin::HistoryDialog()
 {
 	if (_mode != PANEL) return;
-	CmdHistoryDialog dlg(this, _history);
+	CmdHistoryDialog dlg(0, this, _history);
 	int r = dlg.DoModal();
 	if (r!=CMD_OK) return;
 	const unicode_t *s = dlg.Get();
@@ -1720,7 +1724,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 				_panel->DirRoot(); return true;
 				
 			case FC(VK_GRAVE, KM_CTRL):
-				Home();
+				Home(_panel);
 				break;
 			}
 		}
@@ -1750,6 +1754,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 			}
 
 		case VK_ESCAPE:
+			if (wcmConfig.systemEscPanel)
 			{
 				carray<unicode_t> txt = _edit.GetText();
 				unicode_t *p = txt.ptr();
@@ -2458,7 +2463,7 @@ ButtonWin::ButtonWin(Win *parent)
 	for (i=0; i<10; i++) 
 	{
 		static unicode_t emptyStr[]={' ',0};
-		_buttons[i] = new Button(this, emptyStr, 0, 0);//, 12, 12);
+		_buttons[i] = new Button(0, this, emptyStr, 0, 0);//, 12, 12);
 		Win *w = _buttons[i].ptr();
 		w->SetTabFocusFlag(false);
 		w->SetClickFocusFlag(false);
@@ -2490,17 +2495,19 @@ void ButtonWin::Set(ButtonWinData *list)
 	}
 }
 
-int ButtonWin::GetClassId()
+int uiClassButtonWin = GetUiID("ButtonWin");
+
+int ButtonWin::UiGetClassId()
 {
-	return CI_BUTTON_WIN;
+	return uiClassButtonWin;
 }
 
 void ButtonWin::Paint(wal::GC &gc, const crect &paintRect)
 {
 	crect r = ClientRect();
-	gc.SetFillColor(::wcmConfig.whiteStyle ? 0xD8E9EC : 0);
+	gc.SetFillColor(UiGetColor(uiBackground,0,0,0xFFFFFF));
 	gc.FillRect(r);
-	gc.SetTextColor(::wcmConfig.whiteStyle ? 0x505000 : 0xFFFFFF);
+	gc.SetTextColor(UiGetColor(uiColor,0,0,0));
 
         gc.Set(dialogFont.ptr());
 	for (int i = 0; i<10; i++)
@@ -2517,9 +2524,18 @@ ButtonWin::~ButtonWin(){}
 
 /////////////////////////////////////////// StringWin
 
+int uiClassStringWin = GetUiID("StringWin");
+int StringWin::UiGetClassId(){ return uiClassStringWin; }
+
+StringWin::StringWin(Win *parent)
+:Win(WT_CHILD, 0, parent, 0), textSize(0, 0)
+{
+}
+
 void StringWin::OnChangeStyles()
 {
-	if (!text.ptr()) {
+	if (!text.ptr()) 
+	{
 		SetLSize(LSize(cpoint(0,0)));
 		return;
 	}
@@ -2536,12 +2552,11 @@ void StringWin::Paint(wal::GC &gc, const crect &paintRect)
 {
 	gc.Set(GetFont());
 	crect r = ClientRect();
-	gc.SetFillColor(::wcmConfig.whiteStyle ? 0xFFFFFF : 0);
+	gc.SetFillColor(UiGetColor(uiBackground, 0, 0, 0));
 	gc.FillRect(r);
-	gc.SetTextColor(::wcmConfig.whiteStyle ? 0x404000 : 0xFFFF00);
+	gc.SetTextColor(UiGetColor(uiColor, 0, 0, 0xFFFFFF));
 	gc.TextOutF(0,(r.Height()-textSize.y)/2,text.ptr());
 }
-
 
 void StringWin::Set(const unicode_t *txt)
 {
@@ -2558,6 +2573,9 @@ void StringWin::Set(const unicode_t *txt)
 StringWin::~StringWin(){}
 
 /////////////////////////////////////////// EditorHeadWin
+
+static int uiPrefixColor = GetUiID("prefix-color");
+static int uiCSColor = GetUiID("cs-color");
 
 
 static void _DrawUnicode(wal::GC &gc, const crect &rect, const unicode_t *s, int fg, int bg)
@@ -2577,7 +2595,7 @@ void EditorHeadWin::OnChangeStyles()
 	chH = p.y;
 	p.y += 6;
 	LSize lSize(p);
-	lSize.x.maximal=10000;
+	lSize.x.maximal = 10000;
 	SetLSize(lSize);
 	prefixWidth = gc.GetTextExtents(prefixString.Str()).x;
 }
@@ -2610,8 +2628,11 @@ void EditorHeadWin::EventSize(cevent_size *pEvent)
 	CheckSize();
 }
 
+int uiClassEditorHeadWin = GetUiID("EditorHeadWin");
+int EditorHeadWin::UiGetClassId(){ return uiClassEditorHeadWin; };
+
 EditorHeadWin::EditorHeadWin(Win *parent, EditWin *pEdit)
-:	Win(WT_CHILD,0, parent),
+:	Win(WT_CHILD,0, parent, 0),
 	prefixString(utf8_to_unicode(_LT("Edit:")).ptr()),
 	_edit(pEdit)
 {
@@ -2688,26 +2709,26 @@ bool EditorHeadWin::Broadcast(int id, int subId, Win *win, void *data)
 
 void EditorHeadWin::DrawCS(wal::GC &gc)
 {
-	unsigned bgColor  = ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
-	_DrawUnicode(gc, csRect, csString.Str(), ::wcmConfig.whiteStyle ? 0xFF :0xFFFFFF, bgColor);
+	unsigned bgColor  = UiGetColor(uiBackground, 0, 0, 0x808080);
+	_DrawUnicode(gc, csRect, csString.Str(), UiGetColor(uiCSColor, 0, 0, 0), bgColor);
 }
 
 void EditorHeadWin::DrawPos(wal::GC &gc)
 {
-	unsigned bgColor  = ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
-	_DrawUnicode(gc, posRect, posString.Str(), 0, bgColor);
+	unsigned bgColor  = UiGetColor(uiBackground, 0, 0, 0x808080);
+	_DrawUnicode(gc, posRect, posString.Str(), UiGetColor(uiColor, 0, 0, 0), bgColor);
 }
 
 void EditorHeadWin::DrawSym(wal::GC &gc)
 {
-	unsigned bgColor  = ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
-	_DrawUnicode(gc, symRect, symString.Str(), 0, bgColor);
+	unsigned bgColor  = UiGetColor(uiBackground, 0, 0, 0x808080);
+	_DrawUnicode(gc, symRect, symString.Str(), UiGetColor(uiColor, 0, 0, 0), bgColor);
 }
 
 
 void EditorHeadWin::Paint(wal::GC &gc, const crect &paintRect)
 {
-	unsigned bgColor  = ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
+	unsigned bgColor  = UiGetColor(uiBackground, 0, 0, 0x808080);
 	crect r = ClientRect();
 	gc.SetFillColor(bgColor);
 	gc.FillRect(r);
@@ -2718,9 +2739,9 @@ void EditorHeadWin::Paint(wal::GC &gc, const crect &paintRect)
 	r.Dec();
 	r.Dec();
 	
-	_DrawUnicode(gc, prefixRect, prefixString.Str(), ::wcmConfig.whiteStyle ? 0x008000 : 0xFFFFFF, bgColor);
+	_DrawUnicode(gc, prefixRect, prefixString.Str(), UiGetColor(uiPrefixColor, 0, 0, 0), bgColor);
 	UpdateName();
-	_DrawUnicode(gc, nameRect, nameString.Str(), 0, bgColor);
+	_DrawUnicode(gc, nameRect, nameString.Str(), UiGetColor(uiColor, 0, 0, 0), bgColor);
 	UpdateSym(); DrawSym(gc);
 	UpdateCS(); DrawCS(gc);
 	UpdatePos(); DrawPos(gc);
@@ -2750,9 +2771,6 @@ bool EditorHeadWin::EventMouse(cevent_mouse* pEvent)
 	};
 	return true;
 }
-
-
-int EditorHeadWin::GetClassId(){ return CI_EDITORHEADWIN; }
 
 EditorHeadWin::~EditorHeadWin(){}
 
@@ -2803,9 +2821,11 @@ void ViewerHeadWin::EventSize(cevent_size *pEvent)
 	CheckSize();
 }
 
+static int uiClassViewerHeadWin = GetUiID("ViewerHeadWin");
+int ViewerHeadWin::UiGetClassId(){ return uiClassViewerHeadWin; }
 
 ViewerHeadWin::ViewerHeadWin(Win *parent, ViewWin *pView)
-:	Win(WT_CHILD,0, parent),
+:	Win(WT_CHILD, 0, parent, 0),
 	prefixString(utf8_to_unicode(_LT("View:")).ptr()),
 	_view(pView)
 {
@@ -2882,25 +2902,25 @@ bool ViewerHeadWin::Broadcast(int id, int subId, Win *win, void *data)
 
 void ViewerHeadWin::DrawCS(wal::GC &gc)
 {
-	unsigned bgColor  = ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
-	_DrawUnicode(gc, csRect, csString.Str(), ::wcmConfig.whiteStyle ? 0xFF :0xFFFFFF, bgColor);
+	unsigned bgColor  = UiGetColor(uiBackground, 0, 0, 0x808080);
+	_DrawUnicode(gc, csRect, csString.Str(), UiGetColor(uiCSColor, 0, 0, 0), bgColor);
 }
 
 void ViewerHeadWin::DrawCol(wal::GC &gc)
 {
-	unsigned bgColor  = ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
-	_DrawUnicode(gc, colRect, colString.Str(), 0, bgColor);
+	unsigned bgColor  = UiGetColor(uiBackground, 0, 0, 0x808080);
+	_DrawUnicode(gc, colRect, colString.Str(), UiGetColor(uiColor, 0, 0, 0), bgColor);
 }
 
 void ViewerHeadWin::DrawPercent(wal::GC &gc)
 {
-	unsigned bgColor  = ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
-	_DrawUnicode(gc, percentRect, percentString.Str(), 0, bgColor);
+	unsigned bgColor  = UiGetColor(uiBackground, 0, 0, 0x808080);
+	_DrawUnicode(gc, percentRect, percentString.Str(), UiGetColor(uiColor, 0, 0, 0), bgColor);
 }
 
 void ViewerHeadWin::Paint(wal::GC &gc, const crect &paintRect)
 {
-	unsigned bgColor  = ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000;
+	unsigned bgColor  = UiGetColor(uiBackground, 0, 0, 0x808080);
 	crect r = ClientRect();
 	gc.SetFillColor(bgColor);
 	gc.FillRect(r);
@@ -2911,7 +2931,7 @@ void ViewerHeadWin::Paint(wal::GC &gc, const crect &paintRect)
 	r.Dec();
 	r.Dec();
 	
-	_DrawUnicode(gc, prefixRect, prefixString.Str(), ::wcmConfig.whiteStyle ? 0x008000 : 0xFFFFFF, bgColor);
+	_DrawUnicode(gc, prefixRect, prefixString.Str(), UiGetColor(uiPrefixColor, 0, 0, 0), bgColor);
 	UpdateName();
 	_DrawUnicode(gc, nameRect, nameString.Str(), 0, bgColor);
 	UpdateCol(); DrawCol(gc);
@@ -2939,9 +2959,6 @@ bool ViewerHeadWin::EventMouse(cevent_mouse* pEvent)
 	};
 	return true;
 }
-
-
-int ViewerHeadWin::GetClassId(){ return CI_EDITORHEADWIN; }
 
 ViewerHeadWin::~ViewerHeadWin(){}
 

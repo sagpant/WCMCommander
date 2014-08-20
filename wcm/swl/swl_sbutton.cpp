@@ -12,10 +12,8 @@
 
 namespace wal {
 
-int SButton::GetClassId()
-{
-	return CI_SBUTTON;
-}
+int uiClassSButton = GetUiID("SButton");
+int SButton::UiGetClassId(){	return uiClassSButton; }
 
 static unsigned short chPix[]={7, 0x40, 0x60, 0x71, 0x3B, 0x1F, 0x0E, 0x04};
 static unsigned short rbPix[]={5, 0xE, 0x1F, 0x1F, 0x1F, 0xE};
@@ -54,8 +52,8 @@ void SButton::Change(bool _isSet)
 		Parent()->Command(CMD_SBUTTON_INFO, IsSet() ? SCMD_SBUTTON_CHECKED : SCMD_SBUTTON_CLEARED , this, &isSet);
 }
 
-SButton::SButton(Win *parent, unicode_t *txt, int _group, bool _isSet, crect *rect)
-:	Win(Win::WT_CHILD,Win::WH_TABFOCUS|WH_CLICKFOCUS,parent,rect),
+SButton::SButton(int nId, Win *parent, unicode_t *txt, int _group, bool _isSet, crect *rect)
+:	Win(Win::WT_CHILD,Win::WH_TABFOCUS|WH_CLICKFOCUS,parent,rect, nId),
 	isSet(_isSet),
 	text(new_unicode_str(txt)),
 	group(_group)
@@ -88,7 +86,8 @@ bool SButton::Broadcast(int id, int subId, Win *win, void *data)
 void SButton::Paint(GC &gc, const crect &paintRect)
 {
 	crect cr = ClientRect();
-	unsigned colorBg = GetColor(0);
+	
+	unsigned colorBg = UiGetColor(uiBackground, 0, 0, 0xFFFFFF);
 
 	gc.SetFillColor(colorBg); //CCC
 	gc.FillRect(cr);
@@ -102,7 +101,7 @@ void SButton::Paint(GC &gc, const crect &paintRect)
 	cpoint tsize = gc.GetTextExtents(text.ptr());
 	
 	gc.SetFillColor(colorBg);
-	gc.SetTextColor(GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT));
+	gc.SetTextColor(UiGetColor(uiColor, 0, 0, 0));
 	
 	gc.TextOutF(14+1+1+1 , (cr.Height()-tsize.y)/2, text.ptr());
 	
@@ -112,7 +111,7 @@ void SButton::Paint(GC &gc, const crect &paintRect)
 		rect.top = (cr.Height()-tsize.y-2)/2;
 		rect.right = rect.left + tsize.x + 4;
 		rect.bottom = rect.top + tsize.y + 2;
-		DrawBorder(gc, rect, GetColor(IC_FOCUS_MARK)); //CCC
+		DrawBorder(gc, rect, UiGetColor(uiFocusFrameColor, 0, 0, 0)); //CCC
 	}
 }
 

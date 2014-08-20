@@ -12,23 +12,17 @@
 
 using namespace wal;
 
-static char verString[] = "Wal Commander v 0.16.0 GitHub Edition";
+static char verString[] = "Wal Commander v 0.16.1 GitHub Edition";
 
 struct HelpStyle {
 	cfont *font;
 	unsigned fg;
 	unsigned bg;
-	
-	unsigned selectedFg;
-	unsigned selectedBg;
-	
-	HelpStyle():font(0), fg(0), bg(0xFFFFFF), selectedFg(0xFFFFFF), selectedBg(0){}
-
+	HelpStyle():font(0), fg(0), bg(0xFFFFFF){}
+	HelpStyle(cfont *f, unsigned c, unsigned b) :font(f), fg(c), bg(b) {}
 	cfont *Font(){ return this ? font : (cfont*)0; } 
 	unsigned Fg(){ return this ? fg : 0; }
 	unsigned Bg(){ return this ? bg : 0xFFFFFF; }
-	unsigned SelectedFg(){ return this ? selectedFg : 0xFFFFFF; }
-	unsigned SelectedBg(){ return this ? selectedBg : 0; }
 };
 
 //HelpGC сделан для кэширования операций GetTextExtents а то в X11 (со стандартными X11 фонтами) это пиздец как медленно
@@ -1192,6 +1186,7 @@ static cptr<HelpNode> GetHelpNode( const char *theme, cstrhash<HelpStyle> *pStyl
 	return parzer.Parze();
 }
 
+int UiClassHelpWin  = GetUiID("HelpWin");
 
 class HelpWin: public Win {
 	cptr<HelpNode> data;
@@ -1207,12 +1202,18 @@ class HelpWin: public Win {
 	Layout layout;
 	crect helpRect; 
 	crect scrollRect;
-	cstrhash<HelpStyle> *pStyles;
+	cstrhash<HelpStyle> styles;
+	
+	HelpStyle style_head;
+	HelpStyle style_def;
+	HelpStyle style_red;
+	HelpStyle style_bold;
+	
 protected:
 	void CalcScroll();
 public:
-	HelpWin(const char *theme, cstrhash<HelpStyle> *pS, Win *_parent, crect *rect);
-	bool Ok(){ return data.ptr()!=0; }
+	HelpWin(const char *theme, Win *_parent, crect *rect);
+	bool Ok(){ return data.ptr() != 0; }
 	void MoveXOffset(int n);
 	void MoveYOffset(int n);
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
@@ -1221,20 +1222,36 @@ public:
 	virtual bool EventMouse(cevent_mouse* pEvent);
 	virtual bool Command(int id, int subId, Win *win, void *data);
 	virtual void EventTimer(int tid);
+	virtual int UiGetClassId();
 	virtual ~HelpWin();
 };
 
+int HelpWin::UiGetClassId(){ return UiClassHelpWin; }
 
-HelpWin::HelpWin(const char *theme, cstrhash<HelpStyle> *pS, Win *parent, crect *rect)
-:	Win(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, parent, rect),
+static int uiClassHelpWin  = GetUiID("HelpWin");
+static int uiStyleHead = GetUiID("style-head");
+static int uiStyleDef = GetUiID("style-def");
+static int uiStyleRed = GetUiID("style-red");
+static int uiStyleBold = GetUiID("style-bold");
+
+HelpWin::HelpWin(const char *theme, Win *parent, crect *rect)
+:	Win(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, uiClassHelpWin),
 	data(0),
 	xOffset(0), yOffset(0),
 	captureDelta(0),
-	vScroll(this,true,true),
-	hScroll(this,false),
+	vScroll(0, this,true,true),
+	hScroll(0, this,false),
 	layout(4,4),
-	pStyles(pS)
+	style_head( helpHeadFont.ptr(), UiGetColor(uiColor, uiStyleHead, 0, 0), UiGetColor(uiBackground, uiStyleHead, 0, 0xFFFFFF)),
+	style_def ( helpTextFont.ptr(), UiGetColor(uiColor, uiStyleDef, 0, 0), UiGetColor(uiBackground, uiStyleDef, 0, 0xFFFFFF)),
+	style_red ( helpTextFont.ptr(), UiGetColor(uiColor, uiStyleRed, 0, 0), UiGetColor(uiBackground, uiStyleRed, 0, 0xFFFFFF)),
+	style_bold( helpBoldFont.ptr(), UiGetColor(uiColor, uiStyleBold, 0, 0), UiGetColor(uiBackground, uiStyleBold, 0, 0xFFFFFF))
 {
+	styles["def"] = style_def;
+	styles["red"] = style_red;
+	styles["head"] = style_head;
+	styles["bold"] = style_bold;
+
 	vScroll.Show();  
 	vScroll.Enable();
 	hScroll.Show();
@@ -1256,13 +1273,12 @@ HelpWin::HelpWin(const char *theme, cstrhash<HelpStyle> *pS, Win *parent, crect 
 	this->SetLayout(&layout);
 	this->RecalcLayouts();
 
-	data = GetHelpNode(theme, pStyles); 
-	if (data.ptr()) {
+	data = GetHelpNode(theme, &styles); 
+	if (data.ptr()) 
+	{
 		wal::GC gc(this);
 		HelpGC hgc(&gc);
-
 		data->Init(hgc);
-
 		data->Prepare(600);
 	}
 }
@@ -1487,11 +1503,11 @@ class HelpDlg: public NCDialog {
 	HelpWin helpWin;
 //	cstrhash<HelpStyle> styles;
 public:
-	HelpDlg(NCDialogParent *parent, const char * name, const char *theme, cstrhash<HelpStyle> *pS)
-	:	NCDialog(::createDialogAsChild, parent, utf8_to_unicode(name).ptr(), bListCancel),
+	HelpDlg(NCDialogParent *parent, const char * name, const char *theme)
+	:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(name).ptr(), bListCancel),
 		lo(10,10),
-		ver(this, utf8_to_unicode(verString).ptr()),
-		helpWin(theme, pS, this,  0)
+		ver(0, this, utf8_to_unicode(verString).ptr()),
+		helpWin(theme, this,  0)
 	{
 		lo.SetColGrowth(0);
 		lo.SetColGrowth(2);
@@ -1533,38 +1549,7 @@ HelpDlg::~HelpDlg(){}
 
 void Help(NCDialogParent *parent, const char * theme)
 {
-	cstrhash<HelpStyle> styles;
-	
-	HelpStyle style_head;
-	HelpStyle style_def;
-	HelpStyle style_red;
-	HelpStyle style_bold;
-
-	style_head.font = helpHeadFont.ptr();
-	style_def.font = helpTextFont.ptr();
-	style_red.font = helpTextFont.ptr();
-	style_bold.font = helpBoldFont.ptr();
-
-//???
-
-unsigned bg = ::wcmConfig.whiteStyle ? 0xFFFFFF : 0x303000/*0x606000*/;
-style_head.bg = bg;
-style_def.bg = bg;
-style_red.bg = bg;
-style_bold.bg = bg;
-style_head.fg = ::wcmConfig.whiteStyle ? 0 : 0xFFFFFF;
-style_def.fg = ::wcmConfig.whiteStyle ? 0 :0xFFFFFF;
-style_red.fg = ::wcmConfig.whiteStyle ? 0 : 0xFFFFFF;
-style_bold.fg = ::wcmConfig.whiteStyle ? 0x8080 : 0xFFFF;
-style_red.fg =  0xFF;
-
-	styles["def"] = style_def;
-	styles["red"] = style_red;
-	styles["head"] = style_head;
-	styles["bold"] = style_bold;
-
-	HelpDlg dlg(parent, _LT("Help"), theme, &styles);
+	HelpDlg dlg(parent, _LT("Help"), theme);
 	if (!dlg.Ok()) return; //не нашел тему
-
 	dlg.DoModal();
 }

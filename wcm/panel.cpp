@@ -2,6 +2,8 @@
 	Copyright (c) by Valery Goryachev (Wal)
 */
 
+//#define panelColors !!!
+
 #include "wcm-config.h"
 #include "ncfonts.h"
 #include "ncwin.h"
@@ -21,11 +23,13 @@
 #include "vfs-smb.h"
 #include "ltext.h"
 
+int uiPanelSearchWin = GetUiID("PanelSearchWin");
+
 PanelSearchWin::PanelSearchWin(PanelWin *parent, cevent_key *key)
-:	Win(Win::WT_CHILD, 0, parent),
+:	Win(Win::WT_CHILD, 0, parent, 0, uiPanelSearchWin),
 	_parent(parent),
-	_edit(this, 0, 0, 16, true),
-	_static(this, utf8_to_unicode( _LT("Search:") ).ptr()), 
+	_edit(0, this, 0, 0, 16, true),
+	_static(0, this, utf8_to_unicode( _LT("Search:") ).ptr()), 
 	_lo(3, 4)
 {
 	_lo.AddWin(&_static, 1, 1);
@@ -51,11 +55,12 @@ PanelSearchWin::PanelSearchWin(PanelWin *parent, cevent_key *key)
 
 void PanelSearchWin::Paint(wal::GC &gc, const crect &paintRect)
 {
+	int bc = UiGetColor(uiBackground, 0, 0, 0xD8E9EC);
 	crect r = ClientRect();
-	Draw3DButtonW2(gc, r, 0xD8E9EC, true);
+	Draw3DButtonW2(gc, r, bc, true);
 	r.Dec();
 	r.Dec();
-	gc.SetFillColor(0xD8E9EC);
+	gc.SetFillColor(bc);
 	gc.FillRect(r);
 }
 
@@ -63,20 +68,6 @@ void PanelSearchWin::Paint(wal::GC &gc, const crect &paintRect)
 cfont* PanelSearchWin::GetChildFont(Win *w, int fontId)
 {
 	return dialogFont.ptr();	
-}
-
-
-unsigned PanelSearchWin::GetChildColor(Win *w, int id)
-{
-	if (w && w->GetClassId() == CI_EDIT_LINE)
-	{
-		switch (id) {
-		case IC_EDIT_TEXT_BG: return 0x909000; //0xA0A000;
-		case IC_EDIT_TEXT: return 0;
-		}
-	}
-
-	return Win::GetChildColor(w, id);
 }
 
 bool PanelSearchWin::Command(int id, int subId, Win *win, void *data)
@@ -131,10 +122,6 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 	
 	wchar_t c = pEvent->Char();
 	if (c && c>=0x20) return false;
-
-	const int K_SHIFT   = 16;
-	const int K_CONTROL = 17;
-	const int K_ALT     = 18;
 	
 	switch (pEvent->Key()) {
 		case VK_LCONTROL:
@@ -145,9 +132,6 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 		case VK_RMENU:
 		case VK_BACK: 
 		case VK_DELETE:
-		case K_CONTROL:
-		case K_SHIFT:
-		case K_ALT:
 			return false;
 	}
 	
@@ -322,12 +306,9 @@ FSString PanelWin::UriOfCurrent()
 	return fs->Uri(path);
 }
 
+int uiClassPanel = GetUiID("Panel");
+int PanelWin::UiGetClassId(){ return uiClassPanel; }
 
-
-int PanelWin::GetClassId()
-{
-	return CI_PANEL;
-}
 
 unicode_t PanelWin::dirPrefix[]={'/',0};
 unicode_t PanelWin::exePrefix[]={'*',0};
@@ -399,9 +380,9 @@ static int* CheckMode(int *m)
 
 PanelWin::PanelWin(Win *parent, int *mode)
 :	
-	NCDialogParent(WT_CHILD, 0, parent),
+	NCDialogParent(WT_CHILD, 0, 0, parent),
 	_lo(7,4),
-	_scroll(this, true), //, false), //bug with autohide and layouts
+	_scroll(0, this, true), //, false), //bug with autohide and layouts
 	_itemHeight(1),
 	_rows(0),
 	_cols(0),
@@ -659,6 +640,15 @@ static cicon runIcon(xpm16x16_Run, PANEL_ICON_SIZE, PANEL_ICON_SIZE);
 
 bool panelIconsEnabled = true;
 
+static int uiDir = GetUiID("dir");
+static int uiExe = GetUiID("exe");
+static int uiBad = GetUiID("bad");
+static int uiSelectedPanel = GetUiID("selected-panel");
+static int uiOperState = GetUiID("oper-state");
+static int uiHidden = GetUiID("hidden");
+static int uiSelected = GetUiID("selected");
+//static int uiLineColor = GetUiID("line-color");
+
 void PanelWin::DrawItem(wal::GC &gc,  int n)
 {
 	bool active = IsSelectedPanel() && n == _current;
@@ -673,11 +663,27 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	bool isSelected = p && p->IsSelected();
 	bool isHidden = p && p->IsHidden();	
 	
+	/*
 	PanelItemColors color;
 	panelColors->itemF(&color, _inOperState, active, isSelected, isBad, isHidden, isDir, isExe);
+	*/
+	
+	UiCondList ucl;
+	if (isDir) ucl.Set(uiDir, true);
+	if (isExe) ucl.Set(uiExe, true);
+	if (isBad) ucl.Set(uiBad, true);
+	if (IsSelectedPanel()) ucl.Set(uiSelectedPanel, true);
+	if (n == _current) ucl.Set(uiCurrentItem, true);
+	if (isHidden) ucl.Set(uiHidden, true);
+	if (isSelected) ucl.Set(uiSelected, true);
+	if (_inOperState) ucl.Set(uiOperState, true);
+	if (n < _list.Count() && (n % 2) == 0) ucl.Set(uiOdd, true);
+		
+	int color_text = UiGetColor(uiColor, uiItem, &ucl, 0x0);
+	int color_bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
+	int color_shadow = UiGetColor(uiBackground, uiItem, &ucl, 0);
 
-	gc.SetFillColor(color.bg);
-
+	gc.SetFillColor(color_bg);
 	
 	crect rect = _rectList[pos];
 	
@@ -687,13 +693,13 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	if (n<0 || n>=_list.Count()) return;
 
 	if (active) 
-		Draw3DButtonW2(gc, rect, color.bg, true);
+		Draw3DButtonW2(gc, rect, color_bg, true);
 
 
 	int x = rect.left + 7; //5;
 	int y = rect.top;
 
-	gc.SetTextColor(color.text);
+	gc.SetTextColor(color_text);
 
 	if (isDir)
 	{
@@ -708,7 +714,7 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 				break;
 				
 			default: 
-				if (( ((color.bg>>16)&0xFF)+((color.bg>>8)&0xFF)+(color.bg&0xFF)) < 0x80*3)
+				if (( ((color_bg>>16)&0xFF)+((color_bg>>8)&0xFF)+(color_bg&0xFF)) < 0x80*3)
 					folderIcon.DrawF(gc,x,y);
 				else
 					folderIconHi.DrawF(gc,x,y);
@@ -727,16 +733,6 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 			//x += exePrefixW;
 		}
 	} else {
-/*	
-		if (panelIconsEnabled) {
-			ExtNode *en = GetExtNode(_list.GetFileName(n));
-			if (en) {
-				AppNode *an = GetDefApp(en);
-				if (an)
-					runIcon.DrawF(gc,x,y);
-			}
-		}
-*/
 	}
 	
 	if (wcmConfig.panelShowIcons) {
@@ -749,9 +745,9 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	
 	if (isSelected)
 	{
-		gc.SetTextColor(color.shadow);
+		gc.SetTextColor(color_shadow);
 		gc.TextOut(x+1, y+1, _list.GetFileName(n));
-		gc.SetTextColor(color.text);
+		gc.SetTextColor(color_text);
 	}
 	
 	
@@ -768,7 +764,7 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		sizeX += rect.left;
 		int timeX = sizeX + sizeW;
 		
-		gc.SetLine(panelColors->modeLine);
+		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
 		gc.MoveTo(sizeX, rect.top);
 		gc.LineTo(sizeX, rect.bottom);
 		
@@ -777,14 +773,6 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 				
 		if (p) 
 		{
-/*			char cbuf[64];
-			unsigned_to_char<seek_t>(p->Size(), cbuf);
-			unicode_t ubuf[64];
-			latin1_to_unicode( ubuf, cbuf);
-			cpoint size = gc.GetTextExtents(ubuf);
-			gc.TextOut(sizeX + sizeW - size.x - _letterSize[0].x, y, ubuf);
-*/			
-			
 			unicode_t ubuf[64];
 			p->st.GetPrintableSizeStr(ubuf);
 			cpoint size = gc.GetTextExtents(ubuf);
@@ -816,7 +804,7 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		int userX = accessX + accessW;
 		int groupX = userX + userW;
 		
-		gc.SetLine(panelColors->modeLine);
+		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
 		
 		gc.MoveTo(accessX, rect.top);
 		gc.LineTo(accessX, rect.bottom);
@@ -964,10 +952,24 @@ void DrawTextRightAligh(wal::GC &gc, int x, int y, const unicode_t *txt, int wid
 	
 }
 
+static int uiFooter = GetUiID("footer");
+static int uiHeader = GetUiID("header");
+static int uiHaveSelected = GetUiID("have-selected");
+static int uiSummary = GetUiID("summary-color");
+
 void PanelWin::DrawFooter(wal::GC &gc)
 {
-	unsigned bkColor = panelColors->foot.bg;//0xA00000; //0x800000;
-	gc.SetFillColor(bkColor);
+	PanelCounter selectedCn = _list.SelectedCounter();
+	
+	UiCondList ucl;
+	if (IsSelectedPanel()) ucl.Set(uiSelectedPanel, true);
+	if (_inOperState) ucl.Set(uiOperState, true);
+	if (selectedCn.count > 0) ucl.Set(uiHaveSelected, true);
+		
+	int color_text = UiGetColor(uiColor, uiFooter, &ucl, 0x0);
+	int color_bg = UiGetColor(uiBackground, uiFooter, &ucl, 0xFFFFFF);
+	
+	gc.SetFillColor(color_bg);
 	crect tRect = _footRect;
 	gc.SetClipRgn(&tRect);
 
@@ -976,15 +978,13 @@ void PanelWin::DrawFooter(wal::GC &gc)
 	FSNode *cur = GetCurrent();
 	gc.Set(GetFont(1));
 	
-	
 	if (_inOperState) {
 		unicode_t ub[512];
 		utf8_to_unicode( ub, _LT("...Loading...") );
-		gc.SetTextColor(panelColors->foot.operText);
+		gc.SetTextColor(UiGetColor(uiSummary, uiFooter, &ucl, 0xFF));
 		cpoint size = gc.GetTextExtents(ub);
 		int x = (tRect.Width()-size.x)/2;
 		gc.TextOutF(x, tRect.top + 5, ub);
-	
 		return;
 	};
 
@@ -1014,7 +1014,7 @@ void PanelWin::DrawFooter(wal::GC &gc)
 		
 		utf8_to_unicode( ub, b2);
 		
-		gc.SetTextColor(selectedCn.count ? panelColors->foot.selText : panelColors->foot.curText);
+		gc.SetTextColor(UiGetColor(uiSummary, uiFooter, &ucl, 0xFF));
 		cpoint size = gc.GetTextExtents(ub);
 		int x = (tRect.Width()-size.x)/2;
 		if (x < 10) x = 10;
@@ -1023,7 +1023,7 @@ void PanelWin::DrawFooter(wal::GC &gc)
 
 	if (cur) 
 	{
-		gc.SetTextColor(panelColors->foot.text);
+		gc.SetTextColor(color_text);
 		
 		int sizeTextW = 0;
 		
@@ -1032,20 +1032,6 @@ void PanelWin::DrawFooter(wal::GC &gc)
 		
 		if (!cur->extType) 
 		{
-/*		
-			char cbuf1[64];
-			unsigned_to_char<seek_t>(cur->Size(), cbuf1);
-			
-			char cbuf[64];
-			SplitNumber_3(cbuf1, cbuf);
-		
-			unicode_t ubuf[64];
-			latin1_to_unicode( ubuf, cbuf);
-		
-			cpoint size = gc.GetTextExtents(ubuf);
-			gc.TextOutF(tRect.right-size.x, y, ubuf);
-			sizeTextW = size.x;
-*/
 			unicode_t ubuf[64];
 			cur->st.GetPrintableSizeStr(ubuf);
 			cpoint size = gc.GetTextExtents(ubuf);
@@ -1117,17 +1103,33 @@ void PanelWin::DrawFooter(wal::GC &gc)
 	}	
 }
 
+static int uiBorderColor1 = GetUiID("border-color1");
+static int uiBorderColor2 = GetUiID("border-color2");
+static int uiBorderColor3 = GetUiID("border-color3");
+static int uiBorderColor4 = GetUiID("border-color4");
+
+static int uiVLineColor1 = GetUiID("vline-color1");
+static int uiVLineColor2 = GetUiID("vline-color2");
+static int uiVLineColor3 = GetUiID("vline-color3");
+
 void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 {
-	crect r1 = ClientRect();
-	DrawBorder(gc, r1, panelColors->border1);
-	r1.Dec();
-	DrawBorder(gc, r1, panelColors->border2);	
-	r1.Dec();
-	DrawBorder(gc, r1, panelColors->border3);	
-	r1.Dec();
-	DrawBorder(gc, r1, panelColors->border4);
+	PanelCounter selectedCn = _list.SelectedCounter();
+	UiCondList ucl;
+	if (IsSelectedPanel()) ucl.Set(uiSelectedPanel, true);
+	if (_inOperState) ucl.Set(uiOperState, true);
+	if (selectedCn.count > 0) ucl.Set(uiHaveSelected, true);
+	
+	int color_bg = UiGetColor(uiBackground, 0, &ucl, 0xFFFFFF);
 
+	crect r1 = ClientRect();
+	DrawBorder(gc, r1, UiGetColor(uiBorderColor1, 0, &ucl, 0xFF));
+	r1.Dec();
+	DrawBorder(gc, r1, UiGetColor(uiBorderColor2, 0, &ucl, 0xFF));	
+	r1.Dec();
+	DrawBorder(gc, r1, UiGetColor(uiBorderColor3, 0, &ucl, 0xFF));	
+	r1.Dec();
+	DrawBorder(gc, r1, UiGetColor(uiBorderColor4, 0, &ucl, 0xFF));
 
 	gc.Set(GetFont());
 
@@ -1137,22 +1139,22 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 
 	gc.SetClipRgn(&r1);
 
-	gc.SetFillColor(panelColors->bg);
+	gc.SetFillColor(color_bg);
 	for (i=0; i<_emptyRectList.count(); i++)
 		if (paintRect.Cross(_emptyRectList[i]))
 			gc.FillRect(_emptyRectList[i]);
 
 	
 	for(i=0; i<_vLineRectList.count(); i++)
-	if (paintRect.Cross(_vLineRectList[i]))
+		if (paintRect.Cross(_vLineRectList[i]))
 		{
-			gc.SetLine(panelColors->v1);
+			gc.SetLine(UiGetColor(uiVLineColor1, 0, &ucl, 0xFF));
 			gc.MoveTo(_vLineRectList[i].left, _vLineRectList[i].top);
 			gc.LineTo(_vLineRectList[i].left, _vLineRectList[i].bottom);
-			gc.SetLine(panelColors->v2);
+			gc.SetLine(UiGetColor(uiVLineColor2, 0, &ucl, 0xFF));
 			gc.MoveTo(_vLineRectList[i].left+1, _vLineRectList[i].top);
 			gc.LineTo(_vLineRectList[i].left+1, _vLineRectList[i].bottom);
-			gc.SetLine(panelColors->v3);
+			gc.SetLine(UiGetColor(uiVLineColor3, 0, &ucl, 0xFF));
 			gc.MoveTo(_vLineRectList[i].left+2, _vLineRectList[i].top);
 			gc.LineTo(_vLineRectList[i].left+2, _vLineRectList[i].bottom);
 		}
@@ -1161,14 +1163,14 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 	crect tRect(_headRect.left, _headRect.bottom, _headRect.right, _headRect.bottom+1);
 	if (paintRect.Cross(_headRect)) 
 	{
-		PanelHeaderColors colors;
-		panelColors->headF(&colors, IsSelectedPanel());
+//		PanelHeaderColors colors;
+//		panelColors->headF(&colors, IsSelectedPanel());
 		
-		gc.SetFillColor(panelColors->hLine);
+		gc.SetFillColor(UiGetColor(uiLineColor, 0, &ucl, 0xFF));
 
 		gc.FillRect(tRect);
 	
-		gc.SetFillColor(colors.bg);
+		gc.SetFillColor(UiGetColor(uiBackground, uiHeader, &ucl, 0xFFFF));
 		tRect = _headRect;
 		gc.FillRect(tRect);
 
@@ -1185,7 +1187,7 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 			if (p.x > _headRect.Width()) 
 				x -= p.x-_headRect.Width();
 
-			gc.SetTextColor(colors.text);
+			gc.SetTextColor(UiGetColor(uiColor, uiHeader, &ucl, 0xFFFF));
 			gc.Set(GetFont(1));
 			gc.TextOutF(x, _headRect.top+2, uPath);
 		}
@@ -1194,7 +1196,7 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 	tRect = _footRect;
 	tRect.bottom = tRect.top;
 	tRect.top-=1;
-	gc.SetFillColor(panelColors->hLine);
+	gc.SetFillColor(UiGetColor(uiLineColor, 0, &ucl, 0xFF));
 	gc.FillRect(tRect);
 	
 	if (paintRect.Cross(_footRect))
