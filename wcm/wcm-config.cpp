@@ -547,13 +547,7 @@ WcmConfig::WcmConfig()
 
 	panelShowHiddenFiles(true),
 	panelShowIcons(true),
-	panelCaseSensitive(
-#ifdef _WIN32		
-	false
-#else
-	true
-#endif		
-	),
+	panelCaseSensitive(false),
 	panelColorMode(0),
 	
 	panelModeLeft(0),
