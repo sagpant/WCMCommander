@@ -12,6 +12,7 @@
 	надо наладить чтение блоков>64k в клипбоард (ReadConsoleOutputW большие блоки нечитает)
 */
 
+int uiClassTerminal = GetUiID("Terminal");
 
 BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType)
 {
@@ -227,10 +228,10 @@ void W32Cons::OnChangeStyles()
 }
 
 
-W32Cons::W32Cons(Win *parent)
-: Win(WT_CHILD, 0, parent),
+W32Cons::W32Cons( int nId, Win *parent )
+: Win(WT_CHILD, 0, parent, 0, nId),
 	_lo(1,2),
-	_scroll(this,true,false),
+	_scroll(0,this,true),
 	cH(1),cW(1),
 	outHandle(0),
 	_firstRow(0)

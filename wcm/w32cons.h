@@ -2,6 +2,8 @@
 #define W32CONS_H
 #include "nc.h"
 
+extern int uiClassTerminal;
+
 template <class T> class Buf2D {
 	int size;
 	int rows;
@@ -92,7 +94,7 @@ class W32Cons : public Win {
 
 	COORD lastMousePoint;
 public:
-	W32Cons(Win *parent);
+	W32Cons( int nId, Win *parent );
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
 	virtual void ThreadSignal(int id, int data);
 	virtual void EventSize(cevent_size *pEvent);

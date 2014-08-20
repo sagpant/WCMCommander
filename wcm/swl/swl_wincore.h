@@ -792,7 +792,7 @@ public:
 	~UiValue();
 };
 
-class UiSelector;
+struct UiSelector;
 class UiRules;
 
 class UiCache {

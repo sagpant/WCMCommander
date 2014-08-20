@@ -64,7 +64,7 @@ void FSPath::_Set(int cs, const void *v)
 	} else {
 		char *p = (char*)v;
 		
-		if (!*p) return;
+		if (!p || !*p) return;
 		
 		while (*p) 
 		{

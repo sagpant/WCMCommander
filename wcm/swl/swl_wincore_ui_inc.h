@@ -313,7 +313,7 @@ const char *UiValueNode::Str()
 	return s.ptr();
 }
 
-struct UiValue;
+class UiValue;
 
 struct UiSelector {
 	struct Node {

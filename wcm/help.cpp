@@ -966,7 +966,6 @@ cptr<HelpNode> HelpParzer::ParzeTable()
 
 		NextToken();
 	}
-end:
 	return ret;
 }
 
@@ -1026,7 +1025,6 @@ cptr<HelpNode> HelpParzer::Parze()
 		};
 		NextToken();
 	};
-end:
 	//if (pPar->Count()>0) 
 	pList->Append(paragraph);
 

@@ -500,6 +500,7 @@ class FSSys: public FS {
 #ifdef _WIN32
 	volatile int _drive;
 	FSSysHandles handles;
+public:
 	FSSys():FS(FS::SYSTEM){}
 #endif
 public:

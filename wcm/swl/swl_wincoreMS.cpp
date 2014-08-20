@@ -379,7 +379,7 @@ static carray<wchar_t> GetWCT(const unicode_t *s, int charCount, int *retCount)
 
 ////////////////////////////// Win
 
-Win::Win(WTYPE t, unsigned hints, Win *_parent,const crect *rect)
+Win::Win( WTYPE t, unsigned hints, Win *_parent, const crect *rect, int uiNId )
 :	
 	type(t),
 	whint(hints),
