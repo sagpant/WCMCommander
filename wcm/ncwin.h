@@ -270,6 +270,8 @@ private:
 	
 	void ExecuteFile();
 
+	const unicode_t* GetCurrentFileName() const;
+
 #ifndef _WIN32
 	void ExecNoTerminalProcess(unicode_t *p);
 #endif	

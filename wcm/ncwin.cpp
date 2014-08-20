@@ -1056,9 +1056,8 @@ static bool StrHaveSpace(const unicode_t *s)
 	return false;
 }
 
-void NCWin::CtrlEnter()
+const unicode_t* NCWin::GetCurrentFileName() const
 {
-	if (_mode != PANEL) return;
 	if (_panel->IsVisible()) 
 	{
 		const unicode_t *p = _panel->GetCurrentFileName();
@@ -1069,6 +1068,18 @@ void NCWin::CtrlEnter()
 			p = _panel->GetPath().GetUnicode();
 		}
 
+		return p;
+	}
+
+	return NULL;
+}
+
+void NCWin::CtrlEnter()
+{
+	if (_mode != PANEL) return;
+	if (_panel->IsVisible())
+	{
+		const unicode_t *p = GetCurrentFileName();
 		bool spaces = StrHaveSpace(p);
 		if (spaces) _edit.Insert('"');
 		_edit.Insert(p);
@@ -1721,6 +1732,15 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case VK_UP: _edit.SetText(_history.Prev()); break;
 				
 		case VK_INSERT:	_panel->KeyIns(); break;
+		case FC(VK_INSERT, KM_CTRL):
+			{
+				printf( "Ctrl Insert\n" );
+				ClipboardText ct;
+				_terminal.GetMarked(ct);
+				ClipboardSetText(this, ct);
+
+				return true;
+			}
 
 		case VK_ESCAPE:
 			{
