@@ -1080,11 +1080,14 @@ void NCWin::CtrlEnter()
 	if (_panel->IsVisible())
 	{
 		const unicode_t *p = GetCurrentFileName();
-		bool spaces = StrHaveSpace(p);
-		if (spaces) _edit.Insert('"');
-		_edit.Insert(p);
-		if (spaces) _edit.Insert('"');
-		_edit.Insert(' ');
+		if (p)
+		{
+			bool spaces = StrHaveSpace(p);
+			if (spaces) _edit.Insert('"');
+			_edit.Insert(p);
+			if (spaces) _edit.Insert('"');
+			_edit.Insert(' ');
+		}
 	}
 }
 
@@ -1735,9 +1738,13 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case FC(VK_INSERT, KM_CTRL):
 			{
 				printf( "Ctrl Insert\n" );
-				ClipboardText ct;
-				_terminal.GetMarked(ct);
-				ClipboardSetText(this, ct);
+				const unicode_t *p = GetCurrentFileName();
+				if (p)
+				{
+					ClipboardText ct;
+					ct.AppendUnicodeStr(p);
+					ClipboardSetText(this, ct);
+				}
 
 				return true;
 			}

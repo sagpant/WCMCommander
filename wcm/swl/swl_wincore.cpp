@@ -830,6 +830,14 @@ void ClipboardText::Append(unicode_t c)
 	list[n / BUF_SIZE][n % BUF_SIZE] = c;
 }
 
+void ClipboardText::AppendUnicodeStr(const unicode_t* c)
+{
+	while (c && *c)
+	{
+		this->Append(*c);
+		c++;
+	}
+}
 
 /////////////////////////////////    Image32 /////////////////////////////
 
