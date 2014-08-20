@@ -750,9 +750,104 @@ public:
 
 #define CI_WIN 0  //class ID
 
-extern unsigned* (*SysGetColors)(Win *w);
-extern unsigned (*SysGetColor)(Win *w, int colorId);
+//extern unsigned* (*SysGetColors)(Win *w);
+//extern unsigned (*SysGetColor)(Win *w, int colorId);
 extern cfont* (*SysGetFont)(Win *w, int fontId);
+
+///////////////////////////////// Ui
+
+extern int GetUiID(const char *name);
+
+struct UiValueNode {
+	enum {INT=1, STR=2};
+	int flags;
+	int64 i;
+	carray<char> s;
+	
+	UiValueNode(int64 n):i(n),flags(INT) {};
+	UiValueNode(const char *a):s(new_char_str(a)), flags(STR){}
+	
+	int64 Int();
+	const char *Str();
+};
+
+class UiParzer;
+
+class UiValue {
+	friend class UiRules;
+	ccollect<cptr<UiValueNode> > list;
+	UiValue *next;
+	UiValue(UiValue *nx):next(nx){};
+	void Append(int64 n){ cptr<UiValueNode> v = new UiValueNode(n); list.append(v); }
+	void Append(const char *s){ cptr<UiValueNode> v = new UiValueNode(s); list.append(v); }
+	bool ParzeNode(UiParzer &parzer);
+	void Parze(UiParzer &parzer);
+public:
+	UiValue();
+	int64 Int(int n){ return n>=0 && n<list.count() ? list[n]->Int() : 0 ; }
+	int64 Int(){ return Int(0); }
+	const char *Str(int n){ return n>=0 && n<list.count() ? list[n]->Str() : "" ; }
+	const char *Str(){ return Str(0); }
+	int Count(){ return list.count(); }
+	~UiValue();
+};
+
+class UiSelector;
+class UiRules;
+
+class UiCache {
+	bool updated;
+	struct Node {
+		UiSelector *s;
+		UiValue *v;
+		Node():s(0),v(0){}
+		Node(UiSelector *_s, UiValue *_v):s(_s), v(_v){}
+	};
+
+	cinthash<int, ccollect<Node> > hash;
+public:
+	struct ObjNode {
+		int classId;
+		int nameId;
+		ObjNode():classId(0),nameId(0){}
+		ObjNode(int c, int n):classId(c),nameId(n){}
+	};
+	
+	UiCache();
+	
+	bool Updated() const {return updated;}
+	void Clear(){ hash.clear(); updated = false; }
+	void Update(UiRules &rules, ObjNode *list, int listCount);
+	UiValue* Get(int id, int item, int *condList);
+	~UiCache();
+};
+
+struct UiCondList {
+	enum {N = 16};
+	int buf[N];
+	
+	void Clear(){ for (int i = 0; i<N; i++) buf[i]=0; }
+	UiCondList(){ Clear(); }	
+	void Set(int id, bool yes);
+};
+
+extern int uiEnabled;
+extern int uiFocus;
+extern int uiItem;
+extern int uiClassWin;
+extern int uiColor;
+extern int uiBackground;
+extern int uiFrameColor;
+extern int uiCurrentItem;
+extern int uiFocusFrameColor;
+extern int uiButtonColor;//for scrollbar ...
+extern int uiMarkColor; //marked text color
+extern int uiMarkBackground;
+extern int uiCurrentItemFrame;
+extern int uiLineColor;
+extern int uiPointerColor;
+extern int uiOdd;
+
 
 class Win {
 
@@ -809,6 +904,8 @@ private:
 
 	LSize lSize;
 	Layout *upLayout, *layout;
+	int uiNameId;
+	UiCache uiCache;
 
 	void SetState(unsigned s){ state |= s; }
 	void ClearState(unsigned s){ state &= ~s; }
@@ -831,10 +928,10 @@ private:
 
 	friend void KeyEvent(int type, XKeyEvent *event);
 #endif
-	
+protected:
+	void UiSetNameId(int id){ uiNameId = id; }
 public:
-	Win(WTYPE t, unsigned hints=0, Win *_parent = 0, const crect *rect=0);
-	
+	Win(WTYPE t, unsigned hints=0, Win *_parent = 0, const crect *rect=0, int uiNId = 0);
 
 	WinID GetID(){ return handle; }
 	Win* Parent(){ return parent; }
@@ -895,6 +992,11 @@ public:
 	void SetName(const unicode_t *name);
 	void SetName(const char *utf8Name);
 	
+	void UiCacheClear(){ uiCache.Clear(); }
+	virtual int UiGetClassId();
+	int UiGetNameId(){ return uiNameId; }
+	unsigned UiGetColor(int id, int nodeId, UiCondList *cl, unsigned def);
+	
 	virtual void Paint(GC &gc, const crect &paintRect);
 
 	virtual bool Event(cevent *pEvent);
@@ -924,13 +1026,10 @@ public:
 	void Unblock(WinID id){ if (blockedBy == id) blockedBy = 0; }
 	bool UnblockTree(WinID id);
 
-	virtual int GetClassId(); // default CI_WIN
 
-	//Colors, Fonts ...
-	virtual unsigned GetChildColor(Win *w, int id);
+	//Fonts ...
 	virtual cfont *GetChildFont(Win *w, int fontId);
 
-	unsigned GetColor(int colorId){ return parent ?  parent->GetChildColor(this, colorId):SysGetColor(this, colorId); }
 	cfont* GetFont(int fontId=0){ return parent ? parent->GetChildFont(this,fontId):SysGetFont(this,fontId); }
 	
 	//вызывается при изменении фонтов или каких то глобальных параметров, которые могут поменять пропорции окон
@@ -992,6 +1091,9 @@ inline void DrawBorder(GC &gc, crect r, unsigned color)
 	gc.LineTo(r.right-1, r.bottom-1);
 	gc.LineTo(r.right-1, r.top);
 }
+
+extern void UiReadFile(const sys_char_t *fileName); //can throw
+extern void UiReadMem(const char *s); //can throw
 
 }; //namespace wal
 

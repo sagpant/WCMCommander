@@ -33,7 +33,7 @@ struct WcmConfig {
 	
 	bool showToolBar;
 	bool showButtonBar;
-	bool whiteStyle;
+//	bool whiteStyle;
 
 	bool panelShowHiddenFiles;
 	bool panelShowIcons;

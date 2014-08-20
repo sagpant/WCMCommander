@@ -73,7 +73,7 @@ private:
 	}
 public:
 	SCListWin(Win *parent)
-		:	VListWin(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, parent,VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
+		:	VListWin(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent,VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
 	{
 		wal::GC gc(this);
 		gc.Set(GetFont());
@@ -211,17 +211,28 @@ void SCListWin::Save()
 	SaveStringList(shortcursSection, list);
 }
 
+static int uiFcColor = GetUiID("first-char-color");
+
 void SCListWin::DrawItem(wal::GC &gc, int n, crect rect)
 {
 	if (n>=0 && n<itemList.count())
 	{
+		UiCondList ucl;
+		if ((n % 2)==0) ucl.Set(uiOdd, true);
+		if (n == this->GetCurrent()) ucl.Set(uiCurrentItem, true);
+		
+		unsigned bg = UiGetColor(uiBackground, uiItem, &ucl, 0xB0B000);
+		unsigned color = UiGetColor(uiColor, uiItem, &ucl, 0);
+		unsigned fcColor = UiGetColor(uiFcColor, uiItem, &ucl, 0xFFFF);
+
+		/*
 		unsigned bg = ::wcmConfig.whiteStyle ? 0xFFFFFF : 0xB0B000;
 		unsigned fg =  0;
 
 		unsigned sBg = InFocus() ? 0x800000 : 0x808080;
 		unsigned sFg = 0xFFFFFF;
-
-		gc.SetFillColor(n == this->GetCurrent() ? sBg : bg);
+		*/
+		gc.SetFillColor(bg);
 		gc.FillRect(rect);
 
 		unicode_t *name = itemList[n].name.ptr();
@@ -229,18 +240,14 @@ void SCListWin::DrawItem(wal::GC &gc, int n, crect rect)
 		if (name) {
 			gc.Set(GetFont());
 
-			gc.SetTextColor(n == this->GetCurrent() ? sFg : fg);
+			gc.SetTextColor(color);
 			gc.TextOutF(rect.left+10, rect.top + 1, name);
-			if (n != this->GetCurrent())
-			{
-				gc.SetTextColor(::wcmConfig.whiteStyle ? 0xFF : 0xFFFF);
-				gc.TextOutF(rect.left+10, rect.top + 1, name, 1);
-			}
-
+			gc.SetTextColor(fcColor);
+			gc.TextOutF(rect.left+10, rect.top + 1, name, 1);
 		}
 
 	} else {
-		gc.SetFillColor(::wcmConfig.whiteStyle ? 0xFFFFFF : 0xB0B000);
+		gc.SetFillColor(UiGetColor(uiBackground, 0, 0, 0xB0B000));
 		gc.FillRect(rect); //CCC
 	}
 }
@@ -263,12 +270,12 @@ public:
 	SCListWin::Node *retData;
 
 	ShortcutWin(NCDialogParent *parent, FSPtr *fp, FSPath *pPath)
-		:	NCDialog(::createDialogAsChild, parent, utf8_to_unicode( _LT("Shortcuts") ).ptr(), bListOkCancel),
+		:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode( _LT("Shortcuts") ).ptr(), bListOkCancel),
 		lo(10,10),
-		listWin(this),
-		addCurrentButton(this, utf8_to_unicode("+ (Ins)").ptr(), CMD_PLUS),
-		delButton(this, utf8_to_unicode("- (Del)").ptr(), CMD_MINUS),
-		renameButton(this, utf8_to_unicode( _LT("Rename") ).ptr(), CMD_RENAME),
+		listWin( this),
+		addCurrentButton(0, this, utf8_to_unicode("+ (Ins)").ptr(), CMD_PLUS),
+		delButton(0, this, utf8_to_unicode("- (Del)").ptr(), CMD_MINUS),
+		renameButton(0, this, utf8_to_unicode( _LT("Rename") ).ptr(), CMD_RENAME),
 		fs(fp),
 		path(pPath),
 		retData(0)
@@ -311,6 +318,7 @@ public:
 	virtual bool Command(int id, int subId, Win *win, void *data);
 
 	bool Key(cevent_key* pEvent);
+	virtual int UiGetClassId();
 	virtual bool EventChildKey(Win* child, cevent_key* pEvent);
 	virtual bool EventKey(cevent_key* pEvent);
 
@@ -318,6 +326,10 @@ public:
 
 	virtual ~ShortcutWin();
 };
+
+int uiClassShortcut = GetUiID("Shortcuts");
+
+int ShortcutWin::UiGetClassId(){ return uiClassShortcut; }
 
 void ShortcutWin::Selected()
 {

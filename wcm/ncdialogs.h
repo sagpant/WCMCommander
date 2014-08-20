@@ -28,16 +28,7 @@ struct ButtonDataNode {
 class NCDialogParent: public OperThreadWin {
 	Layout _layout;
 public:
-	NCDialogParent(Win::WTYPE t, unsigned hints=0, Win *_parent = 0, const crect *rect=0)
-	:	OperThreadWin(t,hints, _parent, rect), _layout(1,1)
-	{
-		_layout.SetLineGrowth(0);
-		_layout.SetColGrowth(0);
-		_layout.ColSet(0,32,100000);
-		_layout.LineSet(0,32,100000);
-		SetLayout(&_layout); 
-	}
-	
+	NCDialogParent(Win::WTYPE t, unsigned hints=0, int nId = 0, Win *_parent = 0, const crect *rect=0);
 	void AddLayout(Layout *p){ _layout.AddLayout(p,0,0); RecalcLayouts(); } 
 	void DeleteLayout(Layout *p){ _layout.DelObj(p); }
 	
@@ -47,8 +38,8 @@ public:
 
 class NCDialog: public OperThreadWin {
 	NCShadowWin _shadow;
-	unsigned _fcolor;
-	unsigned _bcolor;
+/*	unsigned _fcolor;
+	unsigned _bcolor;*/
 
 	StaticLine _header;
 	
@@ -69,14 +60,14 @@ protected:
 	Win* GetDownButton();
 	int GetFocusButtonNum();
 public:
-	NCDialog(bool child, NCDialogParent *parent, const unicode_t *headerText, ButtonDataNode *blist, unsigned bcolor = 0xD8E9EC, unsigned fcolor = 0);
+	NCDialog(bool child, int nId, NCDialogParent *parent, const unicode_t *headerText, ButtonDataNode *blist);
 	void MaximizeIfChild(bool x = true, bool y=true); //чтоб делать большие дочерние диалоги (типа поиска файлов и тд)
 	void SetPosition();
 	void AddWin(Win *w){ _lo.AddWin(w,4,4); }
 	void AddLayout(Layout *l){ _lo.AddLayout(l,4,4); }
 	void SetEnterCmd(int cmd){ enterCmd = cmd; }
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
-	virtual unsigned GetChildColor(Win *w, int id);
+//	virtual unsigned GetChildColor(Win *w, int id);
 	virtual bool EventShow(bool show);
 	virtual bool EventKey(cevent_key* pEvent);
 	virtual bool EventChildKey(Win* child, cevent_key* pEvent);
@@ -86,6 +77,9 @@ public:
 	virtual void EventMove(cevent_move *pEvent);
 	virtual void CloseDialog(int cmd);
 	virtual cfont *GetChildFont(Win *w, int fontId);
+	
+	virtual int UiGetClassId();
+	
 	virtual ~NCDialog();
 };
 
@@ -94,8 +88,8 @@ class NCVertDialog: public NCDialog {
 protected:
 	ccollect<Win*> order;
 public:
-	NCVertDialog(bool child, NCDialogParent *parent, const unicode_t *headerText, ButtonDataNode *blist, unsigned bcolor = 0xD8E9EC, unsigned fcolor = 0)
-	:	NCDialog(child, parent, headerText, blist, bcolor, fcolor){}
+	NCVertDialog(bool child, int nId, NCDialogParent *parent, const unicode_t *headerText, ButtonDataNode *blist)
+	:	NCDialog(child, nId, parent, headerText, blist){}
 	virtual bool EventChildKey(Win* child, cevent_key* pEvent);
 	virtual ~NCVertDialog();
 };
@@ -124,47 +118,11 @@ class CmdHistoryDialog: public NCDialog {
 	int _selected;
 	TextList _list;
 public:
-	CmdHistoryDialog(NCDialogParent *parent, NCHistory &history)
-	:	NCDialog(createDialogAsChild, parent, utf8_to_unicode(" History ").ptr(), bListOkCancel), 
-		_history(history), 
-		_selected(history.Count()-1),
-		_list(Win::WT_CHILD,Win::WH_TABFOCUS|WH_CLICKFOCUS, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
-	{ 
-		for (int i = _history.Count()-1; i>=0; i--) _list.Append(_history[i]); 
-		_list.Enable();
-		_list.Show();
-		_list.SetFocus();
-		LSRange h(10, 1000, 10);
-		LSRange w(50, 1000, 30);
-		_list.SetHeightRange(h); //in characters
-		_list.SetWidthRange(w); //in characters
-		
-		if (_history.Count()>0) {
-			_list.MoveFirst(0);
-			_list.MoveCurrent(_history.Count()-1);
-		}
-
-		
-		AddWin(&_list);
-		SetEnterCmd(CMD_OK);
-		SetPosition();
-	};
-	
+	CmdHistoryDialog(int nId, NCDialogParent *parent, NCHistory &history);
 	const unicode_t* Get(){ return _list.GetCurrentString(); }
-
 	virtual bool Command(int id, int subId, Win *win, void *data);
-	
 	virtual ~CmdHistoryDialog();
 };
-
-/*
-
-struct DlgMenuNode {
-	const char *str;
-	int cmd;
-	void Set(const char *s, int c){ str = s; cmd = c; }
-};
-*/
 
 class DlgMenuData {
 	friend class DlgMenu;
@@ -177,10 +135,6 @@ class DlgMenuData {
 public:
 	DlgMenuData();
 	int Count() const { return list.count(); }
-/*	const unicode_t *GetName(int n){ return n>=0 && n<list.count() ? list[n].name.ptr() : 0; };
-	const unicode_t *GetComment(int n){ return n>=0 && n<list.count() ? list[n].name.ptr(): 0; };
-	int GetCmd(int n){ return n>=0 && n<list.count() ? list[n].cmd : 0; };
-*/
 	void Add(const unicode_t *name, const unicode_t *coment, int cmd);
 	void Add(const char *utf8name, const char *utf8coment, int cmd);
 	void AddSplitter();
@@ -188,7 +142,7 @@ public:
 };
 
 
-int RunDldMenu(NCDialogParent *parent, const char *header, DlgMenuData *d);
+int RunDldMenu(int nUi, NCDialogParent *parent, const char *header, DlgMenuData *d);
 
 #endif
 

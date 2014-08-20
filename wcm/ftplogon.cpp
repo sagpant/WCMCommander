@@ -35,25 +35,25 @@ public:
 FtpLogonDialog::~FtpLogonDialog(){}
 
 FtpLogonDialog::FtpLogonDialog(NCDialogParent *parent, FSFtpParam &params)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode( _LT("FTP logon") ).ptr(), bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0,  parent, utf8_to_unicode( _LT("FTP logon") ).ptr(), bListOkCancel),
 	iL(16, 3),
-	serverText(this, utf8_to_unicode( _LT("Server:") ).ptr()),
-	anonymousButton(this, utf8_to_unicode( _LT("Anonymous logon") ).ptr(), 0, params.anonymous),
-	userText(this, utf8_to_unicode( _LT("Login:") ).ptr()),
-	passwordText(this, utf8_to_unicode(  _LT("Password:") ).ptr()),
-	portText(this, utf8_to_unicode( _LT("Port:") ).ptr()),
-	charsetText(this, utf8_to_unicode( _LT("Charset:") ).ptr()),
+	serverText(0, this, utf8_to_unicode( _LT("Server:") ).ptr()),
+	anonymousButton(0, this, utf8_to_unicode( _LT("Anonymous logon") ).ptr(), 0, params.anonymous),
+	userText(0, this, utf8_to_unicode( _LT("Login:") ).ptr()),
+	passwordText(0, this, utf8_to_unicode(  _LT("Password:") ).ptr()),
+	portText(0, this, utf8_to_unicode( _LT("Port:") ).ptr()),
+	charsetText(0, this, utf8_to_unicode( _LT("Charset:") ).ptr()),
 	
 	charset(params.charset),
-	charsetIdText(this, utf8_to_unicode("***************").ptr()), //чтоб место забить
+	charsetIdText(0, this, utf8_to_unicode("***************").ptr()), //чтоб место забить
 		
-	serverEdit	(this, 0, 0, 16),
-	userEdit	(this, 0, 0, 16),
-	passwordEdit	(this, 0, 0, 16),
-	portEdit	(this, 0, 0, 16),
+	serverEdit	(0, this, 0, 0, 16),
+	userEdit	(0, this, 0, 0, 16),
+	passwordEdit	(0, this, 0, 0, 16),
+	portEdit	(0, this, 0, 0, 16),
 	
-	charsetButton(this, utf8_to_unicode(">").ptr() , 1000),
-	passiveButton(this, utf8_to_unicode( _LT("Passive mode") ).ptr(), 0, params.passive)
+	charsetButton(0, this, utf8_to_unicode(">").ptr() , 1000),
+	passiveButton(0, this, utf8_to_unicode( _LT("Passive mode") ).ptr(), 0, params.passive)
 {
 	serverEdit.SetText(params.server.Data(), true);
 	userEdit.SetText(params.user.Data(), true);

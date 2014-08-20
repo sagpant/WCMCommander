@@ -1054,6 +1054,7 @@ carray<unicode_t> GetOpenCommand(const unicode_t *uri, bool *needTerminal, const
 	
 	if (list.count() > 0) {
 		if (needTerminal) *needTerminal = list[0]->terminal;
+		if (pAppName)  *pAppName = list[0]->name.ptr();
 		return PrepareCommandString(list[0]->exec.ptr(), uri);
 	}
 		

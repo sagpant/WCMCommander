@@ -35,27 +35,32 @@ bool PopupMenu::IsSplit(int n){ return n>=0 && n<list.count() && list[n].data->t
 bool PopupMenu::IsSub(int n){ return n>=0 && n<list.count() && list[n].data->type==MenuData::SUB; }
 bool PopupMenu::IsEnabled(int n){ return n<0 || n>=list.count() || list[n].enabled; }
 
-int PopupMenu::GetClassId()
-{
-	return CI_POPUPMENU;
-}
 
+int uiClassPopupMenu = GetUiID("PopupMenu");
+int PopupMenu::UiGetClassId(){	return uiClassPopupMenu; }
 
 void PopupMenu::DrawItem(GC &gc, int n)
 {
 	if (n<0 || n>=list.count()) return;
+	
+	UiCondList ucl;
+	if (n == selected) ucl.Set(uiCurrentItem, true);
+		
+	int color_text = UiGetColor(uiColor, uiItem, &ucl, 0x0);
+	int color_bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
+	int color_left = UiGetColor(uiBackground, 0, 0, 0xFFFFFF);
 
 	crect r = list[n].rect;
 	int height = r.Height();
 	r.right = MENU_LEFT_BLOCK;
-	gc.SetFillColor(GetColor(n == selected ? IC_MENUPOPUP_SELECTBG : IC_MENUPOPUP_LEFT));
+	gc.SetFillColor(n == selected ? color_bg : color_left);
 	gc.FillRect(r);
 	r = list[n].rect;
 	r.left = MENU_LEFT_BLOCK ;
-	gc.SetFillColor(GetColor(n == selected ? IC_MENUPOPUP_SELECTBG : IC_MENUPOPUP_BG));
+	gc.SetFillColor(color_bg);
 	gc.FillRect(r);
 	
-	unsigned colorLine = GetColor(IC_MENUPOPUP_LINE);
+	unsigned colorLine = UiGetColor(uiLineColor, uiItem, &ucl, 0);
 	gc.SetLine(colorLine);
 	gc.MoveTo(r.left,r.top);
 	gc.LineTo(r.left,r.bottom);
@@ -67,7 +72,7 @@ void PopupMenu::DrawItem(GC &gc, int n)
 		gc.MoveTo(1,y);
 		gc.LineTo(r.right,y);
 	} else {
-		gc.SetTextColor(GetColor(n == selected ? IC_MENUPOPUP_SELECT_TEXT : IsEnabled(n) ? IC_MENUPOPUP_TEXT : IC_GRAY_TEXT));
+		gc.SetTextColor(color_text);
 		gc.Set(GetFont());
 		unicode_t *lText = list[n].data->leftText.ptr();
 		unicode_t *rText = list[n].data->rightText.ptr();
@@ -77,7 +82,7 @@ void PopupMenu::DrawItem(GC &gc, int n)
 
 		if (IsSub(n)) {
 			int y = r.top + (height - RightMenuPointer[0])/2;
-			DrawPixelList(gc,RightMenuPointer,r.right-10 , y, GetColor(IC_MENUPOPUP_POINTER));
+			DrawPixelList(gc,RightMenuPointer,r.right-10 , y, UiGetColor(uiPointerColor, uiItem, &ucl, 0));
 		}
 
 		if (IsCmd(n)) 
@@ -90,10 +95,10 @@ void PopupMenu::DrawItem(GC &gc, int n)
 	}
 }
 
-PopupMenu::PopupMenu(Win*parent, MenuData *d, int x, int y,Win *_cmdOwner)
+PopupMenu::PopupMenu(int nId, Win*parent, MenuData *d, int x, int y,Win *_cmdOwner)
 :	Win(Win::WT_POPUP,
 		Win::WH_CLICKFOCUS, //0,
-		parent), 
+		parent, 0, nId), 
 	selected(0),
 	cmdOwner(_cmdOwner),
 	leftWidth(0),
@@ -162,7 +167,7 @@ bool PopupMenu::OpenSubmenu()
 {
 	if (!sub.ptr() && IsSub(selected)) {
 		crect rect = this->ScreenRect();
-		sub = new PopupMenu(this, list[selected].data->sub, rect.right, rect.top + list[selected].rect.top, cmdOwner);
+		sub = new PopupMenu(0, this, list[selected].data->sub, rect.right, rect.top + list[selected].rect.top, cmdOwner);
 		sub->Show(Win::SHOW_INACTIVE);
 		sub->Enable(true);
 		return true;
@@ -321,9 +326,9 @@ bool PopupMenu::EventKey(cevent_key* pEvent)
 void PopupMenu::Paint(GC &gc, const crect &paintRect)
 {
 	crect rect = ClientRect();
-	gc.SetFillColor(GetColor(IC_MENUPOPUP_BG));
+	gc.SetFillColor(UiGetColor(uiBackground, 0, 0, 0xFFFFFF));
 	gc.FillRect(rect);
-	DrawBorder(gc, rect, GetColor(IC_MENUPOPUP_BORDER));
+	DrawBorder(gc, rect, UiGetColor(uiFrameColor, 0, 0, 0));
 	for (int i = 0; i<list.count(); i++)
 		DrawItem(gc, i);
 }
@@ -331,9 +336,9 @@ void PopupMenu::Paint(GC &gc, const crect &paintRect)
 PopupMenu::~PopupMenu(){}
 
 
-int DoPopupMenu(Win *parent, MenuData *d, int x, int y)
+int DoPopupMenu(int nId, Win *parent, MenuData *d, int x, int y)
 {
-	PopupMenu menu(parent, d, x, y);
+	PopupMenu menu(nId, parent, d, x, y);
 	menu.Show();
 	menu.Enable();
 	menu.SetCapture();

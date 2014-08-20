@@ -422,7 +422,7 @@ inline FT_GlyphSlot GetSlot(FT_Face face, int *pc)
 
 	if (FT_Load_Glyph( face, glyph_index, FT_LOAD_DEFAULT /*| FT_LOAD_TARGET_LIGHT*/ )) return 0;
 	
-	if (FT_Render_Glyph( face->glyph, /*FT_RENDER_MODE_LIGHT*/ FT_RENDER_MODE_NORMAL )) return 0;
+	if (FT_Render_Glyph( face->glyph, /*FT_RENDER_MODE_LCD*/ FT_RENDER_MODE_NORMAL )) return 0;
 
 	return face->glyph;
 }

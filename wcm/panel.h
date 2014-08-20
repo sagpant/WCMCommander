@@ -15,6 +15,7 @@
 
 using namespace wal;
 
+extern int uiClassPanel;
 
 class PanelWin;
 
@@ -32,7 +33,6 @@ public:
 	virtual bool EventShow(bool show);
 	virtual bool EventKey(cevent_key* pEvent);
 	virtual bool EventChildKey(Win* child, cevent_key* pEvent);
-	virtual unsigned GetChildColor(Win *w, int id);
 	virtual cfont* GetChildFont(Win *w, int fontId);
 	virtual bool Command(int id, int subId, Win *win, void *data);
 	
@@ -259,7 +259,7 @@ public:
 	void ClearSelection(cstrhash<bool,unicode_t> *resList){ _list.ClearSelection(resList); }
 	void Mark(const unicode_t *mask, bool enable){ _list.Mark(mask, enable); Invalidate(); }
 	
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
 	virtual void EventSize(cevent_size *pEvent);
 	virtual bool EventMouse(cevent_mouse* pEvent);

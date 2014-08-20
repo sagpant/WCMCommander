@@ -12,28 +12,57 @@
 #include "ltext.h"
 #include "globals.h"
 
+int uiClassEditor = GetUiID("Editor");
+static int uiShlDEF 	= GetUiID("DEF");
+static int uiShlKEYWORD = GetUiID("KEYWORD");
+static int uiShlCOMMENT = GetUiID("COMMENT");
+static int uiShlSTRING 	= GetUiID("STRING");
+static int uiShlPRE 	= GetUiID("PRE");
+static int uiShlNUM 	= GetUiID("NUM");
+static int uiShlOPER 	= GetUiID("OPER");
+static int uiShlATTN 	= GetUiID("ATTN");
+static int uiShl	= GetUiID("shl");
+static int uiColorCtrl 	= GetUiID("ctrl-color");
+static int uiColorCursor = GetUiID("cursor-color");
+
+
 void EditWin::OnChangeStyles()
 {
+	shlDEF		= UiGetColor(uiShlDEF,		uiShl, 0, 0x000000);
+	shlKEYWORD	= UiGetColor(uiShlKEYWORD,	uiShl, 0, 0x00FFFF);
+	shlCOMMENT	= UiGetColor(uiShlCOMMENT,	uiShl, 0, 0x808080 );
+	shlSTRING	= UiGetColor(uiShlSTRING,	uiShl, 0, 0xFFFF00 );
+	shlPRE		= UiGetColor(uiShlPRE,		uiShl, 0, 0xFF00FF );
+	shlNUM 		= UiGetColor(uiShlNUM,		uiShl, 0, 0xFFFFFF );
+	shlOPER 	= UiGetColor(uiShlOPER,		uiShl, 0, 0xFF80FF );
+	shlATTN		= UiGetColor(uiShlATTN,		uiShl, 0, 0x0000FF );
+	color_text 	= UiGetColor(uiColor, 0, 0, 0 );
+	color_background = UiGetColor(uiBackground, 0, 0, 0xFFFFFF );
+	color_mark_text 	= UiGetColor(uiMarkColor, 0, 0, 0 );
+	color_mark_background = UiGetColor(uiMarkBackground, 0, 0, 0xFFFFFF );
+	color_ctrl 	= UiGetColor(uiColorCtrl, 0, 0, 0xFF0000 );
+	color_cursor 	= UiGetColor(uiColorCursor, 0, 0, 0xFFFF00 );
+
 	wal::GC gc(this);
 	gc.Set(GetFont());
 	cpoint p = gc.GetTextExtents(ABCString);
 	charW = p.x /ABCStringLen;
 	charH = p.y;
-	if (!charW) charW=10;
-	if (!charH) charH=10;
+	if (!charW) charW = 10;
+	if (!charH) charH = 10;
 
 //как в EventSize !!!		
 	rows = editRect.Height()/charH;
 	cols = editRect.Width()/charW;
-	if (rows<=0) rows=1;
-	if (cols<=0) cols=1;
+	if (rows <= 0) rows = 1;
+	if (cols <= 0) cols = 1;
 	CalcScroll();
 
 	{
 		int r = (editRect.Height()+charH-1)/charH;
 		int c = (editRect.Width()+charW-1)/charW;
-if (r<1) r=1;
-if (c<1) c=1;
+		if (r < 1) r = 1;
+		if (c < 1) c = 1;
 		screen.Alloc(r, c);
 		__RefreshScreenData();
 		Invalidate();
@@ -45,7 +74,7 @@ EditWin::EditWin(Win *parent)
 :	 Win(WT_CHILD, 0, parent),
 	_lo(2,2),
 	charset(charset_table[GetFirstOperCharsetId()]), //EditCSLatin1),
-	vscroll(this, true, false),
+	vscroll(0, this, true, false),
 	charH(1),
 	charW(1),
 	autoIdent(wcmConfig.editAutoIdent),
@@ -75,7 +104,7 @@ EditWin::EditWin(Win *parent)
 	OnChangeStyles();
 }
 
-int EditWin::GetClassId(){ return CI_EDITOR; }
+int EditWin::UiGetClassId(){ return uiClassEditor; }
 
 void  EditWin::CursorToScreen()
 {
@@ -1228,18 +1257,17 @@ bool EditWin::Broadcast(int id, int subId, Win *win, void *data)
 unsigned EditWin::ColorById(int id)
 {
 	switch (id) {
-	case COLOR_DEF_ID:	return ::editorColors->shlDEF;
-	case COLOR_KEYWORD_ID:	return ::editorColors->shlKEYWORD;
-	case COLOR_COMMENT_ID:	return ::editorColors->shlCOMMENT;
-	case COLOR_STRING_ID:	return ::editorColors->shlSTRING;
-	case COLOR_PRE_ID:	return ::editorColors->shlPRE;
-	case COLOR_NUM_ID:	return ::editorColors->shlNUM;
-	case COLOR_OPER_ID:	return ::editorColors->shlOPER;
-	case COLOR_ATTN_ID:	
-		return ::editorColors->shlATTN;
+	case COLOR_DEF_ID:	return shlDEF;
+	case COLOR_KEYWORD_ID:	return shlKEYWORD;
+	case COLOR_COMMENT_ID:	return shlCOMMENT;
+	case COLOR_STRING_ID:	return shlSTRING;
+	case COLOR_PRE_ID:	return shlPRE;
+	case COLOR_NUM_ID:	return shlNUM;
+	case COLOR_OPER_ID:	return shlOPER;
+	case COLOR_ATTN_ID:	return shlATTN;
 	}
 //printf("color id ?(%i)\n", id);
-	return ::editorColors->shlDEF;
+	return shlDEF;
 }
 
 #ifdef _WIN32
@@ -1403,7 +1431,7 @@ void EditWin::__RefreshScreenData()
 {
 	if (screen.Rows()<=0 || screen.Cols()<=0) return;
 
-	EditorColors colors = *editorColors;
+	//EditorColors colors = *editorColors;
 	
 	int r, c;
 	for (r = 0; r < screen.Rows(); r++)
@@ -1411,7 +1439,7 @@ void EditWin::__RefreshScreenData()
 		int line = r + firstLine;
 		if (line < 0 || line >= text.Count())
 		{
-			screen.Set(r, 0, screen.Cols(), ' ', 0, colors.bg);
+			screen.Set(r, 0, screen.Cols(), ' ', 0, color_background);
 			continue;
 		}
 		
@@ -1448,22 +1476,22 @@ if (s>=end)
 {
 	printf("s>=end (%i)\n", int(s-end));
 }
-unsigned COL = 	_shl ? ColorById(colId[s-begin]) : colors.fg;
+unsigned COL = 	_shl ? ColorById(colId[s-begin]) : color_text;
 
 				if (tab) 
 				{
 					ce = col + tabSize - col%tabSize;
 					
 					
-					screen.Set(r, col-colOffset, ce, ' ', 0, marked ? colors.bgMarked : colors.bg);
+					screen.Set(r, col-colOffset, ce, ' ', 0, marked ? color_mark_background : color_background);
 					col = ce;
 				} 
 				else 
 				{
 					unicode_t ch = charset->GetChar(s,end);
 					screen.Set(r, col-colOffset, col-colOffset + 1, (ch < 32 /*|| ch>=0x80 && ch< 0xA0*/) ? '.' : ch, 
-						(ch < 32 /*|| ch>=0x80 && ch< 0xA0*/) ? 0xFF3030: (marked ? colors.fgMarked : /*colors.fg*/ COL ),
-						marked ? colors.bgMarked : colors.bg);
+						(ch < 32 /*|| ch>=0x80 && ch< 0xA0*/) ? 0xFF3030: (marked ? color_mark_text : /*colors.fg*/ COL ),
+						marked ? color_mark_background : color_background);
 					col++;
 				}
 				s = charset->GetNext(s, end);
@@ -1472,7 +1500,7 @@ unsigned COL = 	_shl ? ColorById(colId[s-begin]) : colors.fg;
 		}
 		
 		if (col - colOffset < screen.Cols())
-			screen.Set(r, col-colOffset, screen.Cols(), ' ', 0, InMark( EditPoint(line, end-begin)) ? colors.bgMarked : colors.bg);
+			screen.Set(r, col-colOffset, screen.Cols(), ' ', 0, InMark( EditPoint(line, end-begin)) ? color_mark_background : color_background);
 	}
 	screen.SetCursor(cursor.line-firstLine, GetCursorCol()-colOffset);
 }
@@ -1559,7 +1587,7 @@ void EditWin::__DrawChanges()
 			int y = editRect.top + curR*charH;
 			int x = editRect.left + curC*charW;
 			crect rect(x, y, x+3, y+charH);
-			gc.SetFillColor(editorColors->cursor/*0xFFFF00*/);
+			gc.SetFillColor(color_cursor/*0xFFFF00*/);
 			gc.FillRect(rect);
 		}
 		screen.prevCursor = screen.cursor;
@@ -1642,7 +1670,7 @@ void EditWin::Paint(wal::GC &gc, const crect &paintRect)
 			int y = editRect.top + curR*charH;
 			int x = editRect.left + curC*charW;
 			crect rect(x, y, x+3, y+charH);
-			gc.SetFillColor(editorColors->cursor/*0xFFFF00*/);
+			gc.SetFillColor(color_cursor/*0xFFFF00*/);
 			gc.FillRect(rect);
 		}
 		screen.prevCursor = screen.cursor;

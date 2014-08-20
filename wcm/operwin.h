@@ -69,8 +69,8 @@ class OperThreadWin: public Win {
 	OperThreadNode *tNode;
 	bool cbExecuted;
 public:
-	OperThreadWin(WTYPE t, unsigned hints=0, Win *_parent = 0, const crect *rect=0)
-		: Win(t, hints, _parent, rect), nextThreadId(0), tNode(0), cbExecuted(false) {}
+	OperThreadWin(WTYPE t, unsigned hints=0, int nId = 0, Win *_parent = 0, const crect *rect=0)
+		: Win(t, hints, _parent, rect, nId), nextThreadId(0), tNode(0), cbExecuted(false) {}
 	
 	void RunNewThread(const char *info, OperThreadFunc f, void *data); //может быть исключение
 	virtual void OperThreadSignal(int info);

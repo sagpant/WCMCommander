@@ -305,7 +305,7 @@ class SearchListWin: public VListWin {
 	int fontH;
 public:
 	SearchListWin(Win *parent)
-		:	VListWin(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, parent,VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
+		:	VListWin(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
 	{
 		wal::GC gc(this);
 		gc.Set(GetFont());
@@ -375,30 +375,21 @@ extern cicon folderIcon;
 
 void SearchListWin::DrawItem(wal::GC &gc, int n, crect rect)
 {
-	if (n>=0 && n<this->itemList.count())
+	if ( n>= 0 && n < this->itemList.count())
 	{
-		unsigned bg, textColor;
 		bool frame=false;
-		static unsigned frameColor=0xFFE0E0; //CCC
-		if (!IsEnabled())
-		{
-			bg = GetColor(IC_BG);
-			textColor = GetColor(IC_GRAY_TEXT); //CCC
-		} else 
-		if (n == this->GetCurrent())
-		{
-			bg = InFocus() ? 0xFF4040 : 0xA0A0A0 ;//CCC
-			textColor = 0xFFFFFF;//CCC
-			frame = true;
-		} else 
-		if (IsSelected(n)) {
-			bg = InFocus() ? 0xFF4040 : 0xA0A0A0 ;//CCC
-			//bg = 0xFF4040;//CCC
-			textColor = 0xFFFFFF;//CCC
-		} else {
-			bg = (n%2)?0xFFFFFF:0xE0FFE0;
-			textColor = 0;
+		UiCondList ucl;
+		if ( (n % 2) == 0 ) ucl.Set(uiOdd, true);
+		if (n == this->GetCurrent()) {
+			ucl.Set(uiCurrentItem, true);
 		}
+		
+		unsigned bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
+		unsigned textColor = UiGetColor(uiColor, uiItem, &ucl, 0);
+		unsigned frameColor = UiGetColor(uiFrameColor, uiItem, &ucl, 0);;
+
+		if (n == this->GetCurrent())
+			frame = true;
 
 		gc.SetFillColor(bg);
 		gc.FillRect(rect);
@@ -415,13 +406,13 @@ void SearchListWin::DrawItem(wal::GC &gc, int n, crect rect)
 			} else {
 				if (itemList[n].cs) {
 					gc.Set(GetFont());
-					gc.SetTextColor(0xC0C0C0);
+					gc.SetTextColor(textColor);
 					gc.TextOutF(rect.left+10, rect.top+2, utf8_to_unicode(itemList[n].cs->name).ptr());
 				}
 			}
 			x += 20;
 		} else {
-			gc.SetFillColor(0x808080);
+			gc.SetFillColor(bg); //!!!
 			crect r(rect);
 			r.bottom = r.top+1;
 			gc.FillRect(r);
@@ -444,8 +435,8 @@ void SearchListWin::DrawItem(wal::GC &gc, int n, crect rect)
 		}
 
 	} else {
-		gc.SetFillColor(0xFFFFFF);
-		gc.FillRect(rect); //CCC
+		gc.SetFillColor( UiGetColor(uiBackground, uiItem, 0, 0xFFFFFF) );
+		gc.FillRect(rect);
 	}
 }
 
@@ -468,7 +459,7 @@ class SearchFileThreadWin: public NCDialog {
 	void RefreshCounters();
 public:
 	SearchFileThreadWin(NCDialogParent *parent, const char * name, OperSearchData *pD)
-	:	NCDialog(::createDialogAsChild, parent, utf8_to_unicode(name).ptr(), bListOkCancel),
+	:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(name).ptr(), bListOkCancel),
 		pData(pD), 
 		lo(10,10),
 		listWin(this),
@@ -476,12 +467,12 @@ public:
 		curFound(-1),
 		curBadDirs(-1),
 		curBadFiles(-1),
-		foundName(this, utf8_to_unicode( _LT("Files found:") ).ptr()), 
-		foundCount(this, utf8_to_unicode("AAAAAAAAAA").ptr()), 
-		badDirsName(this, utf8_to_unicode( _LT("Bad directories:") ).ptr()), 
-		badDirsCount(this, utf8_to_unicode("AAAAAAAAAA").ptr()),
-		badFilesName(this, utf8_to_unicode( _LT("Not opened files:") ).ptr()), 
-		badFilesCount(this, utf8_to_unicode("AAAAAAAAAA").ptr())
+		foundName(0, this, utf8_to_unicode( _LT("Files found:") ).ptr()), 
+		foundCount(0, this, utf8_to_unicode("AAAAAAAAAA").ptr()), 
+		badDirsName(0, this, utf8_to_unicode( _LT("Bad directories:") ).ptr()), 
+		badDirsCount(0, this, utf8_to_unicode("AAAAAAAAAA").ptr()),
+		badFilesName(0, this, utf8_to_unicode( _LT("Not opened files:") ).ptr()), 
+		badFilesCount(0, this, utf8_to_unicode("AAAAAAAAAA").ptr())
 	{
 		listWin.Show(); listWin.Enable();
 		cPathWin.Show(); cPathWin.Enable();

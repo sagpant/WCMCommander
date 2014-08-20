@@ -15,14 +15,11 @@ bool lessTLNode(TLNode *a, TLNode*b, void*)
 	return *sa<*sb;
 }
 
+int uiClassTextList = GetUiID("TextList");
+int TextList::UiGetClassId(){	return uiClassTextList; }
 
-int TextList::GetClassId()
-{
-	return CI_TEXT_LIST;
-}
-
-TextList::TextList(WTYPE tp, unsigned hints, Win *_parent, SelectType st, BorderType bt, crect *rect)
-:VListWin(tp, hints, _parent, st, bt, rect),
+TextList::TextList(WTYPE tp, unsigned hints, int nId, Win *_parent, SelectType st, BorderType bt, crect *rect)
+:VListWin(tp, hints, nId, _parent, st, bt, rect),
 	valid(false)
 {
 	GC gc(this);
@@ -37,28 +34,15 @@ void TextList::DrawItem(GC &gc, int n, crect rect)
 {
 	if (n>=0 && n<list.count())
 	{
-		unsigned bg, textColor;
-		bool frame=false;
-		static unsigned frameColor=0xFFE0E0; //CCC
-		if (!IsEnabled())
-		{
-			bg = GetColor(IC_BG);
-			textColor = GetColor(IC_GRAY_TEXT); //CCC
-		} else 
-		if (n == this->GetCurrent())
-		{
-			bg = InFocus() ? 0xFF4040 : 0xA0A0A0 ;//CCC
-			textColor = 0xFFFFFF;//CCC
-			frame = true;
-		} else 
-		if (IsSelected(n)) {
-			bg = InFocus() ? 0xFF4040 : 0xA0A0A0 ;//CCC
-			//bg = 0xFF4040;//CCC
-			textColor = 0xFFFFFF;//CCC
-		} else {
-			bg = (n%2)?0xFFFFFF:0xE0FFE0;
-			textColor = 0;
-		}
+		UiCondList ucl;
+		if ((n % 2)==0) ucl.Set(uiOdd, true);
+		if (n == this->GetCurrent()) ucl.Set(uiCurrentItem, true);
+		
+		unsigned bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
+		unsigned textColor = UiGetColor(uiColor, uiItem, &ucl, 0);
+		unsigned frameColor = UiGetColor(uiFrameColor, uiItem, &ucl, 0);;
+		
+		bool frame = (n == this->GetCurrent());
 
 		gc.SetFillColor(bg);
 		gc.FillRect(rect);
@@ -73,7 +57,7 @@ void TextList::DrawItem(GC &gc, int n, crect rect)
 			DrawBorder(gc,rect, frameColor);
 		
 	} else {
-		gc.SetFillColor(0xFFFFFF);
+		gc.SetFillColor(UiGetColor(uiBackground, uiItem, 0, 0xFFFFFF));
 		gc.FillRect(rect); //CCC
 	}
 }

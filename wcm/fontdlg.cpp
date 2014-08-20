@@ -24,20 +24,23 @@ FontExample::FontExample(Win *parent, const unicode_t *txt)
 void FontExample::Paint(wal::GC &gc, const crect &paintRect)
 {
 	crect rect = ClientRect();
-	gc.SetFillColor(GetColor(0));
+	unsigned bg = UiGetColor(uiBackground, 0, 0, 0xFFFFFF);
+	unsigned color = UiGetColor(uiColor, 0, 0, 0xFFFFFF);
+	
+	gc.SetFillColor(bg);
 	gc.FillRect(rect); 
-	Draw3DButtonW2(gc, rect, GetColor(0), false);
+	Draw3DButtonW2(gc, rect, bg, false);
 	int y = 2;
 
 	if (font.ptr()) {
 		gc.Set(font.ptr());
 		
-		gc.SetFillColor(0xFFFFFF);
-		gc.SetTextColor(0); 
+		gc.SetFillColor(bg);
+		gc.SetTextColor(color); 
 		gc.TextOutF(2, y,text.ptr());
 		
-		gc.SetFillColor(0);
-		gc.SetTextColor(0xFFFFFF); 
+		gc.SetFillColor(color);
+		gc.SetTextColor(bg); 
 		gc.TextOutF(2, y + gc.GetTextExtents(text.ptr()).y,text.ptr());
 	}
 }
@@ -83,10 +86,10 @@ extern Display* display;
 
 
 FontDialogX::FontDialogX(NCDialogParent *parent, bool fixed)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode( _LT("Select X11 server font") ).ptr(), bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode( _LT("Select X11 server font") ).ptr(), bListOkCancel),
 	iL(16, 3),
-	textList(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0),
-	filterEdit(this, 0, 0, 16),
+	textList(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0),
+	filterEdit(0, this, 0, 0, 16),
 	example(this, utf8_to_unicode("Example text: [{(123)}] <?`!@#$%^&*>").ptr())
 {
 	iL.AddWin(&textList, 0, 0); textList.Enable(); textList.Show();
@@ -455,17 +458,17 @@ void FontDialogFT::ReloadFiltred(const char *filter)
 
 
 FontDialogFT::FontDialogFT(NCDialogParent *parent, bool _fixed, ccollect<FileNode> *flist, const char *currentUri)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode( _LT("Select font") ).ptr(), bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode( _LT("Select font") ).ptr(), bListOkCancel),
 	fixed(_fixed),
 	fontSize(100),
 	iL(16, 2),
 	fileList(flist),
-	textList(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0),
+	textList(Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0),
 	example(this, utf8_to_unicode("Example text: [{(123)}] <?`!@#$%^&*>").ptr()),
-	filterStatic(this, utf8_to_unicode("Filter:").ptr()),
-	filterEdit(this, 0, 0, 16),
-	sizeStatic(this, utf8_to_unicode( _LT("Size:") ).ptr()),
-	sizeEdit(this, 0, 0, 16)
+	filterStatic(0, this, utf8_to_unicode("Filter:").ptr()),
+	filterEdit(0, this, 0, 0, 16),
+	sizeStatic(0, this, utf8_to_unicode( _LT("Size:") ).ptr()),
+	sizeEdit(0, this, 0, 0, 16)
 {
 	iL.AddWin(&textList,  0,1); textList.Enable(); textList.Show();
 	iL.AddWin(&filterStatic, 1, 0); filterStatic.Enable(); filterStatic.Show();

@@ -30,18 +30,18 @@ public:
 SmbLogonDialog::~SmbLogonDialog(){}
 
 SmbLogonDialog::SmbLogonDialog(NCDialogParent *parent, FSSmbParam &params, bool enterServer)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode( _LT("SMB logon") ).ptr(), bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode( _LT("SMB logon") ).ptr(), bListOkCancel),
 	iL(16, 2),
-	text(this, utf8_to_unicode(carray_cat<char>( _LT("Server:"), const_cast<char*>(params.server)).ptr()).ptr()),
+	text(0, this, utf8_to_unicode(carray_cat<char>( _LT("Server:"), const_cast<char*>(params.server)).ptr()).ptr()),
 	serverInput(enterServer),
-	serverText(this, utf8_to_unicode( _LT("Server:") ).ptr()),
-	domainText(this, utf8_to_unicode( _LT("Domain:") ).ptr()),
-	userText(this, utf8_to_unicode( _LT("Login:") ).ptr()),
-	passwordText(this, utf8_to_unicode( _LT("Password:") ).ptr()),
-	serverEdit	(this, 0, 0, 16),
-	domainEdit	(this, 0, 0, 16),
-	userEdit	(this, 0, 0, 16),
-	passwordEdit	(this, 0, 0, 16)
+	serverText(0, this, utf8_to_unicode( _LT("Server:") ).ptr()),
+	domainText(0, this, utf8_to_unicode( _LT("Domain:") ).ptr()),
+	userText(0, this, utf8_to_unicode( _LT("Login:") ).ptr()),
+	passwordText(0, this, utf8_to_unicode( _LT("Password:") ).ptr()),
+	serverEdit	(0, this, 0, 0, 16),
+	domainEdit	(0, this, 0, 0, 16),
+	userEdit	(0, this, 0, 0, 16),
+	passwordEdit	(0, this, 0, 0, 16)
 {
 
 	serverEdit.SetText(utf8_to_unicode(const_cast<char*>(params.server)).ptr(), true);

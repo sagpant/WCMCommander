@@ -10,10 +10,8 @@ namespace wal {
 
 #define SB_WIDTH 16
 
-int ScrollBar::GetClassId()
-{
-	return CI_SCROLL_BAR;
-}
+int uiClassScrollBar = GetUiID("ScrollBar");
+int ScrollBar::UiGetClassId(){	return uiClassScrollBar; }
 
 void Draw3DButtonW1(GC &gc, crect r, unsigned bg, bool up)
 {
@@ -80,8 +78,8 @@ void SBCDrawButton(GC &gc, crect rect, int type, unsigned bg, bool pressed)
 	};
 }
 
-ScrollBar::ScrollBar(Win *parent, bool _vertical, bool _autoHide, crect *rect)
-:	Win(Win::WT_CHILD,0,parent,rect),
+ScrollBar::ScrollBar(int nId, Win *parent, bool _vertical, bool _autoHide, crect *rect)
+:	Win(Win::WT_CHILD,0,parent,rect, nId),
 	vertical(_vertical),
 	si(100,10,0),
 	len(0), 
@@ -113,11 +111,11 @@ ScrollBar::ScrollBar(Win *parent, bool _vertical, bool _autoHide, crect *rect)
 void ScrollBar::Paint(GC &gc, const crect &paintRect)
 {
 	crect cr = ClientRect();
-	unsigned bgColor = GetColor(IC_SCROLL_BG);
-	unsigned btnColor = GetColor(IC_SCROLL_BUTTON);
+	unsigned bgColor = UiGetColor(uiBackground, 0, 0, 0xD8E9EC);/*GetColor(IC_SCROLL_BG)*/;
+	unsigned btnColor = UiGetColor(uiButtonColor, 0, 0, 0xD8E9EC); //GetColor(IC_SCROLL_BUTTON);
 	gc.SetFillColor(bgColor);
 	gc.FillRect(cr);
-	DrawBorder(gc, cr, GetColor(IC_SCROLL_BORDER));
+	DrawBorder(gc, cr, UiGetColor(uiColor, 0, 0, 0xD8E9EC)/*GetColor(IC_SCROLL_BORDER)*/);
 	if (!b1Rect.IsEmpty()) SBCDrawButton(gc, b1Rect, vertical? 4 : 1, btnColor, b1Pressed);
 	if (!b2Rect.IsEmpty()) SBCDrawButton(gc, b2Rect, vertical? 5 : 2, btnColor, b2Pressed);
 	if (!b3Rect.IsEmpty()) SBCDrawButton(gc, b3Rect, vertical? 6 : 3, btnColor, false);

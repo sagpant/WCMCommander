@@ -9,7 +9,14 @@ then
 	echo "#define LIBSMBCLIENT_EXIST" >>../libconf_ux.h
 	echo "LIBSMB = -l smbclient" >>../makelib.mk
 else
-	echo "!!! (Info)  libsmbclient (dev) not found, and not used" >>../info.txt
+	if gcc -I /usr/local/include -L /usr/local/lib libsmb40_test.cpp -lstdc++ -lsmbclient -o libsmb40test >/dev/null 2>/dev/null && ./libsmb40test >/dev/null 2>/dev/null
+	then
+		echo "#define LIBSMBCLIENT_EXIST" >>../libconf_ux.h
+		echo "#define LIBSMB40" >>../libconf_ux.h
+		echo "LIBSMB = -l smbclient" >>../makelib.mk
+	else
+		echo "!!! (Info)  libsmbclient (dev) not found, and not used" >>../info.txt
+	fi
 fi
 
 
@@ -23,9 +30,9 @@ else
 fi
 
 #freetype
-if gcc -I /usr/local/include -L /usr/local/lib -I /usr/include/freetype2 libfreetype_test.cpp  -lstdc++ -l freetype -o libfreetype_test >/dev/null 2>/dev/null && ./libfreetype_test >/dev/null 2>/dev/null
+if gcc -I /usr/local/include -L /usr/local/lib -I /usr/include/freetype2 -I /usr/local/include/freetype2 libfreetype_test.cpp  -lstdc++ -l freetype -o libfreetype_test >/dev/null 2>/dev/null && ./libfreetype_test >/dev/null 2>/dev/null
 then
-	echo "CFLAGS_FREETYPE = -I /usr/include/freetype2 -D USEFREETYPE" >>../makelib.mk
+	echo "CFLAGS_FREETYPE = -I /usr/include/freetype2 -I /usr/local/include/freetype2 -D USEFREETYPE" >>../makelib.mk
 	echo "LIBFREETYPE = -l freetype" >>../makelib.mk
 else
 	echo "!!! (Info)  freetype (dev) not found, and not used" >>../info.txt
@@ -33,8 +40,4 @@ fi
 
 
 echo "#endif" >>../libconf_ux.h
-
-
-
-
 

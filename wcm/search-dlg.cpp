@@ -16,10 +16,10 @@ public:
 SearchParamDialog::~SearchParamDialog(){}
 
 SearchParamDialog::SearchParamDialog(NCDialogParent *parent, SearchParams *params)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode(_LT("Search")).ptr(), bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Search")).ptr(), bListOkCancel),
 	iL(16, 3),
-	textEdit	(this, 0, 0, 50),
-	caseButton(this, utf8_to_unicode(_LT("Case sensitive")).ptr(), 0, params->sens)
+	textEdit	(0, this, 0, 0, 50),
+	caseButton(0, this, utf8_to_unicode(_LT("Case sensitive")).ptr(), 0, params->sens)
 {
 	if (params->txt.ptr()) textEdit.SetText(params->txt.ptr(), true);
 	
@@ -73,13 +73,13 @@ public:
 SearchFileParamDialog::~SearchFileParamDialog(){}
 
 SearchFileParamDialog::SearchFileParamDialog(NCDialogParent *parent, SearchFileParams *params)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode(_LT("Search")).ptr(), bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Search")).ptr(), bListOkCancel),
 	iL(16, 3),
-	maskText(this, utf8_to_unicode(_LT("File mask:")).ptr()),
-	textText(this, utf8_to_unicode(_LT("Text:")).ptr()),
-	maskEdit	(this, 0, 0, 50),
-	textEdit	(this, 0, 0, 50),
-	caseButton(this, utf8_to_unicode(_LT("Case sensitive")).ptr(), 0, params->sens)
+	maskText(0, this, utf8_to_unicode(_LT("File mask:")).ptr()),
+	textText(0, this, utf8_to_unicode(_LT("Text:")).ptr()),
+	maskEdit	(0, this, 0, 0, 50),
+	textEdit	(0, this, 0, 0, 50),
+	caseButton(0, this, utf8_to_unicode(_LT("Case sensitive")).ptr(), 0, params->sens)
 {
 	if (params->mask.ptr()) maskEdit.SetText(params->mask.ptr(), true);
 	if (params->txt.ptr()) textEdit.SetText(params->txt.ptr(), true);
@@ -136,13 +136,13 @@ public:
 ReplaceEditParamDialog::~ReplaceEditParamDialog(){}
 
 ReplaceEditParamDialog::ReplaceEditParamDialog(NCDialogParent *parent, ReplaceEditParams *params)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode(_LT("Replace")).ptr(), bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Replace")).ptr(), bListOkCancel),
 	iL(16, 3),
-	fromText(this, utf8_to_unicode(_LT("Search for:")).ptr()),
-	toText(this, utf8_to_unicode(_LT("Replace with:")).ptr()),
-	fromEdit	(this, 0, 0, 50),
-	toEdit	(this, 0, 0, 50),
-	caseButton(this, utf8_to_unicode(_LT("Case sensitive")).ptr(), 0, params->sens)
+	fromText(0, this, utf8_to_unicode(_LT("Search for:")).ptr()),
+	toText(0, this, utf8_to_unicode(_LT("Replace with:")).ptr()),
+	fromEdit	(0, this, 0, 0, 50),
+	toEdit	(0, this, 0, 0, 50),
+	caseButton(0, this, utf8_to_unicode(_LT("Case sensitive")).ptr(), 0, params->sens)
 {
 	if (params->from.ptr()) fromEdit.SetText(params->from.ptr(), true);
 	if (params->to.ptr()) toEdit.SetText(params->to.ptr(), true);

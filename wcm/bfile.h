@@ -1,6 +1,7 @@
 #ifndef BFILE_H
 #define BFILE_H
 
+/*
 #include <wal.h>
 
 using namespace wal;
@@ -50,5 +51,6 @@ public:
 	
 	~BFile(){}
 };
+*/
 
 #endif

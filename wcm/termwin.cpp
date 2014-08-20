@@ -36,10 +36,10 @@ void TerminalWin::OnChangeStyles()
 
 }
 
-TerminalWin::TerminalWin(Win *parent)
-: Win(WT_CHILD, 0, parent),
+TerminalWin::TerminalWin(int nId, Win *parent)
+: Win(WT_CHILD, 0, parent, 0, nId),
 	_lo(1,2),
-	_scroll(this, true, false), //надо пошаманить для автохида
+	_scroll(0, this, true, false), //надо пошаманить для автохида
 	cH(1),cW(1),
 	_firstRow(0),
 	_currentRows(1)
@@ -59,7 +59,12 @@ TerminalWin::TerminalWin(Win *parent)
 	OnChangeStyles();
 }
 
-int TerminalWin::GetClassId(){ return CI_TERMINAL; }
+int uiClassTerminal = GetUiID("Terminal");
+
+int TerminalWin::UiGetClassId()
+{
+	return uiClassTerminal; 
+}
 
 void TerminalWin::Paste()
 {

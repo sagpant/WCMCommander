@@ -15,37 +15,16 @@ static cptr<cfont> pSysFont;
 
 static cfont *guiFont = 0;
 
-static unsigned winColors[]={
-	0xD8E9EC,	//background
-	0,		//foreground
-	0,		//text color
-	0x99080C,	//grey text color
-	0x00A000	//focus mark color
-};
-
-static unsigned colorEditTextBg = 0xFFFFFF;
-static unsigned colorEditText = 0;
-static unsigned colorEditSTextBg = 0x800000; 
-static unsigned colorEditSText = 0xFFFFFF;
-static unsigned colorEditDisabledTextBg = 0x808080;
-static unsigned colorEditDisabledText = 0;
-
-static unsigned colorMBoxBg = 0xD8E9EC;
-static unsigned colorMBoxBorder = 0xC0C0C0;
-static unsigned colorMBoxText = 0;
-static unsigned colorMBoxSelectBg = 0xFFA0A0;
-static unsigned colorMBoxSelectText = 0;
-static unsigned colorMBoxSelectFrame = 0;
-
-static unsigned colorMPBg = 0xD8E9EC;
-static unsigned colorMPLeft=0xE0E0E0;
-static unsigned colorMPBorder=0;
-static unsigned colorMPLine=0xC0C0C0;
-static unsigned colorMPText=0;
-static unsigned colorMPSText=0;
-static unsigned colorMPSBg=0xFFA0A0;
-static unsigned colorMPPointer=0;
-
+static char uiDefaultRules[] = 
+"* {color: 0; background: 0xD8E9EC; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
+"*:current-item { color: 0xFFFFFF; background: 0x800000; }"
+"ScrollBar { button-color: 0xD8E9EC;  }"
+"EditLine:!enabled { background: 0xD8E9EC; }"
+"EditLine {color: 0; background: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x800000; }"
+//"Button {color: 0; background: 0xFFFFFF}"
+//"ButtonWin { color: 0xFFFFFF; background: 0 }"
+//"ButtonWin Button {color: 0; background: 0xB0B000 }"
+;
 
 #ifdef _WIN32
 void BaseInit()
@@ -57,9 +36,10 @@ void BaseInit()
 	pSysFont = new cfont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 	guiFont = pSysFont.ptr();
 
-	winColors[IC_BG] = ::GetSysColor(COLOR_BTNFACE);
-	winColors[IC_FG] = winColors[IC_TEXT] = ::GetSysColor(COLOR_BTNTEXT);
-	winColors[IC_GRAY_TEXT] = ::GetSysColor(COLOR_GRAYTEXT);
+//	winColors[IC_BG] = ::GetSysColor(COLOR_BTNFACE);
+//	winColors[IC_FG] = winColors[IC_TEXT] = ::GetSysColor(COLOR_BTNTEXT);
+//	winColors[IC_GRAY_TEXT] = ::GetSysColor(COLOR_GRAYTEXT);
+	UiReadMem(uiDefaultRules);
 }
 #else 
 
@@ -72,55 +52,16 @@ void BaseInit()
 	GC gc((Win*)0);
 	pSysFont = new cfont(gc,"fixed",12,cfont::Normal); // "helvetica",9);
 	guiFont = pSysFont.ptr();
+	UiReadMem(uiDefaultRules);
 }
 
 #endif
-
-static unsigned _SysGetColor(Win *w, int colorId)
-{
-	if (colorId>=0 && colorId<=5) 
-		return winColors[colorId];
-
-	switch (colorId) {
-	case IC_EDIT_TEXT_BG:	return colorEditTextBg;
-	case IC_EDIT_TEXT:	return colorEditText;
-	case IC_EDIT_STEXT_BG:	return colorEditSTextBg;
-	case IC_EDIT_STEXT:	return colorEditSText;
-	case IC_EDIT_DTEXT_BG:	return colorEditDisabledTextBg;
-	case IC_EDIT_DTEXT:	return colorEditDisabledText;
-
-	case IC_MENUBOX_BG:	return colorMBoxBg;
-	case IC_MENUBOX_BORDER:	return colorMBoxBorder;
-	case IC_MENUBOX_TEXT:	return colorMBoxText;
-	case IC_MENUBOX_SELECT_BG:	return colorMBoxSelectBg;
-	case IC_MENUBOX_SELECT_TEXT:	return colorMBoxSelectText;
-	case IC_MENUBOX_SELECT_FRAME:	return colorMBoxSelectFrame;
-
-	case IC_MENUPOPUP_BG: return colorMPBg;
-	case IC_MENUPOPUP_LEFT: return colorMPLeft=0xE0E0E0;
-	case IC_MENUPOPUP_BORDER: return colorMPBorder=0;
-	case IC_MENUPOPUP_LINE: return colorMPLine=0xC0C0C0;
-	case IC_MENUPOPUP_TEXT: return colorMPText=0;
-	case IC_MENUPOPUP_SELECT_TEXT: return colorMPSText=0;
-	case IC_MENUPOPUP_SELECTBG: return colorMPSBg=0xFFA0A0;
-	case IC_MENUPOPUP_POINTER: return colorMPPointer=0;
-	
-	case IC_SCROLL_BORDER: return 0xD0D0D0;
-	case IC_SCROLL_BG: return 0xF0F0F0;
-	case IC_SCROLL_BUTTON: return 0xD8E9EC; //0xF8F9EC //0xD8E9EC
-
-
-	default: return 0xFF;
-	}
-}
-
 
 static cfont* _SysGetFont(Win *w, int fontId)
 {
 	return guiFont;
 }
 
-unsigned (*SysGetColor)(Win *w, int colorId)=_SysGetColor;
 cfont* (*SysGetFont)(Win *w, int fontId) = _SysGetFont;
 
 void Draw3DButtonW2(GC &gc, crect r, unsigned bg, bool up)
@@ -225,15 +166,11 @@ cpoint GetStaticTextExtent(GC &gc, const unicode_t *s, cfont *font)
 	return res;
 }
 
+int uiClassStatic = GetUiID("Static");
+int StaticLine::UiGetClassId(){	return uiClassStatic;}
 
-
-int StaticLine::GetClassId()
-{
-	return CI_STATIC_LINE;
-}
-
-StaticLine::StaticLine(Win *parent, const unicode_t *txt, crect *rect)
-: Win(Win::WT_CHILD, 0, parent, rect), text(new_unicode_str(txt))
+StaticLine::StaticLine(int nId, Win *parent, const unicode_t *txt, crect *rect)
+: Win(Win::WT_CHILD, 0, parent, rect, nId), text(new_unicode_str(txt))
 {
 	if (!rect) 
 	{
@@ -246,12 +183,13 @@ StaticLine::StaticLine(Win *parent, const unicode_t *txt, crect *rect)
 void StaticLine::Paint(GC &gc, const crect &paintRect)
 {
 	crect rect = ClientRect();
-	gc.SetFillColor(GetColor(0));
+	gc.SetFillColor(UiGetColor(uiBackground, 0,0, 0xFFFFFF)/*GetColor(0)*/);
 	gc.FillRect(rect); //CCC
-	gc.SetTextColor(GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)); //CCC
+	gc.SetTextColor(UiGetColor(uiColor, 0,0, 0)/*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/); //CCC
 	gc.Set(GetFont());
 	DrawStaticText(gc,0,0,text.ptr());
 }
+
 
 StaticLine::~StaticLine(){}
 
@@ -263,11 +201,13 @@ class TBToolTip: public Win {
 public:
 	TBToolTip(Win *parent, int x, int y, const unicode_t *s);
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual ~TBToolTip();
 };
 
-int TBToolTip::GetClassId(){ return CI_TOOLTIP; }
+int uiClassToolTip = GetUiID("ToolTip");
+
+int TBToolTip::UiGetClassId(){	return uiClassToolTip; }
 
 TBToolTip::TBToolTip(Win *parent, int x, int y, const unicode_t *s)
 :	Win(Win::WT_POPUP, 0, parent),
@@ -280,10 +220,10 @@ TBToolTip::TBToolTip(Win *parent, int x, int y, const unicode_t *s)
 
 void TBToolTip::Paint(wal::GC &gc, const crect &paintRect)
 {
-	gc.SetFillColor(GetColor(IC_BG)); //0x80FFFF);
+	gc.SetFillColor(UiGetColor(uiBackground, 0,0, 0xFFFFFF)/*GetColor(IC_BG)*/); //0x80FFFF);
 	crect r = ClientRect();
 	gc.FillRect(r);
-	gc.SetTextColor(GetColor(IC_TEXT));
+	gc.SetTextColor(UiGetColor(uiColor, 0,0, 0)/*GetColor(IC_TEXT)*/);
 	//gc.TextOutF(0,0,text.ptr());
 	 DrawStaticText(gc, 2, 1, text.ptr(), GetFont(), false);
 }

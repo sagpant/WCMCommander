@@ -129,7 +129,7 @@ public:
 	cptr<MemFile> file;
 	
 	LoadThreadWin(NCDialogParent *parent, bool ignoreENOENT)
-		:	NCDialog(::createDialogAsChild, parent, utf8_to_unicode("Load file").ptr(), bListCancel), 
+		:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode("Load file").ptr(), bListCancel), 
 			_ignoreENOENT(ignoreENOENT),
 			threadData(parent) 
 	{}
@@ -298,7 +298,7 @@ public:
 	cptr<MemFile> file;
 	
 	SaveThreadWin(NCDialogParent *parent)
-		:	NCDialog(::createDialogAsChild, parent, utf8_to_unicode("Load file").ptr(), bListCancel), threadData(parent) {}
+		:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode("Load file").ptr(), bListCancel), threadData(parent) {}
 	virtual void OperThreadStopped();
 	virtual ~SaveThreadWin();
 };

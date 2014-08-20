@@ -36,23 +36,23 @@ public:
 SftpLogonDialog::~SftpLogonDialog(){}
 
 SftpLogonDialog::SftpLogonDialog(NCDialogParent *parent, FSSftpParam &params)
-:	NCVertDialog(::createDialogAsChild, parent, utf8_to_unicode( _LT("SFTP logon") ).ptr(), bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode( _LT("SFTP logon") ).ptr(), bListOkCancel),
 	iL(16, 3),
-	serverText(this, utf8_to_unicode( _LT("Server:") ).ptr()),
-	userText(this, utf8_to_unicode( _LT("Login:") ).ptr()),
+	serverText(0, this, utf8_to_unicode( _LT("Server:") ).ptr()),
+	userText(0, this, utf8_to_unicode( _LT("Login:") ).ptr()),
 //	passwordText(this, utf8_to_unicode("Password:").ptr()),
-	portText(this, utf8_to_unicode( _LT("Port:") ).ptr()),
-	charsetText(this, utf8_to_unicode( _LT("Charset:") ).ptr()),
+	portText(0, this, utf8_to_unicode( _LT("Port:") ).ptr()),
+	charsetText(0, this, utf8_to_unicode( _LT("Charset:") ).ptr()),
 	
 	charset(params.charset),
-	charsetIdText(this, utf8_to_unicode("***************").ptr()), //чтоб место забить
+	charsetIdText(0, this, utf8_to_unicode("***************").ptr()), //чтоб место забить
 		
-	serverEdit	(this, 0, 0, 16),
-	userEdit	(this, 0, 0, 16),
+	serverEdit	(0, this, 0, 0, 16),
+	userEdit	(0, this, 0, 0, 16),
 //	passwordEdit	(this, 0, 0, 16),
-	portEdit	(this, 0, 0, 7),
+	portEdit	(0, this, 0, 0, 7),
 	
-	charsetButton(this, utf8_to_unicode(">").ptr() , 1000)
+	charsetButton(0, this, utf8_to_unicode(">").ptr() , 1000)
 {
 	serverEdit.SetText(params.server.Data(), true);
 	userEdit.SetText(params.user.Data(), true);
@@ -161,9 +161,9 @@ public:
 FSPromptDialog::~FSPromptDialog(){}
 
 FSPromptDialog::FSPromptDialog(PromptCBData *data)
-:	NCVertDialog(::createDialogAsChild, data->parent, data->header, bListOkCancel),
+:	NCVertDialog(::createDialogAsChild, 0, data->parent, data->header, bListOkCancel),
 	iL(16, 3),
-	message(this, data->message)
+	message(0, this, data->message)
 {
 
 	if (data->message[0]) 
@@ -178,8 +178,8 @@ FSPromptDialog::FSPromptDialog(PromptCBData *data)
 	for (int i = 0; i<data->count; i++)
 	{
 		Node node;
-		node.prompt = new StaticLine(this, data->prompts[i].prompt.Data()); 
-		node.ansver = new EditLine(this, 0, 0, 16); 
+		node.prompt = new StaticLine(0, this, data->prompts[i].prompt.Data()); 
+		node.ansver = new EditLine(0, this, 0, 0, 16); 
 		if (!data->prompts[i].visible)	node.ansver->SetPasswordMode();
 		
 		

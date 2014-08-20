@@ -13,6 +13,8 @@
 
 using namespace wal;
 
+extern int uiClassEditor;
+
 extern unsigned  UnicodeLC(unsigned ch);
 
 enum NCEditorInfo {
@@ -518,6 +520,29 @@ class EditWin : public Win {
 	void __DrawChanges();
 	
 	void Refresh(){ __RefreshScreenData(); __DrawChanges(); }
+	
+	unsigned shlDEF;
+	unsigned shlKEYWORD;
+	unsigned shlCOMMENT;
+	unsigned shlSTRING;
+	unsigned shlPRE;
+	unsigned shlNUM;
+	unsigned shlOPER;
+	unsigned shlATTN;
+	/*
+	unsigned color_text;
+	unsigned color_background;
+	unsigned color_mark_text;
+	unsigned color_mark_background;
+	unsigned color_ctrl;
+	unsigned color_cursor;
+	*/
+	int color_text;
+	int color_background;
+	int color_mark_text;
+	int color_mark_background;
+	int color_ctrl;
+	int color_cursor;
 
 public:
 	enum COLOR_ID {
@@ -585,7 +610,7 @@ public:
 	virtual void EventTimer(int tid);
 	virtual bool Command(int id, int subId, Win *win, void *data);
 	virtual bool Broadcast(int id, int subId, Win *win, void *data); 
-	virtual int GetClassId();
+	virtual int UiGetClassId();
 	virtual void OnChangeStyles();
 	virtual ~EditWin();
 };

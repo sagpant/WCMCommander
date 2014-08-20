@@ -178,11 +178,8 @@ int EditBuf::GetCharGroup(unicode_t c)
 
 /////////////////////////////////////////////////////////// EditLine
 
-
-int EditLine::GetClassId()
-{
-	return CI_EDIT_LINE;
-}
+int uiClassEditLine = GetUiID("EditLine");
+int EditLine::UiGetClassId(){	return uiClassEditLine; }
 
 void EditLine::OnChangeStyles()
 {
@@ -205,8 +202,8 @@ void EditLine::OnChangeStyles()
 	SetLSize(ls);
 }
 
-EditLine::EditLine(Win *parent, const crect *rect, const unicode_t *txt, int chars, bool frame)
-:	Win(Win::WT_CHILD,Win::WH_TABFOCUS|WH_CLICKFOCUS,parent,rect), 
+EditLine::EditLine(int nId, Win *parent, const crect *rect, const unicode_t *txt, int chars, bool frame)
+:	Win(Win::WT_CHILD,Win::WH_TABFOCUS|WH_CLICKFOCUS,parent,rect, nId), 
 	text(txt),
 	_chars(chars>0 ? chars : 10),
 	cursorVisible(false), 
@@ -254,8 +251,8 @@ void EditLine::DrawCursor(GC &gc)
 	x += prevSize.x;
 	
 	bool marked = text.Marked(cursor);
-	unsigned bColor = GetColor(marked ? IC_EDIT_STEXT_BG : IC_EDIT_TEXT_BG);
-	unsigned fColor = GetColor(marked ? IC_EDIT_STEXT : IC_EDIT_TEXT);
+	unsigned bColor = /*GetColor(*/marked ? UiGetColor(uiMarkBackground,0,0,0x800000) : UiGetColor(uiBackground, 0, 0, 0xFFFFFF);//UiIC_EDIT_STEXT_BG : IC_EDIT_TEXT_BG);
+	unsigned fColor = /*GetColor(*/marked ? UiGetColor(uiMarkColor,0,0,0xFFFFFF) : UiGetColor(uiColor, 0, 0, 0);//IC_EDIT_STEXT : IC_EDIT_TEXT);
 	
 	cpoint csize(0,0);
 	
@@ -359,18 +356,21 @@ void EditLine::Paint(GC &gc, const crect &paintRect)
 {
 	crect cr = ClientRect();
 	crect rect = cr;
-	unsigned colorBg = GetColor(0);
+	
+	unsigned frameColor = UiGetColor(uiFrameColor, 0, 0,0xFFFFFF);
 
 	if (frame3d) 
 	{
-		DrawBorder(gc, rect, ColorTone(colorBg,+20));
+		DrawBorder(gc, rect, ColorTone(frameColor,+20));
 		rect.Dec();
-		Draw3DButtonW2(gc, rect, colorBg, false);
+		Draw3DButtonW2(gc, rect, frameColor, false);
 		rect.Dec();
 		rect.Dec();
-		DrawBorder(gc, rect, ColorTone(colorBg, IsEnabled() ? -200 : -80));
+		DrawBorder(gc, rect, ColorTone(frameColor, IsEnabled() ? -200 : -80));
 		rect.Dec();
 	}
+	
+	unsigned colorBg = UiGetColor(uiBackground, 0, 0,0xFFFFFF);
 	
 	int x = rect.left;
 	
@@ -396,6 +396,12 @@ void EditLine::Paint(GC &gc, const crect &paintRect)
 			pwText = pwTextArray.ptr();
 		}
 		
+		int color = UiGetColor(uiColor,0,0,0);
+		int background = UiGetColor(uiBackground, 0, 0, 0xFFFFFF);
+		
+		int mark_color = UiGetColor(uiMarkColor,0,0,0xFFFFFF);
+		int mark_background = UiGetColor(uiMarkBackground, 0, 0, 0);
+		
 		while (cnt > 0)
 		{
 			bool mark = text.Marked(i);
@@ -407,9 +413,9 @@ void EditLine::Paint(GC &gc, const crect &paintRect)
 			int n = j-i;
 			cpoint size = gc.GetTextExtents(passwordMode ? pwText : (text.Ptr()+i), n);
 			
-			gc.SetFillColor(GetColor(InFocus() && mark ? IC_EDIT_STEXT_BG : IC_EDIT_TEXT_BG));
+			gc.SetFillColor(mark ? mark_background : background);//GetColor(InFocus() && mark ? IC_EDIT_STEXT_BG : IC_EDIT_TEXT_BG));
 			gc.FillRect(crect(x, cr.top, x+size.x, cr.bottom));
-			gc.SetTextColor(GetColor(InFocus() &&  mark ? IC_EDIT_STEXT : (IsEnabled() ? IC_EDIT_TEXT : IC_GRAY_TEXT))); 
+			gc.SetTextColor(mark ? mark_color : color);//GetColor(InFocus() &&  mark ? IC_EDIT_STEXT : (IsEnabled() ? IC_EDIT_TEXT : IC_GRAY_TEXT))); 
 			
 			gc.TextOutF(x, y, passwordMode ? pwText : (text.Ptr() + i), n);
 			cnt -= n;
@@ -418,9 +424,9 @@ void EditLine::Paint(GC &gc, const crect &paintRect)
 		}
 	}
 	
-	if (x<cr.right)
+	if (x < cr.right)
 	{
-		gc.SetFillColor(GetColor(IC_EDIT_TEXT_BG));
+		gc.SetFillColor(colorBg);//GetColor(IC_EDIT_TEXT_BG));
 		cr.left = x;
 		gc.FillRect(cr);
 	}
