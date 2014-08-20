@@ -12,7 +12,7 @@
 
 using namespace wal;
 
-static char verString[] = "Wal Commander v 0.16.0";
+static char verString[] = "Wal Commander v 0.16.0 GitHub Edition";
 
 struct HelpStyle {
 	cfont *font;
