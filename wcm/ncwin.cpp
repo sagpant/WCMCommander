@@ -1741,7 +1741,6 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case VK_INSERT:	_panel->KeyIns(); break;
 		case FC(VK_INSERT, KM_CTRL):
 			{
-				printf( "Ctrl Insert\n" );
 				const unicode_t *p = GetCurrentFileName();
 				if (p)
 				{
@@ -1941,6 +1940,15 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case FC( VK_F8, KM_SHIFT): 
 			HistoryDialog(); break;
 		case VK_F8: Delete(); break;
+		case VK_DELETE:
+			{
+				if ( !_edit.IsVisible() || _edit.IsEmpty() )
+				{
+					Delete();
+					return true;
+				}
+				return false;
+			}
 		case VK_F9: _menu.SetFocus();	break;
 		case VK_F10: QuitQuestion(); 	break;
 
