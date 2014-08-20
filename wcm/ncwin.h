@@ -296,7 +296,9 @@ public:
 	int SendConfigChanged(){ return SendBroadcast(ID_CHANGED_CONFIG_BROADCAST, 0, this, 0, 10); };
 	
 	virtual ~NCWin();
-	
+
+	PanelWin* GetLeftPanel() { return &_leftPanel; }
+	PanelWin* GetRightPanel() { return &_rightPanel; }
 };
 
 
