@@ -958,6 +958,7 @@ public:
 	int Count() const  { return count; }
 	void Clear();
 	void Append(unicode_t c);
+	void AppendUnicodeStr(const unicode_t* c);
 	ClipboardText(const ClipboardText &a);
 	ClipboardText& operator = (const ClipboardText &a);
 	unicode_t Get(int n) const {
