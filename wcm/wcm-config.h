@@ -3,6 +3,8 @@
 
 #include "ncdialogs.h"
 
+class NCWin;
+
 struct WcmConfig {
 	enum MapType { MT_BOOL, MT_INT, MT_STR };
 	struct Node {
@@ -62,11 +64,14 @@ struct WcmConfig {
 	carray<char> helpBoldFontUri;
 	carray<char> helpHeadFontUri;
 	
+	carray<char> leftPanelPath;
+	carray<char> rightPanelPath;
+	
 	void ImpCurrentFonts(); //взять используемые шрифты и записать их реквизиты в ...Uri
 	
 	WcmConfig();
 	void Load();
-	void Save();
+	void Save( NCWin* nc );
 };
 
 extern WcmConfig wcmConfig;

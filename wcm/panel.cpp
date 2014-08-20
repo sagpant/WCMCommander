@@ -1207,6 +1207,13 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 void PanelWin::LoadPath(FSPtr fs, FSPath &paramPath, FSString *current, cptr<cstrhash<bool,unicode_t> > selected, LOAD_TYPE lType)
 {
 //printf("LoadPath '%s'\n", paramPath.GetUtf8());
+
+	FSStat stat;
+	FSCInfo info;
+	int err;
+
+	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;
+
 	try {
 		StopThread();
 		_inOperState = true;

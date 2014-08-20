@@ -256,6 +256,20 @@ NCWin::NCWin()
 	SetName(appName);
 	
 	this->AddLayout(&_lo);
+	
+	// apply saved panel paths
+	
+	FSPath path;
+
+//	printf( "Left = %s\n", wcmConfig.leftPanelPath.ptr() );
+	
+	path.Set(sys_charset_id, wcmConfig.leftPanelPath.ptr());
+	_leftPanel.LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
+
+//	printf( "Right = %s\n", wcmConfig.rightPanelPath.ptr() );
+
+	path.Set(sys_charset_id, wcmConfig.rightPanelPath.ptr());
+	_rightPanel.LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
 }
 
 bool NCWin::EventClose()
@@ -1306,7 +1320,7 @@ void NCWin::PanelEqual()
 void NCWin::SaveSetup()
 {
 	try {
-		wcmConfig.Save();
+		wcmConfig.Save(this);
 	} catch (cexception *ex) {
 		NCMessageBox(this, _LT("Save setup"), ex->message(), true);
 		ex->destroy();

@@ -168,13 +168,16 @@ int main(int argc, char **argv)
 		SetCmdIcons();
 
 		NCWin ncWin;
-
-		ncWin.Enable();	ncWin.Show();
+		
+		ncWin.Enable();
+		ncWin.Show();
 
 		InitExtensionApp();		
 				
 		AppRun();
 
+		wcmConfig.Save(&ncWin);
+	
 		dbg_printf("App Quit!!!");
 
 	} catch (cexception *ex)
@@ -185,5 +188,7 @@ int main(int argc, char **argv)
 		printf("Error: %s\n", ex->message());
 	#endif
 	}
+	
+
 	return 0;
 }

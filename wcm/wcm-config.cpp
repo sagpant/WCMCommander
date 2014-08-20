@@ -5,6 +5,7 @@
 #include "vfs.h"
 #include "fontdlg.h"
 #include "ncfonts.h"
+#include "ncwin.h"
 #include "ltext.h"
 #include "globals.h"
 #include "bfile.h"
@@ -563,6 +564,9 @@ WcmConfig::WcmConfig()
 
 	viewColorMode(0)
 {
+	leftPanelPath = new_char_str("");
+	rightPanelPath = new_char_str("");
+
 #ifndef _WIN32
 	MapBool(sectionSystem, "ask_open_exec", &systemAskOpenExec, systemAskOpenExec);
 #endif
@@ -580,6 +584,8 @@ WcmConfig::WcmConfig()
 	MapInt(sectionPanel,  "color_mode",		&panelColorMode, panelColorMode);
 	MapInt(sectionPanel,  "mode_left",		&panelModeLeft, panelModeLeft);
 	MapInt(sectionPanel,  "mode_right",		&panelModeRight, panelModeRight);
+	MapStr(sectionPanel,  "left_panel_path",&leftPanelPath);
+	MapStr(sectionPanel,  "right_panel_path",&rightPanelPath);
 
 	MapBool(sectionEditor, "save_file_position",		&editSavePos, editSavePos);
 	MapBool(sectionEditor, "auto_ident",	&editAutoIdent, editAutoIdent);
@@ -693,8 +699,14 @@ void WcmConfig::Load()
 	if (editTabSize<=0 || editTabSize >64) editTabSize = 8;
 }
 
-void WcmConfig::Save()
+void WcmConfig::Save( NCWin* nc )
 {
+	if ( nc )
+	{
+		leftPanelPath = new_char_str( nc->GetLeftPanel()->GetPath().GetUtf8() );
+		rightPanelPath = new_char_str( nc->GetRightPanel()->GetPath().GetUtf8() );
+	}
+	
 #ifdef _WIN32
 	for (int i = 0; i<mapList.count(); i++)
 	{
