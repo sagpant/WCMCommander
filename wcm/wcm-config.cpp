@@ -538,7 +538,7 @@ const char *sectionFonts = "fonts";
 
 WcmConfig::WcmConfig()
 :	systemAskOpenExec(true),
-	systemEscPanel(false),
+	systemEscPanel(true),
 	systemBackSpaceUpDir(false),
 	systemLang(new_char_str("+")),
 	showToolBar(true),
@@ -561,7 +561,7 @@ WcmConfig::WcmConfig()
 		
 	editSavePos(true),
 	editAutoIdent(true),
-	editTabSize(8),
+	editTabSize(3),
 	editColorMode(0),
 	editShl(true),
 	
