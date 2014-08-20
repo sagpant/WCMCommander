@@ -218,6 +218,10 @@ EditLine::EditLine(int nId, Win *parent, const crect *rect, const unicode_t *txt
 	}
 };
 
+bool EditLine::IsEmpty() const
+{
+	return text.Count() == 0;
+}
 
 #define CURSOR_W (2)
 

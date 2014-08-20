@@ -167,6 +167,7 @@ public:
 	void SetText(const unicode_t *txt, bool mark = false);
 	void Insert(unicode_t t);
 	void Insert(const unicode_t *txt);
+	bool IsEmpty() const;
 	int GetCursorPos(){ return text.Cursor(); }
 	void SetCursorPos(int c, bool mark = false){ text.SetCursor(c, mark); }
 	carray<unicode_t> GetText();
