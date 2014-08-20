@@ -1,9 +1,9 @@
 [fonts]
-dialog_font=+90:/usr/share/wcm/fonts/DejaVuSerifCondensed-Bold.ttf
-editor_font=+115:/usr/share/wcm/fonts/DejaVuSansMono.ttf
-viewer_font=+115:/usr/share/wcm/fonts/DejaVuSansMono.ttf
-helpbold_font=-*-fixed-bold-r-*-*-*-120-*-*-*-*-iso10646-*
-helphead_font=+100:/usr/share/wcm/fonts/DejaVuSerif-Bold.ttf
-helptext_font=+100:/usr/share/wcm/fonts/DejaVuSerifCondensed.ttf
-panel_font=+115:/usr/share/wcm/fonts/DejaVuSerifCondensed.ttf
-terminal_font=-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*
+dialog_font=+140:/usr/share/wcm/fonts/LiberationMono-Regular.ttf
+editor_font=+140:/usr/share/wcm/fonts/LiberationMono-Regular.ttf
+viewer_font=+140:/usr/share/wcm/fonts/LiberationMono-Regular.ttf
+helpbold_font=-*-fixed-bold-r-*-*-*-140-*-*-*-*-iso10646-*
+helphead_font=+140:/usr/share/wcm/fonts/DejaVuSerif-Bold.ttf
+helptext_font=+140:/usr/share/wcm/fonts/DejaVuSerifCondensed.ttf
+panel_font=+140:/usr/share/wcm/fonts/LiberationMono-Regular.ttf
+terminal_font=+140:/usr/share/wcm/fonts/LiberationMono-Regular.ttf
