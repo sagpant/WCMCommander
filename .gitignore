@@ -20,3 +20,9 @@
 wcm/Debug/
 wcm/Release/
 ipch/
+
+wcm/info.txt
+wcm/makelib.mk
+wcm/wcm
+wcm/libtester/libfreetype_test
+wcm/libtester/libssh2test
