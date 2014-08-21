@@ -12,7 +12,32 @@
 
 using namespace wal;
 
-static char verString[] = "Wal Commander v 0.16.1 GitHub Edition";
+// GCC
+#ifdef __GNUC__
+#  define PLATFORM_GCC
+#	ifdef __clang__
+#		define __COMPILER_VER__ "Clang " __VERSION__
+#	else
+#		define __COMPILER_VER__ "GCC " __VERSION__
+#	endif
+#endif
+
+// Microsoft Visual C++
+#ifdef _MSC_VER
+#  define PLATFORM_MSVC
+#define __COMPILER_VER__ "Microsoft Visual C++" _MSC_VER
+#endif
+
+#if defined(_WIN64)
+#	define BUILD_OS "Win64"
+#elif defined(_WIN32)
+#	define BUILD_OS "Win32"
+#else
+#	define BUILD_OS "Linux"
+#endif
+
+
+static char verString[] = "Wal Commander v 0.16.1 GitHub Edition ("__DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
 
 struct HelpStyle {
 	cfont *font;
