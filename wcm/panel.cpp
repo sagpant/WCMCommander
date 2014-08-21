@@ -133,6 +133,10 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 		case VK_BACK: 
 		case VK_DELETE:
 			return false;
+		case VK_ESCAPE:
+			// end search and kill the ESC key
+			EndSearch( NULL );
+			return false;
 	}
 	
 	EndSearch(pEvent);
