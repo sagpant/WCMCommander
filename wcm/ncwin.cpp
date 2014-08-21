@@ -1783,9 +1783,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case VK_ESCAPE:
 			if (wcmConfig.systemEscPanel)
 			{
-				carray<unicode_t> txt = _edit.GetText();
-				unicode_t *p = txt.ptr();
-				if ( _edit.IsVisible() && *p )
+				if ( _edit.IsVisible() && !_edit.IsEmpty() )
 				{
 					// if the command line is not empty - clear it
 					_edit.Clear();
@@ -1983,9 +1981,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case VK_BACK:
 			if ( wcmConfig.systemBackSpaceUpDir )
 			{
-				carray<unicode_t> txt = _edit.GetText();
-				unicode_t *p = txt.ptr();
-				if ( !_edit.IsVisible() || !*p )
+				if ( !_edit.IsVisible() || _edit.IsEmpty() )
 				{
 					_panel->DirUp();
 					return true;

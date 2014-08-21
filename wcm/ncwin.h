@@ -271,6 +271,12 @@ private:
 	void ExecuteFile();
 
 	const unicode_t* GetCurrentFileName() const;
+	PanelWin* GetOtherPanel()
+	{
+		if ( _panel == &_leftPanel ) return &_rightPanel;
+
+		return &_leftPanel;
+	}
 
 #ifndef _WIN32
 	void ExecNoTerminalProcess(unicode_t *p);

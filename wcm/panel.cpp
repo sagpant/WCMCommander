@@ -1371,9 +1371,9 @@ bool PanelWin::EventMouse(cevent_mouse* pEvent)
 	return false;
 }
 
-void PanelWin::DirUp()
+bool PanelWin::DirUp()
 {
-	if (_place.IsEmpty()) return;
+	if (_place.IsEmpty()) return false;
 
 #ifdef _WIN32
 	{
@@ -1400,11 +1400,13 @@ void PanelWin::DirUp()
 					FSPath path(CS_UTF8,"\\");
 
 					LoadPath(netFs, path, 0, 0, RESET);
-					return;
+					return true;
 				} else {
-					if (_place.Pop())
-						Reread(true);
-					return;
+					if ( _place.Pop() )
+					{
+						Reread( true );
+					}
+					return false;
 				}
 			}
 		}
@@ -1416,9 +1418,11 @@ void PanelWin::DirUp()
 	
 	if (p.Count()<=1)
 	{
-		if (_place.Pop())
-			Reread(true);
-		return;
+		if ( _place.Pop() )
+		{
+			Reread( true );
+		}
+		return false;
 	}
 	
 	FSString *s = p.GetItem(p.Count()-1);
@@ -1426,6 +1430,8 @@ void PanelWin::DirUp()
 	if (s) item = *s;
 	p.Pop();
 	LoadPath(GetFSPtr(), p, s ? &item : 0, 0, RESET);
+
+	return true;
 }
 
 void PanelWin::DirEnter()

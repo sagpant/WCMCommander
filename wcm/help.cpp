@@ -25,7 +25,7 @@ using namespace wal;
 // Microsoft Visual C++
 #ifdef _MSC_VER
 #  define PLATFORM_MSVC
-#define __COMPILER_VER__ "Microsoft Visual C++" _MSC_VER
+#define __COMPILER_VER__ "Microsoft Visual C++"
 #endif
 
 #if defined(_WIN64)

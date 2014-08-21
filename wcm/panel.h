@@ -239,7 +239,8 @@ public:
 	const FSNode* Get(int n){ return _list.Get(n); }
 	
 	//dir movies
-	void DirUp();
+	/// returns true if the directory was changed
+	bool DirUp();
 	void DirEnter();
 	void DirRoot();
 	
