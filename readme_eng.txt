@@ -1,39 +1,31 @@
-				Wal commander 0.16.1
+         Wal commander 0.16.1 GitHub Edition
+    https://github.com/corporateshark/WalCommander
+=======================================================
 
+Dual pane file manager with
 
-	Dual pane file manager 
-
-	has:
-	internal terminal emulator
-	internal editow
-	text viewer
-	vfs: smb, ftp, sftp
+- internal terminal emulator
+- built-on editor
+- built-ontext viewer
+- virtual file systems: smb, ftp, sftp
 	
-	
-	need external libs (only):
-				libX11 
-				libsmbclient 
-				libssh2
-				libfreetype
-	
+=======================================================
 				
-install:
-		required libraries:
-			libX11-dev
-			libssh2-dev 
-			libsmbclient-dev
-			libfreetype-dev
+Install:
+
+	Required libraries:
+		libX11-dev
+			
+	Optional libaries:
+		libssh2-dev 
+		libsmbclient-dev
+		libfreetype-dev
+
+	Run once:
+		libtester/libconf.create
+
+Build:
 			
 		make clean
-
-		make
-		
+		make all
 		sudo make install
-		
-	ps:
-		libssh2-dev, libsmbclient-dev, libfreetype-dev - optional libs
-
-
-			
-			
-		
