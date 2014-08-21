@@ -257,6 +257,15 @@ NCWin::NCWin()
 	
 	this->AddLayout(&_lo);
 	
+	// apply position
+	
+	wal::crect Rect( wcmConfig.windowX, wcmConfig.windowY, wcmConfig.windowX+wcmConfig.windowWidth, wcmConfig.windowY+wcmConfig.windowHeight );
+	
+	if ( Rect.Width() > 0 && Rect.Height() > 0 )
+	{
+		NCDialogParent::Move( Rect, true );
+	}
+	
 	// apply saved panel paths
 	
 	FSPath path;
@@ -267,7 +276,7 @@ NCWin::NCWin()
 	int cs = CS_UNICODE;
 #else
 	int cs = sys_charset_id;
-#endif;
+#endif
 	path.Set( cs, wcmConfig.leftPanelPath.ptr( ) );
 	_leftPanel.LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
 

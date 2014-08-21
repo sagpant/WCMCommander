@@ -54,6 +54,11 @@ struct WcmConfig {
 	
 	int viewColorMode;
 	
+	int windowX;
+	int windowY;
+	int windowWidth;
+	int windowHeight;
+	
 	//fonts
 	carray<char> panelFontUri;
 	carray<char> viewerFontUri;

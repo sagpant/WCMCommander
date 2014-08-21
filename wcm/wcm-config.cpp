@@ -605,6 +605,11 @@ WcmConfig::WcmConfig()
 	MapStr(sectionFonts, "helphead_font",	&helpHeadFontUri);
 
 	MapInt(sectionViewer,  "color_mode",	&viewColorMode, viewColorMode);
+	
+	MapInt(sectionSystem,  "windowX",      &windowX,      windowX);
+	MapInt(sectionSystem,  "windowY",      &windowY,      windowY);
+	MapInt(sectionSystem,  "windowWidth",  &windowWidth,  windowWidth);
+	MapInt(sectionSystem,  "windowHeight", &windowHeight, windowHeight);
 }
 
 void WcmConfig::ImpCurrentFonts()
@@ -705,6 +710,11 @@ void WcmConfig::Save( NCWin* nc )
 	{
 		leftPanelPath = new_char_str( nc->GetLeftPanel()->GetPath().GetUtf8() );
 		rightPanelPath = new_char_str( nc->GetRightPanel()->GetPath().GetUtf8() );
+		crect Rect = nc->ScreenRect();
+		windowX = Rect.top;
+		windowY = Rect.left;
+		windowWidth = Rect.Width();
+		windowHeight = Rect.Height();
 	}
 	
 #ifdef _WIN32
