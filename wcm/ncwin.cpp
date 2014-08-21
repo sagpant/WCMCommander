@@ -946,7 +946,7 @@ void NCWin::CreateDirectory()
 		
 		FSPtr checkFS[2];
 		checkFS[0] = _panel->GetFSPtr();
-		checkFS[1] = _panel == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
+		checkFS[1] = GetOtherPanel()->GetFSPtr();
 								
 		FSPath path = _panel->GetPath();
 		FSPtr fs = ParzeURI(dir.ptr(), path, checkFS, 2);	
@@ -1046,7 +1046,7 @@ void NCWin::Edit(bool enterFileName)
 			
 			savedUri = new_unicode_str(uri.ptr());
 			
-			FSPtr cFs[2]={fs, _panel == &_leftPanel ?  _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr() };
+			FSPtr cFs[2]={fs, GetOtherPanel()->GetFSPtr() };
 
 			fs = ParzeURI(uri.ptr(), path, cFs, 2);
 			if (!fs.Ptr()) return;
@@ -1206,17 +1206,10 @@ void NCWin::Copy(bool shift)
 	cptr<FSList> list = _panel->GetSelectedList();
 	if (!list.ptr() || list->Count()<=0) return;
 	
-	FSPtr destFs;
-	FSPath destPath;
-	if (_panel == &_leftPanel) {
-		destFs = _rightPanel.GetFS();
-		destPath = _rightPanel.GetPath();
-	} else {
-		destFs = _leftPanel.GetFS();
-		destPath = _leftPanel.GetPath();
-	}
+	FSPtr destFs = GetOtherPanel()->GetFS();
+	FSPath destPath = GetOtherPanel()->GetPath();
 
-	FSString uri = (_panel == &_leftPanel) ? _rightPanel.UriOfDir() : _leftPanel.UriOfDir();
+	FSString uri = GetOtherPanel()->UriOfDir();
 	
 	carray<unicode_t> str =  InputStringDialog(this, utf8_to_unicode(_LT("Copy")).ptr(), 
 		shift ? _panel->GetCurrentFileName() : uri.GetUnicode());
@@ -1231,7 +1224,7 @@ void NCWin::Copy(bool shift)
 	{
 		FSPtr checkFS[2];
 		checkFS[0] = _panel->GetFSPtr();
-		checkFS[1] = _panel == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
+		checkFS[1] = GetOtherPanel()->GetFSPtr();
 		
 		destPath = srcPath;
 		destFs = ParzeURI(str.ptr(), destPath, checkFS, 2);
@@ -1262,17 +1255,10 @@ void NCWin::Move(bool shift)
 	cptr<FSList> list = _panel->GetSelectedList();
 	if (!list.ptr() || list->Count() <= 0) return;
 	
-	FSPtr destFs;
-	FSPath destPath;
-	if (_panel == &_leftPanel) {
-		destFs = _rightPanel.GetFS();
-		destPath = _rightPanel.GetPath();
-	} else {
-		destFs = _leftPanel.GetFS();
-		destPath = _leftPanel.GetPath();
-	}
+	FSPtr destFs = GetOtherPanel()->GetFS();
+	FSPath destPath = GetOtherPanel()->GetPath();
 
-	FSString uri = (_panel == &_leftPanel) ? _rightPanel.UriOfDir() : _leftPanel.UriOfDir();
+	FSString uri = GetOtherPanel()->UriOfDir();
 	
 	carray<unicode_t> str =  InputStringDialog(this, utf8_to_unicode(_LT("Move")).ptr(), 
 		shift ? _panel->GetCurrentFileName() : uri.GetUnicode());
@@ -1287,7 +1273,7 @@ void NCWin::Move(bool shift)
 	{
 		FSPtr checkFS[2];
 		checkFS[0] = _panel->GetFSPtr();
-		checkFS[1] = _panel == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
+		checkFS[1] = GetOtherPanel()->GetFSPtr();
 
 		destPath = srcPath;
 		destFs = ParzeURI(str.ptr(), destPath, checkFS, 2);
@@ -1318,14 +1304,8 @@ void NCWin::OnOffShl()
 void NCWin::PanelEqual()
 {
 	if (_mode != PANEL) return;
-	PanelWin *a, *b;
-	if (_panel == &_leftPanel) { 
-		a = &_leftPanel; 
-		b = &_rightPanel; 
-	} else { 
-		b = &_leftPanel; 
-		a = &_rightPanel; 
-	}
+	PanelWin *a = _panel;
+	PanelWin *b = GetOtherPanel();
 	b->LoadPath(a->GetFSPtr(), a->GetPath(), 0, 0, PanelWin::SET);
 }
 
@@ -1386,7 +1366,7 @@ bool NCWin::EditSave( bool saveAs)
 			
 			savedUri = new_unicode_str(uri.ptr());
 			
-			FSPtr cFs[2]={fs, _panel == &_leftPanel ?  _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr() };
+			FSPtr cFs[2]={fs, GetOtherPanel()->GetFSPtr() };
 
 			fs = ParzeURI(uri.ptr(), path, cFs, 2);
 			if (!fs.Ptr()) return false;
@@ -1561,7 +1541,7 @@ void NCWin::Tab(bool forceShellTab)
 	if (_mode != PANEL) return;
 	if (_panelVisible && !forceShellTab)
 	{
-		_panel =  (_panel == &_leftPanel) ? &_rightPanel : &_leftPanel ;
+		_panel =  GetOtherPanel();
 		_leftPanel.Invalidate();
 		_rightPanel.Invalidate();
 	} else {
@@ -1877,7 +1857,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 							
 							FSPtr checkFS[2];
 							checkFS[0] = _panel->GetFSPtr();
-							checkFS[1] = _panel == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
+							checkFS[1] = GetOtherPanel()->GetFSPtr();
 								
 							FSPath path = _panel->GetPath();
 							
