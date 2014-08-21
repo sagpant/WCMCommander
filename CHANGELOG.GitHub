@@ -5,11 +5,11 @@
 	Default font is LiberationMono-Regular 14pt
 	Default tab size is 3
 	Case sensitive sorting is disabled by default
-	Fast past selection on the other panel
+	Fast path selection on the other panel
 	Ctrl+Insert copies the current file name to the clipboard
 	Ctrl+Enter on .. pastes the current path into the command line
 	ESC key clears the command line before toggling the panels
 	Don't break Alt+... panel search on Shift, Alt, and Ctrl
-	Enter directories on Ctrl+PgDown 
+	Enter directories via Ctrl+PgDown 
 	Enable BACKSPACE key to go up dir (configurable, off by default)
 	Minor bugfixes
