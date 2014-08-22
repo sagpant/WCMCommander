@@ -22,7 +22,9 @@ Install:
 		libfreetype-dev
 
 	Run once:
-		libtester/libconf.create
+		cd libtester
+		./libconf.create
+		cd ..
 
 Build:
 			
