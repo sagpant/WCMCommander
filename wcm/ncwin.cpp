@@ -1750,21 +1750,33 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 
 		case FC(VK_E, KM_CTRL): 
 		case VK_UP: _edit.SetText(_history.Prev()); break;
-				
 		case VK_INSERT:	_panel->KeyIns(); break;
 		case FC(VK_INSERT, KM_CTRL):
 			{
-				const unicode_t *p = GetCurrentFileName();
-				if (p)
+				ClipboardText ct;
+				if ( _edit.IsVisible() && !_edit.IsEmpty() )
 				{
-					ClipboardText ct;
-					ct.AppendUnicodeStr(p);
-					ClipboardSetText(this, ct);
+					// command line is not empty - copy it to clipboard
+					carray<unicode_t> txt = _edit.GetText();
+					const unicode_t *p = txt.ptr();
+					if (p)
+					{
+						ct.AppendUnicodeStr(p);
+						ClipboardSetText(this, ct);
+					}
+				}
+				else
+				{
+					const unicode_t *p = GetCurrentFileName();
+					if (p)
+					{
+						ct.AppendUnicodeStr(p);
+						ClipboardSetText(this, ct);
+					}
 				}
 
 				return true;
 			}
-
 		case VK_ESCAPE:
 			if (wcmConfig.systemEscPanel)
 			{
