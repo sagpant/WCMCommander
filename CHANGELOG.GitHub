@@ -10,7 +10,8 @@
 	Ctrl+Insert copies contents of the non-empty command line to the clipboard
 	Ctrl+Enter on .. pastes the current path into the command line
 	ESC key clears the command line before toggling the panels
-	Don't break Alt+... panel search on Shift, Alt, and Ctrl
+	ESC key cancels Alt+... panel search before toggling the panels
+	Don't cancel Alt+... panel search on Shift, Alt, and Ctrl
 	Enter directories via Ctrl+PgDown 
 	Enable BACKSPACE key to go up dir (configurable, off by default)
 	Minor bugfixes
