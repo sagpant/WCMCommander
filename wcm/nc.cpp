@@ -26,7 +26,7 @@
 
 cptr<wal::GC> defaultGC;
 
-const char *appName = "Wal Commander";
+const char *appName = "Wal Commander GitHub Edition";
 
 cfont* (*OldSysGetFont)(Win *w, int id)=0;
 cfont* MSysGetFont(Win *w, int id)
