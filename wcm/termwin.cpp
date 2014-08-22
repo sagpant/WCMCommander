@@ -526,7 +526,7 @@ void TerminalWin::DrawRow(wal::GC &gc, int r, int first, int last)
 	int y = (rows - r  -1) * cH;
 	int x = first * cW;
 
-	ASSERT(r>=0 && r<MAX_TERM_ROWS);
+	ASSERT(r>=0);
 	TermChar *p =  screen.Get(r);
 
 	ScreenMarker m = screen.marker;
