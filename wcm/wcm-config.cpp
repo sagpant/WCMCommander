@@ -584,8 +584,15 @@ WcmConfig::WcmConfig()
 	MapInt(sectionPanel,  "color_mode",		&panelColorMode, panelColorMode);
 	MapInt(sectionPanel,  "mode_left",		&panelModeLeft, panelModeLeft);
 	MapInt(sectionPanel,  "mode_right",		&panelModeRight, panelModeRight);
-	MapStr(sectionPanel,  "left_panel_path",&leftPanelPath);
-	MapStr(sectionPanel,  "right_panel_path",&rightPanelPath);
+
+#ifdef _WIN32
+	char* defPanelPath="C:\\";
+#else
+	char* defPanelPath="/";
+#endif
+
+	MapStr(sectionPanel,  "left_panel_path",&leftPanelPath,defPanelPath);
+	MapStr(sectionPanel,  "right_panel_path",&rightPanelPath,defPanelPath);
 
 	MapBool(sectionEditor, "save_file_position",		&editSavePos, editSavePos);
 	MapBool(sectionEditor, "auto_ident",	&editAutoIdent, editAutoIdent);
