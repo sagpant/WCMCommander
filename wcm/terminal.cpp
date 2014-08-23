@@ -30,7 +30,7 @@ TerminalStream::TerminalStream()
 
 	char slaveName[0x100];
 
-	_masterFd = open(masterName, O_RDWR | O_NDELAY);
+        _masterFd = posix_openpt(O_RDWR);
 
 	if (_masterFd >= 0) 
 	{

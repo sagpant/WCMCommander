@@ -10,6 +10,7 @@
 #include <sys/times.h>
 #include <unistd.h>
 #include <string.h>
+#include <locale.h>
 
 #ifdef USEFREETYPE
 #include <ft2build.h>

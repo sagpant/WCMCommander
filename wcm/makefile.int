@@ -1,5 +1,5 @@
 
-CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE)
+CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
 #CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -I wal -I swl -pthread $(CFLAGS_FREETYPE) #--pedantic -Wall
 
 include makelib.mk
