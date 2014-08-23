@@ -31,3 +31,6 @@ wcm/libtester/libsmb40test
 #Code::Blocks IDE files
 wcm/*.depend
 wcm/*.layout
+
+Debug/
+Release/
