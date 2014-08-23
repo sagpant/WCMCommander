@@ -13,6 +13,7 @@
 #include "panel.h"
 
 #include <signal.h>
+#include <locale.h>
 #include "ext-app.h"
 #include "wcm-config.h"
 #include "color-style.h"

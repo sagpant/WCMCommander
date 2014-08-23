@@ -27,6 +27,7 @@ wcm/wcm
 wcm/libtester/libfreetype_test
 wcm/libtester/libssh2test
 wcm/libtester/libsmb40test
+wcm/libtester/libsmbtest
 
 #Code::Blocks IDE files
 wcm/*.depend
