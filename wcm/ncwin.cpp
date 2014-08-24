@@ -1649,6 +1649,17 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 			return true;
 		}
 
+		if (pEvent->Key() == VK_U && (pEvent->Mod() & KM_CTRL))
+		{
+			FSPath LeftPath = _leftPanel.GetPath();
+			FSPath RightPath = _rightPanel.GetPath();
+			FSPtr LeftFS = _leftPanel.GetFSPtr();
+			FSPtr RightFS = _rightPanel.GetFSPtr();
+			_leftPanel.LoadPath( RightFS, RightPath, 0, 0, PanelWin::SET );
+			_rightPanel.LoadPath( LeftFS, LeftPath, 0, 0, PanelWin::SET );
+			return true;
+		}
+
 		if (alt && !shift && !ctrl) 
 		{
 			wchar_t c = pEvent->Char();
