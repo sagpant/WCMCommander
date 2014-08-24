@@ -159,6 +159,7 @@ private:
 	
 	void Check();
 	void DrawItem(wal::GC &gc,  int n);
+	void DrawVerticalSplitters(wal::GC &gc, const crect& rect);
 	void DrawFooter(wal::GC &gc);
 	void RedrawList(wal::GC &gc);
 

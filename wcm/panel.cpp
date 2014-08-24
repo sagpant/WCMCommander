@@ -653,6 +653,54 @@ static int uiHidden = GetUiID("hidden");
 static int uiSelected = GetUiID("selected");
 //static int uiLineColor = GetUiID("line-color");
 
+void PanelWin::DrawVerticalSplitters( wal::GC &gc, const crect& rect )
+{
+	UiCondList ucl;
+
+	if (*_viewMode == FULL_ST)
+	{
+		int width = rect.Width();
+
+		int sizeW = sizeWidth*_letterSize[0].x;
+		int timeW = timeWidth*_letterSize[0].x;
+
+		int sizeX = (width - sizeW - timeW) < minFileNameWidth*_letterSize[0].x ? minFileNameWidth*_letterSize[0].x : width - sizeW - timeW;
+		sizeX += rect.left;
+		int timeX = sizeX + sizeW;
+
+		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
+		gc.MoveTo( sizeX, rect.top );
+		gc.LineTo( sizeX, rect.bottom );
+		gc.MoveTo( timeX, rect.top );
+		gc.LineTo( timeX, rect.bottom );
+	}
+
+	if (*_viewMode == FULL_ACCESS)
+	{
+		int width = rect.Width();
+
+		int accessW = accessWidth*_letterSize[0].x;
+		int userW = userWidth*_letterSize[0].x;
+		int groupW = groupWidth*_letterSize[0].x;
+
+		int accessX = (width - accessW - userW - groupW) < minFileNameWidth*_letterSize[0].x ? minFileNameWidth*_letterSize[0].x : width - accessW - userW - groupW;
+		accessX += rect.left;
+		int userX = accessX + accessW;
+		int groupX = userX + userW;
+
+		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
+
+		gc.MoveTo(accessX, rect.top);
+		gc.LineTo(accessX, rect.bottom);
+
+		gc.MoveTo(userX, rect.top);
+		gc.LineTo(userX, rect.bottom);
+
+		gc.MoveTo(groupX, rect.top);
+		gc.LineTo(groupX, rect.bottom);
+	}
+}
+
 void PanelWin::DrawItem(wal::GC &gc,  int n)
 {
 	bool active = IsSelectedPanel() && n == _current;
@@ -690,10 +738,17 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	gc.SetFillColor(color_bg);
 	
 	crect rect = _rectList[pos];
-	
-	gc.SetClipRgn(&rect);
-	gc.FillRect(rect);
-	
+
+	gc.SetClipRgn( &rect );
+	gc.FillRect( rect );
+	gc.SetClipRgn( &_centerRect );
+	crect frect = _centerRect;
+	frect.left = rect.left;
+	frect.right = rect.right;
+	frect.bottom = ClientRect().bottom;
+	DrawVerticalSplitters( gc, frect );
+	gc.SetClipRgn( &rect );
+
 	if (n<0 || n>=_list.Count()) return;
 
 	if (active) 
@@ -757,7 +812,7 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	
 	if (*_viewMode == FULL_ST) 
 	{
-		FSNode *p = _list.Get(n);
+//		FSNode *p = _list.Get(n);
 		
 		int width = rect.Width();
 		
@@ -769,11 +824,12 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		int timeX = sizeX + sizeW;
 		
 		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
-		gc.MoveTo(sizeX, rect.top);
-		gc.LineTo(sizeX, rect.bottom);
-		
-		gc.MoveTo(timeX, rect.top);
-		gc.LineTo(timeX, rect.bottom);
+/*
+		gc.MoveTo( sizeX, rect.top );
+		gc.LineTo( sizeX, rect.bottom );
+		gc.MoveTo( timeX, rect.top );
+		gc.LineTo( timeX, rect.bottom );
+*/
 				
 		if (p) 
 		{
@@ -807,9 +863,9 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		accessX += rect.left;
 		int userX = accessX + accessW;
 		int groupX = userX + userW;
-		
+
 		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
-		
+/*				
 		gc.MoveTo(accessX, rect.top);
 		gc.LineTo(accessX, rect.bottom);
 		
@@ -818,7 +874,7 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		
 		gc.MoveTo(groupX, rect.top);
 		gc.LineTo(groupX, rect.bottom);
-
+*/
 		if (p) 
 		{
 			unicode_t ubuf[64];
@@ -844,7 +900,6 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		gc.TextOut(x, y, _list.GetFileName(n));
 	} else 
 		gc.TextOutF(x, y, _list.GetFileName(n));
-
 }
 
 void PanelWin::SetCurrent(int n)
@@ -1138,8 +1193,10 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 	gc.Set(GetFont());
 
 	int i;
-	for (i = 0; i<_rectList.count(); i++)
-		if (paintRect.Cross(_rectList[i])) DrawItem(gc, i + _first);
+	for ( i = 0; i < _rectList.count(); i++ )
+	{
+		if ( paintRect.Cross( _rectList[i] ) ) DrawItem( gc, i + _first );
+	}
 
 	gc.SetClipRgn(&r1);
 
@@ -1148,7 +1205,6 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 		if (paintRect.Cross(_emptyRectList[i]))
 			gc.FillRect(_emptyRectList[i]);
 
-	
 	for(i=0; i<_vLineRectList.count(); i++)
 		if (paintRect.Cross(_vLineRectList[i]))
 		{
@@ -1202,7 +1258,9 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 	tRect.top-=1;
 	gc.SetFillColor(UiGetColor(uiLineColor, 0, &ucl, 0xFF));
 	gc.FillRect(tRect);
-	
+
+	DrawVerticalSplitters( gc, _centerRect );
+
 	if (paintRect.Cross(_footRect))
 		DrawFooter(gc);	
 }
