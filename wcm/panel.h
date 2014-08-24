@@ -209,6 +209,7 @@ public:
 	
 	void Reread(bool resetCurrent = false);
 
+	int GetXMargin() const;
 	
 //	void KeyUp(){ SetCurrent(_current-1); };
 //	void KeyDown(){ SetCurrent(_current+1); };

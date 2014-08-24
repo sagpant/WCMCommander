@@ -701,6 +701,21 @@ void PanelWin::DrawVerticalSplitters( wal::GC &gc, const crect& rect )
 	}
 }
 
+int PanelWin::GetXMargin() const
+{
+	int x = 0;
+
+	if (wcmConfig.panelShowIcons) {
+		x += PANEL_ICON_SIZE;
+	} else {
+		x += dirPrefixW;
+	}
+	
+	x += 4;
+
+	return x;
+}
+
 void PanelWin::DrawItem(wal::GC &gc,  int n)
 {
 	bool active = IsSelectedPanel() && n == _current;
@@ -794,13 +809,7 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	} else {
 	}
 	
-	if (wcmConfig.panelShowIcons) {
-		x += PANEL_ICON_SIZE;
-	} else {
-		x += dirPrefixW;
-	}
-	
-	x += 4;
+	x += GetXMargin();
 	
 	if (isSelected)
 	{
@@ -1244,12 +1253,38 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 			cpoint p = gc.GetTextExtents(uPath);
 			int x = _headRect.left+2;
 
-			if (p.x > _headRect.Width()) 
-				x -= p.x-_headRect.Width();
+			const int LeftXMargin  = 7;
+			const int RightXMargin = LeftXMargin + 3;
+			
+			if ( p.x > _headRect.Width( ) - GetXMargin( ) - RightXMargin )
+			{
+				x -= p.x - _headRect.Width( ) + GetXMargin( ) + RightXMargin;
+			}
+			
+			int y = _headRect.top + 2;
 
 			gc.SetTextColor(UiGetColor(uiColor, uiHeader, &ucl, 0xFFFF));
 			gc.Set(GetFont(1));
-			gc.TextOutF(x, _headRect.top+2, uPath);
+			// magic constant comes from DrawItem() value of 'x'
+			gc.TextOutF( x + GetXMargin( ) + LeftXMargin, y, uPath );
+			
+			// draw sorting order mark
+			x = _headRect.left + 2;
+
+			bool asc = _list.AscSort();
+
+			crect SRect = _headRect;
+			SRect.right = x + GetXMargin() + LeftXMargin;
+			gc.FillRect( SRect );
+
+			switch ( _list.SortMode() )
+			{
+			case PanelList::SORT_NONE:  gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "u" : "U" ) ).ptr() ); break;
+			case PanelList::SORT_NAME:  gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "n" : "N" ) ).ptr() ); break;
+			case PanelList::SORT_EXT:   gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "x" : "X" ) ).ptr() ); break;
+			case PanelList::SORT_SIZE:  gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "S" : "s" ) ).ptr() ); break;
+			case PanelList::SORT_MTIME: gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "w" : "W" ) ).ptr() ); break;
+			};
 		}
 	}
 	
