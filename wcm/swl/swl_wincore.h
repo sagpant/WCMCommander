@@ -95,17 +95,18 @@ void AppExit();
 
 #ifdef _WIN32
 enum Keyboard {
+	VK_NUMPAD_CENTER = 0x0C,
 
 #ifndef VK_SLASH
-VK_SLASH      =   0xBF,
+	VK_SLASH      =   0xBF,
 #endif
 
 #ifndef VK_BACKSLASH
-VK_BACKSLASH  =   0xDC,    
-#endif 
+	VK_BACKSLASH  =   0xDC,
+#endif
 
 #ifndef VK_GRAVE
-VK_GRAVE = 0xC0,
+	VK_GRAVE = 0xC0,
 #endif
 	VK_0 = 0x30,
 	VK_1 = 0x31,

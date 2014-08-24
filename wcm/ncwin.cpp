@@ -1961,6 +1961,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case FC( VK_F4, KM_SHIFT): Edit(true); break;
 		case FC( VK_F9, KM_SHIFT): SaveSetup(); break;
 		
+		case VK_NUMPAD_CENTER:
 		case VK_F3: View(); break;
 		case VK_F4: Edit(false); break;
 		case VK_F5: Copy(false); break;
