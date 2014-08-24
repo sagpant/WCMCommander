@@ -246,13 +246,22 @@ static LRESULT CALLBACK WProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		case WM_XBUTTONDOWN:	return MouseEvent(EV_MOUSE_PRESS,	(wParam & XBUTTON1) ? MB_X1 : MB_X2, win, wParam, lParam);
 		case WM_XBUTTONUP:		return MouseEvent(EV_MOUSE_RELEASE,	(wParam & XBUTTON1) ? MB_X1 : MB_X2, win, wParam, lParam);
 		case WM_XBUTTONDBLCLK :	return MouseEvent(EV_MOUSE_DOUBLE,	(wParam & XBUTTON1) ? MB_X1 : MB_X2, win, wParam, lParam);
-/*???
 		case WM_MOUSEWHEEL: 
 			{
-				int delta = (wParam>>8)&0xFF;
-				return MouseEvent(EV_MOUSE_PRESS,	MB_X1, win, wParam, lParam);
+				if ( static_cast< int >( wParam ) > 0 )
+				{
+					// wheel up
+					KeyEvent( EV_KEYDOWN, win, VK_UP, 0 );
+					KeyEvent( EV_KEYUP,   win, VK_UP, 0 );
+				}
+				else
+				{
+					// wheel down
+					KeyEvent( EV_KEYDOWN, win, VK_DOWN, 0 );
+					KeyEvent( EV_KEYUP, win, VK_DOWN, 0 );
+				}
+				return true;
 			}
-*/
 		case WM_SYSKEYDOWN:
 		case WM_KEYDOWN: 
 			if (KeyEvent(EV_KEYDOWN, win, wParam, lParam)) 
