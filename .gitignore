@@ -21,6 +21,7 @@ wcm/Debug/
 wcm/Release/
 ipch/
 
+wcm/libconf_ux.h
 wcm/info.txt
 wcm/makelib.mk
 wcm/wcm
