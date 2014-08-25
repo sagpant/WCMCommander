@@ -88,6 +88,11 @@ void NCWin::SetToolbarView()
 int uiClassNCWin = GetUiID("NCWin");
 int uiCommandLine = GetUiID("command-line");
 
+int NCCommandLine::UiGetClassId()
+{
+	return uiCommandLine;
+}
+
 NCWin::NCWin()
 :	NCDialogParent(WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect),
 	_lo(5,1),

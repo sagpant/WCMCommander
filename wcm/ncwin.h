@@ -168,6 +168,14 @@ public:
 	virtual void OnChangeStyles();
 };
 
+class NCCommandLine: public EditLine
+{
+public:
+	NCCommandLine( int nId, Win *parent, const crect *rect, const unicode_t *txt, int chars = 10, bool frame = true )
+		: EditLine( nId, parent, rect, txt, chars, frame )
+	{}
+	int UiGetClassId();
+};
 
 class NCWin: public NCDialogParent {
 	friend class PanelWin;
@@ -180,7 +188,7 @@ private:
 	PanelWin _leftPanel,
 		 _rightPanel;
 
-	EditLine _edit;
+	NCCommandLine _edit;
 #ifdef _WIN32
 	W32Cons
 #else
