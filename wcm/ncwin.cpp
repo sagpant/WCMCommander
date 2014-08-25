@@ -1190,6 +1190,12 @@ void NCWin::Delete()
 		ex->destroy();
 	}
 
+	if ( _panel->GetSelectedCounter().count == 0 )
+	{
+		// there are no multiple items selected in the panel
+		_panel->KeyDown(false, 0);
+	}
+
 	_leftPanel.Reread();
 	_rightPanel.Reread();
 }
