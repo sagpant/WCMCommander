@@ -734,6 +734,7 @@ public:
 	void Set(cfont *font);
 
 	void FillRect(crect r);
+	void FillRectXor(crect r);
 	void SetClipRgn(crect *r = 0);
 
 	void DrawIcon(int x, int y, cicon *ico);
