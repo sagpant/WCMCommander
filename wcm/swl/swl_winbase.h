@@ -6,9 +6,6 @@
 #ifndef WINBASE_H
 #define WINBASE_H
 
-#define CURSOR_W (16)
-#define CURSOR_H (5)
-
 namespace wal {
 
 extern int uiClassButton;
@@ -150,6 +147,7 @@ class EditLine: public Win {
 	bool passwordMode;
 	int first;
 	bool frame3d;
+	int charH, charW;
 	void DrawCursor(GC &gc);
 	bool CheckCursorPos(); //true - если нужна перерисовка
 	void ClipboardCopy();

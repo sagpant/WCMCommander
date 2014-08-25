@@ -187,6 +187,9 @@ void EditLine::OnChangeStyles()
 	gc.Set(GetFont());
 
 	cpoint ts = gc.GetTextExtents(ABCString);
+	charW = ts.x /ABCStringLen;
+	charH = ts.y;
+
 	int w = (ts.x /ABCStringLen) * _chars;
 
 	int h = ts.y + 2;
@@ -233,7 +236,7 @@ void EditLine::DrawCursor(GC &gc)
 	if (frame3d) cr.Dec(4);
 	
 	int x = cr.left;
-	int y = cr.bottom-CURSOR_H;
+	int y = cr.bottom-charH/5;
 	
 	gc.Set(GetFont());
 	
@@ -261,8 +264,8 @@ void EditLine::DrawCursor(GC &gc)
 	if (cursor < text.Count()) 
 		csize = gc.GetTextExtents(text.Ptr()+cursor, 1);
 	
-	if (csize.x < CURSOR_W)
-		csize.x = CURSOR_W;
+	if (csize.x < charW)
+		csize.x = charW;
 		
 	gc.SetFillColor(bColor);	
 	gc.FillRect(crect(x, y, x + csize.x,cr.bottom));
@@ -276,7 +279,7 @@ void EditLine::DrawCursor(GC &gc)
 	if (cursorVisible) 
 	{
 		gc.SetFillColor(fColor);
-		gc.FillRect(crect(x,y,x+CURSOR_W,cr.bottom));
+		gc.FillRect(crect(x,y,x+charW,cr.bottom));
 	}
 }
 

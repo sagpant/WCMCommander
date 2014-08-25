@@ -1677,7 +1677,7 @@ void EditWin::Paint(wal::GC &gc, const crect &paintRect)
 
 crect EditWin::GetCursorRect(int x, int y) const
 {
-	return crect(x, y+charH-CURSOR_H, x+charW, y+charH);
+	return crect(x, y+charH-charH/5, x+charW, y+charH);
 }
 
 void EditWin::SetPath(FSPtr fs, FSPath &p)
