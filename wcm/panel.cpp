@@ -123,6 +123,8 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 	wchar_t c = pEvent->Char();
 	if (c && c>=0x20) return false;
 	
+//	printf( "Key = %x\n", pEvent->Key() );
+
 	switch (pEvent->Key()) {
 		case VK_LCONTROL:
 		case VK_LSHIFT:
@@ -132,6 +134,8 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 		case VK_RMENU:
 		case VK_BACK: 
 		case VK_DELETE:
+		// this comes from 0xfe08 XK_ISO_Next_Group, workaround for https://github.com/corporateshark/WalCommander/issues/22
+		case 0xfe08:
 			return false;
 		case VK_ESCAPE:
 			// end search and kill the ESC key
