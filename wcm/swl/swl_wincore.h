@@ -153,6 +153,8 @@ enum Keyboard {
 
 #ifndef _WIN32
 enum Keyboard {
+	VK_NUMPAD_CENTER = XK_KP_Begin,
+
 	VK_ESCAPE = XK_Escape,
 	VK_TAB = XK_Tab,
 	VK_RETURN = XK_Return,
