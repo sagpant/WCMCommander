@@ -151,18 +151,21 @@ void Button::Paint(GC &gc, const crect &paintRect)
 	DrawBorder(gc, rect, ColorTone(colorBg, -200));
 	rect.Dec();
 
+	gc.SetFillColor(colorBg);
+	gc.FillRect(rect);
+
 	if (pressed)
 	{
 #if USE_3D_BUTTONS
 		Draw3DButtonW2(gc, rect, colorBg, false);
-		rect.Dec();
-		rect.Dec();
 #endif
+		rect.Dec();
+		rect.Dec();
 	} else {
-#if USE_3D_BUTTONS
+ #if USE_3D_BUTTONS
 		Draw3DButtonW2(gc, rect, colorBg, true);
-		rect.Dec();
-#endif
+ #endif
+ 		rect.Dec();
 		if (InFocus()) {
 			DrawBorder(gc, rect, /*GetColor(IC_FOCUS_MARK)*/ UiGetColor(uiFocusFrameColor, 0, 0, 0)); 
 		}
@@ -171,8 +174,6 @@ void Button::Paint(GC &gc, const crect &paintRect)
 #endif
 	}
 
-	gc.SetFillColor(colorBg);
-	gc.FillRect(rect);
 	gc.SetTextColor(/*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ UiGetColor(uiColor, 0, 0, 0) );
 	gc.Set(GetFont());
 	cpoint tsize = gc.GetTextExtents(text.ptr());

@@ -911,7 +911,7 @@ void EditWin::Cut()
 	DelMarked();
 }
 
-void EditWin::Del() //!Undo
+void EditWin::Del(bool DeleteWord) //!Undo
 {
 	ASSERT(cursor.line>=0 && cursor.line<text.Count());
 	ASSERT(cursor.pos>=0 && cursor.pos<=text.Get(cursor.line).Len());
@@ -931,13 +931,41 @@ void EditWin::Del() //!Undo
 		
 			char *s = str.Get() + cursor.pos;
 			char *end = str.Get() + str.Len();
-			//bool tab;
-			char *t = charset->GetNext(s, end);
-			int delCount = t ? t-s : str.len-cursor.pos;
 
-			undoBlock->DelText(cursor.line, cursor.pos, s, delCount);
+			int totalDelCount = 0;
 
-			str.Delete(cursor.pos,delCount);
+			if (DeleteWord)
+			{
+				EditPoint oldcursor = cursor;
+				EditPoint p = cursor;
+				if (p.line < 0 || p.line>=text.Count()) return;
+				if (p.pos<0 || p.pos > text.Get(p.line).Len()) return;
+
+				EditString &str = text.Get(p.line);
+				unicode_t c = str.Len() > 0 ? charset->GetChar(str.Get() + p.pos, str.Get() + str.Len()) : ' ';
+
+				int group = GetCharGroup( c );
+
+				while (StepRight(&p, &c)) {
+					cursor = p;
+					if (GetCharGroup(c) != group) break;
+				}
+
+				totalDelCount = cursor.pos-oldcursor.pos;
+
+				cursor = oldcursor;
+			}
+			else
+			{
+				char *t = charset->GetNext(s, end);
+				int delCount = t ? t-s : str.len-cursor.pos;
+
+				totalDelCount += delCount;
+			}
+
+			undoBlock->DelText(cursor.line, cursor.pos, s, totalDelCount);
+
+			str.Delete(cursor.pos,totalDelCount);
 		}
 		else 
 		{
@@ -1748,8 +1776,9 @@ bool EditWin::EventKey(cevent_key* pEvent)
 		case VK_PRIOR:	if (ctrl) CtrlPageUp(shift);	else PageUp(shift); break;
 		
 		case VK_DELETE: 
+				if (ctrl) { Del(true); return true; }
 				if (shift){ Cut(); return true; }
-				Del(); 
+				Del(false);
 				break;
 				
 		case VK_BACK: 
