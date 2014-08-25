@@ -192,7 +192,7 @@ void EditWin::SetCursorPos(EditPoint p)
 	
 	CursorToScreen();
 	SendChanges();
-	Refresh(); 
+	Refresh();
 }
 
 void EditWin::CursorHome(bool mark)
@@ -201,11 +201,11 @@ void EditWin::CursorHome(bool mark)
 	if (cursor.pos>0)
 	{
 		cursor.pos=0;
-		CursorToScreen();
-		SendChanges();
-		if (!mark) marker = cursor;
-		Refresh(); 
 	}
+	CursorToScreen();
+	SendChanges();
+	if (!mark) marker = cursor;
+	Refresh();
 }
 
 void EditWin::CursorEnd(bool mark)
@@ -215,11 +215,11 @@ void EditWin::CursorEnd(bool mark)
 	if (cursor.pos < text.Get(cursor.line).Len())
 	{
 		cursor.pos=text.Get(cursor.line).Len();
-		CursorToScreen();
-		SendChanges();
-		if (!mark) marker = cursor;
-		Refresh(); 
 	}
+	CursorToScreen();
+	SendChanges();
+	if (!mark) marker = cursor;
+	Refresh();
 }
 
 void EditWin::CursorRight(bool mark)
