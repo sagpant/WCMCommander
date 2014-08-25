@@ -827,9 +827,10 @@ void GC::FillRect(crect r)
 void GC::FillRectXor(crect r)
 {
 	RECT rect={r.left, r.top, r.right, r.bottom};
-	::SetROP2(handle, R2_XORPEN);
-	::FillRect(handle, &rect, fillBrush);
-	::SetROP2(handle, R2_COPYPEN);
+	//int OldPen = ::SetROP2(handle, R2_XORPEN);
+	//::FillRect(handle, &rect, fillBrush);
+	::PatBlt( handle, r.left, r.top, r.Width(), r.Height(), PATINVERT );
+	//::SetROP2(handle, OldPen);
 };
 
 void GC::SetClipRgn(crect *r)
