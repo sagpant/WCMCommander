@@ -41,7 +41,7 @@ void EditWin::OnChangeStyles()
 	color_mark_text 	= UiGetColor(uiMarkColor, 0, 0, 0 );
 	color_mark_background = UiGetColor(uiMarkBackground, 0, 0, 0xFFFFFF );
 	color_ctrl 	= UiGetColor(uiColorCtrl, 0, 0, 0xFF0000 );
-	color_cursor 	= UiGetColor(uiColorCursor, 0, 0, 0xFFFF00 );
+	color_cursor 	= UiGetColor(uiColorCursor, 0, 0, 0x00FFFF );
 
 	wal::GC gc(this);
 	gc.Set(GetFont());
@@ -1586,9 +1586,8 @@ void EditWin::__DrawChanges()
 		{
 			int y = editRect.top + curR*charH;
 			int x = editRect.left + curC*charW;
-			crect rect(x, y, x+3, y+charH);
 			gc.SetFillColor(color_cursor/*0xFFFF00*/);
-			gc.FillRect(rect);
+			gc.FillRect( GetCursorRect(x, y) );
 		}
 		screen.prevCursor = screen.cursor;
 	}
@@ -1669,12 +1668,16 @@ void EditWin::Paint(wal::GC &gc, const crect &paintRect)
 		{
 			int y = editRect.top + curR*charH;
 			int x = editRect.left + curC*charW;
-			crect rect(x, y, x+3, y+charH);
 			gc.SetFillColor(color_cursor/*0xFFFF00*/);
-			gc.FillRect(rect);
+			gc.FillRect( GetCursorRect(x, y) );
 		}
 		screen.prevCursor = screen.cursor;
 	}
+}
+
+crect EditWin::GetCursorRect(int x, int y) const
+{
+	return crect(x, y+charH-CURSOR_H, x+charW, y+charH);
 }
 
 void EditWin::SetPath(FSPtr fs, FSPath &p)

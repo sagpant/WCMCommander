@@ -64,7 +64,7 @@ static char uiDefaultWcmRules[] =
 "Viewer { background: 0x800000; color:0xFFFFFF; ctrl-color:0xFF0000; "
 "	makr-color:	0x0; mark-background: 0xFFFFFF; line-color:0x00FFFF; "
 "	hid: 0xB00000; load-background:	0xD00000; load-color: 0xFF;}"
-"Editor { background: 0x800000; color:0xFFFFFF; mark-background: 0xFFFFFF; mark-color: 0; cursor-color: 0xFFFF00; "
+"Editor { background: 0x800000; color:0xFFFFFF; mark-background: 0xAAAA00; mark-color: 0; cursor-color: 0x00FFFF; "
 "	DEF:0xFFFFFF; KEYWORD:0x00FFFF; COMMENT:0xFF8080; STRING:0xFFFF00; PRE:0x00FF00; NUM:0xFFFF80; OPER:0x20FFFF; ATTN:0x0000FF; }"
 "StringWin { color: 0xFFFF00; background: 0; }"
 "EditorHeadWin, ViewerHeadWin { color: 0; background: 0xB0B000; prefix-color:0xFFFFFF; cs-color:0xFFFFFF;}"

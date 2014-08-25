@@ -6,6 +6,8 @@
 #ifndef WINBASE_H
 #define WINBASE_H
 
+#define CURSOR_W (16)
+#define CURSOR_H (5)
 
 namespace wal {
 

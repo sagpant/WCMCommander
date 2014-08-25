@@ -484,6 +484,8 @@ class EditWin : public Win {
 	void CursorUp(bool mark);
 	void PageDown(bool mark);
 	void PageUp(bool mark);
+
+	crect GetCursorRect(int x, int y) const;
 	
 	int GetCharGroup(unicode_t c){ return EditBuf::GetCharGroup(c); }
 	bool StepLeft(EditPoint *p, unicode_t *c);

@@ -223,9 +223,6 @@ bool EditLine::IsEmpty() const
 	return text.Count() == 0;
 }
 
-#define CURSOR_W (16)
-#define CURSOR_H (5)
-
 static unicode_t passwordSymbol='*';
 
 void EditLine::DrawCursor(GC &gc)
