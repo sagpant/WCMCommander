@@ -555,7 +555,7 @@ WcmConfig::WcmConfig()
 	panelModeRight(0),
 		
 	editSavePos(true),
-	editAutoIdent(true),
+	editAutoIdent(false),
 	editTabSize(3),
 	editColorMode(0),
 	editShl(true),

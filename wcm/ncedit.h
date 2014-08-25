@@ -506,7 +506,7 @@ class EditWin : public Win {
 	void Cut();
 	
 	void Del(bool DeleteWord);
-	void Backspace();
+	void Backspace(bool DeleteWord);
 	void InsChar(unicode_t ch);
 	void SetCharset(charset_struct *cs);
 	void DeleteLine();

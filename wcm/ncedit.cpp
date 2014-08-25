@@ -1004,11 +1004,11 @@ void EditWin::Del(bool DeleteWord) //!Undo
 
 }
 
-void EditWin::Backspace() //!Undo
+void EditWin::Backspace(bool DeleteWord) //!Undo
 {
 	ASSERT(cursor.line>=0 && cursor.line<text.Count());
 	ASSERT(cursor.pos>=0 && cursor.pos<=text.Get(cursor.line).Len());
-	
+
 	recomendedCursorCol = -1;
 
 	if (DelMarked())
@@ -1024,22 +1024,45 @@ void EditWin::Backspace() //!Undo
 		if (cursor.pos>0) 
 		{
 			SetChanged(cursor.line);
-			char *s = str.Get() + cursor.pos;
-			char *t = charset->GetPrev(s, str.Get());
 
-			if (t) 
-			{ 
-				undoBlock->DelText(cursor.line, t-str.Get(), t, s-t);
-				str.Delete(t-str.Get(), s-t); 
-				cursor.pos-=s-t; 
-			}
-			else 
-			{ 
-				undoBlock->DelText(cursor.line, 0, str.Get(), cursor.pos);
-				str.Delete(0, cursor.pos); 
-				cursor.pos=0; 
-			}
+			if (DeleteWord)
+			{
+				EditPoint oldcursor = cursor;
+				EditPoint p = cursor;
+				unicode_t c;
+				if (!StepLeft(&p,&c)) return;
 
+				int group = GetCharGroup(c);
+				cursor = p;
+				while (StepLeft(&p,&c) && GetCharGroup(c) == group) 
+					cursor = p;
+
+				int totalDelCount = oldcursor.pos-cursor.pos;
+
+				char *s = str.Get() + cursor.pos;
+
+				undoBlock->DelText(cursor.line, cursor.pos, s, totalDelCount);
+
+				str.Delete(cursor.pos, totalDelCount);
+			}
+			else
+			{
+				char *s = str.Get() + cursor.pos;
+				char *t = charset->GetPrev(s, str.Get());
+
+				if (t) 
+				{ 
+					undoBlock->DelText(cursor.line, t-str.Get(), t, s-t);
+					str.Delete(t-str.Get(), s-t); 
+					cursor.pos-=s-t; 
+				}
+				else 
+				{ 
+					undoBlock->DelText(cursor.line, 0, str.Get(), cursor.pos);
+					str.Delete(0, cursor.pos); 
+					cursor.pos=0; 
+				}
+			}
 		} else {
 			if (cursor.line > 0) 
 			{
@@ -1779,7 +1802,7 @@ bool EditWin::EventKey(cevent_key* pEvent)
 			if (alt)
 				Undo();
 			else
-				Backspace(); 
+				Backspace(ctrl); 
 			break;
 
 		case VK_NUMPAD_RETURN:
