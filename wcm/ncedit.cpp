@@ -1888,8 +1888,8 @@ void EditWin::EventTimer(int id)
 {
 	if ( id == 0 )
 	{
-		DrawCursor();
-
+		wal::GC gc( this );
+		DrawCursor(gc);
 		return;
 	}
 

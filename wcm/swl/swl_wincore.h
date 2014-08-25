@@ -98,7 +98,7 @@ void AppExit();
 #ifdef _WIN32
 enum Keyboard {
 	VK_NUMPAD_CENTER = 0x0C,
-	VK_NUMPAD_RETURN = VK_RETURN,
+	VK_NUMPAD_RETURN = 0xFFFF,
 
 #ifndef VK_SLASH
 	VK_SLASH      =   0xBF,
