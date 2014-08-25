@@ -1339,7 +1339,7 @@ void PanelWin::LoadPath(FSPtr fs, FSPath &paramPath, FSString *current, cptr<cst
 	FSCInfo info;
 	int err;
 
-	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;
+//	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;
 
 	try {
 		StopThread();
