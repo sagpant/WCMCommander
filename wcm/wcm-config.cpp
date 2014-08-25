@@ -11,7 +11,7 @@
 #include "bfile.h"
 
 #ifdef _WIN32
-#include "w32util.h"
+#	include "w32util.h"
 #endif
 
 WcmConfig wcmConfig;
@@ -586,9 +586,9 @@ WcmConfig::WcmConfig()
 	MapInt(sectionPanel,  "mode_right",		&panelModeRight, panelModeRight);
 
 #ifdef _WIN32
-	char* defPanelPath="C:\\";
+	const char* defPanelPath="C:\\";
 #else
-	char* defPanelPath="/";
+	const char* defPanelPath="/";
 #endif
 
 	MapStr(sectionPanel,  "left_panel_path",&leftPanelPath,defPanelPath);

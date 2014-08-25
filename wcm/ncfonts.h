@@ -1,6 +1,6 @@
 #ifndef NCFONTS_H
 #define NCFONTS_H
-#include <swl.h>
+#include "swl/swl.h"
 
 extern cptr<cfont> panelFont;
 extern cptr<cfont> viewerFont;
