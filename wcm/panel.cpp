@@ -623,12 +623,13 @@ void PanelWin::EventSize(cevent_size *pEvent)
 }
 
 
-static const int timeWidth = 21; //in characters
+static const int timeWidth =  9; //in characters
+static const int dateWidth = 12; //in characters
 static const int sizeWidth = 10;
 static const int minFileNameWidth = 7;
 
-static const int userWidth = 10;
-static const int groupWidth = 10;
+static const int userWidth = 16;
+static const int groupWidth = 16;
 static const int accessWidth= 13;
 
 
@@ -661,29 +662,42 @@ void PanelWin::DrawVerticalSplitters( wal::GC &gc, const crect& rect )
 	{
 		int width = rect.Width();
 
+		/*
+			|        fileW       |    sizeW    |   dateW   |  timeW  |
+		*/
+
+		int fileW = minFileNameWidth*_letterSize[0].x;
 		int sizeW = sizeWidth*_letterSize[0].x;
+		int dateW = dateWidth*_letterSize[0].x;		
 		int timeW = timeWidth*_letterSize[0].x;
 
-		int sizeX = (width - sizeW - timeW) < minFileNameWidth*_letterSize[0].x ? minFileNameWidth*_letterSize[0].x : width - sizeW - timeW;
+		int sizeX = (width - sizeW - dateW - timeW) < fileW ? fileW : width - sizeW - dateW -  timeW;
 		sizeX += rect.left;
-		int timeX = sizeX + sizeW;
+		int dateX = sizeX + sizeW;
+		int timeX = dateX + dateW;
 
 		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
+		
 		gc.MoveTo( sizeX, rect.top );
 		gc.LineTo( sizeX, rect.bottom );
+
 		gc.MoveTo( timeX, rect.top );
 		gc.LineTo( timeX, rect.bottom );
+
+		gc.MoveTo( dateX, rect.top );
+		gc.LineTo( dateX, rect.bottom );
 	}
 
 	if (*_viewMode == FULL_ACCESS)
 	{
 		int width = rect.Width();
 
+		int fileW = minFileNameWidth*_letterSize[0].x;
 		int accessW = accessWidth*_letterSize[0].x;
 		int userW = userWidth*_letterSize[0].x;
 		int groupW = groupWidth*_letterSize[0].x;
 
-		int accessX = (width - accessW - userW - groupW) < minFileNameWidth*_letterSize[0].x ? minFileNameWidth*_letterSize[0].x : width - accessW - userW - groupW;
+		int accessX = (width - accessW - userW - groupW) < fileW ? fileW : width - accessW - userW - groupW;
 		accessX += rect.left;
 		int userX = accessX + accessW;
 		int groupX = userX + userW;
@@ -826,21 +840,16 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		
 		int width = rect.Width();
 		
+		int fileW = minFileNameWidth*_letterSize[0].x;
 		int sizeW = sizeWidth*_letterSize[0].x;
+		int dateW = dateWidth*_letterSize[0].x;		
 		int timeW = timeWidth*_letterSize[0].x;
-		
-		int sizeX = (width - sizeW - timeW) < minFileNameWidth*_letterSize[0].x ? minFileNameWidth*_letterSize[0].x : width - sizeW - timeW;
+
+		int sizeX = (width - sizeW - dateW - timeW) < fileW ? fileW : width - sizeW - dateW - timeW;
 		sizeX += rect.left;
-		int timeX = sizeX + sizeW;
-		
-		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
-/*
-		gc.MoveTo( sizeX, rect.top );
-		gc.LineTo( sizeX, rect.bottom );
-		gc.MoveTo( timeX, rect.top );
-		gc.LineTo( timeX, rect.bottom );
-*/
-				
+		int dateX = sizeX + sizeW;
+		int timeX = dateX + dateW;		
+
 		if (p) 
 		{
 			unicode_t ubuf[64];
@@ -850,14 +859,22 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		
 			unicode_t buf[64]={0};
 			p->st.GetMTimeStr(buf);
-			gc.TextOutF(timeX + _letterSize[0].x, y, buf);
+			gc.TextOutF(dateX + _letterSize[0].x, y, buf);
 		}
+
+		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
+
+		gc.MoveTo( sizeX, rect.top );
+		gc.LineTo( sizeX, rect.bottom );
+		gc.MoveTo( dateX, rect.top );
+		gc.LineTo( dateX, rect.bottom );
+		gc.MoveTo( timeX, rect.top );
+		gc.LineTo( timeX, rect.bottom );
 		
 		rect.right = sizeX; 
 		gc.SetClipRgn(&rect);
 		
 	}
-	
 	
 	if (*_viewMode == FULL_ACCESS) 
 	{
@@ -890,9 +907,17 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 			unicode_t ubuf[64];
 	 		gc.GetTextExtents(p->st.GetModeStr(ubuf));
 			gc.TextOutF(accessX + _letterSize[0].x, y, ubuf);
+			
+			crect cliprect(rect);
+			
+			cliprect.right = groupX;
+			gc.SetClipRgn(&cliprect);
 		
 			const unicode_t *userName = GetUserName(p->GetUID());
 			gc.TextOutF(userX + _letterSize[0].x, y, userName);
+
+			cliprect.right = rect.right;
+			gc.SetClipRgn(&cliprect);
 
 			const unicode_t *groupName = GetGroupName(p->GetGID());
 			gc.TextOutF(groupX + _letterSize[0].x, y, groupName);
