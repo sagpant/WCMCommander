@@ -824,6 +824,12 @@ void GC::FillRect(crect r)
 	::FillRect(handle, &rect, fillBrush);
 };
 
+void GC::FillRectXor(crect r)
+{
+	RECT rect={r.left, r.top, r.right, r.bottom};
+	::PatBlt( handle, r.left, r.top, r.Width(), r.Height(), PATINVERT );
+};
+
 void GC::SetClipRgn(crect *r)
 {
 	rgn.Set(r); 

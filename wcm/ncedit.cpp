@@ -102,6 +102,8 @@ EditWin::EditWin(Win *parent)
 	SetLSize(ls);
 	
 	OnChangeStyles();
+
+	SetTimer(0, 500);
 }
 
 int EditWin::UiGetClassId(){ return uiClassEditor; }
@@ -1630,18 +1632,21 @@ void EditWin::__DrawChanges()
 
 	
 //перерисовать курсор всегда //	if (screen.prevCursor != screen.cursor) 
+	DrawCursor(gc);
+}
+
+void EditWin::DrawCursor(wal::GC &gc)
+{
+	int curR = screen.cursor.line;
+	int curC = screen.cursor.pos;
+	if (curR >= 0 && curR < screen.Rows() && curC >= 0 && curC < screen.Cols())
 	{
-		int curR = screen.cursor.line;
-		int curC = screen.cursor.pos;
-		if (curR >= 0 && curR < screen.Rows() && curC >= 0 && curC < screen.Cols())
-		{
-			int y = editRect.top + curR*charH;
-			int x = editRect.left + curC*charW;
-			gc.SetFillColor(color_cursor/*0xFFFF00*/);
-			gc.FillRect( GetCursorRect(x, y) );
-		}
-		screen.prevCursor = screen.cursor;
+		int y = editRect.top + curR*charH;
+		int x = editRect.left + curC*charW;
+		gc.SetFillColor(color_cursor/*0xFFFF00*/);
+		gc.FillRectXor( GetCursorRect(x, y) );
 	}
+	screen.prevCursor = screen.cursor;
 }
 
 void EditWin::Paint(wal::GC &gc, const crect &paintRect)
@@ -1712,18 +1717,7 @@ void EditWin::Paint(wal::GC &gc, const crect &paintRect)
 		}
 	}
 	
-	{
-		int curR = screen.cursor.line;
-		int curC = screen.cursor.pos;
-		if (curR >= 0 && curR < screen.Rows() && curC >= 0 && curC < screen.Cols())
-		{
-			int y = editRect.top + curR*charH;
-			int x = editRect.left + curC*charW;
-			gc.SetFillColor(color_cursor/*0xFFFF00*/);
-			gc.FillRect( GetCursorRect(x, y) );
-		}
-		screen.prevCursor = screen.cursor;
-	}
+	DrawCursor(gc);
 }
 
 crect EditWin::GetCursorRect(int x, int y) const
@@ -1942,8 +1936,15 @@ void EditWin::SetCursor(cpoint p, bool mark)
 }
 
 
-void EditWin::EventTimer(int)
+void EditWin::EventTimer(int id)
 {
+	if ( id == 0 )
+	{
+		wal::GC gc( this );
+		DrawCursor(gc);
+		return;
+	}
+
 	SetCursor(lastMousePoint, true);
 }
 
@@ -2198,7 +2199,9 @@ bool EditWin::Replace(const unicode_t *from, const unicode_t *to, bool sens)
 }
 
 
-EditWin::~EditWin(){}
-
+EditWin::~EditWin()
+{
+	DelTimer(0);
+}
 
 

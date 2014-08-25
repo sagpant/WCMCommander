@@ -98,7 +98,7 @@ void AppExit();
 #ifdef _WIN32
 enum Keyboard {
 	VK_NUMPAD_CENTER = 0x0C,
-	VK_NUMPAD_RETURN = VK_RETURN,
+	VK_NUMPAD_RETURN = 0xFFFF,
 
 #ifndef VK_SLASH
 	VK_SLASH      =   0xBF,
@@ -734,6 +734,7 @@ public:
 	void Set(cfont *font);
 
 	void FillRect(crect r);
+	void FillRectXor(crect r);
 	void SetClipRgn(crect *r = 0);
 
 	void DrawIcon(int x, int y, cicon *ico);

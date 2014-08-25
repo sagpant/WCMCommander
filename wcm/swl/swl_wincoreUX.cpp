@@ -1748,7 +1748,16 @@ void GC::FillRect(crect r)
 	SetFg(fillColor);
 	CheckValues();
 	XFillRectangle(display, winId, gc, r.left, r.top, r.Width(), r.Height());
+}
 
+void GC::FillRectXor(crect r)
+{
+	if (r.Width()<=0 || r.Height()<=0) return;
+	SetFg(fillColor);
+	CheckValues();
+	XSetFunction(display, gc, GXxor);
+	XFillRectangle(display, winId, gc, r.left, r.top, r.Width(), r.Height());
+	XSetFunction(display, gc, GXcopy);
 }
 
 void GC::SetTextColor(unsigned rgb)
