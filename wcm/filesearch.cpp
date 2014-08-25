@@ -4,6 +4,8 @@
 #include "search-tools.h"
 #include "ltext.h"
 
+SearchAndReplaceParams searchParams;
+
 struct SearchItemNode {
 	int dirId;
 	charset_struct *cs;
@@ -36,7 +38,7 @@ struct ThreadRetStruct {//эффект cptr
 class OperSearchData: public OperData {
 public:
 	//после создания эти параметры может трогать толькл поток поиска
-	SearchFileParams searchParams;
+	SearchAndReplaceParams searchParams;
 	FSPtr searchFs;
 	FSPath searchPath;
 	cptr<MegaSearcher> megaSearcher;
@@ -52,7 +54,7 @@ public:
 	//поисковый поток может менять, основной поток может использовать только после завершения поискового потока
 	FSString errorString;
 
-	OperSearchData(NCDialogParent *p, SearchFileParams &sParams, FSPtr &fs, FSPath &path, cptr<MegaSearcher> searcher):
+	OperSearchData(NCDialogParent *p, SearchAndReplaceParams &sParams, FSPtr &fs, FSPath &path, cptr<MegaSearcher> searcher):
 		OperData(p), searchParams(sParams), searchFs(fs), searchPath(path), megaSearcher(searcher),
 		found (0), badDirs(0), badFiles(0)
 	{}
@@ -63,11 +65,11 @@ public:
 OperSearchData::~OperSearchData(){}
 
 class OperSearchThread: public OperFileThread {
-	SearchFileParams searchParams;
+	SearchAndReplaceParams searchParams;
 	int lastDirId;
 	int NewDirId(){ return ++lastDirId; }
 public:
-	OperSearchThread(const char *opName, NCDialogParent *par, OperThreadNode *n, SearchFileParams &sp)
+	OperSearchThread(const char *opName, NCDialogParent *par, OperThreadNode *n, SearchAndReplaceParams &sp)
 		: OperFileThread(opName, par, n), searchParams(sp), lastDirId(0){}
 		
 	int TextSearch(FS *fs, FSPath &path, MegaSearcher *pSearcher, int *err, FSCInfo *info, charset_struct **cs);
@@ -608,29 +610,27 @@ void SearchFileThreadFunc(OperThreadNode *node)
 	}
 }
 
-static SearchFileParams searchFileParams;
-
 bool SearchFile(FSPtr f, FSPath p, NCDialogParent *parent, FSPath *retPath)
 {
-	if (!DoFileSearchDialog(parent, &searchFileParams))
+	if (!DoFileSearchDialog(parent, &searchParams))
 		return false;
 		
-	if (!searchFileParams.mask.ptr() || !searchFileParams.mask[0]) return false;
+	if (!searchParams.mask.ptr() || !searchParams.mask[0]) return false;
 
-	carray<char> utf8Mask = unicode_to_utf8(searchFileParams.mask.ptr());
+	carray<char> utf8Mask = unicode_to_utf8(searchParams.mask.ptr());
 	
 	cptr<MegaSearcher> megaSearcher;
-	if (searchFileParams.txt.ptr() && searchFileParams.txt[0])
+	if (searchParams.txt.ptr() && searchParams.txt[0])
 	{
 		megaSearcher = new MegaSearcher();
-		if (!megaSearcher->Set(searchFileParams.txt.ptr(), searchFileParams.sens, 0)) {
+		if (!megaSearcher->Set(searchParams.txt.ptr(), searchParams.sens, 0)) {
 			NCMessageBox(parent,  _LT("File search") ,  _LT("can't search this text") ,  true);
 			return false;
 		}
 	}
 	
 
-	OperSearchData data(parent, searchFileParams, f, p, megaSearcher);
+	OperSearchData data(parent, searchParams, f, p, megaSearcher);
 	SearchFileThreadWin dlg(parent, carray_cat<char>( _LT("Search:"), utf8Mask.ptr()).ptr(), &data);
 	dlg.RunNewThread("Search file", SearchFileThreadFunc, &data); //может быть исключение
 	dlg.Enable();

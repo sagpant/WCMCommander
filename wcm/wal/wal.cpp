@@ -17,6 +17,7 @@ namespace wal {
 
 	carray<unicode_t> new_unicode_str(const unicode_t *s)
 	{
+		if ( !s ) return carray<unicode_t>();
 		const unicode_t *p;
 		for (p = s; *p; ) p++;
 		int len = p-s;
@@ -28,6 +29,7 @@ namespace wal {
 
 	carray<sys_char_t> new_sys_str(const sys_char_t *s)
 	{
+		if ( !s ) return carray<sys_char_t>();
 		int len = sys_strlen(s);
 		carray<sys_char_t> r(len+1);
 		if (len) memcpy(r.ptr(), s, len* sizeof(sys_char_t));
@@ -37,6 +39,7 @@ namespace wal {
 
 	carray<char> new_char_str(const char *s)
 	{
+		if ( !s ) return carray<char>();
 		int len = strlen(s);
 		carray<char> r(len+1);
 		
@@ -50,6 +53,7 @@ namespace wal {
 	
 	carray<sys_char_t> utf8_to_sys(const char *s)
 	{
+		if ( !s ) return carray<sys_char_t>();
 		int symbolCount = utf8_symbol_count(s);
 		carray<unicode_t> unicodeBuf(symbolCount + 1);
 		utf8_to_unicode(unicodeBuf.ptr(), s);
@@ -63,6 +67,7 @@ namespace wal {
 
 	carray<char> sys_to_utf8(const sys_char_t *s)
 	{
+		if ( !s ) return carray<char>();
 		int symbolCount=sys_symbol_count(s);
 		carray<unicode_t> unicodeBuf(symbolCount + 1);
 		sys_to_unicode(unicodeBuf.ptr(), s);
@@ -75,6 +80,7 @@ namespace wal {
 
 	carray<unicode_t> utf8_to_unicode(const char *s)
 	{
+		if ( !s ) return carray<unicode_t>();
 		int symbolCount = utf8_symbol_count(s);
 		carray<unicode_t> unicodeBuf(symbolCount + 1);
 		utf8_to_unicode(unicodeBuf.ptr(), s);
@@ -83,6 +89,7 @@ namespace wal {
 	
 	carray<char> unicode_to_utf8(const unicode_t *u)
 	{
+		if ( !u ) return carray<char>();
 		int size = utf8_string_buffer_len(u);
 		carray<char> s(size + 1);
 		unicode_to_utf8(s.ptr(), u);

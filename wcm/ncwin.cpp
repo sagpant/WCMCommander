@@ -3,7 +3,7 @@
 */
 
 #ifdef _WIN32
-#include <winsock2.h>
+#	include <winsock2.h>
 #endif
 
 #include "ncwin.h"
@@ -12,8 +12,8 @@
 #include <sys/types.h>
 
 #ifndef _WIN32
-#include <signal.h>
-#include <sys/wait.h>                                                                                                                                                            
+#	include <signal.h>
+#	include <sys/wait.h>                                                                                                                                                            
 #endif
 
 #include "eloadsave.h"
@@ -37,12 +37,10 @@
 #include "ltext.h"
 
 #ifndef _WIN32
-#include "ux_util.h"
+#	include "ux_util.h"
 #endif
 
-carray<unicode_t> searchTextString;
-SearchParams textSearchParams;
-ReplaceEditParams textReplaceParams;
+extern SearchAndReplaceParams searchParams;
 
 static crect acWinRect(0,0,850,500);
 
@@ -1414,9 +1412,9 @@ void NCWin::EditSearch(bool next)
 {
 	if (_mode != EDIT) return;
 	
-	if ((next || DoSearchDialog(this, &textSearchParams)) && textSearchParams.txt.ptr() && textSearchParams.txt[0])
+	if ((next || DoSearchDialog(this, &searchParams)) && searchParams.txt.ptr() && searchParams.txt[0])
 	{
-		if (!_editor.Search(textSearchParams.txt.ptr(), textSearchParams.sens))
+		if (!_editor.Search(searchParams.txt.ptr(), searchParams.sens))
 			NCMessageBox(this, _LT("Search"), _LT("String not found"), true);
 	}
 }
@@ -1425,11 +1423,11 @@ void NCWin::EditReplace()
 {
 	if (_mode != EDIT) return;
 	
-	if (DoReplaceEditDialog(this, &textReplaceParams) && textReplaceParams.from.ptr() && textReplaceParams.from[0])
+	if (DoReplaceEditDialog(this, &searchParams) && searchParams.txt.ptr() && searchParams.txt[0])
 	{
 		static unicode_t empty = 0;
-		unicode_t *to = textReplaceParams.to.ptr() && textReplaceParams.to[0] ? textReplaceParams.to.ptr() : &empty;
-		if (!_editor.Replace(textReplaceParams.from.ptr(), to, textReplaceParams.sens))
+		unicode_t *to = searchParams.to.ptr() && searchParams.to[0] ? searchParams.to.ptr() : &empty;
+		if (!_editor.Replace(searchParams.txt.ptr(), to, searchParams.sens))
 			NCMessageBox(this, _LT("Replace"), _LT("String not found"), true);
 	}
 }
@@ -1438,9 +1436,9 @@ void NCWin::ViewSearch(bool next)
 {
 	if (_mode != VIEW) return;
 	
-	if ((next || DoSearchDialog(this, &textSearchParams)) && textSearchParams.txt.ptr() && textSearchParams.txt[0])
+	if ((next || DoSearchDialog(this, &searchParams)) && searchParams.txt.ptr() && searchParams.txt[0])
 	{
-		if (!_viewer.Search(textSearchParams.txt.ptr(), textSearchParams.sens))
+		if (!_viewer.Search(searchParams.txt.ptr(), searchParams.sens))
 			NCMessageBox(this, _LT("Search"), _LT("String not found"), true);
 	}
 }

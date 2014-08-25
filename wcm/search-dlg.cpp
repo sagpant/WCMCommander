@@ -8,14 +8,14 @@ public:
 	EditLine textEdit;
 	SButton  caseButton;
 
-	SearchParamDialog(NCDialogParent *parent, SearchParams *params);
+	SearchParamDialog(NCDialogParent *parent, SearchAndReplaceParams *params);
 	virtual bool Command(int id, int subId, Win *win, void *data);
 	virtual ~SearchParamDialog();
 };
 
 SearchParamDialog::~SearchParamDialog(){}
 
-SearchParamDialog::SearchParamDialog(NCDialogParent *parent, SearchParams *params)
+SearchParamDialog::SearchParamDialog(NCDialogParent *parent, SearchAndReplaceParams *params)
 :	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Search")).ptr(), bListOkCancel),
 	iL(16, 3),
 	textEdit	(0, this, 0, 0, 50),
@@ -42,7 +42,7 @@ bool SearchParamDialog::Command(int id, int subId, Win *win, void *data)
 	return NCVertDialog::Command(id, subId, win, data);
 }
 
-bool DoSearchDialog(NCDialogParent *parent, SearchParams *params)
+bool DoSearchDialog(NCDialogParent *parent, SearchAndReplaceParams *params)
 {
 	SearchParamDialog dlg(parent, params);
 	if (dlg.DoModal() == CMD_OK)
@@ -66,13 +66,13 @@ public:
 	EditLine textEdit;
 	SButton  caseButton;
 
-	SearchFileParamDialog(NCDialogParent *parent, SearchFileParams *params);
+	SearchFileParamDialog(NCDialogParent *parent, SearchAndReplaceParams *params);
 	virtual ~SearchFileParamDialog();
 };
 
 SearchFileParamDialog::~SearchFileParamDialog(){}
 
-SearchFileParamDialog::SearchFileParamDialog(NCDialogParent *parent, SearchFileParams *params)
+SearchFileParamDialog::SearchFileParamDialog(NCDialogParent *parent, SearchAndReplaceParams *params)
 :	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Search")).ptr(), bListOkCancel),
 	iL(16, 3),
 	maskText(0, this, utf8_to_unicode(_LT("File mask:")).ptr()),
@@ -104,7 +104,7 @@ SearchFileParamDialog::SearchFileParamDialog(NCDialogParent *parent, SearchFileP
 	SetPosition();
 }
 
-bool DoFileSearchDialog(NCDialogParent *parent, SearchFileParams *params)
+bool DoFileSearchDialog(NCDialogParent *parent, SearchAndReplaceParams *params)
 {
 	SearchFileParamDialog dlg(parent, params);
 	if (dlg.DoModal() == CMD_OK)
@@ -129,13 +129,13 @@ public:
 	EditLine toEdit;
 	SButton  caseButton;
 
-	ReplaceEditParamDialog(NCDialogParent *parent, ReplaceEditParams *params);
+	ReplaceEditParamDialog(NCDialogParent *parent, SearchAndReplaceParams *params);
 	virtual ~ReplaceEditParamDialog();
 };
 
 ReplaceEditParamDialog::~ReplaceEditParamDialog(){}
 
-ReplaceEditParamDialog::ReplaceEditParamDialog(NCDialogParent *parent, ReplaceEditParams *params)
+ReplaceEditParamDialog::ReplaceEditParamDialog(NCDialogParent *parent, SearchAndReplaceParams *params)
 :	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Replace")).ptr(), bListOkCancel),
 	iL(16, 3),
 	fromText(0, this, utf8_to_unicode(_LT("Search for:")).ptr()),
@@ -144,7 +144,7 @@ ReplaceEditParamDialog::ReplaceEditParamDialog(NCDialogParent *parent, ReplaceEd
 	toEdit	(0, this, 0, 0, 50),
 	caseButton(0, this, utf8_to_unicode(_LT("Case sensitive")).ptr(), 0, params->sens)
 {
-	if (params->from.ptr()) fromEdit.SetText(params->from.ptr(), true);
+	if (params->txt.ptr()) fromEdit.SetText(params->txt.ptr(), true);
 	if (params->to.ptr()) toEdit.SetText(params->to.ptr(), true);
 	
 	iL.AddWin(&fromText,	0, 0); fromText.Enable(); fromText.Show();
@@ -167,13 +167,13 @@ ReplaceEditParamDialog::ReplaceEditParamDialog(NCDialogParent *parent, ReplaceEd
 	SetPosition();
 }
 
-bool DoReplaceEditDialog(NCDialogParent *parent, ReplaceEditParams *params)
+bool DoReplaceEditDialog(NCDialogParent *parent, SearchAndReplaceParams *params)
 {
 	ReplaceEditParamDialog dlg(parent, params);
 	if (dlg.DoModal() == CMD_OK)
 	{
 		params->sens = dlg.caseButton.IsSet();
-		params->from = new_unicode_str(dlg.fromEdit.GetText().ptr());
+		params->txt = new_unicode_str(dlg.fromEdit.GetText().ptr());
 		params->to = new_unicode_str(dlg.toEdit.GetText().ptr());
 		return true;
 	}
