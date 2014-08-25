@@ -467,7 +467,8 @@ static bool ChildKeyRecursive(Win *parent, Win *child, cevent_key *ev)
 
 static void DoKeyEvent(int type, Win *w, KeySym ks, unsigned km,  unicode_t ch)
 {
-	printf( "Keycode = %x\n", (unsigned int)ks );
+//	printf( "type = %i ks = %x km = %u, ch = %u\n", type, (unsigned int)ks, km, ch );
+
 	switch (ks) {
 	case XK_a: ks = XK_A; break;
 	case XK_b: ks = XK_B; break;
@@ -622,6 +623,8 @@ int DoEvents(XEvent *event) //return count of windows
 
 			unsigned bf = 0;
 
+//			printf( "Button = %i\n", e->button );
+
 			unsigned button=0;
 			switch (e->button) {
 			case Button1: button = MB_L;  break;
@@ -631,6 +634,21 @@ int DoEvents(XEvent *event) //return count of windows
 			case Button5: button = MB_X2;  break;
 			}
 
+			// mouse wheel up
+			if (e->button == Button4 && event->type == ButtonPress)
+			{
+				DoKeyEvent( EV_KEYDOWN, w, VK_UP, 0, 0 );
+				DoKeyEvent( EV_KEYUP,   w, VK_UP, 0, 0 );
+				break;
+			}
+			// mouse wheel down
+			if (e->button == Button5 && event->type == ButtonPress)
+			{
+
+				DoKeyEvent( EV_KEYDOWN, w, VK_DOWN, 0, 0 );
+				DoKeyEvent( EV_KEYUP, w, VK_DOWN, 0, 0 );
+				break;
+			}
 			
 			if (button == MB_L && event->type == ButtonPress)
 			{
