@@ -153,16 +153,22 @@ void Button::Paint(GC &gc, const crect &paintRect)
 
 	if (pressed)
 	{
+#if USE_3D_BUTTONS
 		Draw3DButtonW2(gc, rect, colorBg, false);
 		rect.Dec();
 		rect.Dec();
+#endif
 	} else {
+#if USE_3D_BUTTONS
 		Draw3DButtonW2(gc, rect, colorBg, true);
 		rect.Dec();
+#endif
 		if (InFocus()) {
 			DrawBorder(gc, rect, /*GetColor(IC_FOCUS_MARK)*/ UiGetColor(uiFocusFrameColor, 0, 0, 0)); 
 		}
+#if USE_3D_BUTTONS
 		rect.Dec();
+#endif
 	}
 
 	gc.SetFillColor(colorBg);

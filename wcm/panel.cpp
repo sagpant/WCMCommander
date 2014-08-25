@@ -766,9 +766,10 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 
 	if (n<0 || n>=_list.Count()) return;
 
+#if USE_3D_BUTTONS
 	if (active) 
 		Draw3DButtonW2(gc, rect, color_bg, true);
-
+#endif
 
 	int x = rect.left + 7; //5;
 	int y = rect.top;

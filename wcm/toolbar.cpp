@@ -147,9 +147,11 @@ void ToolBar::Paint(wal::GC &gc, const crect &paintRect)
 	unsigned splitColor1 = ColorTone(colorBg, -70);
 	unsigned splitColor2 = ColorTone(colorBg, 70);
 
+#if USE_3D_BUTTONS
 	Draw3DButtonW2(gc, rect, colorBg, true);
 	rect.Dec();
 	rect.Dec();
+#endif
 
 	gc.SetFillColor(colorBg);
 	gc.FillRect(rect);

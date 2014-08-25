@@ -6,6 +6,8 @@
 #ifndef WINCORE_H
 #define WINCORE_H
 
+#define USE_3D_BUTTONS 0
+
 #ifdef _WIN32
 	#include <windows.h>
 	typedef HWND WinID;
