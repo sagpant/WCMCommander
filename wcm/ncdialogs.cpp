@@ -306,7 +306,7 @@ bool NCDialog::EventChildKey(Win* child, cevent_key* pEvent)
 			FocusNextChild();
 			return true;
 		} else 
-		if (pEvent->Key() == VK_RETURN) 
+		if (pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN) 
 		{
 			if (enterCmd && GetFocusButtonNum()<0)
 			{
@@ -777,6 +777,7 @@ bool DlgMenu::EventKey(cevent_key* pEvent)
 		case VK_END:
 		case VK_RIGHT: SetCurrent(_data->Count()-1, true); ; break;
 		
+		case VK_NUMPAD_RETURN:
 		case VK_RETURN:  
 			if (_current>=0 && _current<_data->Count() && _data->list[_current].cmd !=0) 
 				Command(_data->list[_current].cmd, 0, this, 0); 

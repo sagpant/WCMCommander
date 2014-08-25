@@ -124,13 +124,13 @@ bool Button::EventFocus(bool recv)
 
 bool Button::EventKey(cevent_key* pEvent)
 {
-	if (pEvent->Type() == EV_KEYDOWN && pEvent->Key() == VK_RETURN)
+	if (pEvent->Type() == EV_KEYDOWN && ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN ) )
 	{
 		pressed = true;
 		Invalidate();
 		return true;
 	}
-	if (pressed && pEvent->Type() == EV_KEYUP && pEvent->Key() == VK_RETURN)
+	if (pressed && pEvent->Type() == EV_KEYUP && ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN ) )
 	{
 		pressed = false;
 		Invalidate();

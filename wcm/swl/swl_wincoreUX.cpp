@@ -467,6 +467,7 @@ static bool ChildKeyRecursive(Win *parent, Win *child, cevent_key *ev)
 
 static void DoKeyEvent(int type, Win *w, KeySym ks, unsigned km,  unicode_t ch)
 {
+	printf( "Keycode = %x\n", (unsigned int)ks );
 	switch (ks) {
 	case XK_a: ks = XK_A; break;
 	case XK_b: ks = XK_B; break;

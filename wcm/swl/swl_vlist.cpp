@@ -265,6 +265,7 @@ bool VListWin::EventKey(cevent_key* pEvent)
 		case VK_LEFT: MoveXOffset(xOffset-10); break;
 		case VK_RIGHT: MoveXOffset(xOffset+10); break;
 
+		case VK_NUMPAD_RETURN:
 		case VK_RETURN: Command(CMD_ITEM_CLICK, GetCurrent(), this, 0); break; 
 
 		default: return false;

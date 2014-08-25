@@ -1837,6 +1837,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case VK_NEXT:	_terminal.PageDown();	break;
 		case VK_PRIOR:	_terminal.PageUp();	break;
 			
+		case FC(VK_NUMPAD_RETURN, KM_CTRL): 
 		case FC(VK_RETURN, KM_CTRL): 
 			if (_edit.IsVisible()) 
 				CtrlEnter();
@@ -1845,6 +1846,7 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 		case VK_TAB: Tab(false); break;
 		case FC(VK_TAB, KM_SHIFT): Tab(true); break;
 
+		case VK_NUMPAD_RETURN:
 		case VK_RETURN:
 			{
 				if (_edit.IsVisible())

@@ -1759,6 +1759,7 @@ bool EditWin::EventKey(cevent_key* pEvent)
 				Backspace(); 
 			break;
 
+		case VK_NUMPAD_RETURN:
 		case VK_RETURN: 
 				DelMarked();
 				Enter(); 

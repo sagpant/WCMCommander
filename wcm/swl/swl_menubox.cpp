@@ -135,7 +135,8 @@ bool MenuBar::EventKey(cevent_key* pEvent)
 		case VK_LEFT: Left(); return true;
 		case VK_RIGHT: Right(); return true;
 		case VK_DOWN:
-		case VK_RETURN: OpenSub(); return true;
+		case VK_RETURN:
+		case VK_NUMPAD_RETURN: OpenSub(); return true;
 		case VK_ESCAPE: 
 			SetSelect(-1);
 			if (Parent()) 

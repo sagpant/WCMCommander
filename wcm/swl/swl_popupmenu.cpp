@@ -297,6 +297,7 @@ bool PopupMenu::EventKey(cevent_key* pEvent)
 			if (OpenSubmenu()) return true;;
 			break;
 
+		case VK_NUMPAD_RETURN:
 		case VK_RETURN:
 			if (IsCmd(selected) && IsEnabled(selected))
 			{

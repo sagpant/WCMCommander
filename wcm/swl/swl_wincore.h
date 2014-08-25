@@ -96,6 +96,7 @@ void AppExit();
 #ifdef _WIN32
 enum Keyboard {
 	VK_NUMPAD_CENTER = 0x0C,
+	VK_NUMPAD_RETURN = VK_RETURN,
 
 #ifndef VK_SLASH
 	VK_SLASH      =   0xBF,
@@ -158,6 +159,7 @@ enum Keyboard {
 	VK_ESCAPE = XK_Escape,
 	VK_TAB = XK_Tab,
 	VK_RETURN = XK_Return,
+	VK_NUMPAD_RETURN = XK_KP_Enter,
 	VK_BACK = XK_BackSpace,
 	VK_LEFT = XK_Left,
 	VK_RIGHT = XK_Right,
