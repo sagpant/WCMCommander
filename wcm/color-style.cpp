@@ -98,6 +98,10 @@ static char uiBlackWcmRules[] =
 "EditLine:focus {color: 0; background: 0x909000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xA0B0B0 }"
 "EditLine {color: 0; background: 0x909000; frame-color: 0xA0B0B0; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
 
+"command-line:!enabled { background: 0; }"
+"command-line:focus {color: 0xFFFFFF; background: 0; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
+"command-line {color: 0; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+
 "Panel { color: 0xA0A0A0; background: 0x000000; }"
 "Panel@item:exe { color: 0x80FF80 }"
 "Panel@item:dir { color: 0xFFFFFF }"
@@ -176,6 +180,10 @@ static char uiWhiteWcmRules[] =
 "EditLine:!enabled { background: 0xD8E9EC; }"
 "EditLine:focus {color: 0; background: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
 "EditLine {color: 0; background: 0xFFFFFF; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+
+"command-line:!enabled { background: 0xD8E9EC; }"
+"command-line:focus {color: 0; background: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
+"command-line {color: 0; background: 0xFFFFFF; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
 
 "Panel { color: 0x000000; background: 0xF8F8F8; }"
 "Panel@item:odd { background: 0xE0E0E0 }"
