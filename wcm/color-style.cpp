@@ -27,7 +27,7 @@ static char uiDefaultWcmRules[] =
 "Panel@item:bad { color: 0xA0 }"
 "Panel@item:selected { color: 0x00FFFF }"
 "Panel@item:selected-panel:current-item { background: 0xB0B000 }"
-"Panel@item:selected-panel:current-item:oper-state { background: 0xFF }"
+//"Panel@item:selected-panel:current-item:oper-state { background: 0xFF }"
 "Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar {  background: 0xA0A000; button-color: 0xFFFF00 }"
 "Panel { border-color1: 0x000000; border-color2: 0xFFFFFF; border-color3: 0xFFFFFF; border-color4: 0x000000;"
 	" vline-color1: 0xFFFFFF; vline-color2:0x707070; vline-color3:0x700000;"
