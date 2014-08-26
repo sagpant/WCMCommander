@@ -1018,7 +1018,7 @@ void NCWin::ViewExit()
 }
 
 
-static cstrhash<EditPoint, unicode_t> editPosHash;
+static cstrhash<sEditorScrollCtx, unicode_t> editPosHash;
 
 
 void NCWin::Edit(bool enterFileName)
@@ -1058,7 +1058,7 @@ void NCWin::Edit(bool enterFileName)
 
 		
 		if (wcmConfig.editSavePos)
-			_editor.SetCursorPos(editPosHash[fs->Uri(path).GetUnicode()]);
+			_editor.SetScrollCtx(editPosHash[fs->Uri(path).GetUnicode()]);
 		else 
 			_editor.SetCursorPos(EditPoint(0,0));
 		
@@ -1462,7 +1462,7 @@ void NCWin::EditExit()
 	{
 		FSPath path;
 		_editor.GetPath(path);
-		editPosHash[fs->Uri(path).GetUnicode()] = _editor.GetCursorPos();
+		editPosHash[fs->Uri(path).GetUnicode()] = _editor.GetScrollCtx();
 	}
 	
 	if (_editor.Changed())

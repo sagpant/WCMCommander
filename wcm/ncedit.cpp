@@ -12,6 +12,8 @@
 #include "ltext.h"
 #include "globals.h"
 
+#include <algorithm>
+
 int uiClassEditor = GetUiID("Editor");
 static int uiShlDEF 	= GetUiID("DEF");
 static int uiShlKEYWORD = GetUiID("KEYWORD");
@@ -1249,6 +1251,21 @@ void EditWin::Enter() //!Undo
 
 }
 
+sEditorScrollCtx EditWin::GetScrollCtx() const
+{
+	sEditorScrollCtx Ctx;
+	Ctx.m_Point = this->GetCursorPos();
+	Ctx.m_FirstLine = firstLine;
+	return Ctx;
+}
+
+void EditWin::SetScrollCtx(const sEditorScrollCtx& Ctx)
+{
+	firstLine = Ctx.m_FirstLine;
+	int MaxLine = max( 0, text.Count() - rows );
+	firstLine = min( firstLine, MaxLine );
+	SetCursorPos( Ctx.m_Point );
+}
 
 void EditWin::CalcScroll()
 {
