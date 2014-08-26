@@ -17,6 +17,14 @@
 					<Add directory="wal" />
 					<Add directory="swl" />
 				</Compiler>
+				<Linker>
+					<Add library="freetype" />
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+				</Linker>
 			</Target>
 			<Target title="Release Linux64">
 				<Option platforms="Unix;" />
@@ -54,6 +62,9 @@
 					<Add option="-m32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
 					<Add directory="wal" />
 					<Add directory="swl" />
 				</Compiler>
@@ -78,6 +89,9 @@
 					<Add option="-m32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
 					<Add directory="wal" />
 					<Add directory="swl" />
 				</Compiler>
