@@ -176,9 +176,7 @@ int main(int argc, char **argv)
 		InitExtensionApp();		
 				
 		AppRun();
-
-		wcmConfig.Save(&ncWin);
-	
+																													 
 		dbg_printf("App Quit!!!");
 
 	} catch (cexception *ex)

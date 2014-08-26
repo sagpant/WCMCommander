@@ -436,6 +436,12 @@ public:
 	~EditScreen(){}
 };
 
+struct sEditorScrollCtx
+{
+	int m_FirstLine;
+	EditPoint m_Point;
+};
+
 class EditWin : public Win {
 	Layout _lo;
 	ScrollBar vscroll;
@@ -577,8 +583,13 @@ public:
 	
 	void SetPath(FSPtr fs, FSPath &p);
 	
-	EditPoint GetCursorPos(){ return cursor; }
+	EditPoint GetCursorPos() const { return cursor; }
 	void SetCursorPos(EditPoint p);
+
+#pragma region Save/restore the complete position of the editor
+	sEditorScrollCtx GetScrollCtx() const;
+	void SetScrollCtx(const sEditorScrollCtx& Ctx);
+#pragma endregion
 	
 	int GetCursorCol();
 	int GetCursorLine(){ return cursor.line; }

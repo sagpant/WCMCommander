@@ -715,8 +715,8 @@ void WcmConfig::Save( NCWin* nc )
 {
 	if ( nc )
 	{
-		leftPanelPath = new_char_str( nc->GetLeftPanel()->GetPath().GetUtf8() );
-		rightPanelPath = new_char_str( nc->GetRightPanel()->GetPath().GetUtf8() );
+		leftPanelPath = new_char_str( nc->GetLeftPanel( )->UriOfDir().GetUtf8() );
+		rightPanelPath = new_char_str( nc->GetRightPanel( )->UriOfDir( ).GetUtf8() );
 		crect Rect = nc->ScreenRect();
 		windowX = Rect.top;
 		windowY = Rect.left;

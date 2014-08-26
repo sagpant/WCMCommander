@@ -269,27 +269,17 @@ NCWin::NCWin()
 	}
 	
 	// apply saved panel paths
-	
-	FSPath path;
-
 //	printf( "Left = %s\n", wcmConfig.leftPanelPath.ptr() );
-	
-#if defined(_WIN32)
-	int cs = CS_UNICODE;
-#else
-	int cs = sys_charset_id;
-#endif
-	path.Set( cs, wcmConfig.leftPanelPath.ptr( ) );
-	_leftPanel.LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
-
 //	printf( "Right = %s\n", wcmConfig.rightPanelPath.ptr() );
 
-	path.Set( cs, wcmConfig.rightPanelPath.ptr( ) );
-	_rightPanel.LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
+	_leftPanel.LoadPathStringSafe( wcmConfig.leftPanelPath.ptr() );
+	_rightPanel.LoadPathStringSafe( wcmConfig.rightPanelPath.ptr() );
 }
 
 bool NCWin::EventClose()
 {
+	wcmConfig.Save( this );
+
 	switch (_mode) {
 	case PANEL: if (!Blocked()) AppExit();  break; //&& NCMessageBox(this, "Quit", "Do you want to quit?", false) == CMD_OK
 	case EDIT: if (!Blocked()) EditExit(); break;
@@ -975,8 +965,11 @@ void NCWin::CreateDirectory()
 
 void NCWin::QuitQuestion()
 {
-	if (NCMessageBox(this, _LT("Quit"), _LT("Do you want to quit?"), false, bListOkCancel) == CMD_OK)
+	if ( NCMessageBox( this, _LT( "Quit" ), _LT( "Do you want to quit?" ), false, bListOkCancel ) == CMD_OK )
+	{
+		wcmConfig.Save( this );
 		AppExit();
+	}
 }
 
 void NCWin::View()
@@ -1030,7 +1023,7 @@ void NCWin::ViewExit()
 }
 
 
-static cstrhash<EditPoint, unicode_t> editPosHash;
+static cstrhash<sEditorScrollCtx, unicode_t> editPosHash;
 
 
 void NCWin::Edit(bool enterFileName)
@@ -1070,7 +1063,7 @@ void NCWin::Edit(bool enterFileName)
 
 		
 		if (wcmConfig.editSavePos)
-			_editor.SetCursorPos(editPosHash[fs->Uri(path).GetUnicode()]);
+			_editor.SetScrollCtx(editPosHash[fs->Uri(path).GetUnicode()]);
 		else 
 			_editor.SetCursorPos(EditPoint(0,0));
 		
@@ -1474,7 +1467,7 @@ void NCWin::EditExit()
 	{
 		FSPath path;
 		_editor.GetPath(path);
-		editPosHash[fs->Uri(path).GetUnicode()] = _editor.GetCursorPos();
+		editPosHash[fs->Uri(path).GetUnicode()] = _editor.GetScrollCtx();
 	}
 	
 	if (_editor.Changed())

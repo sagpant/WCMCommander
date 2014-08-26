@@ -31,6 +31,7 @@ class PanelSearchWin: public Win {
 public:
 	cptr<cevent_key> ret_key;
 	PanelSearchWin(PanelWin *parent, cevent_key *key);
+	virtual void Repaint();
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
 	virtual bool EventShow(bool show);
 	virtual bool EventKey(cevent_key* pEvent);
@@ -208,6 +209,7 @@ public:
 	void SetViewMode(int m){ *_viewMode = m; Check(); SetScroll(); Invalidate(); }
 
 	void LoadPath(FSPtr fs, FSPath &path, FSString *current, cptr<cstrhash<bool,unicode_t> > selected, LOAD_TYPE lType);
+	void LoadPathStringSafe( const char* path );
 	
 	void Reread(bool resetCurrent = false);
 

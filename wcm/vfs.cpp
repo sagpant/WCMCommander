@@ -1547,7 +1547,7 @@ unicode_t* FSStat::GetMTimeStr(unicode_t ret[64])
 	FILETIME lt;
 	SYSTEMTIME st;
 	if (!FileTimeToLocalFileTime(&mt, &lt) || !FileTimeToSystemTime(&lt, &st)) { ret[0]='?'; ret[1]=0; return ret; }
-	sprintf(str, "%02i/%02i/%04i-%02i:%02i:%02i", 
+	sprintf(str, "%02i/%02i/%04i  %02i:%02i:%02i", 
 		int(st.wDay), int(st.wMonth), int(st.wYear),
 		int(st.wHour), int(st.wMinute), int(st.wSecond));
 #else
@@ -1558,7 +1558,7 @@ unicode_t* FSStat::GetMTimeStr(unicode_t ret[64])
 		p->tm_mday, p->tm_mon+1, p->tm_year + 1900, // % 100, 
 		p->tm_hour, p->tm_min, p->tm_sec);
 	} else {
-		sprintf(str, "%02i/%02i/%04i-%02i:%02i:%02i", 
+		sprintf(str, "%02i/%02i/%04i  %02i:%02i:%02i", 
 		int(0), int(0), int(0) + 1900, // % 100, 
 		int(0), int(0), int(0));
 

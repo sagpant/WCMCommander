@@ -506,7 +506,7 @@ public:
 public:
 #ifdef _WIN32
 	//0-'A'...'Z', -1 - network
-	FSSys(int drive):FS(FS::SYSTEM), _drive(drive){}
+	explicit FSSys(int drive):FS(FS::SYSTEM), _drive(drive){}
 	int Drive() const { return _drive; }
 #else
 	FSSys():FS(FS::SYSTEM){}
