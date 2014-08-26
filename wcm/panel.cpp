@@ -53,6 +53,14 @@ PanelSearchWin::PanelSearchWin(PanelWin *parent, cevent_key *key)
 	if (key) _edit.EventKey(key);
 }
 
+void PanelSearchWin::Repaint()
+{
+	Win::Repaint();
+
+	_edit.Repaint();
+	_static.Repaint();
+}
+
 void PanelSearchWin::Paint(wal::GC &gc, const crect &paintRect)
 {
 	int bc = UiGetColor(uiBackground, 0, 0, 0xD8E9EC);
@@ -82,7 +90,9 @@ bool PanelSearchWin::Command(int id, int subId, Win *win, void *data)
 			_edit.SetText(oldMask.ptr() ? oldMask.ptr() : &empty);
 		} else 
 			oldMask = text;
-		
+
+		this->Repaint();
+
 		return true;
 	}
 	return false;
@@ -118,6 +128,8 @@ bool PanelSearchWin::EventMouse(cevent_mouse* pEvent)
 
 bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 {
+	this->Repaint();
+
 	if (pEvent->Type() != EV_KEYDOWN) return false;
 	
 	bool ctrl = (pEvent->Mod() & KM_CTRL)!=0;
@@ -135,11 +147,13 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 //	printf( "Key = %x\n", pEvent->Key() );
 
 	switch (pEvent->Key()) {
+		case VK_CONTROL:
 		case VK_LCONTROL:
-		case VK_LSHIFT:
-		case VK_LMENU:
 		case VK_RCONTROL:
+		case VK_SHIFT:
+		case VK_LSHIFT:
 		case VK_RSHIFT:
+		case VK_LMENU:
 		case VK_RMENU:
 		case VK_BACK: 
 		case VK_DELETE:

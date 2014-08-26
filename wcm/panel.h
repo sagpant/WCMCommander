@@ -31,6 +31,7 @@ class PanelSearchWin: public Win {
 public:
 	cptr<cevent_key> ret_key;
 	PanelSearchWin(PanelWin *parent, cevent_key *key);
+	virtual void Repaint();
 	virtual void Paint(wal::GC &gc, const crect &paintRect);
 	virtual bool EventShow(bool show);
 	virtual bool EventKey(cevent_key* pEvent);
