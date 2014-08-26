@@ -3,6 +3,7 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="wcm" />
+		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -13,23 +14,9 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-I/usr/include/freetype2" />
-					<Add option="-m64" />
-					<Add option="-D_DEBUG" />
-					<Add option="-DUSEFREETYPE" />
 					<Add directory="wal" />
 					<Add directory="swl" />
 				</Compiler>
-				<Linker>
-					<Add library="X11" />
-					<Add library="pthread" />
-					<Add library="ssh2" />
-					<Add library="smbclient" />
-					<Add library="stdc++" />
-					<Add library="freetype" />
-				</Linker>
 			</Target>
 			<Target title="Release Linux64">
 				<Option platforms="Unix;" />
@@ -103,6 +90,33 @@
 					<Add library="freetype" />
 				</Linker>
 			</Target>
+			<Target title="Release Win32">
+				<Option platforms="Windows;" />
+				<Option output="../Release/wcm_codeblocks" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="msvc8" />
+				<Compiler>
+					<Add option="-I../libssh2" />
+					<Add option="-D_WIN32_WINNT=0x0501" />
+					<Add option="-DNDEBUG" />
+					<Add directory="wal" />
+					<Add directory="swl" />
+				</Compiler>
+				<Linker>
+					<Add library="ws2_32" />
+					<Add library="..\libssh2\static32\ssleay32.lib" />
+					<Add library="..\libssh2\static32\zlib.lib" />
+					<Add library="mpr" />
+					<Add library="..\libssh2\static32\libeay32.lib" />
+					<Add library="..\libssh2\static32\libssh2.lib" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="advapi32" />
+					<Add library="comdlg32.lib" />
+					<Add directory="../libssh2/static32" />
+				</Linker>
+			</Target>
 		</Build>
 		<Unit filename="ReadMe.txt" />
 		<Unit filename="Resource.h" />
@@ -115,14 +129,24 @@
 		<Unit filename="dircalc.h" />
 		<Unit filename="eloadsave.cpp" />
 		<Unit filename="eloadsave.h" />
-		<Unit filename="ext-app-ux.cpp" />
+		<Unit filename="ext-app-ux.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
 		<Unit filename="ext-app.cpp" />
 		<Unit filename="ext-app.h" />
 		<Unit filename="fileopers.cpp" />
 		<Unit filename="fileopers.h" />
 		<Unit filename="filesearch.cpp" />
 		<Unit filename="filesearch.h" />
-		<Unit filename="fontdlg.cpp" />
+		<Unit filename="fontdlg.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
 		<Unit filename="ftplogon.cpp" />
 		<Unit filename="ftplogon.h" />
 		<Unit filename="globals.h" />
@@ -167,7 +191,12 @@
 		<Unit filename="sftpdlg.h" />
 		<Unit filename="shell-tools.cpp" />
 		<Unit filename="shell-tools.h" />
-		<Unit filename="shell.cpp" />
+		<Unit filename="shell.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
 		<Unit filename="shell.h" />
 		<Unit filename="shl.cpp" />
 		<Unit filename="shl.h" />
@@ -194,7 +223,15 @@
 		<Unit filename="swl/swl_winbase.h" />
 		<Unit filename="swl/swl_wincore.cpp" />
 		<Unit filename="swl/swl_wincore.h" />
-		<Unit filename="swl/swl_wincoreUX.cpp" />
+		<Unit filename="swl/swl_wincoreMS.cpp">
+			<Option target="Release Win32" />
+		</Unit>
+		<Unit filename="swl/swl_wincoreUX.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
 		<Unit filename="swl/swl_wincore_freetype_inc.h" />
 		<Unit filename="swl/swl_wincore_internal.h" />
 		<Unit filename="swl/swl_wincore_ui_inc.h" />
@@ -202,7 +239,12 @@
 		<Unit filename="targetver.h" />
 		<Unit filename="tcp_sock.cpp" />
 		<Unit filename="tcp_sock.h" />
-		<Unit filename="terminal.cpp" />
+		<Unit filename="terminal.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
 		<Unit filename="terminal.h" />
 		<Unit filename="termwin.cpp" />
 		<Unit filename="termwin.h" />
@@ -223,16 +265,22 @@
 		<Unit filename="vfs.h" />
 		<Unit filename="vfspath.cpp" />
 		<Unit filename="vfspath.h" />
+		<Unit filename="w32cons.cpp">
+			<Option target="Release Win32" />
+		</Unit>
 		<Unit filename="w32cons.h" />
+		<Unit filename="w32util.cpp">
+			<Option target="Release Win32" />
+		</Unit>
 		<Unit filename="w32util.h" />
 		<Unit filename="wal/wal.cpp" />
+		<Unit filename="wal/wal.h" />
 		<Unit filename="wal/wal_charset.cpp" />
 		<Unit filename="wal/wal_exceptions.cpp" />
 		<Unit filename="wal/wal_files.cpp" />
 		<Unit filename="wal/wal_sys_api.cpp" />
-		<Unit filename="wal/wal_tmpls.cpp" />
-		<Unit filename="wal/wal.h" />
 		<Unit filename="wal/wal_sys_api.h" />
+		<Unit filename="wal/wal_tmpls.cpp" />
 		<Unit filename="wal/wal_tmpls.h" />
 		<Unit filename="wcm-config.cpp" />
 		<Unit filename="wcm-config.h" />
@@ -242,6 +290,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

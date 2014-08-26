@@ -4,7 +4,7 @@
 
 #	if defined(_WIN32)
 //		Disable LibSSH2 on Win builds
-#		undef LIBSSH2_EXIST
+//#		undef LIBSSH2_EXIST
 #	endif // _WIN64
 
 #endif

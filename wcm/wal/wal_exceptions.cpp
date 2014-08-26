@@ -8,11 +8,11 @@
 #include <afx.h>
 #include <Afxwin.h>
 #else
-#ifdef __linux__
+#if defined _WIN32 && !defined __GNUC__
+	#include <new.h>
+#else
 	#include <new>
 	using namespace std;
-#else
-	#include <new.h>
 #endif
 #endif
 
@@ -46,13 +46,13 @@ static void my_new_handler(  )
 
 void init_exceptions()
 {
-	#ifdef _WIN32
+    #if defined _WIN32 && !defined __GNUC__
 	_set_new_handler(my_new_handler);
 	#else
 	set_new_handler(my_new_handler);
 	#endif
 }
-  
+
 static coom oom;
 
 void cexception::destroy()
