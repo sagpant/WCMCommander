@@ -269,23 +269,11 @@ NCWin::NCWin()
 	}
 	
 	// apply saved panel paths
-	
-	FSPath path;
-
 //	printf( "Left = %s\n", wcmConfig.leftPanelPath.ptr() );
-	
-#if defined(_WIN32)
-	int cs = CS_UNICODE;
-#else
-	int cs = sys_charset_id;
-#endif
-	path.Set( cs, wcmConfig.leftPanelPath.ptr( ) );
-	_leftPanel.LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
-
 //	printf( "Right = %s\n", wcmConfig.rightPanelPath.ptr() );
 
-	path.Set( cs, wcmConfig.rightPanelPath.ptr( ) );
-	_rightPanel.LoadPath(new FSSys(), path, 0, 0, PanelWin::SET); 
+	_leftPanel.LoadPathStringSafe( wcmConfig.leftPanelPath.ptr() );
+	_rightPanel.LoadPathStringSafe( wcmConfig.rightPanelPath.ptr() );
 }
 
 bool NCWin::EventClose()
