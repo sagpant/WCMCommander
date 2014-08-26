@@ -158,6 +158,8 @@ public:
 
 void OperRDThread::Run()
 {
+	if ( !fs.Ptr() ) return;
+
 	int n = 8;
 	int ret_err;
 
