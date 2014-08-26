@@ -46,6 +46,7 @@ struct ButtonWinData {
 extern ButtonWinData panelNormalButtons[];
 extern ButtonWinData panelControlButtons[];
 extern ButtonWinData panelShiftButtons[];
+extern ButtonWinData panelAltButtons[];
 extern ButtonWinData editNormalButtons[];
 extern ButtonWinData editShiftButtons[];
 extern ButtonWinData editCtrlButtons[];

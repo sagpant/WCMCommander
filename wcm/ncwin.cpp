@@ -1578,7 +1578,7 @@ void NCWin::CheckKM(bool ctrl, bool alt, bool shift, bool pressed, int ks)
 		if (ctrl) {
 			data = panelControlButtons;
 		} else if (alt) {
-			data = 0;
+			data = panelAltButtons;
 		} else if (shift) {
 			data = panelShiftButtons;
 		} else data = panelNormalButtons;
@@ -2361,6 +2361,21 @@ ButtonWinData panelControlButtons[]=
 	{"Size",ID_SORT_BY_SIZE},
 	{"Unsort",ID_UNSORT},
 	{"",0},
+	{"",0},
+	{"",0},
+	{0}
+};
+
+ButtonWinData panelAltButtons[]=
+{
+	{"Left",0},
+	{"Right",0},
+	{"",0},
+	{"",0},
+	{"",0},
+	{"",0},
+	{"Find",ID_SEARCH_2},
+	{"History",ID_HISTORY},
 	{"",0},
 	{"",0},
 	{0}
