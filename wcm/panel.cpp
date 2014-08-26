@@ -216,6 +216,12 @@ static bool accmask_nocase_begin(const unicode_t *name, const unicode_t *mask)
 
 bool PanelWin::Search(unicode_t *mask)
 {
+//	printf( "mask = %S (%p)\n", (wchar_t*)mask, mask );
+
+	// always match the empty mask with any file
+	if ( !mask ) return true;
+	if ( !*mask ) return true;
+
 	int cur = Current();
 	int cnt = Count();
 	
