@@ -12,6 +12,13 @@ https://github.com/corporateshark/WalCommander
 
 =============================
 
+The purpose of this project is to create a multi-platform open source file manager (Windows, Linux, FreeBSD, OS X) mimicking the 
+look-n-feel of Far Manager.
+
+Currently Wal Commander runs on Windows, Linux and FreeBSD.
+
+=============================
+
 Features:
 ---------
 
