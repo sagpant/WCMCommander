@@ -1632,8 +1632,6 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 	
 	unsigned mod = pEvent->Mod();
 	unsigned fullKey = (pEvent->Key() & 0xFFFF) + (mod << 16);
-	
-#define FC(key, mods) (((key)&0xFFFF) + ((mods)<<16))
 
 	bool shift = (pEvent->Mod() & KM_SHIFT)!=0;
 	if (!shift) _shiftSelectType = -1;

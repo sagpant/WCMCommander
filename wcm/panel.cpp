@@ -76,7 +76,7 @@ bool PanelSearchWin::Command(int id, int subId, Win *win, void *data)
 	{
 		carray<unicode_t> text = _edit.GetText();
 		
-		if (!_parent->Search(text.ptr()))
+		if ( !_parent->Search(text.ptr(), false) )
 		{
 			unicode_t empty = 0;
 			_edit.SetText(oldMask.ptr() ? oldMask.ptr() : &empty);
@@ -120,9 +120,18 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 {
 	if (pEvent->Type() != EV_KEYDOWN) return false;
 	
+	bool ctrl = (pEvent->Mod() & KM_CTRL)!=0;
+
+	if ( ctrl && pEvent->Key() == VK_RETURN )
+	{
+		carray<unicode_t> text = _edit.GetText();
+		_parent->Search( text.ptr(), true );
+		return false;
+	}
+
 	wchar_t c = pEvent->Char();
 	if (c && c>=0x20) return false;
-	
+
 //	printf( "Key = %x\n", pEvent->Key() );
 
 	switch (pEvent->Key()) {
@@ -214,7 +223,7 @@ static bool accmask_nocase_begin(const unicode_t *name, const unicode_t *mask)
 }
 
 
-bool PanelWin::Search(unicode_t *mask)
+bool PanelWin::Search(unicode_t *mask, bool SearchForNext)
 {
 //	printf( "mask = %S (%p)\n", (wchar_t*)mask, mask );
 
@@ -226,8 +235,10 @@ bool PanelWin::Search(unicode_t *mask)
 	int cnt = Count();
 	
 	int i;
+
+	int ofs = SearchForNext ? 1 : 0;
 	
-	for (i = cur; i < cnt; i++)
+	for (i = cur+ofs; i < cnt; i++)
 	{
 		const unicode_t *name = _list.GetFileName(i);;
 		if (name && accmask_nocase_begin(name, mask)) {
@@ -236,7 +247,7 @@ bool PanelWin::Search(unicode_t *mask)
 		}
 	}
 	
-	for (i = 0; i < cnt-1; i++)
+	for (i = 0; i < cnt-1+ofs; i++)
 	{
 		const unicode_t *name = _list.GetFileName(i);
 		if (name && accmask_nocase_begin(name, mask)) {

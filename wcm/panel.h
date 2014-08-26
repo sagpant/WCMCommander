@@ -13,6 +13,8 @@
 #include "fileopers.h"
 #include "panel_list.h"
 
+#define FC(key, mods) (((key)&0xFFFF) + ((mods)<<16))
+
 using namespace wal;
 
 extern int uiClassPanel;
@@ -196,7 +198,7 @@ public:
 	void DisableSort();
 	
 	cptr<cevent_key> QuickSearch(cevent_key *key);
-	bool Search(unicode_t *s);
+	bool Search(unicode_t *s, bool SearchForNext);
 	
 	void SetCurrent(int n);
 	bool SetCurrent(FSString &a);
