@@ -278,6 +278,8 @@ NCWin::NCWin()
 
 bool NCWin::EventClose()
 {
+	wcmConfig.Save( this );
+
 	switch (_mode) {
 	case PANEL: if (!Blocked()) AppExit();  break; //&& NCMessageBox(this, "Quit", "Do you want to quit?", false) == CMD_OK
 	case EDIT: if (!Blocked()) EditExit(); break;
@@ -963,8 +965,11 @@ void NCWin::CreateDirectory()
 
 void NCWin::QuitQuestion()
 {
-	if (NCMessageBox(this, _LT("Quit"), _LT("Do you want to quit?"), false, bListOkCancel) == CMD_OK)
+	if ( NCMessageBox( this, _LT( "Quit" ), _LT( "Do you want to quit?" ), false, bListOkCancel ) == CMD_OK )
+	{
+		wcmConfig.Save( this );
 		AppExit();
+	}
 }
 
 void NCWin::View()
