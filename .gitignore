@@ -36,3 +36,7 @@ wcm/*.layout
 
 Debug/
 Release/
+
+libssh2/dll32/
+
+

@@ -1,0 +1,56 @@
+How to build libssh in all-static-linked 32-bit for WalCommander
+
+** Pre-requisites
+- Visual Studio C++ 2008 AKA VC9
+- Perl (from cygwin, to configure openssl)
+
+** Download the files
+zlib-1.2.8.tar.gz 
+openssl-0.9.8zb.tar.gz 
+libssh2-1.4.3.tar.gz 
+
+and unpack them to 3 folders:
+libssh2-1.4.3/
+openssl-0.9.8zb/
+zlib-1.2.8/
+
+** Set VC9 command-line environment
+"C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat"
+
+4. Build zlib
+In the file zlib-1.2.8\win32\Makefile.msc, line "CFLAGS  =..." 
+replace "-MD" (use C runtime as DLL) to "-MT" (use C static runtime)
+
+cd zlib-1.2.8 
+nmake -f win32\Makefile.msc
+cd ..
+
+This will create static library, DLL and implib files: zlib.lib zdll.lib zlib1.dll in the zlib-1.2.8 folder
+
+** Build openssl lib (detailed instructions are in openssl-0.9.8zb\INSTALL.W32)
+==in cygwin console== 
+  (otherwise CRLF in '>' output may not match perl open() input)
+cd openssl-0.9.8zb
+perl Configure VC-WIN32 zlib --with-zlib-lib=../zlib-1.2.8/zlib.lib --with-zlib-include=../zlib-1.2.8 --prefix=c:/some/openssl/dir
+ms/do_masm
+nmake -f ms/nt.mak
+
+** Build, and test openssh.lib
+Replace the file libssh2-1.4.3\win32\libssh2.vcproj to provided one.
+In Visual Studio 9 open workspace libssh2-1.4.3\win32\libssh2.sln, select configuration "Release_lib",
+and build 'libssh2', and 'tests' target
+Run tests from IDE, and ensure that it does not complain
+
+** Results of the build are the files
+zlib-1.2.8\zlib.lib 
+out32/ssleay32.lib 
+out32/libeay32.lib 
+win32/Release_lib/libssh2.lib 
+
+Copy these files to WalCommander/libssh2/static32
+
+Thanks to the link:
+http://chaosstuff.com/2013/07/07/build-libssh2-on-visual-studio-2010/
+--
+Oleg
+
