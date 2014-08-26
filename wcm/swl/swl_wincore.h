@@ -147,7 +147,10 @@ enum Keyboard {
 	VK_W = 0x57,
 	VK_X = 0x58,
 	VK_Y = 0x59,
-	VK_Z = 0x5A
+	VK_Z = 0x5A,
+
+	VK_BRACKETLEFT = 219,
+	VK_BRACKETRIGHT = 221,
 };
 
 
@@ -219,6 +222,8 @@ enum Keyboard {
 	VK_9 = XK_9,
 	VK_0 = XK_0,
 		
+	VK_BRACKETLEFT = XK_bracketleft,
+	VK_BRACKETRIGHT = XK_bracketright,
 
 #define S(a) VK_##a = XK_##a
 	S(A), 

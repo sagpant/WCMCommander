@@ -274,6 +274,11 @@ private:
 	void SetToolbarPanel();
 	void SetToolbarEdit();
 	void SetToolbarView();
+
+	void PastePanelPath(PanelWin* p);
+
+	/// paste file or folder name to the command line, add quotes if the name contains spaces
+	void PasteFileNameToCommandLine( const unicode_t *path );
 	
 	void CheckKM(bool ctrl, bool alt, bool shift, bool pressed, int ks);
 	

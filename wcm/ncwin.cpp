@@ -2,19 +2,18 @@
 	Copyright (c) by Valery Goryachev (Wal) 2010
 */
 
+#include <sys/types.h>
+
 #ifdef _WIN32
 #	include <winsock2.h>
+#else
+#	include <signal.h>
+#	include <sys/wait.h>
 #endif
 
 #include "ncwin.h"
 #include "wcm-config.h"
 #include "ncfonts.h"
-#include <sys/types.h>
-
-#ifndef _WIN32
-#	include <signal.h>
-#	include <sys/wait.h>                                                                                                                                                            
-#endif
 
 #include "eloadsave.h"
 #include "vfs-uri.h"
@@ -1093,7 +1092,7 @@ static bool StrHaveSpace(const unicode_t *s)
 
 const unicode_t* NCWin::GetCurrentFileName() const
 {
-	if (_panel->IsVisible()) 
+	if (_panel->IsVisible())
 	{
 		const unicode_t *p = _panel->GetCurrentFileName();
 		
@@ -1109,27 +1108,44 @@ const unicode_t* NCWin::GetCurrentFileName() const
 	return NULL;
 }
 
+void  NCWin::PasteFileNameToCommandLine( const unicode_t *path )
+{
+	if (path)
+	{
+		bool spaces = StrHaveSpace(path);
+		if (spaces) _edit.Insert('"');
+		_edit.Insert(path);
+		if (spaces) _edit.Insert('"');
+		_edit.Insert(' ');
+	}
+}
+
+void NCWin::PastePanelPath(PanelWin* panel)
+{
+	if (_mode != PANEL) return;
+	if (panel->IsVisible())
+	{
+		const unicode_t *p = panel->GetPath().GetUnicode();
+
+		PasteFileNameToCommandLine(p);
+	}
+}
+
 void NCWin::CtrlEnter()
 {
 	if (_mode != PANEL) return;
 	if (_panel->IsVisible()) 
 	{
 		const unicode_t *p = GetCurrentFileName();
-		if (p)
-		{
-			bool spaces = StrHaveSpace(p);
-			if (spaces) _edit.Insert('"');
-			_edit.Insert(p);
-			if (spaces) _edit.Insert('"');
-			_edit.Insert(' ');
-		}
+
+		PasteFileNameToCommandLine(p);
 	}
 }
 
 void NCWin::CtrlF()
 {
 	if (_mode != PANEL) return;
-	if (_panel->IsVisible()) 
+	if (_panel->IsVisible())
 	{
 		FSString uri = _panel->UriOfCurrent();
 		const unicode_t *str = uri.GetUnicode();
@@ -1544,7 +1560,6 @@ void NCWin::ExecNoTerminalProcess(unicode_t *p)
 }
 #endif
 
-
 void NCWin::Tab(bool forceShellTab)
 {
 	if (_mode != PANEL) return;
@@ -1843,9 +1858,22 @@ bool NCWin::OnKeyDown(Win *w, cevent_key* pEvent, bool pressed)
 			
 		case FC(VK_NUMPAD_RETURN, KM_CTRL): 
 		case FC(VK_RETURN, KM_CTRL): 
-			if (_edit.IsVisible()) 
+			if (_edit.IsVisible())
 				CtrlEnter();
 			break;
+
+		case FC(VK_BRACKETLEFT, KM_CTRL):
+			{
+				if (_edit.IsVisible())
+					PastePanelPath( &_leftPanel );
+				break;
+			}
+		case FC(VK_BRACKETRIGHT, KM_CTRL):
+			{
+				if (_edit.IsVisible())
+					PastePanelPath( &_rightPanel );
+				break;
+			}
 
 		case VK_TAB: Tab(false); break;
 		case FC(VK_TAB, KM_SHIFT): Tab(true); break;
