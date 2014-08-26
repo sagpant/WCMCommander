@@ -1347,6 +1347,16 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 		DrawFooter(gc);	
 }
 
+void PanelWin::LoadPathStringSafe( const char* path )
+{
+	if ( !path || !*path ) return;
+
+	FSPath fspath;
+
+	FSPtr fs = ParzeURI( utf8_to_unicode( path ).ptr(), fspath, 0, 0 );
+
+	this->LoadPath( fs, fspath, 0, 0, PanelWin::SET );
+}
 
 void PanelWin::LoadPath(FSPtr fs, FSPath &paramPath, FSString *current, cptr<cstrhash<bool,unicode_t> > selected, LOAD_TYPE lType)
 {

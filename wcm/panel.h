@@ -208,6 +208,7 @@ public:
 	void SetViewMode(int m){ *_viewMode = m; Check(); SetScroll(); Invalidate(); }
 
 	void LoadPath(FSPtr fs, FSPath &path, FSString *current, cptr<cstrhash<bool,unicode_t> > selected, LOAD_TYPE lType);
+	void LoadPathStringSafe( const char* path );
 	
 	void Reread(bool resetCurrent = false);
 
