@@ -965,6 +965,12 @@ public:
 	void SetTabFocusFlag(bool enable){ if (enable) whint|=WH_TABFOCUS; else whint&=~WH_TABFOCUS; }
 	void SetClickFocusFlag(bool enable){ if (enable) whint|=WH_CLICKFOCUS; else whint&=~WH_CLICKFOCUS; }
 
+	virtual void Repaint()
+	{
+		wal::GC gc( this );
+		this->Paint( gc, this->ClientRect() );
+	}
+
 	void Show(SHOW_TYPE type = SHOW_ACTIVE);
 	void Hide();
 
