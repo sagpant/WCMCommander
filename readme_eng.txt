@@ -2,9 +2,9 @@
     https://github.com/corporateshark/WalCommander
 =======================================================
 
-Dual pane file manager with
+Dual panel file manager with
 
-- internal terminal emulator
+- terminal emulator
 - built-on editor
 - built-ontext viewer
 - virtual file systems: smb, ftp, sftp
