@@ -89,7 +89,7 @@ void init_exceptions();
 
 //////////////////////// ///////////////////////////////////////////////////////////
 
-#define CLASS_COPY_PROTECTION(a) private: a(const a&){}; a& operator = (const a&){};
+#define CLASS_COPY_PROTECTION(a) private: a(const a&){}; a& operator = (const a&){return *this;};
 
 ////////////////////////  C++ thread wrappers //////////////////////////////////////
 extern void (*thread_error_func)(int err, const char *msg, const char *file, int *line); //by default - abort process
