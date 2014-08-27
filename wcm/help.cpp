@@ -111,7 +111,7 @@ struct HelpNode {
 	cpoint _pos; //относительно хозяина (хозяином и выставляется после prepare)
 	cpoint _size; //текущая ширина и высота
 
-	HelpNode(HelpStyle *style, int min = 0, int max = 10000):_style(style), _min(min), _max(_max), _pos(0,0), _size(0,0){}
+	HelpNode(HelpStyle *style, int min = 0, int max = 10000):_style(style), _min(min), _max(max), _pos(0,0), _size(0,0){}
 	virtual void Init(HelpGC &gc); //инициализируется по данным и определяет min и max
 	virtual void Prepare(int width); //подготовка к размеру, выставляет _size
 	virtual void Paint(HelpGC &gc, int x, int y, bool selected, crect visibleRect); //нарисовать в нужном месте (обязан зарисовать весь размер _size)
