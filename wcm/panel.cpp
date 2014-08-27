@@ -29,7 +29,7 @@ PanelSearchWin::PanelSearchWin(PanelWin *parent, cevent_key *key)
 :	Win(Win::WT_CHILD, 0, parent, 0, uiPanelSearchWin),
 	_parent(parent),
 	_edit(0, this, 0, 0, 16, true),
-	_static(0, this, utf8_to_unicode( _LT("Search:") ).ptr()), 
+	_static(0, this, utf8_to_unicode( _LT("Search:") ).ptr()),
 	_lo(3, 4)
 {
 	_lo.AddWin(&_static, 1, 1);
@@ -42,14 +42,14 @@ PanelSearchWin::PanelSearchWin(PanelWin *parent, cevent_key *key)
 	_static.Show(); _static.Enable();
 	SetLayout(&_lo);
 	RecalcLayouts();
-		
+
 	LSize ls = _lo.GetLSize();
 	ls.x.maximal = ls.x.minimal;
 	ls.y.maximal = ls.y.minimal;
 	SetLSize(ls);
-	
+
 	if (_parent) _parent->RecalcLayouts();
-	
+
 	if (key) _edit.EventKey(key);
 }
 
@@ -75,7 +75,7 @@ void PanelSearchWin::Paint(wal::GC &gc, const crect &paintRect)
 
 cfont* PanelSearchWin::GetChildFont(Win *w, int fontId)
 {
-	return dialogFont.ptr();	
+	return dialogFont.ptr();
 }
 
 bool PanelSearchWin::Command(int id, int subId, Win *win, void *data)
@@ -83,12 +83,12 @@ bool PanelSearchWin::Command(int id, int subId, Win *win, void *data)
 	if (id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_CHANGED)
 	{
 		carray<unicode_t> text = _edit.GetText();
-		
+
 		if ( !_parent->Search(text.ptr(), false) )
 		{
 			unicode_t empty = 0;
 			_edit.SetText(oldMask.ptr() ? oldMask.ptr() : &empty);
-		} else 
+		} else
 			oldMask = text;
 
 		this->Repaint();
@@ -116,7 +116,7 @@ bool PanelSearchWin::EventMouse(cevent_mouse* pEvent)
 {
 	switch (pEvent->Type())	{
 	case EV_MOUSE_DOUBLE:
-	case EV_MOUSE_PRESS:	
+	case EV_MOUSE_PRESS:
 	case EV_MOUSE_RELEASE:
 		ReleaseCapture();
 		EndSearch(0);
@@ -131,7 +131,7 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 	this->Repaint();
 
 	if (pEvent->Type() != EV_KEYDOWN) return false;
-	
+
 	bool ctrl = (pEvent->Mod() & KM_CTRL)!=0;
 
 	if ( ctrl && pEvent->Key() == VK_RETURN )
@@ -147,15 +147,17 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 //	printf( "Key = %x\n", pEvent->Key() );
 
 	switch (pEvent->Key()) {
+#ifdef _WIN32
 		case VK_CONTROL:
+		case VK_SHIFT:
+#endif
 		case VK_LCONTROL:
 		case VK_RCONTROL:
-		case VK_SHIFT:
 		case VK_LSHIFT:
 		case VK_RSHIFT:
 		case VK_LMENU:
 		case VK_RMENU:
-		case VK_BACK: 
+		case VK_BACK:
 		case VK_DELETE:
 		// this comes from 0xfe08 XK_ISO_Next_Group, workaround for https://github.com/corporateshark/WalCommander/issues/22
 		case 0xfe08:
@@ -165,9 +167,9 @@ bool PanelSearchWin::EventChildKey(Win* child, cevent_key* pEvent)
 			EndSearch( NULL );
 			return false;
 	}
-	
+
 	EndSearch(pEvent);
-	
+
 	return true;
 }
 
@@ -185,7 +187,7 @@ bool PanelSearchWin::EventShow(bool show)
 		_edit.SetFocus();
 		SetCapture();
 	} else
-		if (IsCaptured()) 
+		if (IsCaptured())
 			ReleaseCapture();
 	return true;
 }
@@ -201,21 +203,21 @@ cptr<cevent_key> PanelWin::QuickSearch(cevent_key *key)
 	r.right = r.left + ls.x.minimal;
 	r.bottom = r.top + ls.y.minimal;
 	_search->Move(r);
-	
+
 	_search->DoModal();
-	
+
 	cptr<cevent_key> ret = _search->ret_key;
 	_search = 0;
-	
+
 	return ret;
 }
 
 static bool accmask_nocase_begin(const unicode_t *name, const unicode_t *mask)
 {
-	if (!*mask) 
+	if (!*mask)
 		return *name == 0;
-	
-	while (true) 
+
+	while (true)
 	{
 		switch (*mask) {
 		case 0:
@@ -225,12 +227,12 @@ static bool accmask_nocase_begin(const unicode_t *name, const unicode_t *mask)
 			while (*mask == '*') mask++;
 			if (!*mask) return true;
 			for (; *name; name++ )
-				if (accmask_nocase_begin(name, mask)) 
+				if (accmask_nocase_begin(name, mask))
 					return true;
 			return false;
 		default:
-			if (UnicodeLC(*name) != UnicodeLC(*mask)) 
-				return false; 
+			if (UnicodeLC(*name) != UnicodeLC(*mask))
+				return false;
 		}
 		name++; mask++;
 	}
@@ -247,11 +249,11 @@ bool PanelWin::Search(unicode_t *mask, bool SearchForNext)
 
 	int cur = Current();
 	int cnt = Count();
-	
+
 	int i;
 
 	int ofs = SearchForNext ? 1 : 0;
-	
+
 	for (i = cur+ofs; i < cnt; i++)
 	{
 		const unicode_t *name = _list.GetFileName(i);;
@@ -260,7 +262,7 @@ bool PanelWin::Search(unicode_t *mask, bool SearchForNext)
 			return true;
 		}
 	}
-	
+
 	for (i = 0; i < cnt-1+ofs; i++)
 	{
 		const unicode_t *name = _list.GetFileName(i);
@@ -276,7 +278,7 @@ bool PanelWin::Search(unicode_t *mask, bool SearchForNext)
 void PanelWin::SortByName()
 {
 	FSNode *p = _list.Get(_current);
-	if (_list.SortMode() == PanelList::SORT_NAME) 
+	if (_list.SortMode() == PanelList::SORT_NAME)
 		_list.Sort(PanelList::SORT_NAME, !_list.AscSort());
 	else
 		_list.Sort(PanelList::SORT_NAME, true);
@@ -287,7 +289,7 @@ void PanelWin::SortByName()
 void PanelWin::SortByExt()
 {
 	FSNode *p = _list.Get(_current);
-	if (_list.SortMode()==PanelList::SORT_EXT) 
+	if (_list.SortMode()==PanelList::SORT_EXT)
 		_list.Sort(PanelList::SORT_EXT, !_list.AscSort());
 	else
 		_list.Sort(PanelList::SORT_EXT, true);
@@ -298,7 +300,7 @@ void PanelWin::SortByExt()
 void PanelWin::SortBySize()
 {
 	FSNode *p = _list.Get(_current);
-	if (_list.SortMode()==PanelList::SORT_SIZE) 
+	if (_list.SortMode()==PanelList::SORT_SIZE)
 		_list.Sort(PanelList::SORT_SIZE, !_list.AscSort());
 	else
 		_list.Sort(PanelList::SORT_SIZE, true);
@@ -309,7 +311,7 @@ void PanelWin::SortBySize()
 void PanelWin::SortByMTime()
 {
 	FSNode *p = _list.Get(_current);
-	if (_list.SortMode()==PanelList::SORT_MTIME) 
+	if (_list.SortMode()==PanelList::SORT_MTIME)
 		_list.Sort(PanelList::SORT_MTIME, !_list.AscSort());
 	else
 		_list.Sort(PanelList::SORT_MTIME, true);
@@ -328,17 +330,17 @@ void PanelWin::DisableSort()
 
 FSString PanelWin::UriOfDir()
 {
-	FSString s; 
-	FS *fs = _place.GetFS(); 
-	if (!fs) return s; 
-	return fs->Uri(GetPath()); 
+	FSString s;
+	FS *fs = _place.GetFS();
+	if (!fs) return s;
+	return fs->Uri(GetPath());
 }
-	
+
 FSString PanelWin::UriOfCurrent()
 {
-	FSString s; 
-	FS *fs = _place.GetFS(); 
-	if (!fs) return s; 
+	FSString s;
+	FS *fs = _place.GetFS();
+	if (!fs) return s;
 	FSPath path = GetPath();
 	FSNode *node = GetCurrent();
 	if (node) path.PushStr(node->Name());
@@ -364,7 +366,7 @@ void PanelWin::OnChangeStyles()
 	gc.Set(GetFont());
 	_letterSize[0] = gc.GetTextExtents(ABCString);
 	_letterSize[0].x /= ABCStringLen;
-	
+
 	gc.Set(GetFont(1));
 	_letterSize[1] = gc.GetTextExtents(ABCString);
 	_letterSize[1].x /= ABCStringLen;
@@ -379,7 +381,7 @@ void PanelWin::OnChangeStyles()
 	if (headerH<10) headerH=10;
 	_lo.LineSet(1,headerH);
 	_lo.LineSet(2,1);
-	
+
 	int footH = _letterSize[1].y*3 + 3 + 3;
 
 //	if (footH<20) footH=20;
@@ -392,8 +394,8 @@ void PanelWin::OnChangeStyles()
 		_itemHeight = 16;
 
 	RecalcLayouts(); //получается двойной пересчет, но хер ли делать
-		
-//как в EventSize (подумать)	
+
+//как в EventSize (подумать)
 	Check();
 	bool v = _scroll.IsVisible();
 	SetCurrent(_current);
@@ -418,7 +420,7 @@ static int* CheckMode(int *m)
 }
 
 PanelWin::PanelWin(Win *parent, int *mode)
-:	
+:
 	NCDialogParent(WT_CHILD, 0, 0, parent),
 	_lo(7,4),
 	_scroll(0, this, true), //, false), //bug with autohide and layouts
@@ -447,17 +449,17 @@ PanelWin::PanelWin(Win *parent, int *mode)
 	_lo.AddRect(&_headRect, 1, 1, 1, 2);
 	_lo.AddRect(&_centerRect, 3, 1);
 	_lo.AddRect(&_footRect, 5, 1, 5, 2);
-	
+
 	_lo.AddWin(&_scroll, 3, 2);
-		
-	
+
+
 	OnChangeStyles();
-	
+
 	_scroll.SetManagedWin(this);
 	_scroll.Enable();
 	_scroll.Show(Win::SHOW_INACTIVE);
-	
-	NCDialogParent::AddLayout(&_lo); 
+
+	NCDialogParent::AddLayout(&_lo);
 
 
 	try {
@@ -504,7 +506,7 @@ void PanelWin::SetScroll()
 
 bool PanelWin::Command(int id, int subId, Win *win, void *data)
 {
-	if (id != CMD_SCROLL_INFO) 
+	if (id != CMD_SCROLL_INFO)
 		return false;
 
 	int n = _first;
@@ -517,12 +519,12 @@ bool PanelWin::Command(int id, int subId, Win *win, void *data)
 	case SCMD_SCROLL_TRACK: n = ((int*)data)[0]; break;
 	}
 
-	if (n + pageSize > _list.Count()) 
+	if (n + pageSize > _list.Count())
 		n = _list.Count()-pageSize;
 
 	if (n<0) n = 0;
 
-	if (n != _first) 
+	if (n != _first)
 	{
 		_first = n;
 		SetScroll();
@@ -533,12 +535,12 @@ bool PanelWin::Command(int id, int subId, Win *win, void *data)
 
 bool PanelWin::Broadcast(int id, int subId, Win *win, void *data)
 {
-	if (id == ID_CHANGED_CONFIG_BROADCAST) 
+	if (id == ID_CHANGED_CONFIG_BROADCAST)
 	{
 		FSNode *node = GetCurrent();
 		FSString s;
 		if (node) s.Copy(node->Name());
-	
+
 		bool a = _list.SetShowHidden(wcmConfig.panelShowHiddenFiles);
 		bool b = _list.SetCase(wcmConfig.panelCaseSensitive);
 
@@ -549,16 +551,16 @@ bool PanelWin::Broadcast(int id, int subId, Win *win, void *data)
 		Invalidate();
 
 //		}
-		
+
 		return true;
-	} 
+	}
 	return false;
 }
 
 
 #define VLINE_WIDTH (3)
 #define MIN_BRIEF_CHARS 12
-#define MIN_MEDIUM_CHARS 18 
+#define MIN_MEDIUM_CHARS 18
 
 void PanelWin::Check()
 {
@@ -566,9 +568,9 @@ void PanelWin::Check()
 	int height = _centerRect.Height();
 
 	int cols;
-	
+
 	CheckMode(_viewMode);
-	
+
 	switch (*_viewMode) {
 	case FULL:
 	case FULL_ST:
@@ -582,23 +584,23 @@ void PanelWin::Check()
 		{
 			cols = 100;
 			int minChars = (*_viewMode == BRIEF) ? MIN_BRIEF_CHARS : MIN_MEDIUM_CHARS;
-	       
+
 			if (width < cols * minChars * _letterSize[0].x + (cols-1)*VLINE_WIDTH)
 			{
 				cols = (width + VLINE_WIDTH)/(minChars*_letterSize[0].x + VLINE_WIDTH);
 				if (cols<1) cols = 1;
 			}
-	
+
 			if (*_viewMode != BRIEF && cols>3) cols = 3;
 		}
 	};
-	
+
 	int rows = height/_itemHeight;
-	if (rows < 1) rows = 1;               
-	
+	if (rows < 1) rows = 1;
+
 	if (rows>100) rows = 100;
 	if (cols>100) cols = 100;
-	
+
 	_cols = cols;
 	_rows = rows;
 
@@ -632,7 +634,7 @@ void PanelWin::Check()
 		_emptyRectList[c] = crect(x, y, x+w, _centerRect.bottom);
 
 		if (c < _vLineRectList.count())
-			_vLineRectList[c] = crect(x+w, _centerRect.top, 
+			_vLineRectList[c] = crect(x+w, _centerRect.top,
 				x+w+VLINE_WIDTH, _centerRect.bottom);
 
 		x += w+VLINE_WIDTH;
@@ -703,7 +705,7 @@ void PanelWin::DrawVerticalSplitters( wal::GC &gc, const crect& rect )
 
 		int fileW = minFileNameWidth*_letterSize[0].x;
 		int sizeW = sizeWidth*_letterSize[0].x;
-		int dateW = dateWidth*_letterSize[0].x;		
+		int dateW = dateWidth*_letterSize[0].x;
 		int timeW = timeWidth*_letterSize[0].x;
 
 		int sizeX = (width - sizeW - dateW - timeW) < fileW ? fileW : width - sizeW - dateW -  timeW;
@@ -712,7 +714,7 @@ void PanelWin::DrawVerticalSplitters( wal::GC &gc, const crect& rect )
 		int timeX = dateX + dateW;
 
 		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
-		
+
 		gc.MoveTo( sizeX, rect.top );
 		gc.LineTo( sizeX, rect.bottom );
 
@@ -759,7 +761,7 @@ int PanelWin::GetXMargin() const
 	} else {
 		x += dirPrefixW;
 	}
-	
+
 	x += 4;
 
 	return x;
@@ -777,13 +779,13 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	bool isExe = !isDir && p && p->IsExe();
 	bool isBad = p && p->IsBad();
 	bool isSelected = p && p->IsSelected();
-	bool isHidden = p && p->IsHidden();	
-	
+	bool isHidden = p && p->IsHidden();
+
 	/*
 	PanelItemColors color;
 	panelColors->itemF(&color, _inOperState, active, isSelected, isBad, isHidden, isDir, isExe);
 	*/
-	
+
 	UiCondList ucl;
 	if (isDir) ucl.Set(uiDir, true);
 	if (isExe) ucl.Set(uiExe, true);
@@ -794,13 +796,13 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	if (isSelected) ucl.Set(uiSelected, true);
 	if (_inOperState) ucl.Set(uiOperState, true);
 	if (n < _list.Count() && (n % 2) == 0) ucl.Set(uiOdd, true);
-		
+
 	int color_text = UiGetColor(uiColor, uiItem, &ucl, 0x0);
 	int color_bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
 	int color_shadow = UiGetColor(uiBackground, uiItem, &ucl, 0);
 
 	gc.SetFillColor(color_bg);
-	
+
 	crect rect = _rectList[pos];
 
 	gc.SetClipRgn( &rect );
@@ -816,7 +818,7 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 	if (n<0 || n>=_list.Count()) return;
 
 #if USE_3D_BUTTONS
-	if (active) 
+	if (active)
 		Draw3DButtonW2(gc, rect, color_bg, true);
 #endif
 
@@ -832,12 +834,12 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 			case FSNode::SERVER:
 				serverIcon.DrawF(gc,x,y);
 				break;
-				
+
 			case FSNode::WORKGROUP:
 				workgroupIcon.DrawF(gc,x,y);
 				break;
-				
-			default: 
+
+			default:
 				if (( ((color_bg>>16)&0xFF)+((color_bg>>8)&0xFF)+(color_bg&0xFF)) < 0x80*3)
 					folderIcon.DrawF(gc,x,y);
 				else
@@ -847,7 +849,7 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 			gc.TextOutF(x, y, dirPrefix);
 			//x += dirPrefixW;
 		}
-	} else 
+	} else
 	if (isExe)
 	{
 		if (wcmConfig.panelShowIcons) {
@@ -858,40 +860,40 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		}
 	} else {
 	}
-	
+
 	x += GetXMargin();
-	
+
 	if (isSelected)
 	{
 		gc.SetTextColor(color_shadow);
 		gc.TextOut(x+1, y+1, _list.GetFileName(n));
 		gc.SetTextColor(color_text);
 	}
-	
-	
-	if (*_viewMode == FULL_ST) 
+
+
+	if (*_viewMode == FULL_ST)
 	{
 //		FSNode *p = _list.Get(n);
-		
+
 		int width = rect.Width();
-		
+
 		int fileW = minFileNameWidth*_letterSize[0].x;
 		int sizeW = sizeWidth*_letterSize[0].x;
-		int dateW = dateWidth*_letterSize[0].x;		
+		int dateW = dateWidth*_letterSize[0].x;
 		int timeW = timeWidth*_letterSize[0].x;
 
 		int sizeX = (width - sizeW - dateW - timeW) < fileW ? fileW : width - sizeW - dateW - timeW;
 		sizeX += rect.left;
 		int dateX = sizeX + sizeW;
-		int timeX = dateX + dateW;		
+		int timeX = dateX + dateW;
 
-		if (p) 
+		if (p)
 		{
 			unicode_t ubuf[64];
 			p->st.GetPrintableSizeStr(ubuf);
 			cpoint size = gc.GetTextExtents(ubuf);
 			gc.TextOutF(sizeX + sizeW - size.x - _letterSize[0].x, y, ubuf);
-		
+
 			unicode_t buf[64]={0};
 			p->st.GetMTimeStr(buf);
 			gc.TextOutF(dateX + _letterSize[0].x, y, buf);
@@ -905,49 +907,49 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 		gc.LineTo( dateX, rect.bottom );
 		gc.MoveTo( timeX, rect.top );
 		gc.LineTo( timeX, rect.bottom );
-		
-		rect.right = sizeX; 
+
+		rect.right = sizeX;
 		gc.SetClipRgn(&rect);
-		
+
 	}
-	
-	if (*_viewMode == FULL_ACCESS) 
+
+	if (*_viewMode == FULL_ACCESS)
 	{
 		FSNode *p = _list.Get(n);
-		
+
 		int width = rect.Width();
-		
+
 		int accessW = accessWidth*_letterSize[0].x;
 		int userW = userWidth*_letterSize[0].x;
 		int groupW = groupWidth*_letterSize[0].x;
-		
+
 		int accessX = (width - accessW - userW - groupW) < minFileNameWidth*_letterSize[0].x ? minFileNameWidth*_letterSize[0].x : width - accessW - userW - groupW;
 		accessX += rect.left;
 		int userX = accessX + accessW;
 		int groupX = userX + userW;
 
 		gc.SetLine(UiGetColor(uiLineColor, uiItem, &ucl, 0xFF));
-/*				
+/*
 		gc.MoveTo(accessX, rect.top);
 		gc.LineTo(accessX, rect.bottom);
-		
+
 		gc.MoveTo(userX, rect.top);
 		gc.LineTo(userX, rect.bottom);
-		
+
 		gc.MoveTo(groupX, rect.top);
 		gc.LineTo(groupX, rect.bottom);
 */
-		if (p) 
+		if (p)
 		{
 			unicode_t ubuf[64];
 	 		gc.GetTextExtents(p->st.GetModeStr(ubuf));
 			gc.TextOutF(accessX + _letterSize[0].x, y, ubuf);
-			
+
 			crect cliprect(rect);
-			
+
 			cliprect.right = groupX;
 			gc.SetClipRgn(&cliprect);
-		
+
 			const unicode_t *userName = GetUserName(p->GetUID());
 			gc.TextOutF(userX + _letterSize[0].x, y, userName);
 
@@ -958,17 +960,17 @@ void PanelWin::DrawItem(wal::GC &gc,  int n)
 			gc.TextOutF(groupX + _letterSize[0].x, y, groupName);
 
 		}
-		
-		rect.right = accessX; 
+
+		rect.right = accessX;
 		gc.SetClipRgn(&rect);
-		
+
 	}
 
-	
+
 	if (active)
 	{
 		gc.TextOut(x, y, _list.GetFileName(n));
-	} else 
+	} else
 		gc.TextOutF(x, y, _list.GetFileName(n));
 }
 
@@ -983,14 +985,14 @@ void PanelWin::SetCurrent(int n, bool shift, int *selectType)
 
 	if (n >= _list.Count()) n = _list.Count()-1;
 	if (n < 0) n = 0;
-	
+
 //	if (n == _current) return;
 
 	int old = _current;
 	_current = n;
-	
+
 	bool fullRedraw = false;
-	
+
 	if (shift && selectType)
 	{
 		if (old == _current)
@@ -1020,7 +1022,7 @@ void PanelWin::SetCurrent(int n, bool shift, int *selectType)
 	{
 		_first = _current;
 		fullRedraw = true;
-	} else 
+	} else
 
 	if (_list.Count()- _first < _rectList.count() && _first>0)
 	{
@@ -1028,10 +1030,10 @@ void PanelWin::SetCurrent(int n, bool shift, int *selectType)
 		if (_first<0) _first = 0;
 		fullRedraw = true;
 	}
-	
+
 	SetScroll();
-	
-	if (fullRedraw) 
+
+	if (fullRedraw)
 	{
 		Invalidate();
 		return;
@@ -1073,12 +1075,12 @@ void DrawTextRightAligh(wal::GC &gc, int x, int y, const unicode_t *txt, int wid
 		gc.SetClipRgn(&r);
 		x = x + width - size.x;
 	}
-	
+
 	gc.TextOutF(x, y, txt);
-	
+
 	if (size.x > width)
 		gc.SetClipRgn();
-	
+
 }
 
 static int uiFooter = GetUiID("footer");
@@ -1089,15 +1091,15 @@ static int uiSummary = GetUiID("summary-color");
 void PanelWin::DrawFooter(wal::GC &gc)
 {
 	PanelCounter selectedCn = _list.SelectedCounter();
-	
+
 	UiCondList ucl;
 	if (IsSelectedPanel()) ucl.Set(uiSelectedPanel, true);
 	if (_inOperState) ucl.Set(uiOperState, true);
 	if (selectedCn.count > 0) ucl.Set(uiHaveSelected, true);
-		
+
 	int color_text = UiGetColor(uiColor, uiFooter, &ucl, 0x0);
 	int color_bg = UiGetColor(uiBackground, uiFooter, &ucl, 0xFFFFFF);
-	
+
 	gc.SetFillColor(color_bg);
 	crect tRect = _footRect;
 	gc.SetClipRgn(&tRect);
@@ -1106,7 +1108,7 @@ void PanelWin::DrawFooter(wal::GC &gc)
 
 	FSNode *cur = GetCurrent();
 	gc.Set(GetFont(1));
-	
+
 	if (_inOperState) {
 		unicode_t ub[512];
 		utf8_to_unicode( ub, _LT("...Loading...") );
@@ -1119,30 +1121,30 @@ void PanelWin::DrawFooter(wal::GC &gc)
 
 
 	{ //print files count and size
-		
+
 		PanelCounter selectedCn = _list.SelectedCounter();
 		PanelCounter filesCn = _list.FilesCounter();
 		int hiddenCount = _list.HiddenCounter().count;
-	
+
 		char b1[64];
 		unsigned_to_char<long long>(selectedCn.count > 0 ? selectedCn.size : filesCn.size , b1);
 		char b11[100];
 		SplitNumber_3(b1, b11);
-		
+
 		char b3[0x100] = "";
 		if (hiddenCount) sprintf(b3, _LT("(%i hidden)"), hiddenCount);
-		
+
 		char b2[128];
 				if (selectedCn.count)
 			sprintf(b2, _LT("%s bytes in %i selected files%s"), b11, selectedCn.count, b3);
 		else
 			sprintf(b2, _LT("%s bytes in %i files%s"), b11, filesCn.count, b3);
-			
-			
+
+
 		unicode_t ub[512];
-		
+
 		utf8_to_unicode( ub, b2);
-		
+
 		gc.SetTextColor(UiGetColor(uiSummary, uiFooter, &ucl, 0xFF));
 		cpoint size = gc.GetTextExtents(ub);
 		int x = (tRect.Width()-size.x)/2;
@@ -1150,16 +1152,16 @@ void PanelWin::DrawFooter(wal::GC &gc)
 		gc.TextOutF(x, tRect.top + 3, ub);
 	}
 
-	if (cur) 
+	if (cur)
 	{
 		gc.SetTextColor(color_text);
-		
+
 		int sizeTextW = 0;
-		
+
 		int y = tRect.top + 3;
 		y += _letterSize[1].y;
-		
-		if (!cur->extType) 
+
+		if (!cur->extType)
 		{
 			unicode_t ubuf[64];
 			cur->st.GetPrintableSizeStr(ubuf);
@@ -1167,20 +1169,20 @@ void PanelWin::DrawFooter(wal::GC &gc)
 			gc.TextOutF(tRect.right-size.x, y, ubuf);
 			sizeTextW = size.x;
 		}
-	
+
 		const unicode_t *name = cur->GetUnicodeName();
-		
+
 		int x = tRect.left + 5;
 		DrawTextRightAligh(gc, x, y, name, tRect.right - sizeTextW - x - 15);
-		
+
 		//gc.TextOut(tRect.left + 5, y, name);
-		
-		if (!cur->extType) 
+
+		if (!cur->extType)
 		{
 			y += _letterSize[1].y;
 			int x = tRect.left + 5;
 			unicode_t ubuf[64];
-			
+
 #ifdef _WIN32
 			FS *pFs = this->GetFS();
 			if (pFs && pFs->Type()==FS::SYSTEM)
@@ -1196,7 +1198,7 @@ void PanelWin::DrawFooter(wal::GC &gc)
 				if ((cur->st.dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED)!=0)ubuf[n++] =  'C';
 				ubuf[n++] = ']';
 				ubuf[n] = 0;
-			} else 
+			} else
 				cur->st.GetModeStr(ubuf);
 #else
 			cur->st.GetModeStr(ubuf);
@@ -1207,7 +1209,7 @@ void PanelWin::DrawFooter(wal::GC &gc)
 			x += size.x + 10;
 #ifdef _WIN32
 			if (!(pFs && pFs->Type()==FS::SYSTEM))
-#else 
+#else
 			if (1)
 #endif
 			{
@@ -1219,8 +1221,8 @@ void PanelWin::DrawFooter(wal::GC &gc)
 				static unicode_t ch=':';
 				size = gc.GetTextExtents(&ch,1);
 				gc.TextOutF(x, y, &ch, 1);
-				x += size.x;		
-		
+				x += size.x;
+
 				const unicode_t *groupName = GetGroupName(cur->GetGID());
 				gc.TextOutF(x, y, groupName);
 			}
@@ -1229,7 +1231,7 @@ void PanelWin::DrawFooter(wal::GC &gc)
 			size = gc.GetTextExtents(ubuf);
 			gc.TextOutF(tRect.right-size.x, y, ubuf);
 		}
-	}	
+	}
 }
 
 static int uiBorderColor1 = GetUiID("border-color1");
@@ -1248,15 +1250,15 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 	if (IsSelectedPanel()) ucl.Set(uiSelectedPanel, true);
 	if (_inOperState) ucl.Set(uiOperState, true);
 	if (selectedCn.count > 0) ucl.Set(uiHaveSelected, true);
-	
+
 	int color_bg = UiGetColor(uiBackground, 0, &ucl, 0xFFFFFF);
 
 	crect r1 = ClientRect();
 	DrawBorder(gc, r1, UiGetColor(uiBorderColor1, 0, &ucl, 0xFF));
 	r1.Dec();
-	DrawBorder(gc, r1, UiGetColor(uiBorderColor2, 0, &ucl, 0xFF));	
+	DrawBorder(gc, r1, UiGetColor(uiBorderColor2, 0, &ucl, 0xFF));
 	r1.Dec();
-	DrawBorder(gc, r1, UiGetColor(uiBorderColor3, 0, &ucl, 0xFF));	
+	DrawBorder(gc, r1, UiGetColor(uiBorderColor3, 0, &ucl, 0xFF));
 	r1.Dec();
 	DrawBorder(gc, r1, UiGetColor(uiBorderColor4, 0, &ucl, 0xFF));
 
@@ -1291,44 +1293,44 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 
 //header
 	crect tRect(_headRect.left, _headRect.bottom, _headRect.right, _headRect.bottom+1);
-	if (paintRect.Cross(_headRect)) 
+	if (paintRect.Cross(_headRect))
 	{
 //		PanelHeaderColors colors;
 //		panelColors->headF(&colors, IsSelectedPanel());
-		
+
 		gc.SetFillColor(UiGetColor(uiLineColor, 0, &ucl, 0xFF));
 
 		gc.FillRect(tRect);
-	
+
 		gc.SetFillColor(UiGetColor(uiBackground, uiHeader, &ucl, 0xFFFF));
 		tRect = _headRect;
 		gc.FillRect(tRect);
 
 		FS *fs =  GetFS();
-	
+
 		if (fs) {
 			FSPath &path = GetPath();
 			FSString uri = fs->Uri(path);
 			const unicode_t *uPath = uri.GetUnicode();
-		
+
 			cpoint p = gc.GetTextExtents(uPath);
 			int x = _headRect.left+2;
 
 			const int LeftXMargin  = 7;
 			const int RightXMargin = LeftXMargin + 3;
-			
+
 			if ( p.x > _headRect.Width( ) - GetXMargin( ) - RightXMargin )
 			{
 				x -= p.x - _headRect.Width( ) + GetXMargin( ) + RightXMargin;
 			}
-			
+
 			int y = _headRect.top + 2;
 
 			gc.SetTextColor(UiGetColor(uiColor, uiHeader, &ucl, 0xFFFF));
 			gc.Set(GetFont(1));
 			// magic constant comes from DrawItem() value of 'x'
 			gc.TextOutF( x + GetXMargin( ) + LeftXMargin, y, uPath );
-			
+
 			// draw sorting order mark
 			x = _headRect.left + 2;
 
@@ -1348,7 +1350,7 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 			};
 		}
 	}
-	
+
 	tRect = _footRect;
 	tRect.bottom = tRect.top;
 	tRect.top-=1;
@@ -1358,7 +1360,7 @@ void PanelWin::Paint(wal::GC &gc, const crect &paintRect)
 	DrawVerticalSplitters( gc, _centerRect );
 
 	if (paintRect.Cross(_footRect))
-		DrawFooter(gc);	
+		DrawFooter(gc);
 }
 
 void PanelWin::LoadPathStringSafe( const char* path )
@@ -1410,9 +1412,9 @@ void PanelWin::OperThreadStopped()
 		Invalidate();
 		return;
 	}
-	
+
 	_inOperState = false;
-	
+
 	try {
 		if (!_operData.errorString.IsEmpty())
 		{
@@ -1420,10 +1422,10 @@ void PanelWin::OperThreadStopped()
 			NCMessageBox((NCDialogParent*)Parent(), _LT("Read dialog list"), _operData.errorString.GetUtf8(), true);
 			return;
 		}
-	
+
 		cptr<FSList> list = _operData.list;
 		cptr<cstrhash<bool,unicode_t> > selected = _operSelected;
-	
+
 //??? почему-то иногда list.ptr() == 0 ???
 //!!! найдено и исправлено 20120202 в NewThreadID стоял & вместо % !!!
 
@@ -1433,24 +1435,24 @@ void PanelWin::OperThreadStopped()
 		default:
 			_place.Set(_operData.fs, _operData.path, false); break;
 		};
-	
+
 		_list.SetData(list);
 		if (selected.ptr()) {
 			_list.SetSelectedByHash(selected.ptr());
 		}
-		
+
 		if (!_operCurrent.IsEmpty())
 		{
 			int n = _list.Find(_operCurrent);
 			SetCurrent(n < 0 ? 0 : n);
-		} else 
+		} else
 			SetCurrent(0);
-			
+
 	} catch (cexception *ex) {
 		NCMessageBox((NCDialogParent*)Parent(), _LT("Read dialog list"), ex->message(), true);
 		ex->destroy();
 	}
-	
+
 	Invalidate();
 }
 
@@ -1461,7 +1463,7 @@ void PanelWin::Reread(bool resetCurrent)
 	FSNode *node = resetCurrent ? 0 : GetCurrent();
 	FSString s;
 	if (node) s.Copy(node->Name());
-	
+
 	LoadPath(GetFSPtr(), GetPath(), node ? &s : 0, sHash, RESET);
 }
 
@@ -1473,24 +1475,24 @@ bool PanelWin::EventMouse(cevent_mouse* pEvent)
 
 	switch (pEvent->Type())	{
 	case EV_MOUSE_MOVE:
-		if (IsCaptured()) 
+		if (IsCaptured())
 			{
 		}
 		break;
 
-	
+
 	case EV_MOUSE_DOUBLE:
 	case EV_MOUSE_PRESS:
 		{
-			if (IsSelectedPanel()) 
+			if (IsSelectedPanel())
 			{
-				if (pEvent->Button()==MB_X1) 
+				if (pEvent->Button()==MB_X1)
 				{
 					KeyPrior();
 					break;
 				}
 
-				if (pEvent->Button()==MB_X2) 
+				if (pEvent->Button()==MB_X2)
 				{
 					KeyNext();
 					break;
@@ -1502,19 +1504,19 @@ bool PanelWin::EventMouse(cevent_mouse* pEvent)
 			for (int i = 0; i<_rectList.count(); i++)
 				if (_rectList[i].In(pEvent->Point()))
 				{
-					if (ctrl && pEvent->Button() == MB_L) 
+					if (ctrl && pEvent->Button() == MB_L)
 					{
 						_list.InvertSelection(_first+i);
 						SetCurrent(_first+i);
-					} 
-					else 
+					}
+					else
 					{
 						SetCurrent(_first+i);
-						
-						if (pEvent->Button() == MB_R) 
+
+						if (pEvent->Button() == MB_R)
 						{
 							FSNode *fNode =  GetCurrent();
-							if (fNode && Current() == _first + i) 
+							if (fNode && Current() == _first + i)
 							{
 								crect rect = ScreenRect();
 								cpoint p = pEvent->Point();
@@ -1531,11 +1533,11 @@ bool PanelWin::EventMouse(cevent_mouse* pEvent)
 
                 }
 		break;
-		
+
 
 	case EV_MOUSE_RELEASE:
 		break;
-	};	
+	};
 	return false;
 }
 
@@ -1581,9 +1583,9 @@ bool PanelWin::DirUp()
 	}
 #endif
 
-	
+
 	FSPath p = _place.GetPath();
-	
+
 	if (p.Count()<=1)
 	{
 		if ( _place.Pop() )
@@ -1592,7 +1594,7 @@ bool PanelWin::DirUp()
 		}
 		return false;
 	}
-	
+
 	FSString *s = p.GetItem(p.Count()-1);
 	FSString item("");
 	if (s) item = *s;
@@ -1605,32 +1607,32 @@ bool PanelWin::DirUp()
 void PanelWin::DirEnter()
 {
 	if (_place.IsEmpty()) return;
-	
-	if (!Current()) 
-	{ 
+
+	if (!Current())
+	{
 
 		DirUp();
 		return;
 	};
-	
+
 	FSNode *node = GetCurrent();
 	if (!node || !node->IsDir()) return;
-	
+
 	FSPath p = GetPath();
 	int cs = node->Name().PrimaryCS();
 	p.Push(cs, node->Name().Get(cs));
-	
-	
+
+
 	FSPtr fs = GetFSPtr();
-	
+
 	if (fs.IsNull()) return;
-	
+
 #ifdef _WIN32
 	if (fs->Type()==FS::WIN32NET)
 	{
 		NETRESOURCEW *nr = node->_w32NetRes.Get();
 		if (!nr || !nr->lpRemoteName) return;
-		
+
 		if (node->extType == FSNode::FILESHARE)
 		{
 			FSPath path;
@@ -1646,7 +1648,7 @@ void PanelWin::DirEnter()
 #endif
 
 	// for smb servers
-	
+
 #ifdef LIBSMBCLIENT_EXIST
 
 	if (fs->Type()==FS::SAMBA && node->extType == FSNode::SERVER)
@@ -1657,17 +1659,17 @@ void PanelWin::DirEnter()
 		FSPtr smbFs = new FSSmb(&param);
 		FSPath path(CS_UTF8,"/");
 		LoadPath(smbFs, path, 0, 0, PUSH);
-		return;	
+		return;
 	}
-#endif	
-	
+#endif
+
 	LoadPath(GetFSPtr(), p, 0, 0, RESET);
 }
 
 void PanelWin::DirRoot()
 {
 	FSPath p;
-	p.PushStr(FSString()); //у абсолютного пути всегда пустая строка в начале 
+	p.PushStr(FSString()); //у абсолютного пути всегда пустая строка в начале
 	LoadPath(GetFSPtr(), p, 0, 0, RESET);
 }
 

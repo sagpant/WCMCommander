@@ -53,7 +53,7 @@ void EditWin::OnChangeStyles()
 	if (!charW) charW = 10;
 	if (!charH) charH = 10;
 
-//как в EventSize !!!		
+//как в EventSize !!!
 	rows = editRect.Height()/charH;
 	cols = editRect.Width()/charW;
 	if (rows <= 0) rows = 1;
@@ -85,10 +85,10 @@ EditWin::EditWin(Win *parent)
 	colOffset(0),
 	recomendedCursorCol(-1),
 	rows(0), cols(0),
-	
+
 	_shl(0),
 	_shlLine(-1),
-	
+
 	_changed(false)
 {
 	vscroll.Enable();
@@ -99,10 +99,10 @@ EditWin::EditWin(Win *parent)
 	_lo.SetColGrowth(0);
 	SetLayout(&_lo);
 	LSRange lr(0,10000,1000);
-	LSize ls; 
+	LSize ls;
 	ls.x = ls.y = lr;
 	SetLSize(ls);
-	
+
 	OnChangeStyles();
 
 	SetTimer(0, 500);
@@ -113,13 +113,13 @@ int EditWin::UiGetClassId(){ return uiClassEditor; }
 void  EditWin::CursorToScreen()
 {
 	int f = firstLine;
-	if (cursor.line >= firstLine + rows) 
+	if (cursor.line >= firstLine + rows)
 		firstLine = cursor.line - rows + 1;
 
-	if (cursor.line < firstLine) 
+	if (cursor.line < firstLine)
 		firstLine = cursor.line;
 
-	if (f!=firstLine) 
+	if (f!=firstLine)
 		CalcScroll();
 
 	int c = GetCursorCol();
@@ -144,38 +144,38 @@ void  EditWin::CursorToScreen_forReplace()
 	int c = GetCursorCol();
 	colOffset = (c < cols) ? 0 : c - cols;
 
-	if (f!=firstLine) 
+	if (f!=firstLine)
 		CalcScroll();
 }
 
 
 
-void EditWin::CursorLeft(bool mark) 
+void EditWin::CursorLeft(bool mark)
 {
 	ASSERT(cursor.line>=0 && cursor.line<text.Count());
 	ASSERT(cursor.pos>=0 && cursor.pos<=text.Get(cursor.line).Len());
 
 	recomendedCursorCol = -1;
 	char *t = charset->GetPrev(text.Get(cursor.line).Get() + cursor.pos, text.Get(cursor.line).Get());
-	
+
 	bool refresh = false;
-	
-	if (t) 
+
+	if (t)
 	{
 		cursor.pos = t-text.Get(cursor.line).Get();
 		refresh = true;
 		SendChanges();
 	}
-	else 
+	else
 	{
-		if (cursor.line>0) 
+		if (cursor.line>0)
 		{
 			cursor.line--;
 			cursor.pos = text.Get(cursor.line).Len();
 			refresh = true;
 			SendChanges();
 		}
-	} 
+	}
 	CursorToScreen();
 	if (!mark) marker = cursor;
 	if (refresh) Refresh();
@@ -185,13 +185,13 @@ void EditWin::SetCursorPos(EditPoint p)
 {
 	if (p.line >= text.Count()) { p.line = text.Count()-1; p.pos = 0; }
 	if (p.line < 0) { p.line = 0; p.pos = 0; }
-	
+
 	int l = text.Get(p.line).Len();
 	if (p.pos > l) p.pos = l;
 	if (p.pos<0) p.pos = 0;
-	
+
 	marker = cursor = p;
-	
+
 	CursorToScreen();
 	SendChanges();
 	Refresh();
@@ -229,16 +229,16 @@ void EditWin::CursorRight(bool mark)
 	recomendedCursorCol = -1;
 	ASSERT(cursor.line>=0 && cursor.line<text.Count());
 
-	if (cursor.pos >= text.Get(cursor.line).Len()) 
-	{ 
-		if (cursor.line+1<text.Count()) 
+	if (cursor.pos >= text.Get(cursor.line).Len())
+	{
+		if (cursor.line+1<text.Count())
 		{
 			cursor.line++;
 			cursor.pos = 0;
 			CursorToScreen();
 			SendChanges();
 			if (!mark) marker = cursor;
-			Refresh(); 
+			Refresh();
 		}
 		return;
 	}
@@ -251,15 +251,15 @@ void EditWin::CursorRight(bool mark)
 	CursorToScreen();
 	SendChanges();
 	if (!mark) marker = cursor;
-	Refresh(); 
+	Refresh();
 }
 
 
 void EditWin::CursorDown(bool mark)
 {
-	if (cursor.line+1<text.Count()) 
+	if (cursor.line+1<text.Count())
 	{
-		if (recomendedCursorCol<0) 
+		if (recomendedCursorCol<0)
 			recomendedCursorCol = GetColFromPos(cursor.line, cursor.pos);
 
 		cursor.pos = GetPosFromCol( cursor.line+1, recomendedCursorCol);
@@ -267,17 +267,17 @@ void EditWin::CursorDown(bool mark)
 		CursorToScreen();
 		SendChanges();
 		if (!mark) marker = cursor;
-		Refresh(); 
+		Refresh();
 	}
 }
 
 void EditWin::CursorUp(bool mark)
 {
-	if (cursor.line>0) 
+	if (cursor.line>0)
 	{
-		if (recomendedCursorCol<0) 
+		if (recomendedCursorCol<0)
 			recomendedCursorCol = GetColFromPos(cursor.line, cursor.pos);
-		
+
 		cursor.pos = GetPosFromCol( cursor.line-1, recomendedCursorCol );
 		cursor.line--;
 		CursorToScreen();
@@ -294,14 +294,14 @@ bool EditWin::StepLeft(EditPoint *p, unicode_t *c)
 
 	EditString &str = text.Get(p->line);
 	char *t = charset->GetPrev(str.Get() + p->pos, str.Get());
-	
-	if (t) 
+
+	if (t)
 	{
 		p->pos = t - text.Get(p->line).Get();
 		*c = charset->GetChar(t, str.Get() + str.Len());
 		return true;
 	}
-	
+
 	if (p->line <= 0) return false;
 	p->line--;
 	p->pos = text.Get(p->line).Len();
@@ -314,9 +314,9 @@ bool EditWin::StepRight(EditPoint *p, unicode_t *c)
 	if (p->line < 0 || p->line>=text.Count()) return false;
 	if (p->pos < 0) return false;
 
-	
+
 	if (p->pos >= text.Get(p->line).Len())
-	{ 
+	{
 		if (p->line + 1 >= text.Count()) return false;
 		p->line++;
 		p->pos = 0;
@@ -328,7 +328,7 @@ bool EditWin::StepRight(EditPoint *p, unicode_t *c)
 		char *t = charset->GetNext(s, end);
 		p->pos = t ? (t - begin) : len;
 	}
-	
+
 	EditString &str = text.Get(p->line);
 	*c = str.Len() > p->pos ? charset->GetChar(str.Get() + p->pos, str.Get() + str.Len()) : ' ';
 	return true;
@@ -339,12 +339,12 @@ void EditWin::CursorCtrlLeft(bool mark)
 	EditPoint p = cursor;
 	unicode_t c;
 	if (!StepLeft(&p,&c)) return;
-	
+
 	int group = GetCharGroup(c);
 	cursor = p;
-	while (StepLeft(&p,&c) && GetCharGroup(c) == group) 
+	while (StepLeft(&p,&c) && GetCharGroup(c) == group)
 		cursor = p;
-		
+
 	recomendedCursorCol = -1;
 	SendChanges();
 	CursorToScreen();
@@ -362,12 +362,12 @@ void EditWin::CursorCtrlRight(bool mark)
 	unicode_t c = str.Len() > 0 ? charset->GetChar(str.Get() + p.pos, str.Get() + str.Len()) : ' ';
 
 	int group = GetCharGroup( c );
-	
+
 	while (StepRight(&p, &c)) {
 		cursor = p;
 		if (GetCharGroup(c) != group) break;
 	}
-	
+
 	recomendedCursorCol = -1;
 	SendChanges();
 	CursorToScreen();
@@ -379,14 +379,14 @@ void EditWin::CursorCtrlRight(bool mark)
 void EditWin::PageDown(bool mark)
 {
 	CursorToScreen();
-	if (recomendedCursorCol<0) 
+	if (recomendedCursorCol<0)
 		recomendedCursorCol = GetColFromPos(cursor.line, cursor.pos);
 
 	int lines = text.Count();
 
-	if (firstLine + rows>=lines) 
+	if (firstLine + rows>=lines)
 	{
-		if (lines>0 && cursor.line+1<lines) 
+		if (lines>0 && cursor.line+1<lines)
 		{
 			cursor.line = lines-1;
 			cursor.pos = GetPosFromCol( cursor.line, recomendedCursorCol );
@@ -401,7 +401,7 @@ void EditWin::PageDown(bool mark)
 	if (firstLine + addLines + rows > lines)
 		addLines = lines - rows - firstLine;
 
-	if (firstLine + addLines<0) 
+	if (firstLine + addLines<0)
 		addLines = -firstLine;
 
 	//ASSERT(addLines >= 0);
@@ -417,18 +417,18 @@ void EditWin::PageDown(bool mark)
 	CalcScroll();
 	SendChanges();
 	if (!mark) marker = cursor;
-	Refresh(); 
+	Refresh();
 }
 
 void EditWin::PageUp(bool mark)
 {
 	CursorToScreen();
-	if (recomendedCursorCol<0) 
+	if (recomendedCursorCol<0)
 		recomendedCursorCol = GetColFromPos(cursor.line, cursor.pos);
 
 	if (firstLine==0)
 	{
-		if (cursor.line>0) 
+		if (cursor.line>0)
 		{
 			cursor.line = 0;
 			cursor.pos = GetPosFromCol( cursor.line, recomendedCursorCol );
@@ -437,11 +437,11 @@ void EditWin::PageUp(bool mark)
 			Refresh();
 			return;
 		}
-	} 
+	}
 
 	int minus = rows - 1;
 
-	if (firstLine < minus) 
+	if (firstLine < minus)
 		minus = firstLine;
 
 	firstLine -= minus;
@@ -450,32 +450,32 @@ void EditWin::PageUp(bool mark)
 	CalcScroll();
 	SendChanges();
 	if (!mark) marker = cursor;
-	Refresh(); 
+	Refresh();
 }
 
 void EditWin::CtrlPageDown(bool mark)
 {
 	if (!text.Count()) return;
 	cursor.line = text.Count() - 1;
-	cursor.pos = text.Get(cursor.line).Len(); 
-	
+	cursor.pos = text.Get(cursor.line).Len();
+
 	CalcScroll();
 	SendChanges();
 	CursorToScreen();
 	if (!mark) marker = cursor;
-	Refresh(); 
+	Refresh();
 }
 
 void EditWin::CtrlPageUp(bool mark)
 {
 	cursor.line = 0;
 	cursor.pos = 0;
-	
+
 	CalcScroll();
 	SendChanges();
 	CursorToScreen();
 	if (!mark) marker = cursor;
-	Refresh(); 
+	Refresh();
 }
 
 
@@ -487,7 +487,7 @@ void EditWin::SelectAll()
 	CalcScroll();
 	CursorToScreen();
 	SendChanges();
-	Refresh(); 
+	Refresh();
 }
 
 int EditWin::GetCursorCol()
@@ -518,21 +518,21 @@ bool EditWin::Undo()
 
 			switch (r->type) {
 
-			case UndoRec::ATTR: 
+			case UndoRec::ATTR:
 				{
 					EditString &str = text.Get(r->line);
 					str.flags = r->prevAttr;
 				}
 				break;
 
-			case UndoRec::INSTEXT: 
+			case UndoRec::INSTEXT:
 				{
 					EditString &str = text.Get(r->line);
 					str.Delete(r->pos, r->dataSize);
 				}
 				break;
 
-			case UndoRec::DELTEXT: 
+			case UndoRec::DELTEXT:
 				{
 					EditString &str = text.Get(r->line);
 					str.Insert(r->data.ptr(), r->pos, r->dataSize);
@@ -554,7 +554,7 @@ bool EditWin::Undo()
 				}
 				break;
 
-			default: 
+			default:
 NCMessageBox((NCDialogParent*)Parent(),"bad oper","undo", true);
 				undoList.Clear();
 				return false;
@@ -571,7 +571,7 @@ NCMessageBox((NCDialogParent*)Parent(),"bad oper","undo", true);
 	CursorToScreen();
 	CalcScroll();
 	SendChanges();
-	Refresh(); 
+	Refresh();
 	return true;
 }
 
@@ -588,21 +588,21 @@ bool EditWin::Redo()
 
 			switch (r->type) {
 
-			case UndoRec::ATTR: 
+			case UndoRec::ATTR:
 				{
 					EditString &str = text.Get(r->line);
 					str.flags = r->attr;
 				}
 				break;
 
-			case UndoRec::INSTEXT: 
+			case UndoRec::INSTEXT:
 				{
 					EditString &str = text.Get(r->line);
 					str.Insert(r->data.ptr(), r->pos, r->dataSize);
 				}
 				break;
 
-			case UndoRec::DELTEXT: 
+			case UndoRec::DELTEXT:
 				{
 					EditString &str = text.Get(r->line);
 					str.Delete( r->pos, r->dataSize);
@@ -624,7 +624,7 @@ bool EditWin::Redo()
 				}
 				break;
 
-			default: 
+			default:
 NCMessageBox((NCDialogParent*)Parent(),"bad oper","Redo", true);
 				undoList.Clear();
 				return false;
@@ -641,7 +641,7 @@ NCMessageBox((NCDialogParent*)Parent(),"bad oper","Redo", true);
 	CursorToScreen();
 	CalcScroll();
 	SendChanges();
-	Refresh(); 
+	Refresh();
 
 
 	return true;
@@ -652,7 +652,7 @@ void EditWin::InsChar(unicode_t ch) //!Undo
 	char buf[0x100];
 	int n = charset->SetChar(buf, ch);
 
-	if (n<=0) 
+	if (n<=0)
 		return;
 
 	cptr<UndoBlock> undoBlock = new UndoBlock(true, _changed);
@@ -680,7 +680,7 @@ void EditWin::InsChar(unicode_t ch) //!Undo
 	CursorToScreen();
 	CalcScroll();
 	SendChanges();
-	Refresh(); 
+	Refresh();
 }
 
 bool EditWin::DelMarked() //!Undo
@@ -689,19 +689,19 @@ bool EditWin::DelMarked() //!Undo
 
 	cptr<UndoBlock> undoBlock = new UndoBlock(false, _changed);
 	undoBlock->SetBeginPos(cursor, marker);
-	
+
 	EditPoint begin, end;
-	if (cursor<marker) 
+	if (cursor<marker)
 	{
 		begin = cursor;
-		end = marker; 
+		end = marker;
 	}
-	else 
+	else
 	{
 		begin = marker;
-		end = cursor; 
+		end = cursor;
 	}
-	
+
 	SetChanged(begin.line);
 
 	try {
@@ -714,18 +714,18 @@ bool EditWin::DelMarked() //!Undo
 			line.Delete(begin.pos, count);
 			cursor = begin;
 		}
-		else 
+		else
 		{
 			EditString &bLine = text.Get(begin.line);
-			EditString &eLine = text.Get(end.line);	
+			EditString &eLine = text.Get(end.line);
 
-			if (begin.pos < bLine.len) 
+			if (begin.pos < bLine.len)
 			{
 				undoBlock->DelText(begin.line, begin.pos, bLine.Get()+ begin.pos, bLine.len - begin.pos);
 				bLine.Delete(begin.pos, bLine.len - begin.pos);
 			}
 
-			if (end.pos < eLine.len) 
+			if (end.pos < eLine.len)
 			{
 				int count = eLine.len - end.pos;
 				bLine.Insert(eLine.Get()+end.pos, begin.pos, count);
@@ -740,13 +740,13 @@ bool EditWin::DelMarked() //!Undo
 			for (int i = 0; i<delCount; i++)
 			{
 				EditString &line = text.Get(begin.line + i + 1);
-				undoBlock->DelLine(begin.line + 1 /*!!! без i*/, line.flags, line.Get(), line.Len());  
+				undoBlock->DelLine(begin.line + 1 /*!!! без i*/, line.flags, line.Get(), line.Len());
 			}
 
 			text.Delete(begin.line + 1, delCount);
 			cursor = begin;
 		}
-        
+
 		marker = cursor;
 
 		undoBlock->SetEndPos(cursor, marker);
@@ -755,7 +755,7 @@ bool EditWin::DelMarked() //!Undo
 		CursorToScreen();
 		CalcScroll();
 		SendChanges();
-		Refresh(); 
+		Refresh();
 
 	} catch (...) {
 		undoList.Clear();
@@ -771,9 +771,9 @@ inline void _ToClipboardText(char *s, int count, charset_struct *cs, ClipboardTe
 //printf("??? count= %i\n", count);
 		return;
 	}
-	
+
 	char *endPos = s+count;
-	while (s) 
+	while (s)
 	{
 		//bool tab;
 		unicode_t c = cs->GetChar(s, endPos);
@@ -789,24 +789,24 @@ void EditWin::ToClipboard()
 	ClipboardText ctx;
 
 	EditPoint begin, end;
-	if (cursor<marker) 
+	if (cursor<marker)
 	{
 		begin = cursor;
-		end = marker; 
-	} 
-	else 
+		end = marker;
+	}
+	else
 	{
 		begin = marker;
-		end = cursor; 
+		end = cursor;
 	}
-	
+
 	if (begin.line == end.line)
 	{
 		EditString &line = text.Get(begin.line);
 		_ToClipboardText(line.Get() + begin.pos, end.pos-begin.pos, charset, ctx);
 		//cursor = begin;
-	} 
-	else 
+	}
+	else
 	{
 		EditString &bLine = text.Get(begin.line);
 		_ToClipboardText(bLine.Get() + begin.pos, bLine.len - begin.pos, charset, ctx);
@@ -817,16 +817,16 @@ void EditWin::ToClipboard()
 			_ToClipboardText(line.Get(), line.len, charset, ctx);
 			ctx.Append('\n');
 		}
-		
-		EditString &eLine = text.Get(end.line);	
-		
-		if (end.pos>0) 
+
+		EditString &eLine = text.Get(end.line);
+
+		if (end.pos>0)
 		{
-			EditString &eLine = text.Get(end.line);	
+			EditString &eLine = text.Get(end.line);
 			_ToClipboardText(eLine.Get(), end.pos, charset, ctx);
 		}
 	}
-	ClipboardSetText(this, ctx);	
+	ClipboardSetText(this, ctx);
 }
 
 void EditWin::FromClipboard() //!Undo
@@ -843,7 +843,7 @@ void EditWin::FromClipboard() //!Undo
 
 		recomendedCursorCol = -1;
 		SetChanged(cursor.line);
-	
+
 		int i = 0;
 
 		while (i<count)
@@ -856,7 +856,7 @@ void EditWin::FromClipboard() //!Undo
 			{
 				unicode_t ch = ctx[i];
 
-				if (ch == '\n') 
+				if (ch == '\n')
 				{
 					newline = true;
 					i++;
@@ -874,7 +874,7 @@ void EditWin::FromClipboard() //!Undo
 
 			cursor.pos+=n;
 
-			if (newline) 
+			if (newline)
 			{
 				EditString &str = text.Get(cursor.line);
 				text.Insert(cursor.line + 1, 1, line.flags);
@@ -884,12 +884,12 @@ void EditWin::FromClipboard() //!Undo
 					text.Get(cursor.line+1).Set(str.Get()+cursor.pos, str.len - cursor.pos);
 					str.len = cursor.pos;
 					undoBlock->AddLine(cursor.line+1, line.flags,  str.Get()+cursor.pos, str.len - cursor.pos);
-				} else 
+				} else
 					undoBlock->AddLine(cursor.line+1, line.flags,  0, 0);
 
 				cursor.line++;
 				cursor.pos = 0;
-			} 
+			}
 		}
 
 		marker = cursor;
@@ -900,7 +900,7 @@ void EditWin::FromClipboard() //!Undo
 		CalcScroll();
 		CursorToScreen();
 		SendChanges();
-		Refresh(); 
+		Refresh();
 
 	} catch (...) {
 		undoList.Clear();
@@ -929,10 +929,10 @@ void EditWin::Del(bool DeleteWord) //!Undo
 	try {
 		EditString &str = text.Get(cursor.line);
 
-		if (cursor.pos < str.len) 
+		if (cursor.pos < str.len)
 		{
 			SetChanged(cursor.line);
-		
+
 			char *s = str.Get() + cursor.pos;
 			char *end = str.Get() + str.Len();
 
@@ -971,12 +971,12 @@ void EditWin::Del(bool DeleteWord) //!Undo
 
 			str.Delete(cursor.pos,totalDelCount);
 		}
-		else 
+		else
 		{
-			if (cursor.line + 1 < text.Count()) 
+			if (cursor.line + 1 < text.Count())
 			{
 				SetChanged(cursor.line);
-			
+
 				EditString &str_1 = text.Get(cursor.line+1);
 
 				str.Insert(str_1.Get(), cursor.pos, str_1.len);
@@ -997,7 +997,7 @@ void EditWin::Del(bool DeleteWord) //!Undo
 
 		CalcScroll();
 		SendChanges();
-		Refresh(); 
+		Refresh();
 
 	} catch (...) {
 		undoList.Clear();
@@ -1023,7 +1023,7 @@ void EditWin::Backspace(bool DeleteWord) //!Undo
 
 		EditString &str = text.Get(cursor.line);
 
-		if (cursor.pos>0) 
+		if (cursor.pos>0)
 		{
 			SetChanged(cursor.line);
 
@@ -1036,7 +1036,7 @@ void EditWin::Backspace(bool DeleteWord) //!Undo
 
 				int group = GetCharGroup(c);
 				cursor = p;
-				while (StepLeft(&p,&c) && GetCharGroup(c) == group) 
+				while (StepLeft(&p,&c) && GetCharGroup(c) == group)
 					cursor = p;
 
 				int totalDelCount = oldcursor.pos-cursor.pos;
@@ -1052,27 +1052,27 @@ void EditWin::Backspace(bool DeleteWord) //!Undo
 				char *s = str.Get() + cursor.pos;
 				char *t = charset->GetPrev(s, str.Get());
 
-				if (t) 
-				{ 
+				if (t)
+				{
 					undoBlock->DelText(cursor.line, t-str.Get(), t, s-t);
-					str.Delete(t-str.Get(), s-t); 
-					cursor.pos-=s-t; 
+					str.Delete(t-str.Get(), s-t);
+					cursor.pos-=s-t;
 				}
-				else 
-				{ 
+				else
+				{
 					undoBlock->DelText(cursor.line, 0, str.Get(), cursor.pos);
-					str.Delete(0, cursor.pos); 
-					cursor.pos=0; 
+					str.Delete(0, cursor.pos);
+					cursor.pos=0;
 				}
 			}
 		} else {
-			if (cursor.line > 0) 
+			if (cursor.line > 0)
 			{
 				SetChanged(cursor.line - 1);
 				EditString &str_1 = text.Get(cursor.line-1);
 				int l = str_1.len;
 
-				
+
 				undoBlock->InsText(cursor.line-1, str_1.len, str.Get(), str.Len()); //пока не поменялся str_1.len
 				str_1.Insert(str.Get(), str_1.len, str.len);
 
@@ -1094,7 +1094,7 @@ void EditWin::Backspace(bool DeleteWord) //!Undo
 
 		CursorToScreen();
 		SendChanges();
-		Refresh(); 
+		Refresh();
 
 	} catch (...) {
 		undoList.Clear();
@@ -1105,22 +1105,22 @@ void EditWin::Backspace(bool DeleteWord) //!Undo
 
 char* EditWin::Ident(EditString &str)
 {
-	if (!str.len) 
+	if (!str.len)
 		return 0;
 
 	char *s =str.Get();
 	char *end = s + str.len;
-	while (true) 
+	while (true)
 	{
 		unicode_t c = charset->GetChar(s,end);
 
-		if (c!=' '  && c!='\t') 
+		if (c!=' '  && c!='\t')
 			break;
 
 		//bool tab;
 		s = charset->GetNext(s, end);
 
-		if (!s) 
+		if (!s)
 			return 0;
 	}
 	return s;
@@ -1129,14 +1129,14 @@ char* EditWin::Ident(EditString &str)
 void EditWin::SetCharset(charset_struct *cs)
 {
 	ASSERT(cursor.line>=0 && cursor.line<text.Count());
-	ASSERT(cursor.pos>=0 && cursor.pos<=text.Get(cursor.line).Len());		
+	ASSERT(cursor.pos>=0 && cursor.pos<=text.Get(cursor.line).Len());
 	charset = cs;
 	CursorRight(false);
 	CursorLeft(false);
 	SendChanges();
 	marker = cursor;
 	EnableShl(wcmConfig.editShl);
-	Refresh(); 
+	Refresh();
 }
 
 void EditWin::DeleteLine() //!Undo
@@ -1151,16 +1151,16 @@ void EditWin::DeleteLine() //!Undo
 	EditString &str = text.Get(cursor.line);
 
 	try {
-		if (cursor.line + 1>=text.Count()) 
+		if (cursor.line + 1>=text.Count())
 		{
-			if (str.len==0) 
+			if (str.len==0)
 				return;
 
 			undoBlock->DelText(cursor.line, 0, str.Get(), str.len);
 			str.len = 0; //!!!
 			cursor.pos = 0;
-		} 
-		else 
+		}
+		else
 		{
 			undoBlock->DelLine(cursor.line, str.flags, str.Get(), str.len);
 			text.Delete(cursor.line,1);
@@ -1176,7 +1176,7 @@ void EditWin::DeleteLine() //!Undo
 
 		CursorToScreen();
 		SendChanges();
-		Refresh(); 
+		Refresh();
 	} catch (...) {
 		undoList.Clear();
 		throw;
@@ -1192,7 +1192,7 @@ void EditWin::Enter() //!Undo
 
 	cptr<UndoBlock> undoBlock = new UndoBlock(true, _changed);
 	undoBlock->SetBeginPos(cursor, marker);
-	
+
 	try {
 		SetChanged(cursor.line);
 
@@ -1205,32 +1205,32 @@ void EditWin::Enter() //!Undo
 			undoBlock->AddLine(cursor.line + 1, str.flags, str.Get() + cursor.pos, str.len - cursor.pos);
 			undoBlock->DelText(cursor.line, cursor.pos, str.Get() + cursor.pos, str.len - cursor.pos);
 			str.len = cursor.pos;
-		} else 
+		} else
 			undoBlock->AddLine(cursor.line + 1, str.flags, 0, 0);
 
 		cursor.line++;
 		cursor.pos = 0;
 
-		if (autoIdent) 
+		if (autoIdent)
 		{
 			for (int i = cursor.line-1; i>=0; i--)
 			{
 				char *s = Ident(text.Get(i));
-				if (s) 
+				if (s)
 				{
 					char *p= text.Get(i).Get();
 					EditString &cstr = text.Get(cursor.line);
 					char *t = Ident(cstr);
-					if (t) 
+					if (t)
 					{
 						undoBlock->DelText(cursor.line, 0, cstr.Get() , t - cstr.Get());
-						cstr.Delete(0, t-cstr.Get()); 
+						cstr.Delete(0, t-cstr.Get());
 						cursor.pos=0;
 					}
 					undoBlock->InsText(cursor.line, 0, p, s-p);
 					cstr.Insert(p,0, s-p);
 					cursor.pos = s-p;
-					break; 
+					break;
 				}
 			}
 		}
@@ -1242,7 +1242,7 @@ void EditWin::Enter() //!Undo
 
 		CursorToScreen();
 		SendChanges();
-		Refresh(); 
+		Refresh();
 
 	} catch (...) {
 		undoList.Clear();
@@ -1262,8 +1262,8 @@ sEditorScrollCtx EditWin::GetScrollCtx() const
 void EditWin::SetScrollCtx(const sEditorScrollCtx& Ctx)
 {
 	firstLine = Ctx.m_FirstLine;
-	int MaxLine = max( 0, text.Count() - rows );
-	firstLine = min( firstLine, MaxLine );
+	int MaxLine = std::max( 0, text.Count() - rows );
+	firstLine = std::min( firstLine, MaxLine );
 	SetCursorPos( Ctx.m_Point );
 }
 
@@ -1276,14 +1276,14 @@ void EditWin::CalcScroll()
 	bool vVisible = vscroll.IsVisible();
 	vscroll.Command(CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &vsi);
 
-	if (vVisible != vscroll.IsVisible() ) 
+	if (vVisible != vscroll.IsVisible() )
 		this->RecalcLayouts();
 }
 
 
 bool EditWin::Command(int id, int subId, Win *win, void *data)
 {
-	if (id != CMD_SCROLL_INFO) 
+	if (id != CMD_SCROLL_INFO)
 		return false;
 
 	int n = firstLine;
@@ -1295,17 +1295,17 @@ bool EditWin::Command(int id, int subId, Win *win, void *data)
 	case SCMD_SCROLL_TRACK: n = ((int*)data)[0]; break;
 	}
 
-	if (n + rows > text.Count()) 
+	if (n + rows > text.Count())
 		n = text.Count()-rows;
 
 	if (n<0) n = 0;
 
-	if (n != firstLine) 
+	if (n != firstLine)
 	{
 		firstLine = n;
 		CalcScroll();
 		SendChanges();
-		Refresh(); 
+		Refresh();
 	}
 
 	return true;
@@ -1313,13 +1313,13 @@ bool EditWin::Command(int id, int subId, Win *win, void *data)
 
 bool EditWin::Broadcast(int id, int subId, Win *win, void *data)
 {
-	if (id == ID_CHANGED_CONFIG_BROADCAST) 
+	if (id == ID_CHANGED_CONFIG_BROADCAST)
 	{
 		autoIdent = wcmConfig.editAutoIdent;
 		tabSize = wcmConfig.editTabSize;
 		if (IsVisible()) Invalidate();
 		return true;
-	} 
+	}
 	return false;
 }
 
@@ -1354,7 +1354,7 @@ static bool CheckAsciiSymbol(charset_struct *cs, unsigned char c)
 static bool CheckAscii(charset_struct *cs)
 {
 	for (int i = 1; i<128; i++)
-		if (!CheckAsciiSymbol(cs, i)) 
+		if (!CheckAsciiSymbol(cs, i))
 			return false;
 	return true;
 }
@@ -1367,7 +1367,7 @@ void EditWin::EnableShl(bool on)
 
 	if (on) {
 
-		if (!CheckAscii(charset)) 
+		if (!CheckAscii(charset))
 			return;
 
 		cstrhash<int> colors;
@@ -1379,34 +1379,34 @@ void EditWin::EnableShl(bool on)
 		colors["NUM"	] = COLOR_NUM_ID;
 		colors["OPER"	] = COLOR_OPER_ID;
 		colors["ATTN"	] = COLOR_ATTN_ID;
-	
+
 		carray<char> firstLine;
 		if (text.Count()>0)
 		{
 			EditString &str = text.Get(EditList::Pos());
 			int len = str.len;
-		
+
 			firstLine.alloc(len + 1);
-		
+
 			char *s = firstLine.ptr();
-		
-			if (len > 0) 
+
+			if (len > 0)
 				memcpy(firstLine.ptr(), str.Get(), len);
-		
+
 			firstLine[len]=0;
-			
+
 			char *ns = 0;
 			for (; *s; s++)
 				if (*s <= 0 || *s > ' ')
 					ns = s;
-					
+
 			if (ns) ns[1] = 0;
 		}
 
 		_shlConf = new SHL::ShlConf();
 #ifdef _WIN32
 		wal::carray<wchar_t> path = GetAppPath();
-		_shlConf->Parze( carray_cat<wchar_t>(GetAppPath().ptr(), utf8_to_sys("\\shl\\config.cfg").ptr()).ptr()); 
+		_shlConf->Parze( carray_cat<wchar_t>(GetAppPath().ptr(), utf8_to_sys("\\shl\\config.cfg").ptr()).ptr());
 #else
 		_shlConf->Parze((sys_char_t*) UNIX_CONFIG_DIR_PATH "/shl/config.cfg");
 #endif
@@ -1425,9 +1425,9 @@ void EditWin::Load(FSPtr fs, FSPath &path, MemFile &f)
 	_fs = fs;
 	_path = path;
 	CalcScroll();
-	
+
 	_changed = false;
-	
+
 	EnableShl(wcmConfig.editShl);
 }
 
@@ -1435,7 +1435,7 @@ void EditWin::Clear()
 {
 	text.Clear();
 	undoList.Clear();
-	cursor.Set(0,0); 
+	cursor.Set(0,0);
 	marker = cursor;
 	firstLine = 0;
 	colOffset = 0;
@@ -1463,36 +1463,36 @@ void EditWin::RefreshShl(int n)
 	if (_shl && n >_shlLine && text.Count()>0)
 	{
 		int first = _shlLine;
-		
+
 		int count = text.Count();
-		
-		if (first < 0) 
+
+		if (first < 0)
 		{
 			text.Get(0).shlId = _shl->GetStartId();
 			first = 0;
 			_shlLine = 0;
 		}
-		
+
 		int last = n;
 		if (last >= count) last = count-1;
-		
+
 		if (first < last)
 		{
 			EditList::Pos pos(first);
 			int statId = text.Get(pos).shlId;
-			
-			for ( ;pos <= last ; pos.Inc()) 
+
+			for ( ;pos <= last ; pos.Inc())
 			{
 				EditString &str	= text.Get(pos);
 				char *begin = str.Get(), *s = begin, *end = s + str.Len();
-				
+
 				if (pos != first) str.shlId = statId;
-				
+
 				if (pos != last)
 					statId = _shl->ScanLine((unsigned char*)begin, (unsigned char*)end, statId);
 			}
 		}
-		
+
 		_shlLine = last;
 	}
 }
@@ -1502,7 +1502,7 @@ void EditWin::__RefreshScreenData()
 	if (screen.Rows()<=0 || screen.Cols()<=0) return;
 
 	//EditorColors colors = *editorColors;
-	
+
 	int r, c;
 	for (r = 0; r < screen.Rows(); r++)
 	{
@@ -1512,15 +1512,15 @@ void EditWin::__RefreshScreenData()
 			screen.Set(r, 0, screen.Cols(), ' ', 0, color_background);
 			continue;
 		}
-		
+
 		EditString &str	= text.Get(line);
 		char *begin = str.Get(), *s = begin, *end = s+str.Len();
 		bool tab = charset->IsTab(s,end);
 		int col = 0;
-		
+
 		if (str.len)
 		{
-		
+
 //TEMP
 carray<char> colId(str.len+1);
 memset(colId.ptr(), -1, str.len+1);
@@ -1531,35 +1531,35 @@ if (_shl) {
 }
 			int ce = col;
 			while (s) {
-				ce = (tab) ? col + tabSize - col%tabSize : col + 1;	
+				ce = (tab) ? col + tabSize - col%tabSize : col + 1;
 				if (ce > colOffset) break;
 				s = charset->GetNext(s, end);
 				tab = charset->IsTab(s, end);
 				col = ce;
 			}
-			
-			while (s && col - colOffset < screen.Cols()) 
+
+			while (s && col - colOffset < screen.Cols())
 			{
 				bool marked = InMark( EditPoint(line, s - begin));
-				
+
 if (s>=end)
 {
 	printf("s>=end (%i)\n", int(s-end));
 }
 unsigned COL = 	_shl ? ColorById(colId[s-begin]) : color_text;
 
-				if (tab) 
+				if (tab)
 				{
 					ce = col + tabSize - col%tabSize;
-					
-					
+
+
 					screen.Set(r, col-colOffset, ce, ' ', 0, marked ? color_mark_background : color_background);
 					col = ce;
-				} 
-				else 
+				}
+				else
 				{
 					unicode_t ch = charset->GetChar(s,end);
-					screen.Set(r, col-colOffset, col-colOffset + 1, (ch < 32 /*|| ch>=0x80 && ch< 0xA0*/) ? '.' : ch, 
+					screen.Set(r, col-colOffset, col-colOffset + 1, (ch < 32 /*|| ch>=0x80 && ch< 0xA0*/) ? '.' : ch,
 						(ch < 32 /*|| ch>=0x80 && ch< 0xA0*/) ? 0xFF3030: (marked ? color_mark_text : /*colors.fg*/ COL ),
 						marked ? color_mark_background : color_background);
 					col++;
@@ -1568,7 +1568,7 @@ unsigned COL = 	_shl ? ColorById(colId[s-begin]) : color_text;
 				tab = charset->IsTab(s, end);
 			}
 		}
-		
+
 		if (col - colOffset < screen.Cols())
 			screen.Set(r, col-colOffset, screen.Cols(), ' ', 0, InMark( EditPoint(line, end-begin)) ? color_mark_background : color_background);
 	}
@@ -1581,59 +1581,59 @@ unsigned COL = 	_shl ? ColorById(colId[s-begin]) : color_text;
 void EditWin::__DrawChanges()
 {
 	if (screen.Rows() <= 0 && screen.Cols() <= 0) return;
-	
+
 	wal::GC gc(this);
 	gc.Set(GetFont());
-	
-	if (screen.prevCursor != screen.cursor && 
+
+	if (screen.prevCursor != screen.cursor &&
 		screen.prevCursor.line>=0 && screen.prevCursor.line < screen.Rows() &&
 		screen.prevCursor.pos>=0 && screen.prevCursor.pos < screen.Cols())
 		screen.Line(screen.prevCursor.line)[screen.prevCursor.pos].changed = true;
-	
+
 	for (int r = 0; r < screen.Rows(); r++)
 	{
 		int c = 0;
 		EditScreenChar *p = screen.Line(r);
 		if (!p) continue;
-		
+
 		EditScreenChar *pe = p + screen.Cols();
 		int y = editRect.top + r*charH;
-		
-		while (p < pe) 
+
+		while (p < pe)
 		{
 			if (!p->changed)
 			{
 				while (p < pe && !p->changed){ p++; c++; }
 				continue;
 			}
-			
+
 			int x = editRect.left + c*charW;
-			
+
 			if (p->ch == ' ')
 			{
 				EditScreenChar *t = p + 1;
-				p->changed = false; 
-				
-				for( ; t->ch == ' ' && t < pe && t->changed && t->bColor == p->bColor; t++) 
+				p->changed = false;
+
+				for( ; t->ch == ' ' && t < pe && t->changed && t->bColor == p->bColor; t++)
 					t->changed = false;
-				int n = t - p;	
-				gc.SetFillColor(p->bColor);	
+				int n = t - p;
+				gc.SetFillColor(p->bColor);
 				gc.FillRect(crect(x, y, x + n*charW, y+charH));
 				p = t;
 				c += n;
 				continue;
 			}
-			
+
 			EditScreenChar *t = p + 1;
-			p->changed = false; 
-			
-			for ( ; t < pe && t->changed  && t->bColor == p->bColor && t->fColor == p->fColor; t++) 
+			p->changed = false;
+
+			for ( ; t < pe && t->changed  && t->bColor == p->bColor && t->fColor == p->fColor; t++)
 				t->changed = false;
-				
+
 			int n = t - p;
 			gc.SetFillColor(p->bColor);
 			gc.SetTextColor(p->fColor);
-			while (n>0) 
+			while (n>0)
 			{
 				unicode_t buf[PBSIZE];
 				int count = n>PBSIZE ? PBSIZE : n;
@@ -1647,8 +1647,8 @@ void EditWin::__DrawChanges()
 		}
 	}
 
-	
-//перерисовать курсор всегда //	if (screen.prevCursor != screen.cursor) 
+
+//перерисовать курсор всегда //	if (screen.prevCursor != screen.cursor)
 	DrawCursor(gc);
 }
 
@@ -1677,50 +1677,50 @@ void EditWin::Paint(wal::GC &gc, const crect &paintRect)
 	if (r2 > screen.Rows()) r2 = screen.Rows();
 	if (c1 < 0) c1 = 0;
 	if (c2 > screen.Cols()) c2 = screen.Cols();
-	
+
 	if (r1 >= r2 || c1 >= c2) return;
 
 	gc.Set(GetFont());
-	
+
 	for (int r = r1; r < r2; r++)
 	{
 		int c = c1;
 		EditScreenChar *p = screen.Line(r) + c;
 		if (!p) continue;
-		
+
 		EditScreenChar *pe = p + c2 - c1;
 		int y = editRect.top + r*charH;
-		
-		while (p < pe) 
+
+		while (p < pe)
 		{
 			int x = editRect.left + c*charW;
-			
+
 			if (p->ch == ' ')
 			{
 				EditScreenChar *t = p + 1;
-				p->changed = false; 
-				
-				for( ; t->ch == ' ' && t < pe && t->bColor == p->bColor; t++) 
+				p->changed = false;
+
+				for( ; t->ch == ' ' && t < pe && t->bColor == p->bColor; t++)
 					t->changed = false;
-					
-				int n = t - p;	
-				gc.SetFillColor(p->bColor);	
+
+				int n = t - p;
+				gc.SetFillColor(p->bColor);
 				gc.FillRect(crect(x, y, x + n*charW, y+charH));
 				p = t;
 				c += n;
 				continue;
 			}
-			
+
 			EditScreenChar *t = p + 1;
-			p->changed = false; 
-			
-			for ( ; t < pe  && t->bColor == p->bColor && t->fColor == p->fColor; t++) 
+			p->changed = false;
+
+			for ( ; t < pe  && t->bColor == p->bColor && t->fColor == p->fColor; t++)
 				t->changed = false;
-				
+
 			int n = t - p;
 			gc.SetFillColor(p->bColor);
 			gc.SetTextColor(p->fColor);
-			while (n>0) 
+			while (n>0)
 			{
 				unicode_t buf[PBSIZE];
 				int count = n>PBSIZE ? PBSIZE : n;
@@ -1733,7 +1733,7 @@ void EditWin::Paint(wal::GC &gc, const crect &paintRect)
 			}
 		}
 	}
-	
+
 	DrawCursor(gc);
 }
 
@@ -1770,69 +1770,69 @@ bool EditWin::EventKey(cevent_key* pEvent)
 		bool shift = (pEvent->Mod() & KM_SHIFT) !=0;
 		bool ctrl = (pEvent->Mod() & KM_CTRL) !=0;
 		bool alt = (pEvent->Mod() & KM_ALT)!=0;
-		
-		if (ctrl) 
+
+		if (ctrl)
 		{
 			switch (pEvent->Key()) {
 			case VK_Y: DeleteLine(); return true;
 			case VK_X: Cut(); return true;
 			case VK_C: ToClipboard(); return true;
-			case VK_V: 
+			case VK_V:
 				DelMarked();
-				FromClipboard(); 
+				FromClipboard();
 				return true;
-							
+
 			case VK_Z: if (shift) Redo(); else Undo(); return true;
 			}
 		}
-		
-	
+
+
 		switch (pEvent->Key()) {
-		case VK_RIGHT: 
-			if (ctrl) 
-				CursorCtrlRight(shift); 
+		case VK_RIGHT:
+			if (ctrl)
+				CursorCtrlRight(shift);
 			else
-				CursorRight(shift); 
+				CursorRight(shift);
 			break;
-		case VK_LEFT: 
-			if (ctrl) 
-				CursorCtrlLeft(shift); 
+		case VK_LEFT:
+			if (ctrl)
+				CursorCtrlLeft(shift);
 			else
-				CursorLeft(shift); 
+				CursorLeft(shift);
 			break;
-			
+
 		case VK_DOWN: CursorDown(shift); break;
 		case VK_UP: CursorUp(shift); break;
-		
+
 		case VK_HOME:	if (ctrl) CtrlPageUp(shift);	else CursorHome(shift); break;
 		case VK_END:	if (ctrl) CtrlPageDown(shift);	else CursorEnd(shift); break;
 		case VK_NEXT:	if (ctrl) CtrlPageDown(shift);	else PageDown(shift); break;
 		case VK_PRIOR:	if (ctrl) CtrlPageUp(shift);	else PageUp(shift); break;
-		
-		case VK_DELETE: 
+
+		case VK_DELETE:
 				if (ctrl) { Del(true); return true; }
 				if (shift){ Cut(); return true; }
 				Del(false);
 				break;
-				
-		case VK_BACK: 
+
+		case VK_BACK:
 			if (alt)
 				Undo();
 			else
-				Backspace(ctrl); 
+				Backspace(ctrl);
 			break;
 
 		case VK_NUMPAD_RETURN:
-		case VK_RETURN: 
+		case VK_RETURN:
 				DelMarked();
-				Enter(); 
+				Enter();
 				break;
 
-		case VK_INSERT: 
-				if (shift){ 
+		case VK_INSERT:
+				if (shift){
 					DelMarked();
-					FromClipboard(); 
-					return true; 
+					FromClipboard();
+					return true;
 				}
 				if (ctrl) { ToClipboard(); return true; }
 				break;
@@ -1840,7 +1840,7 @@ bool EditWin::EventKey(cevent_key* pEvent)
 		default:
 			if (ctrl && pEvent->Key()==VK_A) { SelectAll(); break; }
 
-			if (pEvent->Char()=='\t' || pEvent->Char()>=' ') 
+			if (pEvent->Char()=='\t' || pEvent->Char()>=' ')
 			{
 				DelMarked();
 				InsChar(pEvent->Char());
@@ -1883,7 +1883,7 @@ int EditWin::GetColFromPos(int line, int pos)
 
 	bool tab = charset->IsTab(s, end);
 	int col = 0;
-	while (s) 
+	while (s)
 	{
 		if (pos <= 0) break;
 		col += tab ? tabSize - col%tabSize : 1;
@@ -1909,7 +1909,7 @@ int EditWin::GetPosFromCol(int line, int nCol)
 
 	int pos = 0, col = 0;
 
-	while (s) 
+	while (s)
 	{
 		int step = (tab ? tabSize - (col%tabSize) : 1);
 
@@ -1920,9 +1920,9 @@ int EditWin::GetPosFromCol(int line, int nCol)
 		char *t = charset->GetNext(s, end);
 		tab = charset->IsTab(t, end);
 
-		if (t) 
-			pos += t-s; 
-		else 
+		if (t)
+			pos += t-s;
+		else
 			pos = str.Len();
 
 		s = t;
@@ -1942,14 +1942,14 @@ void EditWin::SetCursor(cpoint p, bool mark)
 	int line = r;
 	if (line>=text.Count()) line=text.Count()-1;
 	if (line<0) line=0;
-	
+
 	EditString &str=text.Get(line);
 	int pos = GetPosFromCol(line, c);
 	cursor.Set(line, pos);
 	if (!mark) marker = cursor;
 	CursorToScreen();
 	SendChanges();
-	Refresh(); 
+	Refresh();
 }
 
 
@@ -1971,7 +1971,7 @@ bool EditWin::EventMouse(cevent_mouse* pEvent)
 	lastMousePoint = pEvent->Point();
 	switch (pEvent->Type())	{
 	case EV_MOUSE_MOVE:
-		if (IsCaptured()) 
+		if (IsCaptured())
 		{
 			SetCursor(lastMousePoint, true);
 		}
@@ -1989,7 +1989,7 @@ bool EditWin::EventMouse(cevent_mouse* pEvent)
 				break;
 			}
 
-			if (pEvent->Button()!=MB_L) 
+			if (pEvent->Button()!=MB_L)
 				break;
 
 			SetCapture();
@@ -1998,7 +1998,7 @@ bool EditWin::EventMouse(cevent_mouse* pEvent)
 			SetTimer(1, 100);
                 }
 		break;
-		
+
 
 	case EV_MOUSE_RELEASE:
 		if (pEvent->Button()!=MB_L)
@@ -2017,7 +2017,7 @@ bool EditWin::EventMouse(cevent_mouse* pEvent)
 bool EditWin::Search(const unicode_t *arg, bool sens)
 {
 	carray<unicode_t> search = new_unicode_str(arg);
-	
+
 	if (!sens)
 		for (unicode_t *u = search.ptr(); *u; u++) *u = UnicodeLC(*u);
 
@@ -2032,7 +2032,7 @@ bool EditWin::Search(const unicode_t *arg, bool sens)
 
 	while (true)
 	{
-		while (s) 
+		while (s)
 		{
 			const unicode_t *sPtr = search.ptr();
 
@@ -2044,7 +2044,7 @@ bool EditWin::Search(const unicode_t *arg, bool sens)
 					marker = cursor;
 					CursorToScreen();
 					SendChanges();
-					Refresh(); 
+					Refresh();
 					return true;
 				}
 
@@ -2058,7 +2058,7 @@ bool EditWin::Search(const unicode_t *arg, bool sens)
 					if ( UnicodeLC(c) != *sPtr) break;
 				}
 			}
-			
+
 			s = charset->GetNext(s,end);
 		}
 
@@ -2068,7 +2068,7 @@ bool EditWin::Search(const unicode_t *arg, bool sens)
 		s = begin = str.Get();
 		end = begin + str.Len();
 	}
-	
+
 	return false;
 }
 
@@ -2081,13 +2081,13 @@ static ButtonDataNode bReplaceAllSkipCancel[] = { {"Replace", CMD_REPLACE}, { "A
 bool EditWin::Replace(const unicode_t *from, const unicode_t *to, bool sens)
 {
 	carray<unicode_t> search = new_unicode_str(from);
-	
+
 	if (!sens)
 		for (unicode_t *u = search.ptr(); *u; u++) *u = UnicodeLC(*u);
 
 	ccollect<char> rep;
 	charset_struct *cs = charset;
-	for (;*to;to++) 
+	for (;*to;to++)
 	{
 		char buf[32];
 		int n = cs->SetChar(buf, *to);
@@ -2100,7 +2100,7 @@ bool EditWin::Replace(const unicode_t *from, const unicode_t *to, bool sens)
 	EditString &str = text.Get(line);
 	char *begin = str.Get(), *end = begin + str.Len();
 	char *s = begin +cursor.pos;
-	
+
 	if (s < end)
 		s = charset->GetNext(s, end);
 
@@ -2113,50 +2113,50 @@ bool EditWin::Replace(const unicode_t *from, const unicode_t *to, bool sens)
 	try {
 		while (true)
 		{
-			while (s) 
+			while (s)
 			{
-				
+
 				restart:
-				
+
 				const unicode_t *sPtr = search.ptr();
 				for (char *p = s; ; p = charset->GetNext(p, end), sPtr++)
 				{
 					if (!*sPtr)
 					{
 						char *blockEnd = (p ? p : end);
-						
+
 						foundCount++;
 						if (!all) {
 							marker.Set(line, s - begin);
 							cursor.Set(line, blockEnd - begin);
 							CursorToScreen_forReplace();
 							SendChanges();
-							Refresh(); 
-						
+							Refresh();
+
 							int ret = NCMessageBox((NCDialogParent*)Parent(), _LT("Replace"), _LT("Replace it?"), false, bReplaceAllSkipCancel);
 							if (ret == CMD_ALL) all = true;
 							if (ret == CMD_SKIP) continue;
 
-							if (ret != CMD_ALL && ret != CMD_REPLACE) 
+							if (ret != CMD_ALL && ret != CMD_REPLACE)
 							{
 								marker = cursor;
 
 							//!!
-								undoBlock->SetEndPos(cursor, marker); 
+								undoBlock->SetEndPos(cursor, marker);
 								undoList.Append(undoBlock);
 
 								CursorToScreen();
 								SendChanges();
-								Refresh(); 
+								Refresh();
 								return true;
 							}
 						}
-					
+
 						{ //replace
 							int pos = s - begin;
 							int size = blockEnd - s;
 							SetChanged(line);
-	
+
 							EditString &str = text.Get(line);
 
 							undoBlock->DelText(line, pos, str.Get()+pos, size);
@@ -2172,7 +2172,7 @@ bool EditWin::Replace(const unicode_t *from, const unicode_t *to, bool sens)
 
 							cursor.Set(line, s-begin);
 							marker = cursor;
-							
+
 							goto restart;
 						}
 					}
@@ -2187,7 +2187,7 @@ bool EditWin::Replace(const unicode_t *from, const unicode_t *to, bool sens)
 						if ( UnicodeLC(c) != *sPtr) break;
 					}
 				}
-			
+
 				s = charset->GetNext(s,end);
 			}
 
@@ -2205,7 +2205,7 @@ bool EditWin::Replace(const unicode_t *from, const unicode_t *to, bool sens)
 
 		CursorToScreen();
 		SendChanges();
-		Refresh(); 
+		Refresh();
 
 	} catch (...) {
 		undoList.Clear();
