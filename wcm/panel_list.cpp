@@ -4,6 +4,7 @@
 
 
 #include "panel_list.h"
+#include "wcm-config.h"
 
 using namespace wal;
 
@@ -109,3 +110,45 @@ void PanelList::Mark(const unicode_t *mask, bool enable)
 	selectedCn = counter;
 }
 
+void PanelList::ShiftSelection(int n, int *selectType)
+{
+	if (n <= 0 || n > listCount) return;
+	FSNode *p = list[n-1]; 
+	if (!p) return;
+	
+	if (*selectType < 0) //not defined
+		*selectType = p->IsSelected() ? 0 : 1;
+
+	bool sel = (*selectType > 0);
+	if (sel == p->IsSelected()) return;
+
+	if (sel)
+	{
+		p->SetSelected(); 
+		selectedCn.AddOne(p->Size());
+	} else {
+		p->ClearSelected(); 
+		selectedCn.SubOne(p->Size());
+	}
+}
+
+void PanelList::InvertSelection()
+{
+	int n = listCount;
+	selectedCn.Clear();
+		
+	for (int i = 0; i < n; i++) 
+	{
+		FSNode *p = list.ptr()[i];
+		if (p->IsSelected())
+		{
+			p->ClearSelected();
+		}
+		else
+		{
+			if (!wcmConfig.panelSelectFolders && p->IsDir()) continue;
+			p->SetSelected();
+			selectedCn.AddOne(p->st.size);
+		}
+	}
+};

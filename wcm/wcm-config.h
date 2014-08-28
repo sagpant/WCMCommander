@@ -40,6 +40,7 @@ struct WcmConfig {
 	bool panelShowHiddenFiles;
 	bool panelShowIcons;
 	bool panelCaseSensitive;
+	bool panelSelectFolders;
 	int panelColorMode;
 	int panelModeLeft;
 	int panelModeRight;

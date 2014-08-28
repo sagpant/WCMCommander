@@ -549,6 +549,7 @@ WcmConfig::WcmConfig()
 	panelShowHiddenFiles(true),
 	panelShowIcons(true),
 	panelCaseSensitive(false),
+	panelSelectFolders(false),
 	panelColorMode(0),
 	
 	panelModeLeft(0),
@@ -581,6 +582,7 @@ WcmConfig::WcmConfig()
 	MapBool(sectionPanel, "show_hidden_files",	&panelShowHiddenFiles, panelShowHiddenFiles);
 	MapBool(sectionPanel, "show_icons",		&panelShowIcons, panelShowIcons);
 	MapBool(sectionPanel, "case_sensitive_sort",	&panelCaseSensitive, panelCaseSensitive);
+	MapBool(sectionPanel, "select_folders",	&panelSelectFolders, panelSelectFolders);
 	MapInt(sectionPanel,  "color_mode",		&panelColorMode, panelColorMode);
 	MapInt(sectionPanel,  "mode_left",		&panelModeLeft, panelModeLeft);
 	MapInt(sectionPanel,  "mode_right",		&panelModeRight, panelModeRight);
@@ -813,6 +815,7 @@ public:
 	SButton  showHiddenButton;
 	SButton  showIconsButton;
 	SButton  caseSensitive;
+	SButton  selectFolders;
 	
 	PanelOptDialog(NCDialogParent *parent);
 	virtual ~PanelOptDialog();
@@ -825,11 +828,13 @@ PanelOptDialog::PanelOptDialog(NCDialogParent *parent)
 	iL(16, 3),
 	showHiddenButton(0, this, utf8_to_unicode( _LT("Show hidden files") ).ptr(), 0, wcmConfig.panelShowHiddenFiles),
 	showIconsButton(0, this, utf8_to_unicode( _LT("Show icons") ).ptr(), 0, wcmConfig.panelShowIcons),
-	caseSensitive(0, this, utf8_to_unicode( _LT("Case sensitive sort") ).ptr(), 0, wcmConfig.panelCaseSensitive)
+	caseSensitive(0, this, utf8_to_unicode( _LT("Case sensitive sort") ).ptr(), 0, wcmConfig.panelCaseSensitive),
+	selectFolders(0, this, utf8_to_unicode( _LT("Select folders") ).ptr(), 0, wcmConfig.panelSelectFolders)
 {
 	iL.AddWin(&showHiddenButton,	0, 0); showHiddenButton.Enable(); showHiddenButton.SetFocus(); showHiddenButton.Show(); 
 	iL.AddWin(&showIconsButton,	1, 0); showIconsButton.Enable(); showIconsButton.Show(); 
 	iL.AddWin(&caseSensitive,	2, 0); caseSensitive.Enable(); caseSensitive.Show(); 
+	iL.AddWin(&selectFolders,	3, 0); selectFolders.Enable(); selectFolders.Show(); 
 	AddLayout(&iL);
 	SetEnterCmd(CMD_OK);
 
@@ -838,6 +843,7 @@ PanelOptDialog::PanelOptDialog(NCDialogParent *parent)
 	order.append(&showHiddenButton);
 	order.append(&showIconsButton);
 	order.append(&caseSensitive);
+	order.append(&selectFolders);
 	SetPosition();
 }
 
@@ -850,6 +856,7 @@ bool DoPanelConfigDialog(NCDialogParent *parent)
 		wcmConfig.panelShowHiddenFiles = dlg.showHiddenButton.IsSet(); 
 		wcmConfig.panelShowIcons = dlg.showIconsButton.IsSet(); 
 		wcmConfig.panelCaseSensitive = dlg.caseSensitive.IsSet(); 
+		wcmConfig.panelSelectFolders = dlg.selectFolders.IsSet(); 
 		return true;
 	}
 
