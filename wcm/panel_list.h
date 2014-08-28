@@ -160,13 +160,13 @@ public:
 			if (p && p->IsSelected()) 
 			{
 				cptr<FSNode> t = new FSNode(*p);
+				t->originNode = p;
 				plist->Append(t);
 			}
 		}
 		return plist;
 	}
-	
-	
+
 	void InvertSelection(int n) //от n отнимается 1
 	{
 		if (n<=0 || n>listCount) return;

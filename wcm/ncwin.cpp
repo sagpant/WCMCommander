@@ -978,25 +978,29 @@ void NCWin::View()
 	try {
 		FSPath path = _panel->GetPath();
 		FSPtr fs = _panel->GetFSPtr();
+
+		cptr<FSList> list = _panel->GetSelectedList();
 		
 		int cur = _panel->Current();
 		
 		if (!cur) {
 			//calc current dir
-			DirCalc(fs, path, this); 
+			DirCalc(fs, path, list, this); 
+			_panel->Repaint();
 			return; 
 		};
 		
 		FSNode*p =  _panel->GetCurrent();
 		if (!p) return;
 
-		path.Push(p->name.PrimaryCS(), p->name.Get(p->name.PrimaryCS()));
-		
 		if (p->IsDir())
 		{
-			DirCalc(fs, path, this);
+			DirCalc(fs, path, list, this);
+			_panel->Repaint();
 			return;
 		};
+
+		path.Push(p->name.PrimaryCS(), p->name.Get(p->name.PrimaryCS()));
 		
 		if (!(fs->Flags() & FS::HAVE_SEEK))
 		{

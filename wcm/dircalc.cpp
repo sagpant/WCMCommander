@@ -9,7 +9,8 @@ class OperDirCalcData: public OperData {
 public:
 	//после создания эти параметры может трогать толькл поток поиска
 	FSPtr dirFs;
-	FSPath dirPath;
+	FSPath _path;
+	cptr<FSList> dirList;
 	
 	/////////////////////////
 	Mutex resMutex; // {
@@ -23,9 +24,8 @@ public:
 	//поисковый поток может менять, основной поток может использовать только после завершения поискового потока
 	FSString errorString;
 
-	OperDirCalcData(NCDialogParent *p, FSPtr &fs, FSPath &path):
-		OperData(p), dirFs(fs), dirPath(path),
-		badDirs(0),
+	OperDirCalcData(NCDialogParent *p, FSPtr &fs, FSPath &path, cptr<FSList> list):
+		OperData(p), dirFs(fs), _path(path), dirList(list), badDirs(0),
 		fileCount(0), folderCount(0), sumSize(0)
 	{}
 	
@@ -38,20 +38,20 @@ class OperDirCalcThread: public OperFileThread {
 public:
 	OperDirCalcThread(const char *opName, NCDialogParent *par, OperThreadNode *n)
 		: OperFileThread(opName, par, n){}
-		
-	void CalcDir(FS *fs, FSPath path);
 	void Calc();
 	virtual ~OperDirCalcThread();
+private:
+	int64 CalcDir(FS *fs, FSPath path);
 };
 
 
-void OperDirCalcThread::CalcDir(FS *fs, FSPath path)
+int64 OperDirCalcThread::CalcDir(FS *fs, FSPath path)
 {
-	if (Info()->Stopped()) return;
+	if (Info()->Stopped()) return -1;
 	
 	{//lock
 		MutexLock lock(Node().GetMutex());
-		if (!Node().Data()) return;
+		if (!Node().Data()) return -1;
 		OperDirCalcData *data = (OperDirCalcData*)Node().Data();
 		MutexLock l1(&data->resMutex);
 		data->currentPath = path;
@@ -64,10 +64,10 @@ void OperDirCalcThread::CalcDir(FS *fs, FSPath path)
 	if (fs->ReadDir(&list, path, &err, Info())) 
 	{
 		MutexLock lock(Node().GetMutex());
-		if (!Node().Data()) return;
+		if (!Node().Data()) return -1;
 		MutexLock l1(&((OperDirCalcData*)Node().Data())->resMutex);
 		((OperDirCalcData*)Node().Data())->badDirs++;
-		return;
+		return -1;
 	};
 	
 	int count = list.Count();
@@ -95,7 +95,7 @@ void OperDirCalcThread::CalcDir(FS *fs, FSPath path)
 			
 	{//lock
 		MutexLock lock(Node().GetMutex());
-		if (!Node().Data()) return;
+		if (!Node().Data()) return -1;
 
 		OperDirCalcData *data = (OperDirCalcData*)Node().Data();
 		MutexLock l1(&data->resMutex);
@@ -111,24 +111,47 @@ void OperDirCalcThread::CalcDir(FS *fs, FSPath path)
 		if (p[i]->IsDir() && !p[i]->extType && p[i]->st.link.IsEmpty())
 		{
 			if (Info()->Stopped()) 
-				return;
+				return -1;
 				
 			path.SetItemStr(lastPathPos, p[i]->Name());
-			CalcDir(fs, path);
+			sumSize += CalcDir(fs, path);
 		}
 	}
 
+	return sumSize;
 }
 
 void OperDirCalcThread::Calc()
 {
 	MutexLock lock(Node().GetMutex());
+
 	if (!Node().Data()) return;
-	FSPath path = ((OperDirCalcData*)Node().Data())->dirPath;
-	FSPtr fs = ((OperDirCalcData*)Node().Data())->dirFs;
+
+	OperDirCalcData* CalcData = (OperDirCalcData*)Node().Data();
+
+	FSPtr fs = CalcData->dirFs;
+	FSPath path =  CalcData->_path;
+	cptr<FSList> list = CalcData->dirList;
+
 	lock.Unlock(); //!!!
 
-	CalcDir(fs.Ptr(), path);
+	int cnt = path.Count();
+
+	for (FSNode *node = list->First(); node; node = node->next)
+	{
+		bool IsDir = false;
+
+		path.SetItemStr(cnt, node->Name()); 
+
+		IsDir = node->IsDir() && !node->st.IsLnk();
+
+		if (IsDir)
+		{
+			int64 Size = CalcDir(fs.Ptr(), path);
+
+			if ( Size >= 0 && node && node->originNode ) node->originNode->st.size = Size;
+		}
+	}
 }
 
 OperDirCalcThread::~OperDirCalcThread(){}
@@ -432,10 +455,10 @@ void DirCalcThreadFunc(OperThreadNode *node)
 	}
 }
 
-bool DirCalc(FSPtr f, FSPath p, NCDialogParent *parent)
+bool DirCalc(FSPtr f, FSPath &path, cptr<FSList> list, NCDialogParent *parent)
 {
-	OperDirCalcData data(parent, f, p);
-	DirCalcThreadWin dlg(parent,  _LT("Folder size") , &data, f->Uri(p).GetUnicode());
+	OperDirCalcData data(parent, f, path, list);
+	DirCalcThreadWin dlg(parent,  _LT("Selected folders size") , &data, f->Uri(path).GetUnicode());
 
 	dlg.RunNewThread("Folder calc", DirCalcThreadFunc, &data); //может быть исключение
 
