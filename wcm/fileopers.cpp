@@ -170,14 +170,20 @@ void OperRDThread::Run()
 		
 		FSStat st;
 
-		if (fs->Stat(path, &st, &ret_err, Info()))
-			throw_msg("%s", fs->StrError(ret_err).GetUtf8());
+		// if path is inaccessible, try .. path
+		while( fs->Stat(path, &st, &ret_err, Info())) 
+			if (!path.IsAbsolute() || !path.Pop())
+				throw_msg("%s", fs->StrError(ret_err).GetUtf8());
+
+		// yell immediately if the path is inaccessible (orig behavior)
+		//if (fs->Stat(path, &st, &ret_err, Info()))
+		//	throw_msg("%s", fs->StrError(ret_err).GetUtf8());
 			
 		if (!st.IsLnk()) 
 			break;
 		n--;
 		if (n<0) 
-			throw_msg("too more symbolic links '%s'", path.GetUtf8());
+			throw_msg("too many symbolic links '%s'", path.GetUtf8());
 			
 		path.Pop();
 		if (!ParzeLink(path, st.link))
@@ -185,10 +191,18 @@ void OperRDThread::Run()
 	}
 
 	cptr<FSList> list = new FSList;
-	int ret = fs->ReadDir(list.ptr(), path, &ret_err, Info());
-	if (ret) 
-		throw_msg("%s", fs->StrError(ret_err).GetUtf8());
-	
+
+	// if directory is not readable, try .. path
+	// "Stat" call above does not catch this: it checks only folder existence, but not accessibilly
+	while (fs->ReadDir(list.ptr(), path, &ret_err, Info()))
+		if (!path.IsAbsolute() || !path.Pop())
+			throw_msg("%s", fs->StrError(ret_err).GetUtf8());
+
+	// yell immediately if the dir is unreadable (orig behavior)
+	//int ret = fs->ReadDir(list.ptr(), path, &ret_err, Info());
+	//if (ret)
+	//	throw_msg("%s", fs->StrError(ret_err).GetUtf8());
+
 	MutexLock lock(Node().GetMutex()); //!!!
 	if (Node().NBStopped()) return;
 	OperRDData *data = ((OperRDData*)Node().Data());
