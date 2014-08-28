@@ -1166,7 +1166,7 @@ void PanelWin::DrawFooter(wal::GC &gc)
 
 		char b2[128];
 		if (selectedCn.count)
-			sprintf(b2, _LT( ( selectedCn.count == 1 ) ? "%s bytes in %i file %s" : "%s bytes in %i files %s"), b11, selectedCn.count, b3);
+			sprintf(b2, _LT( ( selectedCn.count == 1 ) ? "%s bytes in %i file" : "%s bytes in %i files"), b11, selectedCn.count);
 		else
 			sprintf(b2, _LT("%s (%i) %s"), b11, filesCn.count, b3);
 
