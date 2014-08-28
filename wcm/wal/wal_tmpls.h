@@ -59,7 +59,7 @@ namespace wal
 		carray& operator = ( const carray& a );
 		void resize( int n );
 		T* data();
-		const T* const_ptr() const;
+		const T* data() const;
 		T& operator [] ( int n );
 		const T& const_item( int n ) const;
 		~carray();
@@ -219,7 +219,7 @@ namespace wal
 		return m_data;
 	}
 
-	template <class T> inline const T* carray<T>::const_ptr() const
+	template <class T> inline const T* carray<T>::data() const
 	{
 		return m_data;
 	}
@@ -924,7 +924,7 @@ namespace wal
 
 			for ( i = 0; i < a.tableSize; i++ )
 			{
-				for ( const LT* p = a.table.const_ptr()[i];
+				for ( const LT* p = a.table.data()[i];
 				      p;
 				      p = p->next )
 				{

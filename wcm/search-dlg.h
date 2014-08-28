@@ -10,15 +10,15 @@ struct SearchAndReplaceParams
 	SearchAndReplaceParams(): sens( false ) {}
 	SearchAndReplaceParams( const SearchAndReplaceParams& a )
 	{
-		mask = new_unicode_str( a.mask.const_ptr() );
-		txt = new_unicode_str( a.txt.const_ptr() );
-		to = new_unicode_str( a.to.const_ptr() );
+		mask = new_unicode_str( a.mask.data() );
+		txt = new_unicode_str( a.txt.data() );
+		to = new_unicode_str( a.to.data() );
 	}
 	SearchAndReplaceParams& operator = ( const SearchAndReplaceParams& a )
 	{
-		mask = new_unicode_str( a.mask.const_ptr() );
-		txt = new_unicode_str( a.txt.const_ptr() );
-		to = new_unicode_str( a.to.const_ptr() );
+		mask = new_unicode_str( a.mask.data() );
+		txt = new_unicode_str( a.txt.data() );
+		to = new_unicode_str( a.to.data() );
 		return *this;
 	}
 };

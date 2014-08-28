@@ -42,7 +42,7 @@ public:
 	{
 		carray<unicode_t> name;
 		cptr<StrConfig> conf;
-		bool operator <= ( const Node& a ) { return CmpNoCase( name.const_ptr(), a.name.const_ptr() ) <= 0; }
+		bool operator <= ( const Node& a ) { return CmpNoCase( name.data(), a.name.data() ) <= 0; }
 	};
 
 	void Sort();

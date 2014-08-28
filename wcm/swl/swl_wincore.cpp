@@ -920,7 +920,7 @@ namespace wal
 		for ( i = 0; i < a.list.count(); i++ )
 		{
 			carray<unicode_t> p = new unicode_t[BUF_SIZE];
-			memcpy( p.data(), a.list.const_item( i ).const_ptr(), BUF_SIZE * sizeof( unicode_t ) );
+			memcpy( p.data(), a.list.const_item( i ).data(), BUF_SIZE * sizeof( unicode_t ) );
 			list.append( p );
 		}
 
@@ -1027,7 +1027,7 @@ namespace wal
 
 		if ( _width > 0 && _height > 0 )
 		{
-			memcpy( _data.data(), a._data.const_ptr(), _width * _height * sizeof( unsigned32 ) );
+			memcpy( _data.data(), a._data.data(), _width * _height * sizeof( unsigned32 ) );
 			unsigned32* p = _data.data();
 
 			for ( int i = 0; i < _height; i++, p += _width ) { _lines[i] = p; }

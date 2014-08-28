@@ -508,8 +508,8 @@ namespace wal
 		int Width() const { return width; }
 		int Height() const { return height; }
 
-		const unsigned* Colors() const { return colors.const_ptr(); }
-		const int* Data() const { return data.const_ptr(); }
+		const unsigned* Colors() const { return colors.data(); }
+		const int* Data() const { return data.data(); }
 
 		bool Load( const char** list, int count );
 		//void Load(InStream &stream);
