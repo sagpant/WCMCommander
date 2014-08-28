@@ -14,8 +14,15 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
 					<Add directory="wal" />
 					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 				<Linker>
 					<Add library="freetype" />
@@ -38,8 +45,12 @@
 					<Add option="-m64" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
 					<Add directory="wal" />
 					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 				<Linker>
 					<Add library="X11" />
@@ -67,6 +78,7 @@
 					<Add option="-DLIBSSH2_EXIST" />
 					<Add directory="wal" />
 					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 				<Linker>
 					<Add library="X11" />
@@ -94,6 +106,7 @@
 					<Add option="-DLIBSSH2_EXIST" />
 					<Add directory="wal" />
 					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 				<Linker>
 					<Add library="X11" />
