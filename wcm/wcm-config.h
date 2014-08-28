@@ -17,7 +17,7 @@ struct WcmConfig
 		{
 			int* pInt;
 			bool* pBool;
-			carray<char>* pStr;
+			std::vector<char>* pStr;
 		} ptr;
 		union
 		{
@@ -30,12 +30,12 @@ struct WcmConfig
 	ccollect<Node, 64> mapList;
 	void MapInt( const char* section, const char* name, int* pInt, int def );
 	void MapBool( const char* section, const char* name, bool* pInt, bool def );
-	void MapStr( const char* section, const char* name, carray<char>* pStr, const char* def = 0 );
+	void MapStr( const char* section, const char* name, std::vector<char>* pStr, const char* def = 0 );
 
 	bool systemAskOpenExec;
 	bool systemEscPanel;
 	bool systemBackSpaceUpDir;
-	carray<char> systemLang; //"+" - auto "-" -internal eng.
+	std::vector<char> systemLang; //"+" - auto "-" -internal eng.
 
 	bool showToolBar;
 	bool showButtonBar;
@@ -65,17 +65,17 @@ struct WcmConfig
 	int windowHeight;
 
 	//fonts
-	carray<char> panelFontUri;
-	carray<char> viewerFontUri;
-	carray<char> editorFontUri;
-	carray<char> dialogFontUri;
-	carray<char> terminalFontUri;
-	carray<char> helpTextFontUri;
-	carray<char> helpBoldFontUri;
-	carray<char> helpHeadFontUri;
+	std::vector<char> panelFontUri;
+	std::vector<char> viewerFontUri;
+	std::vector<char> editorFontUri;
+	std::vector<char> dialogFontUri;
+	std::vector<char> terminalFontUri;
+	std::vector<char> helpTextFontUri;
+	std::vector<char> helpBoldFontUri;
+	std::vector<char> helpHeadFontUri;
 
-	carray<char> leftPanelPath;
-	carray<char> rightPanelPath;
+	std::vector<char> leftPanelPath;
+	std::vector<char> rightPanelPath;
 
 	void ImpCurrentFonts(); //взять используемые шрифты и записать их реквизиты в ...Uri
 
@@ -94,7 +94,7 @@ bool DoStyleConfigDialog( NCDialogParent* parent );
 bool DoSystemConfigDialog( NCDialogParent* parent );
 bool DoTerminalConfigDialog( NCDialogParent* parent );
 
-bool LoadStringList( const char* section, ccollect< carray<char> >& list );
-void SaveStringList( const char* section, ccollect< carray<char> >& list );
+bool LoadStringList( const char* section, ccollect< std::vector<char> >& list );
+void SaveStringList( const char* section, ccollect< std::vector<char> >& list );
 
 #endif

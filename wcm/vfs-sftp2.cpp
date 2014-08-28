@@ -110,11 +110,11 @@ inline void FSSftp::CheckSFTP( int err )
 }
 
 
-static carray<char> CopyToStrZ( const char* s, int size )
+static std::vector<char> CopyToStrZ( const char* s, int size )
 {
 	if ( size <= 0 ) { size = 0; }
 
-	carray<char> p( size + 1 );
+	std::vector<char> p( size + 1 );
 
 	if ( size > 0 ) { memcpy( p.data(), s, size ); }
 
@@ -141,7 +141,7 @@ void KbIntCallback(
 	try
 	{
 
-		carray<FSPromptData> pData( num_prompts );
+		std::vector<FSPromptData> pData( num_prompts );
 		int i;
 
 		for ( i = 0; i < num_prompts; i++ )
@@ -159,7 +159,7 @@ void KbIntCallback(
 
 		for ( i = 0; i < num_prompts; i++ )
 		{
-			carray<char> str = new_char_str( ( char* )FSString( pData[i].prompt.Data() ).Get( kbdIntParam->charset ) );
+			std::vector<char> str = new_char_str( ( char* )FSString( pData[i].prompt.Data() ).Get( kbdIntParam->charset ) );
 
 			if ( str.data() )
 			{
@@ -1235,7 +1235,7 @@ FSString FSSftp::Uri( FSPath& path )
 {
 	MutexLock lock( &infoMutex ); //infoMutex!!!
 
-	carray<char> a;
+	std::vector<char> a;
 
 	char port[0x100];
 	snprintf( port, sizeof( port ), ":%i", _infoParam.port );

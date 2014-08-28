@@ -23,7 +23,7 @@ WcmConfig wcmConfig;
 class TextInStream
 {
 	int bufSize;
-	carray<char> buffer;
+	std::vector<char> buffer;
 	int pos, count;
 	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.data(), bufSize ); pos = 0; return count > 0; }
 public:
@@ -83,7 +83,7 @@ bool TextInStream::GetLine( char* s, int size )
 class TextOutStream
 {
 	int bufSize;
-	carray<char> buffer;
+	std::vector<char> buffer;
 	int pos;
 public:
 	TextOutStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), pos( 0 ) { buffer.resize( bufSize ); }
@@ -159,9 +159,9 @@ inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
 
 class IniHash
 {
-	cstrhash< cstrhash< carray<char> > > hash;
-	carray<char>* Find( const char* section, const char* var );
-	carray<char>* Create( const char* section, const char* var );
+	cstrhash< cstrhash< std::vector<char> > > hash;
+	std::vector<char>* Find( const char* section, const char* var );
+	std::vector<char>* Create( const char* section, const char* var );
 	void Delete( const char* section, const char* var );
 public:
 	IniHash();
@@ -179,22 +179,22 @@ public:
 
 IniHash::IniHash() {}
 
-carray<char>* IniHash::Find( const char* section, const char* var )
+std::vector<char>* IniHash::Find( const char* section, const char* var )
 {
-	cstrhash< carray<char> >* h = hash.exist( section );
+	cstrhash< std::vector<char> >* h = hash.exist( section );
 
 	if ( !h ) { return 0; }
 
 	return h->exist( var );
 }
 
-carray<char>* IniHash::Create( const char* section, const char* var ) { return &( hash[section][var] ); }
+std::vector<char>* IniHash::Create( const char* section, const char* var ) { return &( hash[section][var] ); }
 void IniHash::Delete( const char* section, const char* var ) { hash[section].del( var, false ); }
-void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; carray<char>* p = Create( section, var ); if ( p ) { *p = new_char_str( value ); } }
+void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; std::vector<char>* p = Create( section, var ); if ( p ) { *p = new_char_str( value ); } }
 void IniHash::SetIntValue( const char* section, const char* var, int value ) { char buf[64]; int_to_char<int>( value, buf ); SetStrValue( section, var, buf ); }
 void IniHash::SetBoolValue( const char* section, const char* var, bool value ) { SetIntValue( section, var, value ? 1 : 0 ); }
-const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { carray<char>* p =  Find( section, var ); return ( p && p->ptr() ) ? p->ptr() : def; }
-int IniHash::GetIntValue( const char* section, const char* var, int def ) { carray<char>* p =  Find( section, var ); return ( p && p->ptr() ) ? atoi( p->ptr() ) : def; }
+const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->ptr() ) ? p->ptr() : def; }
+int IniHash::GetIntValue( const char* section, const char* var, int def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->ptr() ) ? atoi( p->ptr() ) : def; }
 bool IniHash::GetBoolValue( const char* section, const char* var, bool def ) { int n = GetIntValue( section, var, def ? 1 : 0 ); return n ? true : false; }
 
 void IniHash::Clear() { hash.clear(); }
@@ -220,7 +220,7 @@ void IniHash::Load( const sys_char_t* fileName )
 	}
 
 	char buf[4096];
-	carray<char> section;
+	std::vector<char> section;
 
 	while ( in.GetLine( buf, sizeof( buf ) ) )
 	{
@@ -290,7 +290,7 @@ void IniHash::Save( const sys_char_t* fileName )
 
 	if ( hash.count() > 0 )
 	{
-		carray<const char*> secList = hash.keys();
+		std::vector<const char*> secList = hash.keys();
 		sort2m<const char*>( secList.data(), hash.count(), strless< const char* > );
 
 		for ( int i = 0; i < hash.count(); i++ )
@@ -298,18 +298,18 @@ void IniHash::Save( const sys_char_t* fileName )
 			out.Put( "\n[" );
 			out.Put( secList[i] );
 			out.Put( "]\n" );
-			cstrhash< carray<char> >* h = hash.exist( secList[i] );
+			cstrhash< std::vector<char> >* h = hash.exist( secList[i] );
 
 			if ( !h ) { continue; }
 
-			carray<const char*> varList = h->keys();
+			std::vector<const char*> varList = h->keys();
 			sort2m<const char*>( varList.data(), h->count(), strless< const char* > );
 
 			for ( int j = 0; j < h->count(); j++ )
 			{
 				out.Put( varList[j] );
 				out.PutC( '=' );
-				carray<char>* p = h->exist( varList[j] );
+				std::vector<char>* p = h->exist( varList[j] );
 
 				if ( p && p->ptr() ) { out.Put( p->ptr() ); }
 
@@ -324,7 +324,7 @@ void IniHash::Save( const sys_char_t* fileName )
 
 IniHash::~IniHash() {}
 
-bool LoadStringList( const char* section, ccollect< carray<char> >& list )
+bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 {
 	try
 	{
@@ -355,7 +355,7 @@ bool LoadStringList( const char* section, ccollect< carray<char> >& list )
 }
 
 
-void SaveStringList( const char* section, ccollect< carray<char> >& list )
+void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 {
 	try
 	{
@@ -463,13 +463,13 @@ DWORD RegReadInt( const char* sect, const  char* what, DWORD def )
 	return def;
 }
 
-carray<char> RegReadString( char const* sect, const char* what, const char* def )
+std::vector<char> RegReadString( char const* sect, const char* what, const char* def )
 {
 	HKEY hsect = GetSection( sect );
 
-	if ( !hsect ) { return def ? new_char_str( def ) : carray<char>( 0 ); }
+	if ( !hsect ) { return def ? new_char_str( def ) : std::vector<char>( 0 ); }
 
-	carray<char> strValue;
+	std::vector<char> strValue;
 	DWORD dwType, dwCount;
 	LONG lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,
 	                                NULL, &dwCount );
@@ -492,7 +492,7 @@ carray<char> RegReadString( char const* sect, const char* what, const char* def 
 		return strValue;
 	}
 
-	return def ? new_char_str( def ) : carray<char>( 0 );
+	return def ? new_char_str( def ) : std::vector<char>( 0 );
 }
 
 int RegGetBinSize( const char* sect, const char* what )
@@ -577,7 +577,7 @@ bool RegWriteBin( const char* sect, const char* what, const void* data, int size
 	return lResult == ERROR_SUCCESS;
 }
 
-bool LoadStringList( const char* section, ccollect< carray<char> >& list )
+bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 {
 	char name[64];
 	list.clear();
@@ -585,7 +585,7 @@ bool LoadStringList( const char* section, ccollect< carray<char> >& list )
 	for ( int i = 1; ; i++ )
 	{
 		snprintf( name, sizeof( name ), "v%i", i );
-		carray<char> s = RegReadString( section, name, "" );
+		std::vector<char> s = RegReadString( section, name, "" );
 
 		if ( !s.data() || !s[0] ) { break; }
 
@@ -595,7 +595,7 @@ bool LoadStringList( const char* section, ccollect< carray<char> >& list )
 	return true;
 }
 
-void SaveStringList( const char* section, ccollect< carray<char> >& list )
+void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 {
 	int n = 1;
 	char name[64];
@@ -747,7 +747,7 @@ void WcmConfig::MapBool( const char* section, const char* name, bool* pBool, boo
 	mapList.append( node );
 }
 
-void WcmConfig::MapStr( const char* section, const char* name, carray<char>* pStr, const char* def )
+void WcmConfig::MapStr( const char* section, const char* name, std::vector<char>* pStr, const char* def )
 {
 	Node node;
 	node.type = MT_STR;
@@ -1093,13 +1093,13 @@ class StyleOptDialog: public NCVertDialog
 public:
 	struct Node
 	{
-		carray<char> name;
+		std::vector<char> name;
 		cfont* oldFont;
-		carray<char>* pUri;
+		std::vector<char>* pUri;
 		cptr<cfont> newFont;
 		bool fixed;
 		Node(): oldFont( 0 ) {}
-		Node( const char* n, bool fix,  cfont* old, carray<char>* uri ): name( new_char_str( n ) ), fixed( fix ), oldFont( old ), pUri( uri ) {}
+		Node( const char* n, bool fix,  cfont* old, std::vector<char>* uri ): name( new_char_str( n ) ), fixed( fix ), oldFont( old ), pUri( uri ) {}
 	};
 
 	ccollect<Node>* pList;
@@ -1296,7 +1296,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 		if ( count <= 0 || cur < 0 || cur >= count ) { return true; }
 
 		LOGFONT lf;
-		carray<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
+		std::vector<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
 		cfont::UriToLogFont( &lf, pUri && pUri->data() ?  pUri->data() : 0 );
 
 		CHOOSEFONT cf;
@@ -1335,7 +1335,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		if ( count <= 0 || cur < 0 || cur >= count ) { return true; }
 
-		carray<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
+		std::vector<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
 
 		cptr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->ptr() ) ? pUri->ptr() : 0 );
 
@@ -1441,8 +1441,8 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 
 struct LangListNode
 {
-	carray<char> id;
-	carray<char> name;
+	std::vector<char> id;
+	std::vector<char> name;
 	LangListNode() {}
 	LangListNode( const char* i, const char* n ): id( new_char_str( i ) ), name( new_char_str( n ) ) {}
 };
@@ -1602,7 +1602,7 @@ class SysOptDialog: public NCVertDialog
 {
 	Layout iL;
 public:
-	carray<char> curLangId;
+	std::vector<char> curLangId;
 	ccollect<LangListNode> list;
 	void SetCurLang( const char* id );
 

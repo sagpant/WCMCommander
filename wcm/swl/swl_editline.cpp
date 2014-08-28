@@ -16,7 +16,7 @@ namespace wal
 
 		n = ( ( n + STEP - 1 ) / STEP ) * STEP;
 
-		wal::carray<unicode_t> p( n );
+		std::vector<unicode_t> p( n );
 
 		if ( count > 0 )
 		{
@@ -385,10 +385,10 @@ namespace wal
 		return oldFirst != first;
 	}
 
-	carray<unicode_t> EditLine::GetText()
+	std::vector<unicode_t> EditLine::GetText()
 	{
 		int count = text.Count();
-		carray<unicode_t> p( count + 1 );
+		std::vector<unicode_t> p( count + 1 );
 
 		if ( count > 0 ) { memcpy( p.data(), text.Ptr(), sizeof( unicode_t )*count ); }
 
@@ -461,7 +461,7 @@ namespace wal
 			int cnt = text.Count() - first;
 			int i = first;
 
-			carray<unicode_t> pwTextArray;
+			std::vector<unicode_t> pwTextArray;
 			unicode_t* pwText = 0;
 
 			if ( passwordMode && cnt > 0 )

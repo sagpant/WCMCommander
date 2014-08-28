@@ -6,9 +6,9 @@
 #include "string-util.h"
 #include "w32util.h"
 
-static carray<wchar_t> GetOpenApp( wchar_t* ext )
+static std::vector<wchar_t> GetOpenApp( wchar_t* ext )
 {
-	if ( !ext ) { return carray<wchar_t>(); }
+	if ( !ext ) { return std::vector<wchar_t>(); }
 
 	RegKey key;
 
@@ -17,7 +17,7 @@ static carray<wchar_t> GetOpenApp( wchar_t* ext )
 		key.Open( HKEY_CLASSES_ROOT, ext );
 	}
 
-	carray<wchar_t> p = key.GetString();
+	std::vector<wchar_t> p = key.GetString();
 
 	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.data(), L"\\shell\\open\\command" ).data() ) )
 	{
@@ -27,7 +27,7 @@ static carray<wchar_t> GetOpenApp( wchar_t* ext )
 	return key.GetString();
 }
 
-static carray<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const unicode_t* uri )
+static std::vector<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const unicode_t* uri )
 {
 	ccollect<unicode_t, 0x100> res;
 	int insCount = 0;
@@ -65,23 +65,23 @@ static carray<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const unicod
 	return res.grab();
 }
 
-static carray<wchar_t> GetFileExt( const unicode_t* uri )
+static std::vector<wchar_t> GetFileExt( const unicode_t* uri )
 {
-	if ( !uri ) { return carray<wchar_t>(); }
+	if ( !uri ) { return std::vector<wchar_t>(); }
 
 	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
 
-	if ( !ext || !*ext ) { return carray<wchar_t>(); }
+	if ( !ext || !*ext ) { return std::vector<wchar_t>(); }
 
 	return UnicodeToUtf16( ext );
 }
 
-static carray<unicode_t> NormalizeStr( unicode_t* s )
+static std::vector<unicode_t> NormalizeStr( unicode_t* s )
 {
-	if ( !s ) { return 0; }
+	if ( !s ) { return std::vector<unicode_t>(1); }
 
 	int n = unicode_strlen( s );
-	carray<unicode_t> p( n + 1 );
+	std::vector<unicode_t> p( n + 1 );
 	unicode_t* t = p.data();
 
 	for ( ; *s; s++ ) if ( *s != '&' ) { *( t++ ) = *s; }
@@ -92,7 +92,7 @@ static carray<unicode_t> NormalizeStr( unicode_t* s )
 
 cptr<AppList> GetAppList( const unicode_t* uri )
 {
-	carray<wchar_t> ext = GetFileExt( uri );
+	std::vector<wchar_t> ext = GetFileExt( uri );
 
 	if ( !ext.data() ) { return 0; }
 
@@ -103,7 +103,7 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 		key.Open( HKEY_CLASSES_ROOT, ext.data() );
 	}
 
-	carray<wchar_t> p = key.GetString();
+	std::vector<wchar_t> p = key.GetString();
 
 	RegKey key2;
 
@@ -117,11 +117,11 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 
 	cptr<AppList> ret = new AppList();
 
-	carray<wchar_t> pref = key2.GetString();
+	std::vector<wchar_t> pref = key2.GetString();
 
 	for ( int i = 0; i < 10; i++ )
 	{
-		carray<wchar_t> sub = key2.SubKey( i );
+		std::vector<wchar_t> sub = key2.SubKey( i );
 
 		if ( !sub.data() ) { break; }
 
@@ -130,11 +130,11 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 
 		if ( !key25.Ok() ) { continue; }
 
-		carray<wchar_t> name = key25.GetString();
+		std::vector<wchar_t> name = key25.GetString();
 //wprintf(L"%s, %s\n", sub.ptr(), name.ptr());
 		RegKey key3;
 		key3.Open( key25.Key(), L"command" );
-		carray<wchar_t> command = key3.GetString();
+		std::vector<wchar_t> command = key3.GetString();
 
 		if ( command.data() )
 		{
@@ -162,14 +162,14 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 
 		for ( int i = 0; i < 10; i++ )
 		{
-			carray<wchar_t> sub = key2.SubKey( i );
+			std::vector<wchar_t> sub = key2.SubKey( i );
 
 			if ( !sub.data() ) { break; }
 
 			RegKey keyApplication;
 			keyApplication.Open( HKEY_CLASSES_ROOT,
 			                     carray_cat<wchar_t>( L"Applications\\", sub.data(), L"\\shell\\open\\command" ).data() );
-			carray<wchar_t> command = keyApplication.GetString();
+			std::vector<wchar_t> command = keyApplication.GetString();
 
 			if ( command.data() )
 			{
@@ -194,11 +194,11 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 }
 
 
-carray<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName )
+std::vector<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName )
 {
-	carray<wchar_t> wCmd = GetOpenApp( GetFileExt( uri ).data() );
+	std::vector<wchar_t> wCmd = GetOpenApp( GetFileExt( uri ).data() );
 
-	if ( !wCmd.data() ) { return carray<unicode_t>(); }
+	if ( !wCmd.data() ) { return std::vector<unicode_t>(); }
 
 	return CfgStringToCommand( wCmd.data(), uri );
 }

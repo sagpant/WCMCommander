@@ -241,7 +241,7 @@ FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
 			if ( path.Count() == 2 )
 			{
 				static unicode_t aa[] = {'\\', '\\', 0};
-				carray<wchar_t> name = UnicodeToUtf16( carray_cat<unicode_t>( aa, path.GetItem( 1 )->GetUnicode() ).data() );
+				std::vector<wchar_t> name = UnicodeToUtf16( carray_cat<unicode_t>( aa, path.GetItem( 1 )->GetUnicode() ).data() );
 
 				NETRESOURCEW r;
 				r.dwScope = RESOURCE_GLOBALNET;
@@ -317,7 +317,7 @@ FSPtr ParzeCurrentSystemURL( FSPath& path )
 	return new FSSys( drive );
 #else
 	int bufSize = 1024;
-	carray<sys_char_t> buf( bufSize );
+	std::vector<sys_char_t> buf( bufSize );
 
 	while ( true )
 	{

@@ -1605,7 +1605,7 @@ void EditWin::EnableShl( bool on )
 		colors["OPER"  ] = COLOR_OPER_ID;
 		colors["ATTN"  ] = COLOR_ATTN_ID;
 
-		carray<char> firstLine;
+		std::vector<char> firstLine;
 
 		if ( text.Count() > 0 )
 		{
@@ -1636,7 +1636,7 @@ void EditWin::EnableShl( bool on )
 
 		_shlConf = new SHL::ShlConf();
 #ifdef _WIN32
-		wal::carray<wchar_t> path = GetAppPath();
+		std::vector<wchar_t> path = GetAppPath();
 		_shlConf->Parze( carray_cat<wchar_t>( GetAppPath().data(), utf8_to_sys( "\\shl\\config.cfg" ).data() ).data() );
 #else
 		_shlConf->Parze( ( sys_char_t* ) UNIX_CONFIG_DIR_PATH "/shl/config.cfg" );
@@ -1760,7 +1760,7 @@ void EditWin::__RefreshScreenData()
 		{
 
 //TEMP
-			carray<char> colId( str.len + 1 );
+			std::vector<char> colId( str.len + 1 );
 			memset( colId.data(), -1, str.len + 1 );
 
 			if ( _shl )
@@ -2382,7 +2382,7 @@ bool EditWin::EventMouse( cevent_mouse* pEvent )
 
 bool EditWin::Search( const unicode_t* arg, bool sens )
 {
-	carray<unicode_t> search = new_unicode_str( arg );
+	std::vector<unicode_t> search = new_unicode_str( arg );
 
 	if ( !sens )
 		for ( unicode_t* u = search.data(); *u; u++ ) { *u = UnicodeLC( *u ); }
@@ -2454,7 +2454,7 @@ static ButtonDataNode bReplaceAllSkipCancel[] = { {"Replace", CMD_REPLACE}, { "A
 
 bool EditWin::Replace( const unicode_t* from, const unicode_t* to, bool sens )
 {
-	carray<unicode_t> search = new_unicode_str( from );
+	std::vector<unicode_t> search = new_unicode_str( from );
 
 	if ( !sens )
 		for ( unicode_t* u = search.data(); *u; u++ ) { *u = UnicodeLC( *u ); }

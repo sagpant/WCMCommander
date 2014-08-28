@@ -132,8 +132,8 @@ namespace SHL
 
 	class ShlStreamFile: public ShlStream
 	{
-		carray<sys_char_t> _name;
-		carray<char> _name_utf8;
+		std::vector<sys_char_t> _name;
+		std::vector<char> _name_utf8;
 		BFile _f;
 	public:
 		ShlStreamFile( sys_char_t* s ): _name( new_sys_str( s ) ), _name_utf8( sys_to_utf8( s ) ) { _f.Open( s ); }
@@ -169,7 +169,7 @@ namespace SHL
 	{
 		struct Node
 		{
-			carray<unicode_t> str;
+			std::vector<unicode_t> str;
 			Node* next;
 		};
 
@@ -187,8 +187,8 @@ namespace SHL
 
 		struct Node
 		{
-			carray<char> name;
-			carray<char> shlFileName;
+			std::vector<char> name;
+			std::vector<char> shlFileName;
 //		cptr< StrList > first;
 //		cptr< StrList > mimes;
 //		cptr< StrList > masks;
@@ -200,7 +200,7 @@ namespace SHL
 			enum Type { FIRST = 1, MASK = 2 };
 			Type type;
 			StrList list;
-			carray<char> id;
+			std::vector<char> id;
 		};
 
 		cstrhash<cptr<Node> > hash;

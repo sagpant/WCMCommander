@@ -5,11 +5,11 @@
 
 class StrConfig
 {
-	wal::cstrhash<wal::carray<char> > varHash;
+	wal::cstrhash<std::vector<char> > varHash;
 public:
 	StrConfig();
 	bool Load( const char* s );
-	wal::carray<char> GetConfig();
+	std::vector<char> GetConfig();
 	void Set( const char* name, const char* value );
 	void Set( const char* name, unsigned value );
 

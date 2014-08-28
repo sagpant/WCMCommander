@@ -194,9 +194,9 @@ public:
 	void Append( cptr<FSNode> );
 	void Clear();
 
-	wal::carray<FSNode*> GetArray();
+	std::vector<FSNode*> GetArray();
 
-	wal::carray<FSNode*> GetFilteredArray( bool showHidden, int* pCount );
+	std::vector<FSNode*> GetFilteredArray( bool showHidden, int* pCount );
 
 	void CopyFrom( const FSList& a, bool onlySelected = false );
 	void CopyOne( FSNode* node );

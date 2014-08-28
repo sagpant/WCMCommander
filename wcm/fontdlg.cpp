@@ -5,7 +5,7 @@
 
 class FontExample: public Win
 {
-	wal::carray<unicode_t> text;
+	std::vector<unicode_t> text;
 	cptr<cfont> font;
 public:
 	FontExample( Win* parent, const unicode_t* txt );
@@ -53,7 +53,7 @@ FontExample::~FontExample() {}
 class FontDialogX: public NCVertDialog
 {
 	Layout iL;
-	ccollect<carray<char> > origList;
+	ccollect<std::vector<char> > origList;
 	ccollect<char*> sortedList;
 public:
 	TextList textList;
@@ -195,14 +195,14 @@ bool FontDialogX::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_EDITLINE_INFO )
 	{
-		carray<unicode_t> a = filterEdit.GetText();
+		std::vector<unicode_t> a = filterEdit.GetText();
 
 		if ( !a.ptr() ) { return true; }
 
-		carray<char> str = unicode_to_utf8( a.ptr() );
+		std::vector<char> str = unicode_to_utf8( a.ptr() );
 		char* s = str.ptr();
 
-		ccollect<carray<char> > flist;
+		ccollect<std::vector<char> > flist;
 
 		while ( *s )
 		{
@@ -297,7 +297,7 @@ inline bool ExtIs( const char* name, const char* ucExt )
 
 struct FileNode
 {
-	carray<char> path;
+	std::vector<char> path;
 	time_t mtime;
 };
 
@@ -325,7 +325,7 @@ static void ScanFontDir( const char* dirName, ccollect<FileNode>& list, int leve
 				continue;
 			}
 
-			carray<char> filePath = carray_cat<char>( dirName, "/", ent.d_name );
+			std::vector<char> filePath = carray_cat<char>( dirName, "/", ent.d_name );
 
 			struct stat sb;
 
@@ -452,10 +452,10 @@ static int CheckFontSize( int n )
 
 void FontDialogFT::ReloadFiltred( const char* filter )
 {
-	carray<char> filtBuf  = new_char_str( filter );
+	std::vector<char> filtBuf  = new_char_str( filter );
 	char* s = filtBuf.ptr();
 
-	ccollect<carray<char> > flist;
+	ccollect<std::vector<char> > flist;
 
 	while ( *s )
 	{
@@ -644,7 +644,7 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_EDITLINE_INFO && win == &filterEdit )
 	{
-		carray<unicode_t> a = filterEdit.GetText();
+		std::vector<unicode_t> a = filterEdit.GetText();
 
 		if ( !a.ptr() ) { return true; }
 
@@ -659,11 +659,11 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_EDITLINE_INFO && win == &sizeEdit )
 	{
-		carray<unicode_t> a = sizeEdit.GetText();
+		std::vector<unicode_t> a = sizeEdit.GetText();
 
 		if ( !a.ptr() ) { return true; }
 
-		carray<char> str = unicode_to_utf8( a.ptr() );
+		std::vector<char> str = unicode_to_utf8( a.ptr() );
 		char* s = str.ptr();
 
 		while ( *s && *s <= 32 ) { s++; }

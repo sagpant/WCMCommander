@@ -12,11 +12,11 @@ template<class T> inline const T* find_right_char( const T* s, T c )
 }
 
 
-inline carray<wchar_t> UnicodeToUtf16( const unicode_t* s )
+inline std::vector<wchar_t> UnicodeToUtf16( const unicode_t* s )
 {
-	if ( !s ) { return carray<wchar_t>(); }
+	if ( !s ) { return std::vector<wchar_t>(); }
 
-	carray<wchar_t> p( unicode_strlen( s ) + 1 );
+	std::vector<wchar_t> p( unicode_strlen( s ) + 1 );
 	wchar_t* d;
 
 	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
@@ -25,9 +25,9 @@ inline carray<wchar_t> UnicodeToUtf16( const unicode_t* s )
 	return p;
 }
 
-inline carray<unicode_t> Utf16ToUnicode( const wchar_t* s )
+inline std::vector<unicode_t> Utf16ToUnicode( const wchar_t* s )
 {
-	carray<unicode_t> p( wcslen( s ) + 1 );
+	std::vector<unicode_t> p( wcslen( s ) + 1 );
 	unicode_t* d;
 
 	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
@@ -36,15 +36,15 @@ inline carray<unicode_t> Utf16ToUnicode( const wchar_t* s )
 	return p;
 }
 
-inline carray<wchar_t> new_wchar_str( const wchar_t* str )
+inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
 {
-	if ( !str ) { return carray<wchar_t>(); }
+	if ( !str ) { return std::vector<wchar_t>(); }
 
 	int l = 0;
 
 	for ( const wchar_t* s = str; *s; s++ ) { l++; }
 
-	carray<wchar_t> p( l + 1 );
+	std::vector<wchar_t> p( l + 1 );
 	wchar_t* t;
 
 	for ( t = p.data(); *str; t++, str++ ) { *t = *str; }
@@ -62,11 +62,11 @@ template <class T> inline  int carray_len( const T* s )
 #define X(i) int n ## i = a ## i ? carray_len<T>(a ## i) : 0;
 #define CP(i) if (n ## i) { for ( ;* a ## i; a ## i++) *(s++) = *(a ## i); }
 
-template <class T> inline carray<T> carray_cat( const T* a1, const T* a2 )
+template <class T> inline std::vector<T> carray_cat( const T* a1, const T* a2 )
 {
 	X( 1 );
 	X( 2 );
-	carray<T> str( n1 + n2 + 1 );
+	std::vector<T> str( n1 + n2 + 1 );
 	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
@@ -74,12 +74,12 @@ template <class T> inline carray<T> carray_cat( const T* a1, const T* a2 )
 	return str;
 }
 
-template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const T* a3 )
+template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, const T* a3 )
 {
 	X( 1 );
 	X( 2 );
 	X( 3 );
-	carray<T> str( n1 + n2 + n3 + 1 );
+	std::vector<T> str( n1 + n2 + n3 + 1 );
 	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
@@ -88,13 +88,13 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	return str;
 }
 
-template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4 )
+template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4 )
 {
 	X( 1 );
 	X( 2 );
 	X( 3 );
 	X( 4 );
-	carray<T> str( n1 + n2 + n3 + n4 + 1 );
+	std::vector<T> str( n1 + n2 + n3 + n4 + 1 );
 	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
@@ -105,14 +105,14 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 
 }
 
-template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4, const T* a5 )
+template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4, const T* a5 )
 {
 	X( 1 );
 	X( 2 );
 	X( 3 );
 	X( 4 );
 	X( 5 );
-	carray<T> str( n1 + n2 + n3 + n4 + n5 + 1 );
+	std::vector<T> str( n1 + n2 + n3 + n4 + n5 + 1 );
 	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
@@ -123,7 +123,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	return str;
 }
 
-template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4, const T* a5, const T* a6 )
+template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4, const T* a5, const T* a6 )
 {
 	X( 1 );
 	X( 2 );
@@ -131,7 +131,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	X( 4 );
 	X( 5 );
 	X( 6 );
-	carray<T> str( n1 + n2 + n3 + n4 + n5 + n6 + 1 );
+	std::vector<T> str( n1 + n2 + n3 + n4 + n5 + n6 + 1 );
 	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
@@ -143,7 +143,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	return str;
 }
 
-template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4, const T* a5, const T* a6, const T* a7 )
+template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4, const T* a5, const T* a6, const T* a7 )
 {
 	X( 1 );
 	X( 2 );
@@ -152,7 +152,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	X( 5 );
 	X( 6 );
 	X( 7 )
-	carray<T> str( n1 + n2 + n3 + n4 + n5 + n6 + n7 + 1 );
+	std::vector<T> str( n1 + n2 + n3 + n4 + n5 + n6 + n7 + 1 );
 	T* s = str.data();
 	CP( 1 );
 	CP( 2 );

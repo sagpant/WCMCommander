@@ -104,7 +104,7 @@ private:
 
 	int len;
 	int dataSize;
-	carray<Node> data;
+	std::vector<Node> data;
 public:
 	ViewerString(): begin( 0 ), bytes( 0 ), len( 0 ), dataSize( VIEWER_COLS ), data( VIEWER_COLS ) {}
 	void Clear() { len = 0; begin = 0; bytes = 0; }
@@ -882,7 +882,7 @@ public:
 
 	VSData ret;
 	VFPos pos;
-	carray<char> error;
+	std::vector<char> error;
 	int64 loadStartTime;
 
 	int Id() const {return tid; }
@@ -1870,7 +1870,7 @@ void ViewWin::ThreadSignal( int id, int data )
 
 		if ( threadData->error.data() )
 		{
-			carray<char> s = threadData->error;
+			std::vector<char> s = threadData->error;
 
 			lock.Unlock(); //!!!
 			ClearFile();
@@ -2066,7 +2066,7 @@ static void ViewPreparHexModeText( unicode_t* inStr, char* inAttr, unicode_t* u,
 {
 	if ( count <= 0 ) { return; }
 
-	carray<char> str( count );
+	std::vector<char> str( count );
 	int i;
 
 	for ( i = 0; i < count; i++ ) { str[i] = inStr[i]; }
@@ -2201,8 +2201,8 @@ void ViewWin::Paint( wal::GC& gc, const crect& paintRect )
 		unicode_t* p = lastResult.data.data();
 
 		int bytes = size.cols * size.rows;
-		carray<unicode_t> txtDataBuf( bytes );
-		carray<char> txtAttrBuf( bytes );
+		std::vector<unicode_t> txtDataBuf( bytes );
+		std::vector<char> txtAttrBuf( bytes );
 
 		ViewPreparHexModeText( lastResult.data.data(), lastResult.attr.data(), txtDataBuf.data(), txtAttrBuf.data(), bytes, charset );
 
@@ -2516,7 +2516,7 @@ struct VSTData
 	Mutex mutex;
 	//in
 	VFilePtr file;
-	carray<unicode_t> str;
+	std::vector<unicode_t> str;
 	charset_struct* charset;
 	bool sensitive;
 	FSCViewerInfo info;
@@ -2526,7 +2526,7 @@ struct VSTData
 	bool winClosed;
 	bool threadStopped;
 	//ret
-	carray<char> err;
+	std::vector<char> err;
 	seek_t begin;
 	seek_t end;
 
@@ -2557,7 +2557,7 @@ void* VSThreadFunc( void* ptr )
 		int maxLen = search.MaxLen();
 		int minLen = search.MinLen();
 		int bufSize = 16000 + maxLen;
-		carray<char> buf( bufSize );
+		std::vector<char> buf( bufSize );
 		int count = 0;
 
 		seek_t offset = data->from;

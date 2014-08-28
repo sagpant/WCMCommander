@@ -12,7 +12,7 @@ typedef unsigned TermChar;
 class EmulatorCLList
 {
 	int dataSize;
-	carray<bool> data;
+	std::vector<bool> data;
 	int count;
 public:
 	EmulatorCLList(): dataSize( 0x100 ), data( 0x100 ), count( 0 ) {}
@@ -54,7 +54,7 @@ class EmulatorScreen
 	int lineCount;
 	int lineSize;
 	EmulatorCLList* clList;
-	carray<carray<TermChar> > list;
+	std::vector<std::vector<TermChar> > list;
 	int CLN( int n ) { return n >= rows ? rows - 1 : ( n < 0 ? 0 : n ); }
 	void SetCL( int n ) { if ( clList ) { clList->Set( n, true ); } }
 public:

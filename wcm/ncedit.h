@@ -32,7 +32,7 @@ struct EditString
 	int size, len;
 	short shlId;
 	unsigned char flags;
-	carray<char> data;
+	std::vector<char> data;
 
 	EditString();
 	EditString( const EditString& a );
@@ -68,7 +68,7 @@ class EditList
 	enum { BSIZE = 1024 };
 
 	int count;
-	ccollect<carray<EditString>, 0x100> data;
+	ccollect<std::vector<EditString>, 0x100> data;
 public:
 	class Pos
 	{
@@ -109,7 +109,7 @@ public:
 		if ( cb > data.count() )
 			for ( ; data.count() < cb; )
 			{
-				data.append( carray<EditString>( BSIZE ) );
+				data.append( std::vector<EditString>( BSIZE ) );
 			}
 
 		count = n;
@@ -262,7 +262,7 @@ struct UndoRec
 	int line;   //ALL
 	int pos; //INSTEXT, DELTEXT
 
-	carray<char> data; //INSTEXT, DELTEXT, ADDLINE, DELLINE
+	std::vector<char> data; //INSTEXT, DELTEXT, ADDLINE, DELLINE
 	int dataSize;
 
 	UndoRec* prev, *next;
@@ -453,7 +453,7 @@ class EditScreen
 {
 	int rows, cols;
 	int data_rows, data_cols;
-	carray< carray<EditScreenChar> > data;
+	std::vector< std::vector<EditScreenChar> > data;
 public:
 	EditPoint prevCursor, cursor;
 
@@ -462,9 +462,12 @@ public:
 	{
 		if ( r > 0 && c > 0 && ( r > data_rows ||  c > data_cols ) )
 		{
-			carray< carray<EditScreenChar> > p( r );
+			std::vector< std::vector<EditScreenChar> > p( r );
 
-			for ( int i = 0; i < r; i++ ) { p[i] = new EditScreenChar[c]; }
+			for ( int i = 0; i < r; i++ )
+			{
+				p[i].resize( c );// = new EditScreenChar[c];
+			}
 
 			data = p;
 			data_rows = r;
@@ -750,7 +753,7 @@ inline void EditString::Insert( char* s, int n, int count )
 			newSize = len + count + 1;
 		}
 
-		carray<char> p( newSize );
+		std::vector<char> p( newSize );
 
 		if ( len > 0 )
 		{

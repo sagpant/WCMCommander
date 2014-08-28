@@ -476,7 +476,7 @@ namespace wal
 	}
 
 
-	static carray<wchar_t> GetWCT( const unicode_t* s, int charCount, int* retCount )
+	static std::vector<wchar_t> GetWCT( const unicode_t* s, int charCount, int* retCount )
 	{
 		if ( charCount < 0 )
 		{
@@ -485,7 +485,7 @@ namespace wal
 			for ( const unicode_t* t = s; *t; t++ ) { charCount++; }
 		}
 
-		carray<wchar_t> p( charCount + 1 );
+		std::vector<wchar_t> p( charCount + 1 );
 
 		for ( int i = 0; i < charCount; i++ ) { p[i] = s[i]; }
 
@@ -1059,7 +1059,7 @@ namespace wal
 			bkMode = 0;
 		}
 
-		carray<wchar_t> p = GetWCT( s, charCount, &charCount );
+		std::vector<wchar_t> p = GetWCT( s, charCount, &charCount );
 		//::TextOutW(handle, x, y, p.ptr(), charCount);
 		::ExtTextOutW( handle, x, y, ETO_IGNORELANGUAGE, 0, p.data(), charCount, 0 );
 	}
@@ -1072,7 +1072,7 @@ namespace wal
 			bkMode = 1;
 		}
 
-		carray<wchar_t> p = GetWCT( s, charCount, &charCount );
+		std::vector<wchar_t> p = GetWCT( s, charCount, &charCount );
 		//::TextOutW(handle, x, y, p.ptr(), charCount);
 		::ExtTextOutW( handle, x, y, ETO_IGNORELANGUAGE, 0, p.data(), charCount, 0 );
 	}
@@ -1083,7 +1083,7 @@ namespace wal
 		if ( !s ) { return cpoint( 0, 0 ); }
 
 		SIZE size;
-		carray<wchar_t> p = GetWCT( s, charCount, &charCount );
+		std::vector<wchar_t> p = GetWCT( s, charCount, &charCount );
 		::GetTextExtentPoint32W( handle, p.data(), charCount, &size );
 		return cpoint( size.cx, size.cy );
 	}
@@ -1153,7 +1153,7 @@ namespace wal
 		handle = CreateFontIndirect( &lf );
 	}
 
-	carray<char> cfont::LogFontToUru( LOGFONT& lf )
+	std::vector<char> cfont::LogFontToUru( LOGFONT& lf )
 	{
 		ccollect<char, 0x100> uri;
 		uri.append( '-' );

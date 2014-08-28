@@ -82,7 +82,7 @@ namespace wal
 };
 #endif
 
-inline carray<sys_char_t> LTPath( const sys_char_t* fn, const char* ext )
+inline std::vector<sys_char_t> LTPath( const sys_char_t* fn, const char* ext )
 {
 	return carray_cat<sys_char_t>( fn, utf8_to_sys( ext ).data() );
 }
@@ -91,7 +91,7 @@ static  bool InitLocale( const sys_char_t* dir, const char* id )
 {
 	if ( id[0] == '-' ) { return true; }
 
-	carray<sys_char_t> fn =
+	std::vector<sys_char_t> fn =
 #ifdef _WIN32
 	   carray_cat<sys_char_t>( dir, utf8_to_sys( "\\ltext." ).data() );
 #else

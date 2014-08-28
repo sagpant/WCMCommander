@@ -50,7 +50,7 @@ using namespace wal;
 
 class MimeGlobs
 {
-	carray<char> fileName;
+	std::vector<char> fileName;
 	time_t mtime;
 
 	cstrhash< ccollect<int, 1>, unicode_t> extMimeHash;
@@ -59,7 +59,7 @@ class MimeGlobs
 
 	struct MaskNode
 	{
-		carray<unicode_t> mask;
+		std::vector<unicode_t> mask;
 		int mime;
 		MaskNode* next;
 		MaskNode( const unicode_t* s, int m ): mask( new_unicode_str( s ) ), mime( m ), next( 0 ) { }
@@ -77,7 +77,7 @@ public:
 
 class MimeSubclasses
 {
-	carray<char> fileName;
+	std::vector<char> fileName;
 	time_t mtime;
 	cinthash< int, ccollect<int> > hash;
 public:
@@ -89,7 +89,7 @@ public:
 
 class MimeAliases
 {
-	carray<char> fileName;
+	std::vector<char> fileName;
 	time_t mtime;
 	cinthash<int, int> data;
 public:
@@ -120,7 +120,7 @@ public:
 
 class AppDefListFile
 {
-	carray<char> fileName;
+	std::vector<char> fileName;
 	time_t mtime;
 	cinthash<int, ccollect<int, 1> > hash;
 public:
@@ -133,8 +133,8 @@ public:
 
 struct AppNode
 {
-	carray<unicode_t> name;
-	carray<unicode_t> exec;
+	std::vector<unicode_t> name;
+	std::vector<unicode_t> exec;
 	bool terminal;
 	AppNode(): terminal( true ) {}
 };
@@ -142,7 +142,7 @@ struct AppNode
 
 class AppDB
 {
-	carray<char> appDefsPrefix;
+	std::vector<char> appDefsPrefix;
 	cinthash<int, cptr<AppNode> > apps;
 	cinthash<int, ccollect<int> > mimeMapHash;
 
@@ -187,7 +187,7 @@ static void SearchExe( const char* dirName, cstrhash<bool>& hash )
 				continue;
 			}
 
-			carray<char> filePath = carray_cat<char>( dirName, "/", ent.d_name );
+			std::vector<char> filePath = carray_cat<char>( dirName, "/", ent.d_name );
 
 			struct stat sb;
 
@@ -240,7 +240,7 @@ bool ExeFileExist( const char* name )
 
 		if ( !pl ) { return false; }
 
-		carray<char> paths = new_char_str( pl );
+		std::vector<char> paths = new_char_str( pl );
 		char* s = paths.ptr();
 
 		while ( *s )
@@ -269,10 +269,10 @@ extern unsigned  UnicodeLC( unsigned ch );
 #define MIMEDEBUG
 
 #ifdef MIMEDEBUG
-static cinthash<int, carray<char> > mimeIdToNameHash;
+static cinthash<int, std::vector<char> > mimeIdToNameHash;
 const char* GetMimeName( int n )
 {
-	carray<char>* p = mimeIdToNameHash.exist( n );
+	std::vector<char>* p = mimeIdToNameHash.exist( n );
 	return p ? p->ptr() : "";
 }
 #endif
@@ -295,7 +295,7 @@ static int GetMimeID( const char* mimeName )
 	return id;
 }
 
-static cinthash<int, carray<char> > appIdToNameHash;
+static cinthash<int, std::vector<char> > appIdToNameHash;
 
 static int GetAppID( const char* appName )
 {
@@ -315,7 +315,7 @@ static int GetAppID( const char* appName )
 
 static const char* GetAppName( int id )
 {
-	carray<char>* p = appIdToNameHash.exist( id );
+	std::vector<char>* p = appIdToNameHash.exist( id );
 	return p ? p->ptr() : "";
 }
 
@@ -326,15 +326,15 @@ inline time_t GetMTime( const char* fileName )
 	return stat( fileName, &st ) != 0 ? 0 : st.st_mtime;
 }
 
-static carray<unicode_t> GetFileExtLC( const unicode_t* uri )
+static std::vector<unicode_t> GetFileExtLC( const unicode_t* uri )
 {
 	if ( !uri ) { return 0; }
 
 	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
 
-	if ( !ext || !*ext ) { return carray<unicode_t>(); }
+	if ( !ext || !*ext ) { return std::vector<unicode_t>(); }
 
-	carray<unicode_t> a = new_unicode_str( ext + 1 ); //пропустить точку
+	std::vector<unicode_t> a = new_unicode_str( ext + 1 ); //пропустить точку
 	unicode_t* s = a.ptr();
 
 	for ( ; *s; s++ ) { *s = UnicodeLC( *s ); }
@@ -496,7 +496,7 @@ static bool accmask( const unicode_t* name, const unicode_t* mask )
 
 int MimeGlobs::GetMimeList( const unicode_t* fileName, ccollect<int>& list )
 {
-	carray<unicode_t> ext = GetFileExtLC( fileName );
+	std::vector<unicode_t> ext = GetFileExtLC( fileName );
 
 	if ( ext.ptr() )
 	{
@@ -518,7 +518,7 @@ int MimeGlobs::GetMimeList( const unicode_t* fileName, ccollect<int>& list )
 		if ( fn ) { fn++; }
 		else { fn = fileName; }
 
-		carray<unicode_t> str( unicode_strlen( fn ) + 1 );
+		std::vector<unicode_t> str( unicode_strlen( fn ) + 1 );
 		unicode_t* s = str.ptr();
 
 		while ( *fn ) { *( s++ ) = UnicodeLC( *( fn++ ) ); }
@@ -1187,7 +1187,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 }
 
 
-static carray<unicode_t> PrepareCommandString( const unicode_t* exec, const unicode_t* uri )
+static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const unicode_t* uri )
 {
 	if ( !exec || !uri ) { return 0; }
 
@@ -1244,7 +1244,7 @@ static carray<unicode_t> PrepareCommandString( const unicode_t* exec, const unic
 }
 
 
-carray<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName )
+std::vector<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName )
 {
 	ccollect<AppNode*> list;
 	_GetAppList( uri, list );

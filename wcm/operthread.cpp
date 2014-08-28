@@ -40,7 +40,7 @@ static int RedCallBack( void* cbData )
 
 int OperThread::RedMessage( ButtonDataNode* b, const char* str, const char* sysErr )
 {
-	carray<char> msg = sysErr ? carray_cat<char>( str, ":\n", sysErr ) : new_char_str( str );
+	std::vector<char> msg = sysErr ? carray_cat<char>( str, ":\n", sysErr ) : new_char_str( str );
 	CbRedMsgData cbParam;
 	cbParam.message = msg.data();
 	cbParam.operName = OperName();
@@ -53,20 +53,32 @@ int OperThread::RedMessage( const char* s1, ButtonDataNode* buttons, const char*
 { return RedMessage( buttons, new_char_str( s1 ).data(), sysErr ); }
 
 int OperThread::RedMessage( const char* s1, const char* s2, ButtonDataNode* buttons, const char* sysErr )
-{ return RedMessage( buttons, carray_cat<char>( s1, s2 ).data(), sysErr ); }
+{
+	return RedMessage( buttons, carray_cat<char>( s1, s2 ).data(), sysErr );
+}
 
 int OperThread::RedMessage( const char* s1, const char* s2, const char* s3, ButtonDataNode* buttons, const char* sysErr )
-{ return RedMessage( buttons, carray_cat<char>( s1, s2, s3 ).data(), sysErr );}
+{
+	return RedMessage( buttons, carray_cat<char>( s1, s2, s3 ).data(), sysErr );
+}
 
 int OperThread::RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, ButtonDataNode* buttons, const char* sysErr )
-{ return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s4 ).data(), sysErr ); }
+{
+	return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s4 ).data(), sysErr );
+}
 
 int OperThread::RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, ButtonDataNode* buttons, const char* sysErr )
-{ return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s5, s5 ).data(), sysErr ); }
+{
+	return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s5, s5 ).data(), sysErr );
+}
 
 int OperThread::RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, const char* s5,  const char* s6, ButtonDataNode* buttons, const char* sysErr )
-{ return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s5, s5, s6 ).data(), sysErr ); }
+{
+	return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s5, s5, s6 ).data(), sysErr );
+}
 
 int OperThread::RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, const char* s5,  const char* s6, const char* s7, ButtonDataNode* buttons, const char* sysErr )
-{ return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s5, s5, s6, s7 ).data(), sysErr ); }
+{
+	return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s5, s5, s6, s7 ).data(), sysErr );
+}
 

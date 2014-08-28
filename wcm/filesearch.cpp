@@ -151,7 +151,7 @@ int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher,
 		int maxLen = pSearcher->MaxLen();
 		int minLen = pSearcher->MinLen();
 		int bufSize = 16000 + maxLen;
-		carray<char> buf( bufSize );
+		std::vector<char> buf( bufSize );
 
 		bytes =  fs->Read( fd, buf.data(), bufSize, err, info );
 
@@ -254,7 +254,7 @@ void OperSearchThread::SearchDir( FS* fs, FSPath path, MegaSearcher* pSearcher )
 
 	int count = list.Count();
 
-	carray<FSNode*> p = list.GetArray();
+	std::vector<FSNode*> p = list.GetArray();
 
 	list.SortByName( p.data(), count, true, false );
 
@@ -758,7 +758,7 @@ bool SearchFile( FSPtr f, FSPath p, NCDialogParent* parent, FSPath* retPath )
 
 	if ( !searchParams.mask.data() || !searchParams.mask[0] ) { return false; }
 
-	carray<char> utf8Mask = unicode_to_utf8( searchParams.mask.data() );
+	std::vector<char> utf8Mask = unicode_to_utf8( searchParams.mask.data() );
 
 	cptr<MegaSearcher> megaSearcher;
 

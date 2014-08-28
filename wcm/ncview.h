@@ -45,8 +45,8 @@ struct VSData
 	ViewerSize size;
 
 	int dataSize;
-	carray<unicode_t> data;
-	carray<char> attr;
+	std::vector<unicode_t> data;
+	std::vector<char> attr;
 
 	void SetDataSize( int n ) { if ( dataSize < n ) { data.resize( n ); attr.resize( n ); dataSize = n; } };
 
@@ -133,7 +133,7 @@ class ViewWin : public Win
 	VSData lastResult;
 	VFPos lastPos;
 
-	carray<unicode_t> loadingText;
+	std::vector<unicode_t> loadingText;
 	bool drawLoading;
 
 	void CalcScroll();

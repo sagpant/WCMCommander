@@ -236,7 +236,7 @@ void FTPNode::Noop()
 	CheckFtpRet( ReadCode() );
 }
 
-void FTPNode::Ls( ccollect<carray<char> >& list )
+void FTPNode::Ls( ccollect<std::vector<char> >& list )
 {
 	OpenData( "LIST\r\n" );
 	list.clear();
@@ -1290,7 +1290,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 	{
 		FSPath path( _path );
 
-		ccollect<carray<char> > ftp_list;
+		ccollect<std::vector<char> > ftp_list;
 
 		CStopSetter stopSetter( p->pFtpNode.ptr(), info );
 
@@ -1482,7 +1482,7 @@ FSString FSFtp::Uri( FSPath& path )
 {
 	MutexLock lock( &mutex );
 
-	carray<char> a;
+	std::vector<char> a;
 
 	char port[0x100];
 	snprintf( port, sizeof( port ), ":%i", _param.port );

@@ -87,7 +87,7 @@ bool PanelSearchWin::Command( int id, int subId, Win* win, void* data )
 {
 	if ( id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_CHANGED )
 	{
-		carray<unicode_t> text = _edit.GetText();
+		std::vector<unicode_t> text = _edit.GetText();
 
 		if ( !_parent->Search( text.data(), false ) )
 		{
@@ -150,7 +150,7 @@ bool PanelSearchWin::EventChildKey( Win* child, cevent_key* pEvent )
 
 	if ( ctrl && pEvent->Key() == VK_RETURN )
 	{
-		carray<unicode_t> text = _edit.GetText();
+		std::vector<unicode_t> text = _edit.GetText();
 		_parent->Search( text.data(), true );
 		return false;
 	}
@@ -1863,7 +1863,7 @@ bool PanelWin::DirUp()
 				if ( _place.Count() <= 2 )
 				{
 					static unicode_t aa[] = {'\\', '\\', 0};
-					carray<wchar_t> name = UnicodeToUtf16( carray_cat<unicode_t>( aa, GetPath().GetItem( 1 )->GetUnicode() ).data() );
+					std::vector<wchar_t> name = UnicodeToUtf16( carray_cat<unicode_t>( aa, GetPath().GetItem( 1 )->GetUnicode() ).data() );
 
 					NETRESOURCEW r;
 					r.dwScope = RESOURCE_GLOBALNET;

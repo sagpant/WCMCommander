@@ -33,39 +33,16 @@
 #endif
 #endif
 
+#include <vector>
+
 namespace wal
 {
 
-	//Для cptr и carray
+	//Для cptr и std::vector
 	template <class T> void set_const_data( const T* ptr, T data )
 	{
 		*( ( T* )ptr ) = data;
 	}
-
-	/*
-	smart pointer массив
-	*/
-
-	template <class T> class carray
-	{
-	public:
-		carray();
-		carray( int n );
-		carray( T* p );
-		carray( const carray& a );
-		void clear(); //уничтожает объект
-		void drop(); //отцепляет объект
-		carray& operator = ( T* p );
-		carray& operator = ( const carray& a );
-		void resize( int n );
-		T* data();
-		const T* data() const;
-		T& operator [] ( int n );
-		const T& const_item( int n ) const;
-		~carray();
-	private:
-		T* m_data;
-	};
 
 	/*
 	smart pointer объект
@@ -101,7 +78,7 @@ namespace wal
 		const T& const_item( int n ) const;
 		const T* const_ptr() const;
 		T* ptr();
-		carray<T> grab();
+		std::vector<T> grab();
 		T& operator [] ( int n );
 		void insert( int n );
 		void insert( int n, const T& a );
@@ -116,123 +93,11 @@ namespace wal
 		int count() const;
 		~ccollect();
 	private:
-		carray<T> m_data;
+		std::vector<T> m_data;
 		int cnt;
 		void realloc( int n );
 		void copy_from( const ccollect& a );
 	};
-
-
-
-/// carray /////////////////////////////////////////////////////////////////////////////
-	template <class T> inline carray<T>::carray()
-	{
-		m_data = NULL;
-	}
-
-	template <class T> inline carray<T>::carray( int n )
-	{
-		ASSERT( n >= 0 );
-		m_data = n > 0 ? new T[n] : ( T* )NULL;
-	}
-
-	template <class T> inline carray<T>::carray( T* p )
-	{
-		m_data = p;
-	}
-
-	template <class T> inline carray<T>::carray( const carray<T>& a )
-	{
-		m_data = a.m_data;
-		set_const_data<T*>( &a.m_data, NULL );
-	}
-
-	template <class T> inline void carray<T>::clear()
-	{
-		if ( m_data )
-		{
-			delete [] m_data;
-			m_data = NULL;
-		}
-	}
-
-	template <class T> inline void carray<T>::drop()
-	{
-		m_data = NULL;
-	}
-
-	template <class T> inline carray<T>& carray<T>::operator = ( T* p )
-	{
-		if ( m_data )
-		{
-			delete [] m_data;
-		}
-
-		m_data = p;
-		return *this;
-	}
-
-	template <class T> inline carray<T>& carray<T>::operator = ( const carray& a )
-	{
-		ASSERT( this != &a );
-
-		if ( m_data )
-		{
-			delete [] m_data;
-		}
-
-		m_data = a.m_data;
-		set_const_data<T*>( &a.m_data, NULL );
-
-		return *this;
-	}
-
-	template <class T> inline void carray<T>::resize( int n )
-	{
-		ASSERT( n >= 0 );
-		T* p = n > 0 ? new T[n] : ( T* )NULL;
-
-		if ( m_data )
-		{
-			delete [] m_data;
-		}
-
-		m_data = p;
-	}
-
-	template <class T> inline const T& carray<T>::const_item( int n ) const
-	{
-		ASSERT( m_data );
-		return m_data[n];
-	}
-
-
-	template <class T> inline T& carray<T>::operator [] ( int n )
-	{
-		ASSERT( m_data );
-		return m_data[n];
-	}
-
-
-	template <class T> inline T* carray<T>::data()
-	{
-		return m_data;
-	}
-
-	template <class T> inline const T* carray<T>::data() const
-	{
-		return m_data;
-	}
-
-
-
-	template <class T> inline carray<T>::~carray()
-	{
-		if ( m_data )
-		{
-			delete [] m_data;
-		}
-	}
 
 /// cptr /////////////////////////////////////////////////////////////////////
 	template <class T> inline cptr<T>::cptr()
@@ -343,7 +208,7 @@ namespace wal
 
 		if ( a != b )
 		{
-			carray<T> p( b * step );
+			std::vector<T> p( b * step );
 
 			for ( int i = cnt > n ? n - 1 : cnt - 1; i >= 0; i-- )
 			{
@@ -408,7 +273,7 @@ namespace wal
 		return m_data.data();
 	}
 
-	template <class T, int step> carray<T> ccollect<T, step>::grab()
+	template <class T, int step> std::vector<T> ccollect<T, step>::grab()
 	{
 		cnt = 0;
 		return m_data;
@@ -417,12 +282,12 @@ namespace wal
 	template <class T, int step> inline const T& ccollect<T, step>::const_item( int n ) const
 	{
 		ASSERT( n >= 0 && n < cnt );
-		return m_data.const_item( n );
+		return m_data[ n ];
 	}
 
 	template <class T, int step> inline const T* ccollect<T, step>::const_ptr() const
 	{
-		return m_data.const_ptr();
+		return m_data.data();
 	}
 
 	template <class T, int step> T& ccollect<T, step>::operator [] ( int n )
@@ -526,11 +391,11 @@ namespace wal
 	{
 		if ( this != &a )
 		{
-			carray<T> x( a.cnt );
+			std::vector<T> x( a.cnt );
 
 			for ( int i = 0; i < a.cnt; i++ )
 			{
-				x[i] = a.m_data.const_item( i );
+				x[i] = a.m_data.at( i );
 			}
 
 			m_data = x;
@@ -589,7 +454,7 @@ namespace wal
 	{
 		const HashIndex tableSize;
 		HashIndex i;
-		carray<LT* >& table;
+		std::vector<LT* >& table;
 		LT* ptr;
 		hash_iterator() {}
 	public:
@@ -606,7 +471,7 @@ namespace wal
 			}
 		}
 
-		hash_iterator( carray<LT* >& tab, HashIndex size )
+		hash_iterator( std::vector<LT* >& tab, HashIndex size )
 			: tableSize( size ), table( tab )
 		{
 			if ( size <= 0 )
@@ -687,7 +552,7 @@ namespace wal
 		void copy( const internal_hash& a );
 		HashIndex tableSize;
 		HashIndex itemCount;
-		carray<LT*> table;
+		std::vector<LT*> table;
 	};
 
 
@@ -831,7 +696,7 @@ namespace wal
 	}
 
 
-	template <class LT> void destroy_hash_table( carray<LT*> table, HashIndex size )
+	template <class LT> void destroy_hash_table( std::vector<LT*> table, HashIndex size )
 	{
 		for ( HashIndex i = 0; i < size; i++ )
 		{
@@ -883,7 +748,7 @@ namespace wal
 		}
 		else
 		{
-			carray<LT*> newTable( newSize );
+			std::vector<LT*> newTable( newSize );
 			HashIndex i;
 
 			for ( i = 0; i < newSize; i++ )
@@ -911,7 +776,7 @@ namespace wal
 	template <class LT, class KT, bool IC, class P>
 	void internal_hash<LT, KT, IC, P>::copy( const internal_hash& a )
 	{
-		carray< LT*> tmpTable( a.tableSize );
+		std::vector< LT*> tmpTable( a.tableSize );
 
 		try
 		{
@@ -1026,10 +891,10 @@ namespace wal
 			}
 		}
 
-		carray<T*> get_all()
+		std::vector<T*> get_all()
 		{
 			int n = hash.count();
-			carray<T*> ret( n );
+			std::vector<T*> ret( n );
 			int j = 0;
 
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next(), j++ )
@@ -1147,10 +1012,10 @@ namespace wal
 			}
 		}
 
-		carray<IT> keys()
+		std::vector<IT> keys()
 		{
 			int n = hash.count();
-			carray<IT> ret( n );
+			std::vector<IT> ret( n );
 			int j = 0;
 
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next(), j++ )
@@ -1401,10 +1266,10 @@ namespace wal
 			}
 		}
 
-		carray<const CT*> keys()
+		std::vector<const CT*> keys()
 		{
 			int n = hash.count();
-			carray<const CT*> ret( n );
+			std::vector<const CT*> ret( n );
 			int j = 0;
 
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next(), j++ )

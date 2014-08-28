@@ -203,7 +203,7 @@ public:
 struct InBuf
 {
 	int size;
-	carray<char> data;
+	std::vector<char> data;
 	int pos, count;
 	InBuf( int bufSize = 1024 * 16 ): size( bufSize ), data( bufSize ), pos( 1 ), count( 1 ) {}
 	int Pop( char* s, int n ) { if ( n > count - pos ) { n = count - pos; } if ( n < 0 ) { return 0; } memcpy( s, data.data() + pos, n ); pos += n; return n; }
@@ -213,7 +213,7 @@ struct InBuf
 struct OutBuf
 {
 	int size;
-	carray<char> data;
+	std::vector<char> data;
 	int count;
 	int Space() { return size - count; }
 	OutBuf( int bufSize = 1024 * 16 ): size( bufSize ), data( bufSize ), count( 0 ) {}

@@ -441,12 +441,12 @@ void NCWin::ExecuteFile()
 
 #ifdef _WIN32
 		static unicode_t w[2] = {'"', 0};
-		StartExecute( carray_cat<unicode_t>( w, _panel->UriOfCurrent().GetUnicode(), w ).data(), _panel->GetFS(), _panel->GetPath() );
+		StartExecute( carray_cat<unicode_t>( w, _panel->UriOfCurrent( ).GetUnicode( ), w ).data( ), _panel->GetFS( ), _panel->GetPath( ) );
 		return;
 #else
 		const unicode_t*   fName = p->GetUnicodeName();
 		int len = unicode_strlen( fName );
-		carray<unicode_t> cmd( 2 + len + 1 );
+		std::vector<unicode_t> cmd( 2 + len + 1 );
 		cmd[0] = '.';
 		cmd[1] = '/';
 		memcpy( cmd.data() + 2, fName, len * sizeof( unicode_t ) );
@@ -480,7 +480,7 @@ void NCWin::PanelEnter()
 	}
 
 	bool cmdChecked = false;
-	carray<unicode_t> cmd;
+	std::vector<unicode_t> cmd;
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
 
@@ -673,7 +673,7 @@ void NCWin::ReturnToDefaultSysDir()
 void NCWin::Home( PanelWin* p )
 {
 #ifdef _WIN32
-	carray<unicode_t> homeUri;
+	std::vector<unicode_t> homeUri;
 
 	//find home
 	{
@@ -792,7 +792,7 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 	mData.AddSplitter();
 
 #ifdef _WIN32
-	carray<unicode_t> homeUri;
+	std::vector<unicode_t> homeUri;
 
 	//find home
 	{
@@ -877,9 +877,9 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 
 		for ( int i = 0; i < 9 && i < mntList.count(); i++ )
 		{
-			//ccollect<carray<char> > strHeap;
+			//ccollect<std::vector<char> > strHeap;
 
-			carray<unicode_t> un = sys_to_unicode_array( mntList[i].path.data() );
+			std::vector<unicode_t> un = sys_to_unicode_array( mntList[i].path.data() );
 			static int maxNLen = 20;
 			int nLen = unicode_strlen( un.data() );
 
@@ -893,7 +893,7 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 				un = carray_cat<unicode_t>( un.data(), un.data() + nLen - n2 );
 			}
 
-			carray<unicode_t> ut = sys_to_unicode_array( mntList[i].type.data() );
+			std::vector<unicode_t> ut = sys_to_unicode_array( mntList[i].type.data() );
 
 			static int maxTLen = 10;
 
@@ -1091,7 +1091,7 @@ void NCWin::CreateDirectory()
 
 	try
 	{
-		carray<unicode_t> dir = InputStringDialog( this, utf8_to_unicode( _LT( "Create new directory" ) ).data() );
+		std::vector<unicode_t> dir = InputStringDialog( this, utf8_to_unicode( _LT( "Create new directory" ) ).data() );
 
 		if ( !dir.data() ) { return; }
 
@@ -1214,8 +1214,8 @@ void NCWin::Edit( bool enterFileName )
 
 		if ( enterFileName )
 		{
-			static carray<unicode_t> savedUri;
-			carray<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "File to edit" ) ).data(), savedUri.data() );
+			static std::vector<unicode_t> savedUri;
+			std::vector<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "File to edit" ) ).data(), savedUri.data() );
 
 			if ( !uri.data() ) { return; }
 
@@ -1457,7 +1457,7 @@ void NCWin::Copy( bool shift )
 
 	FSString uri = GetOtherPanel()->UriOfDir();
 
-	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Copy" ) ).data(),
+	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Copy" ) ).data(),
 	                                            shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -1513,7 +1513,7 @@ void NCWin::Move( bool shift )
 
 	FSString uri = GetOtherPanel()->UriOfDir();
 
-	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Move" ) ).data(),
+	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Move" ) ).data(),
 	                                            shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -1545,7 +1545,7 @@ void NCWin::Mark( bool enable )
 {
 	if ( _mode != PANEL ) { return; }
 
-	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( enable ? "Select" : "Deselect" ) ).data(), utf8_to_unicode( "*" ).data() );
+	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( enable ? "Select" : "Deselect" ) ).data(), utf8_to_unicode( "*" ).data() );
 
 	if ( !str.data() || !str[0] ) { return; }
 
@@ -1626,8 +1626,8 @@ bool NCWin::EditSave( bool saveAs )
 
 		if ( saveAs )
 		{
-			static carray<unicode_t> savedUri;
-			carray<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "Save file as ..." ) ).data(), savedUri.data() );
+			static std::vector<unicode_t> savedUri;
+			std::vector<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "Save file as ..." ) ).data(), savedUri.data() );
 
 			if ( !uri.data() ) { return false; }
 
@@ -1851,7 +1851,7 @@ void NCWin::Tab( bool forceShellTab )
 	else
 	{
 		int cursor = _edit.GetCursorPos();
-		carray<unicode_t> p = ShellTabKey( this,  _panel->GetFSPtr(), _panel->GetPath(), _edit.GetText().data(), &cursor );
+		std::vector<unicode_t> p = ShellTabKey( this,  _panel->GetFSPtr(), _panel->GetPath(), _edit.GetText().data(), &cursor );
 
 		if ( p.data() )
 		{
@@ -2161,7 +2161,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				if ( _edit.IsVisible() && !_edit.IsEmpty() )
 				{
 					// command line is not empty - copy it to clipboard
-					carray<unicode_t> txt = _edit.GetText();
+					std::vector<unicode_t> txt = _edit.GetText();
 					const unicode_t* p = txt.data();
 
 					if ( p )
@@ -2293,7 +2293,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			{
 				if ( _edit.IsVisible() )
 				{
-					carray<unicode_t> txt = _edit.GetText();
+					std::vector<unicode_t> txt = _edit.GetText();
 					unicode_t* p = txt.data();
 
 					while ( *p == ' ' ) { p++; }
@@ -2315,7 +2315,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 							while ( *p == ' ' ) { p++; }
 
-							carray<unicode_t> uHome;
+							std::vector<unicode_t> uHome;
 
 							if ( !*p )
 							{

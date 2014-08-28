@@ -25,7 +25,7 @@ using namespace wal;
 
 class StringWin: public Win
 {
-	carray<unicode_t> text;
+	std::vector<unicode_t> text;
 	cpoint textSize;
 public:
 	StringWin( Win* parent );

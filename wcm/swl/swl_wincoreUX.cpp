@@ -1469,8 +1469,8 @@ namespace wal
 			return ret;
 		}
 
-		carray<char> GetArray() { carray<char> p; if ( count > 0 ) { p.resize( count ); Get( p.ptr(), count ); } return p; }
-		carray<char> GetArray( int* pCount ) { int n = count; carray<char> p; if ( count > 0 ) { p.resize( count ); Get( p.ptr(), count ); } if ( pCount ) { *pCount = n; } return p; }
+		std::vector<char> GetArray() { std::vector<char> p; if ( count > 0 ) { p.resize( count ); Get( p.ptr(), count ); } return p; }
+		std::vector<char> GetArray( int* pCount ) { int n = count; std::vector<char> p; if ( count > 0 ) { p.resize( count ); Get( p.ptr(), count ); } if ( pCount ) { *pCount = n; } return p; }
 
 		~CharQueue() { Clear(); }
 	};
@@ -1479,7 +1479,7 @@ namespace wal
 	static   void CharQueueToClipboartAsUtf8( ClipboardText* text, CharQueue* q )
 	{
 		int size;
-		carray<char> p = q->GetArray( &size );
+		std::vector<char> p = q->GetArray( &size );
 
 		char* s = p.ptr();
 
@@ -1869,7 +1869,7 @@ namespace wal
 
 		{
 			int size;
-			carray<char> p = q.GetArray( &size );
+			std::vector<char> p = q.GetArray( &size );
 
 			XChangeProperty( display,
 			                 event->xselectionrequest.requestor,
@@ -2157,7 +2157,7 @@ Nah:
 
 		SetFg( textColor );
 		CheckValues();
-		carray<XChar2b> sc( charCount );
+		std::vector<XChar2b> sc( charCount );
 
 		for ( int i = 0; i < charCount; i++ )
 		{
@@ -2190,7 +2190,7 @@ Nah:
 		SetFg( textColor );
 		SetBg( fillColor );
 		CheckValues();
-		carray<XChar2b> sc( charCount );
+		std::vector<XChar2b> sc( charCount );
 
 		for ( int i = 0; i < charCount; i++ )
 		{
@@ -2259,7 +2259,7 @@ Nah:
 		}
 		else
 		{
-			carray<XChar2b> sc( charCount );
+			std::vector<XChar2b> sc( charCount );
 
 			for ( int i = 0; i < charCount; i++ )
 			{
@@ -3090,7 +3090,7 @@ stopped:
 	/*
 	struct Node {
 	   SCImage image;
-	   carray<char> mash;
+	   std::vector<char> mash;
 	   unigned bgColor;
 	};
 	*/

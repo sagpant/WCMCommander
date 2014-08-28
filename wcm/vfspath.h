@@ -172,7 +172,7 @@ class FSPath
 	ccollect<FSString, 16> data;
 	int cacheCs;
 
-	carray<char> cache;
+	std::vector<char> cache;
 	int cacheSize;
 	int cacheSplitter;
 

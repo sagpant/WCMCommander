@@ -177,7 +177,7 @@ static void WritePipeStr( int fd, const char* s )
 	}
 }
 
-static carray<char> ReadPipeStr( int fd )
+static std::vector<char> ReadPipeStr( int fd )
 {
 	ccollect<char, 0x100> p;
 	char c;
@@ -193,7 +193,7 @@ static carray<char> ReadPipeStr( int fd )
 	return p.grab();
 }
 
-static bool ReadCmd( int fd, int* pCmd, ccollect<carray<char> >& params )
+static bool ReadCmd( int fd, int* pCmd, ccollect<std::vector<char> >& params )
 {
 	try
 	{
@@ -231,7 +231,7 @@ static bool WriteCmd( int fd, int cmd, ccollect<char*>& list )
 	return true;
 }
 
-static bool WriteCmd( int fd, int cmd, ccollect<carray<char> >& list )
+static bool WriteCmd( int fd, int cmd, ccollect<std::vector<char> >& list )
 {
 	try
 	{
@@ -265,7 +265,7 @@ static bool WriteCmd( int fd, int cmd, const char* s )
 	return true;
 }
 
-inline void AddInt( ccollect<carray<char> >& list, int n )
+inline void AddInt( ccollect<std::vector<char> >& list, int n )
 {
 	char buf[64];
 	sprintf( buf, "%i", n );
@@ -282,7 +282,7 @@ static void ShellProc( int in, int out )
 
 	while ( true )
 	{
-		ccollect<carray<char> > pList;
+		ccollect<std::vector<char> > pList;
 		int cmd = 0;
 
 		if ( !ReadCmd( in, &cmd, pList ) ) { exit( 1 ); }
@@ -367,7 +367,7 @@ pid_t Shell::Exec( const char* cmd )
 {
 	if ( !WriteCmd( out, CMD_EXEC, cmd ) ) { Run(); return -1; }
 
-	ccollect<carray<char> > list;
+	ccollect<std::vector<char> > list;
 	int r;
 
 	if ( !ReadCmd( in, &r, list ) ) { Run(); return -1; }
@@ -384,7 +384,7 @@ int Shell::Wait( pid_t pid, int* pStatus )
 
 	if ( !WriteCmd( out, CMD_WAIT, buf ) ) { Run(); return -1; }
 
-	ccollect<carray<char> > list;
+	ccollect<std::vector<char> > list;
 	int r;
 
 	if ( !ReadCmd( in, &r, list ) ) { Run(); return -1; }
@@ -398,7 +398,7 @@ int Shell::CD( const char* path )
 {
 	if ( !WriteCmd( out, CMD_CD, path ) ) { Run(); return -1; }
 
-	ccollect<carray<char> > list;
+	ccollect<std::vector<char> > list;
 	int r;
 
 	if ( !ReadCmd( in, &r, list ) ) { Run(); return -1; }

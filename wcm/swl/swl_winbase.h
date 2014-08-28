@@ -41,7 +41,7 @@ namespace wal
 	class Button: public Win
 	{
 		bool pressed;
-		wal::carray<unicode_t> text;
+		std::vector<unicode_t> text;
 		cptr<cicon> icon;
 		int commandId;
 
@@ -70,7 +70,7 @@ namespace wal
 	class SButton: public Win
 	{
 		bool isSet;
-		carray<unicode_t> text;
+		std::vector<unicode_t> text;
 		int group;
 	public:
 		SButton( int nId, Win* parent, unicode_t* txt, int _group, bool _isSet = false, crect* rect = 0 );
@@ -89,7 +89,7 @@ namespace wal
 
 	class EditBuf
 	{
-		wal::carray<unicode_t> data;
+		std::vector<unicode_t> data;
 		int size;   //размер буфера
 		int count;  //количесво символов в строке
 		int cursor; //позиция курсора
@@ -180,7 +180,7 @@ namespace wal
 		bool IsEmpty() const;
 		int GetCursorPos() { return text.Cursor(); }
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
-		carray<unicode_t> GetText();
+		std::vector<unicode_t> GetText();
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();
@@ -191,7 +191,7 @@ namespace wal
 
 	class StaticLine: public Win
 	{
-		wal::carray<unicode_t> text;
+		std::vector<unicode_t> text;
 	public:
 		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = 0 );
 		virtual void Paint( GC& gc, const crect& paintRect );
@@ -338,7 +338,7 @@ namespace wal
 	struct TLNode
 	{
 		int pixelWidth;
-		carray<unicode_t> str;
+		std::vector<unicode_t> str;
 		long intData;
 		void* ptrData;
 		TLNode() : pixelWidth( -1 ), intData( 0 ), ptrData( 0 ) {}
@@ -390,8 +390,8 @@ namespace wal
 		{
 			int type;
 			int id;
-			wal::carray<unicode_t> leftText;
-			wal::carray<unicode_t> rightText;
+			std::vector<unicode_t> leftText;
+			std::vector<unicode_t> rightText;
 			MenuData* sub;
 			Node(): type( 0 ), sub( 0 ) {}
 			Node( int _type, int _id, const unicode_t* s,  const unicode_t* rt, MenuData* _sub )
@@ -460,7 +460,7 @@ namespace wal
 	{
 		struct Node
 		{
-			wal::carray<unicode_t> text;
+			std::vector<unicode_t> text;
 			MenuData* data;
 		};
 

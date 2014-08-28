@@ -80,7 +80,7 @@ int64 OperDirCalcThread::CalcDir( FS* fs, FSPath path )
 
 	int count = list.Count();
 
-	carray<FSNode*> p = list.GetArray();
+	std::vector<FSNode*> p = list.GetArray();
 
 	//list.SortByName(p.ptr(), count, true, false);
 
@@ -180,7 +180,7 @@ void OperDirCalcThread::Calc()
 
 OperDirCalcThread::~OperDirCalcThread() {}
 
-static carray<unicode_t> ScanedDirString( const unicode_t* dirName )
+static std::vector<unicode_t> ScanedDirString( const unicode_t* dirName )
 {
 	ccollect<unicode_t, 100> list;
 

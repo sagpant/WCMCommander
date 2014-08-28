@@ -428,15 +428,15 @@ namespace wal
 		void drop();
 #endif
 
-		carray<char> _uri;
-		carray<char> _name;
+		std::vector<char> _uri;
+		std::vector<char> _name;
 	public:
 #ifdef _WIN32
 		static void SetWin32Charset( unsigned );
 		cfont( HFONT hf ): handle( hf ), external( true ) {};
 		bool Ok() { return handle != NULL; }
 
-		static carray<char> LogFontToUru( LOGFONT& lf );
+		static std::vector<char> LogFontToUru( LOGFONT& lf );
 		static void UriToLogFont( LOGFONT* plf, const char* uri );
 #else
 		static void SetWin32Charset( unsigned ) {};
@@ -486,8 +486,8 @@ namespace wal
 		{
 			enum {FIXED_WIDTH = 1};
 			unsigned flags;
-			carray<char> name;
-			carray<char> styleName;
+			std::vector<char> name;
+			std::vector<char> styleName;
 		};
 		static cptr<FTInfo> GetFTFileInfo( const char* path );
 #endif
@@ -497,10 +497,10 @@ namespace wal
 	class XPMImage
 	{
 		int colorCount;
-		carray<unsigned> colors;
+		std::vector<unsigned> colors;
 		int none;
 		int width, height;
-		carray<int> data;
+		std::vector<int> data;
 	public:
 		void Clear();
 		XPMImage(): colorCount( 0 ), none( -1 ), width( 0 ), height( 0 ) {}
@@ -520,8 +520,8 @@ namespace wal
 	{
 		int _width;
 		int _height;
-		carray<unsigned32> _data;
-		carray<unsigned32*> _lines;
+		std::vector<unsigned32> _data;
+//		std::vector<unsigned32*> _lines;
 
 		Image32( const Image32& ) {}
 		void operator=( const Image32& ) {}
@@ -541,9 +541,13 @@ namespace wal
 
 		void clear();
 
-		unsigned32 get( int x, int y ) { return ( x >= 0 && x < _width && y >= 0 && y < _height ) ? _lines[y][x] : 0xFF; }
+		unsigned32 get( int x, int y )
+		{
+			//return ( x >= 0 && x < _width && y >= 0 && y < _height ) ? _lines[y][x] : 0xFF;
+			return ( x >= 0 && x < _width && y >= 0 && y < _height ) ? _data[ y * _width + x ] : 0xFF;
+		}
 
-		unsigned32* line( int y ) { return _lines[y]; }
+		unsigned32* line( int y ) { return &_data[ y * _width ]; }
 
 		Image32( int w, int h ) { alloc( w, h ); }
 
@@ -560,7 +564,7 @@ namespace wal
 	{
 		HBITMAP handle;
 		int _w, _h;
-		carray<char> mask;
+		std::vector<char> mask;
 		void clear();
 		void init( int w, int h );
 	public:
@@ -577,8 +581,8 @@ namespace wal
 	class IntXImage
 	{
 		XImage im;
-		carray<char> data;
-		carray<char> mask;
+		std::vector<char> data;
+		std::vector<char> mask;
 
 		void init( int w, int h );
 		void clear() { data.clear(); mask.clear(); }
@@ -639,7 +643,7 @@ namespace wal
 		struct Node
 		{
 			SCImage image;
-			carray<char> mask;
+			std::vector<char> mask;
 			unsigned bgColor;
 		};
 
@@ -814,7 +818,7 @@ namespace wal
 		enum {INT = 1, STR = 2};
 		int flags;
 		int64 i;
-		carray<char> s;
+		std::vector<char> s;
 
 		UiValueNode( int64 n ): i( n ), flags( INT ) {};
 		UiValueNode( const char* a ): s( new_char_str( a ) ), flags( STR ) {}
@@ -1118,7 +1122,7 @@ namespace wal
 	class ClipboardText
 	{
 		enum { BUF_SIZE = 1024 };
-		ccollect< carray<unicode_t>, 0x100 > list;
+		ccollect< std::vector<unicode_t>, 0x100 > list;
 		int count;
 		void CopyFrom( const ClipboardText& a );
 	public:
@@ -1132,7 +1136,7 @@ namespace wal
 		unicode_t Get( int n ) const
 		{
 			ASSERT( n >= 0 && n < count );
-			return n >= 0 && n < count ? list.const_item( n / BUF_SIZE ).const_item( n % BUF_SIZE ) : 0;
+			return n >= 0 && n < count ? list.const_item( n / BUF_SIZE ).at( n % BUF_SIZE ) : 0;
 		}
 		unicode_t operator[]( int n ) const { return Get( n ); }
 	};

@@ -12,7 +12,7 @@ using namespace wal;
 
 class NCHistory
 {
-	ccollect<carray<unicode_t> > list;
+	ccollect<std::vector<unicode_t> > list;
 	int current;
 public:
 	NCHistory(): current( 0 ) {}
@@ -31,7 +31,7 @@ public:
 
 			if ( *t == *s )
 			{
-				carray<unicode_t> p = list[i];
+				std::vector<unicode_t> p = list[i];
 				list.del( i );
 				list.insert( 0, p );
 				return;

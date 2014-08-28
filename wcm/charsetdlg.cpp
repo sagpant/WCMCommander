@@ -21,7 +21,7 @@ void InitOperCharsets()
 
 	for ( i = 0; i < count; i++ ) { hash[list[i]->name] = list[i]; }
 
-	ccollect< carray<char> > stringList;
+	ccollect< std::vector<char> > stringList;
 
 	if ( LoadStringList( charsetSection, stringList ) )
 	{
@@ -63,7 +63,7 @@ void InitOperCharsets()
 
 void SaveOperCharsets()
 {
-	ccollect< carray<char> > stringList;
+	ccollect< std::vector<char> > stringList;
 
 	for ( int i = 0; i < csList.count(); i++ )
 	{

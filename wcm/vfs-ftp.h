@@ -64,7 +64,7 @@ public:
 
 	void Connect( unsigned ip, int port, const char* user, const char* password, bool passive );
 	void Noop();
-	void Ls( ccollect<carray<char> >& list );
+	void Ls( ccollect<std::vector<char> >& list );
 	void Cwd( const char* path );
 	void OpenRead( const char* fileName );
 	void MkDir( const char* fileName );
@@ -87,7 +87,7 @@ class FtpIDCollection
 {
 	Mutex mutex;
 	cstrhash<int, unicode_t> byName;
-	ccollect<carray<unicode_t> > byId;
+	ccollect<std::vector<unicode_t> > byId;
 	static unicode_t u0;
 public:
 	FtpIDCollection() {}
@@ -105,7 +105,7 @@ public:
 
 		if ( n ) { return *n; }
 
-		carray<unicode_t> p = new_unicode_str( name );
+		std::vector<unicode_t> p = new_unicode_str( name );
 		int t = byId.count();
 		byId.append( p );
 		byName[name] = t;

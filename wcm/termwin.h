@@ -32,7 +32,7 @@ struct TScreen
 	ScreenMarker marker;
 
 	int bufSize;
-	carray<TermChar> buf;
+	std::vector<TermChar> buf;
 	TScreen(): rows( 1 ), cols( 1 ), buf( 1 ), bufSize( 1 ) {}
 
 	void SetSize( int r, int c )
@@ -41,7 +41,7 @@ struct TScreen
 
 		if ( bufSize < newSize )
 		{
-			carray<TermChar> p( newSize );
+			std::vector<TermChar> p( newSize );
 			buf = p;
 			bufSize = newSize;
 		}

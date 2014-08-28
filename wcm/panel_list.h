@@ -38,7 +38,7 @@ private:
 	bool ascSort;
 
 	cptr<FSList> data;
-	carray<FSNode*> list;
+	std::vector<FSNode*> list;
 	int listCount;
 
 	static unicode_t emptyStr[];

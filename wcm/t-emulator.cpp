@@ -1000,7 +1000,7 @@ void EmulatorScreen::SetSize( int r, int c )
 {
 	if ( r > lineCount )
 	{
-		carray<carray<TermChar> > t( r );
+		std::vector<std::vector<TermChar> > t( r );
 		int i;
 		int n = r - lineCount;
 
@@ -1023,7 +1023,7 @@ void EmulatorScreen::SetSize( int r, int c )
 	{
 		for ( int i = 0; i < lineCount; i++ )
 		{
-			carray<TermChar> p( c );
+			std::vector<TermChar> p( c );
 
 			if ( cols > 0 )
 			{
@@ -1066,7 +1066,7 @@ void EmulatorScreen::ScrollUp( int a, int b, int count, unsigned ch ) //a<=b
 
 		for ( ; count > 0; count-- )
 		{
-			carray<TermChar> t = list[b];
+			std::vector<TermChar> t = list[b];
 			ClearEmulatorLine( t.ptr(), cols, ch );
 
 			for ( int i = b; i > a; i-- ) { list[i] = list[i - 1]; }
@@ -1096,7 +1096,7 @@ void EmulatorScreen::ScrollDown( int a, int b, int count, unsigned ch ) //a<=b
 	{
 		for ( ; count > 0; count-- )
 		{
-			carray<TermChar> t = list[a];
+			std::vector<TermChar> t = list[a];
 			ClearEmulatorLine( t.ptr(), cols, ch );
 
 			for ( int i = a; i < b; i++ ) { list[i] = list[i + 1]; }

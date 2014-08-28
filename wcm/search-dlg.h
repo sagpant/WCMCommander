@@ -3,9 +3,9 @@
 
 struct SearchAndReplaceParams
 {
-	carray<unicode_t> mask;
-	carray<unicode_t> txt;
-	carray<unicode_t> to;
+	std::vector<unicode_t> mask;
+	std::vector<unicode_t> txt;
+	std::vector<unicode_t> to;
 	bool sens;
 	SearchAndReplaceParams(): sens( false ) {}
 	SearchAndReplaceParams( const SearchAndReplaceParams& a )

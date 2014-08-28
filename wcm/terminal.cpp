@@ -125,7 +125,7 @@ static int WritePipe( int fd, int cmd, ... )
 	return 0;
 }
 
-static int ReadPipe( int fd, int& cmd, ccollect<carray<char> >& params )
+static int ReadPipe( int fd, int& cmd, ccollect<std::vector<char> >& params )
 {
 	char c;
 	int ret;
@@ -172,7 +172,7 @@ static void Shell( int in, int out )
 
 	while ( true )
 	{
-		ccollect<carray<char> > pList;
+		ccollect<std::vector<char> > pList;
 		int cmd = 0;
 
 		if ( ReadPipe( in, cmd, pList ) ) { exit( 1 ); }

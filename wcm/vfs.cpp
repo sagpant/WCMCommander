@@ -97,10 +97,10 @@ FILETIME FSTime::GetFileTime()
 
 inline int Utf16Chars( const wchar_t* s ) { int n = 0; for ( ; *s; s++ ) { n++; } return n; }
 
-inline carray<wchar_t> UnicodeToUtf16_cat( const unicode_t* s, wchar_t* cat )
+inline std::vector<wchar_t> UnicodeToUtf16_cat( const unicode_t* s, wchar_t* cat )
 {
 	int lcat = Utf16Chars( cat );
-	carray<wchar_t> p( unicode_strlen( s ) + lcat + 1 );
+	std::vector<wchar_t> p( unicode_strlen( s ) + lcat + 1 );
 	wchar_t* d;
 
 	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
@@ -134,9 +134,9 @@ bool FSSys::Equal( FS* fs )
 }
 
 /* не поддерживает пути >265 длиной
-static carray<wchar_t> SysPathStr(int drive, const unicode_t *s)
+static std::vector<wchar_t> SysPathStr(int drive, const unicode_t *s)
 {
-   carray<wchar_t> p(2 + unicode_strlen(s)+1);
+   std::vector<wchar_t> p(2 + unicode_strlen(s)+1);
    wchar_t *d =p.ptr();
 
    if (drive == -1) { //???
@@ -153,9 +153,9 @@ static carray<wchar_t> SysPathStr(int drive, const unicode_t *s)
 }
 */
 
-static carray<wchar_t> SysPathStr( int drive, const unicode_t* s )
+static std::vector<wchar_t> SysPathStr( int drive, const unicode_t* s )
 {
-	carray<wchar_t> p( 10 + unicode_strlen( s ) + 1 ); //+10 прозапас, вообще +8 (макс \\?\UNC\)
+	std::vector<wchar_t> p( 10 + unicode_strlen( s ) + 1 ); //+10 прозапас, вообще +8 (макс \\?\UNC\)
 	wchar_t* d = p.data();
 
 	d[0] = '\\';
@@ -347,7 +347,7 @@ int FSSys::MkDir( FSPath& path, int mode, int* err,  FSCInfo* info )
 
 int FSSys::Delete( FSPath& path, int* err, FSCInfo* info )
 {
-	carray<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
+	std::vector<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
 
 	if ( DeleteFileW( sp.data() ) ) { return 0; }
 
@@ -366,7 +366,7 @@ int FSSys::Delete( FSPath& path, int* err, FSCInfo* info )
 
 int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 {
-	carray<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
+	std::vector<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
 
 	if ( RemoveDirectoryW( sp.data() ) ) { return 0; }
 
@@ -407,11 +407,11 @@ int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FS
 	return 0;
 }
 /* не поддерживает пути >265 длиной
-static carray<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *cat)
+static std::vector<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *cat)
 {
    int lcat = Utf16Chars(cat);
 
-   carray<wchar_t> p(2 + unicode_strlen(s)+lcat+1);
+   std::vector<wchar_t> p(2 + unicode_strlen(s)+lcat+1);
    wchar_t *d =p.ptr();
 
    if (drive == -1) {
@@ -429,11 +429,11 @@ static carray<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *cat)
 }
 */
 
-static carray<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t* cat )
+static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t* cat )
 {
 	int lcat = Utf16Chars( cat );
 
-	carray<wchar_t> p( 10 + unicode_strlen( s ) + lcat + 1 );
+	std::vector<wchar_t> p( 10 + unicode_strlen( s ) + lcat + 1 );
 	wchar_t* d = p.data();
 
 	d[0] = '\\';
@@ -674,8 +674,8 @@ FSString FSSys::Uri( FSPath& path )
 	return FSString( carray_cat<unicode_t>( pref, path.GetUnicode() ).data() );
 }
 
-static cinthash<int, carray<unicode_t> > userList;
-static cinthash<int, carray<unicode_t> > groupList;
+static cinthash<int, std::vector<unicode_t> > userList;
+static cinthash<int, std::vector<unicode_t> > groupList;
 
 static unicode_t* GetOSUserName( int id )
 {
@@ -806,7 +806,7 @@ class WNetEnumerator
 {
 	enum { BUFSIZE = 16 * 1024 };
 	HANDLE handle;
-	carray<char> buf;
+	std::vector<char> buf;
 	int pos, count;
 	bool Fill( DWORD* pErr );
 public:
@@ -1324,12 +1324,12 @@ FSString FSSys::Uri( FSPath& path )
 }
 
 
-static cinthash<int, carray<unicode_t> > userList;
-static cinthash<int, carray<unicode_t> > groupList;
+static cinthash<int, std::vector<unicode_t> > userList;
+static cinthash<int, std::vector<unicode_t> > groupList;
 
 static unicode_t* GetOSUserName( int id )
 {
-	carray<unicode_t>* u = userList.exist( id );
+	std::vector<unicode_t>* u = userList.exist( id );
 
 	if ( u ) { return u->ptr(); }
 
@@ -1340,7 +1340,7 @@ static unicode_t* GetOSUserName( int id )
 
 	if ( !p ) { sprintf( buf, "%i", id ); }
 
-	carray<unicode_t> str = sys_to_unicode_array( nameStr );
+	std::vector<unicode_t> str = sys_to_unicode_array( nameStr );
 	unicode_t* s = str.ptr();
 	userList[id] = str;
 	endpwent();
@@ -1349,7 +1349,7 @@ static unicode_t* GetOSUserName( int id )
 
 static unicode_t* GetOSGroupName( int id )
 {
-	carray<unicode_t>* g = groupList.exist( id );
+	std::vector<unicode_t>* g = groupList.exist( id );
 
 	if ( g ) { return g->ptr(); }
 
@@ -1360,7 +1360,7 @@ static unicode_t* GetOSGroupName( int id )
 
 	if ( !p ) { sprintf( buf, "%i", id ); }
 
-	carray<unicode_t> str = sys_to_unicode_array( nameStr );
+	std::vector<unicode_t> str = sys_to_unicode_array( nameStr );
 	unicode_t* s = str.ptr();
 	groupList[id] = str;
 	endgrent();
@@ -1465,9 +1465,9 @@ void FSList::CopyOne( FSNode* node )
 	count = 1;
 }
 
-carray<FSNode*> FSList::GetArray()
+std::vector<FSNode*> FSList::GetArray()
 {
-	carray<FSNode*> p( Count() );
+	std::vector<FSNode*> p( Count() );
 	FSNode* pNode = first;
 	int n = Count();
 
@@ -1479,11 +1479,11 @@ carray<FSNode*> FSList::GetArray()
 	return p;
 }
 
-wal::carray<FSNode*> FSList::GetFilteredArray( bool showHidden, int* pCount )
+std::vector<FSNode*> FSList::GetFilteredArray( bool showHidden, int* pCount )
 {
 	if ( pCount ) { *pCount = 0; }
 
-	carray<FSNode*> p( Count() );
+	std::vector<FSNode*> p( Count() );
 	FSNode* pNode = first;
 	int n = Count();
 	int i;

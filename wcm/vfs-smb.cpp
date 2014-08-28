@@ -36,7 +36,7 @@ static FSSmbParam lastFsParam;
 
 struct PathBuffer
 {
-	carray<char> p;
+	std::vector<char> p;
 	int size;
 	int minPos;
 	int pos;
@@ -65,7 +65,7 @@ void PathBuffer::Cut( const char* s )
 	if ( nsize > size )
 	{
 		nsize = ( ( nsize + 0x100 - 1 ) / 0x100 ) * 0x100;
-		carray<char> t( nsize );
+		std::vector<char> t( nsize );
 
 		if ( pos > 0 ) { memcpy( t.ptr(), p.ptr(), pos ); }
 
@@ -458,7 +458,7 @@ int FSSmb::Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info ) //EPE
 FSString FSSmb::Uri( FSPath& path )
 {
 	MutexLock lock( &mutex );
-	carray<char> a;
+	std::vector<char> a;
 
 	if ( _param.server[0] )
 	{

@@ -230,7 +230,7 @@ namespace wal
 
 	class TBToolTip: public Win
 	{
-		carray<unicode_t> text;
+		std::vector<unicode_t> text;
 	public:
 		TBToolTip( Win* parent, int x, int y, const unicode_t* s );
 		virtual void Paint( wal::GC& gc, const crect& paintRect );

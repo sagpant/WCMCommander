@@ -29,7 +29,7 @@ namespace SHL
 		}
 		else
 		{
-			carray<char> p( strlen( s ) + 1 );
+			std::vector<char> p( strlen( s ) + 1 );
 			char* t;
 
 			for ( t = p.data(); *s; s++, t++ )
@@ -48,7 +48,7 @@ namespace SHL
 
 		int l = end - s;
 		char buf[0x100];
-		carray<char> buf2;
+		std::vector<char> buf2;
 		char* p;
 
 		if ( l >= sizeof( buf ) )
@@ -344,7 +344,7 @@ namespace SHL
 
 	struct ShlParzerBuf
 	{
-		carray<char> data;
+		std::vector<char> data;
 		int size;
 		int pos;
 		ShlParzerBuf(): size( 0 ), pos( 0 ) {}
@@ -357,7 +357,7 @@ namespace SHL
 		if ( pos >= size )
 		{
 			int n = ( pos + 1 ) * 2;
-			carray<char> p( n );
+			std::vector<char> p( n );
 
 			if ( pos > 0 )
 			{
@@ -1345,11 +1345,11 @@ begin:
 
 	void ShlConf::Parze( sys_char_t* filePath )
 	{
-		carray<char> utf8path = sys_to_utf8( filePath );
+		std::vector<char> utf8path = sys_to_utf8( filePath );
 
 		try
 		{
-			carray<char> dirPath = new_char_str( "" );
+			std::vector<char> dirPath = new_char_str( "" );
 
 			{
 
@@ -1393,7 +1393,7 @@ begin:
 
 					if ( parzer.Tok() != TOK_STR ) { parzer.Syntax(); }
 
-					carray<char> id = new_char_str( parzer.Str() );
+					std::vector<char> id = new_char_str( parzer.Str() );
 
 					cptr<Node> node = new Node;
 					parzer.Next();
@@ -1423,7 +1423,7 @@ begin:
 							{
 								int l1 = strlen( dirPath.data() );
 								int l2 = strlen( parzer.Str() );
-								carray<char> fp( l1 + l2 + 1 );
+								std::vector<char> fp( l1 + l2 + 1 );
 
 								if ( l1 )
 								{

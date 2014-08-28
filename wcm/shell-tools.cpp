@@ -13,7 +13,7 @@ struct ShellLoadDirTD
 	bool threadStopped;
 	FSCSimpleInfo info;
 	cptr<FSList> list;
-	carray<char> err;
+	std::vector<char> err;
 	ShellLoadDirTD( FSPtr f, FSPath& p ): fs( f ), path( p ), winClosed( false ), threadStopped( false ) {}
 };
 
@@ -307,11 +307,11 @@ static bool accmask_nocase_begin0( const unicode_t* name, const unicode_t* mask 
 struct ShellFileDlgData
 {
 	cptr<FSList> list;
-	carray<FSNode*> sorted;
-	carray<unicode_t> mask;
+	std::vector<FSNode*> sorted;
+	std::vector<unicode_t> mask;
 	cptr< ccollect<FSNode*, 0x100> > filtered;
 
-	void RefreshList( carray<unicode_t> mask );
+	void RefreshList( std::vector<unicode_t> mask );
 
 	ShellFileDlgData( cptr<FSList> l, const unicode_t* s ): list( l )
 	{
@@ -327,7 +327,7 @@ struct ShellFileDlgData
 	}
 };
 
-void ShellFileDlgData::RefreshList( carray<unicode_t> m )
+void ShellFileDlgData::RefreshList( std::vector<unicode_t> m )
 {
 	filtered = 0;
 	mask = m;
@@ -452,9 +452,9 @@ static cptr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPa
 }
 
 
-carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, const unicode_t* str, int* cursor )
+std::vector<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, const unicode_t* str, int* cursor )
 {
-	if ( fs->Type() != FS::SYSTEM ) { return 0; }
+	if ( fs->Type() != FS::SYSTEM ) { return std::vector<unicode_t>(); }
 
 	int len = unicode_strlen( str );
 	int n = len;
@@ -527,12 +527,12 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 
 	if ( b < 0 ) { b = n; }
 
-	if ( b >= e ) { return 0; }
+	if ( b >= e ) { return std::vector<unicode_t>(1); }
 
 	FSPath searchPath = path;
 	int bm = ds >= b ? ds + 1 : b;
 	int maskLen = e - bm;
-	carray<unicode_t> mask( maskLen + 1 );
+	std::vector<unicode_t> mask( maskLen + 1 );
 
 	for ( i = 0; i < maskLen; i++ )
 	{
@@ -544,7 +544,7 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 	if ( ds >= b )
 	{
 		int l = ds - b + 1;
-		carray<unicode_t> buf( l + 1 );
+		std::vector<unicode_t> buf( l + 1 );
 
 		for ( i = 0; i < l; i++ )
 		{
@@ -555,7 +555,7 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 
 		FSPtr f1 = ParzeURI( buf.data(), searchPath, &fs, 1 );
 
-		if ( !f1.Ptr() ) { return 0; }
+		if ( !f1.Ptr() ) { return std::vector<unicode_t>(); }
 
 		fs = f1;
 	}
@@ -570,7 +570,7 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 
 		if ( data.filtered.ptr() )
 		{
-			if ( !data.filtered->count() ) { return 0; }
+			if ( !data.filtered->count() ) { return std::vector<unicode_t>( 1 ); }
 
 			if ( data.filtered->count() == 1 )
 			{
@@ -592,7 +592,7 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 
 			const unicode_t* name = p->GetUnicodeName();
 
-			if ( !name ) { return 0; } //???
+			if ( !name ) { return std::vector<unicode_t>(1); } //???
 
 			int nLen = unicode_strlen( name );
 
@@ -626,5 +626,5 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 		}
 	}
 
-	return carray<unicode_t>( 0 );
+	return std::vector<unicode_t>( 0 );
 }

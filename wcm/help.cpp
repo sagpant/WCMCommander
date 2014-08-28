@@ -165,7 +165,7 @@ struct HelpNodeV: public HelpNode
 //текст фиксированной длины и ширины
 struct HelpNodeWord: public HelpNode
 {
-	carray<unicode_t> _txt;
+	std::vector<unicode_t> _txt;
 
 	HelpNodeWord( HelpStyle* style, const char* utf8, const char* addr = 0 );
 	virtual void Init( HelpGC& gc );
@@ -228,7 +228,7 @@ struct HelpNodeTable: public HelpNode
 	ccollect<cptr<ccollect<cptr<HelpNode> > > > _tab;
 
 	int _cols; //заполняется Init
-	carray<Pair> _colPair; //создается Init
+	std::vector<Pair> _colPair; //создается Init
 
 	void Append( cptr<HelpNode> item ) { _tab[_tab.count() - 1]->append( item ); }
 	void NL() { _tab.append( new ccollect< cptr<HelpNode> > ); }
@@ -466,7 +466,7 @@ void HelpNodeTable::Prepare( int width )
 	int n = _cols;
 	int i;
 
-	carray<int> cw( _cols );
+	std::vector<int> cw( _cols );
 
 	for ( i = 0; i < _cols; i++ ) { cw[i] = _colPair[i].minV; }
 
@@ -1278,7 +1278,7 @@ HelpParzer::~HelpParzer() {}
 
 class HelpFile
 {
-	cstrhash< carray<char> > hash;
+	cstrhash< std::vector<char> > hash;
 	bool loaded;
 	bool LoadFile( sys_char_t* name );
 	void Load();
@@ -1297,7 +1297,7 @@ bool HelpFile::LoadFile( sys_char_t* name )
 //printf("file-'%s'\n", name);
 		f.Open( name );
 
-		carray<char> thName;
+		std::vector<char> thName;
 
 		char buf[4096];
 
@@ -1410,7 +1410,7 @@ void HelpFile::Load()
 const char* HelpFile::GetTheme( const char* theme )
 {
 	Load();
-	carray<char>* p = hash.exist( theme );
+	std::vector<char>* p = hash.exist( theme );
 	return p ? p->data() : 0;
 }
 

@@ -64,7 +64,7 @@ void ReadDirThreadFunc( OperThreadNode* node );
 
 class OperFileNameWin: public Win
 {
-	carray<unicode_t> text;
+	std::vector<unicode_t> text;
 	int _ccount;
 public:
 	OperFileNameWin( Win* parent, int ccount = 80 )

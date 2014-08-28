@@ -40,7 +40,7 @@ class SCListWin: public VListWin
 public:
 	struct Node
 	{
-		carray<unicode_t> name;
+		std::vector<unicode_t> name;
 		cptr<StrConfig> conf;
 		bool operator <= ( const Node& a ) { return CmpNoCase( name.data(), a.name.data() ) <= 0; }
 	};
@@ -53,7 +53,7 @@ private:
 	{
 		itemList.clear();
 
-		ccollect< carray<char> > list;
+		ccollect< std::vector<char> > list;
 		LoadStringList( shortcursSection, list );
 
 		for ( int i = 0; i < list.count(); i++ )
@@ -76,7 +76,7 @@ private:
 
 		Sort();
 
-		//void SaveStringList(const char *section, ccollect< carray<char> > &list);
+		//void SaveStringList(const char *section, ccollect< std::vector<char> > &list);
 	}
 public:
 	SCListWin( Win* parent )
@@ -215,7 +215,7 @@ t:
 
 void SCListWin::Save()
 {
-	ccollect< carray<char> > list;
+	ccollect< std::vector<char> > list;
 
 	for ( int i = 0; i < itemList.count(); i++ )
 		if ( itemList[i].conf.ptr() && itemList[i].name.data() )
@@ -406,7 +406,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 
 		if ( !node || !node->name.data() ) { return true; }
 
-		carray<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Rename item" ) ).data(),
+		std::vector<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Rename item" ) ).data(),
 		                                            node->name.data() );
 
 		if ( name.data() )
@@ -470,7 +470,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 
 						return false;
 
-			carray<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Enter shortcut name" ) ).data(),
+			std::vector<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Enter shortcut name" ) ).data(),
 			                                            fs[0]->Uri( *path ).GetUnicode() );
 
 			if ( name.data() )

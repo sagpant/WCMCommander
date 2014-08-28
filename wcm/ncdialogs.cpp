@@ -490,7 +490,7 @@ int uiNCRedMessageBox = GetUiID( "messagebox-red" );
 
 int NCMessageBox( NCDialogParent* parent, const char* utf8head, const char* utf8txt, bool red, ButtonDataNode* buttonList )
 {
-	carray<unicode_t> str = utf8_to_unicode( utf8txt );
+	std::vector<unicode_t> str = utf8_to_unicode( utf8txt );
 	ccollect<unicode_t> buf;
 
 	unicode_t* s = str.data();
@@ -550,7 +550,7 @@ public:
 		SetPosition();
 	}
 
-	carray<unicode_t> GetText() { return edit.GetText(); };
+	std::vector<unicode_t> GetText() { return edit.GetText(); };
 
 	virtual ~GoToDialog();
 };
@@ -566,7 +566,7 @@ int GoToLineDialog( NCDialogParent* parent )
 
 	if ( r != CMD_OK ) { return -1; }
 
-	carray<unicode_t> str = d.GetText();
+	std::vector<unicode_t> str = d.GetText();
 	int n = 0;
 	unicode_t* s = str.data();
 
@@ -599,7 +599,7 @@ public:
 		SetPosition();
 	}
 
-	carray<unicode_t> GetText() { return edit.GetText(); };
+	std::vector<unicode_t> GetText() { return edit.GetText(); };
 
 	virtual ~InputStrDialog();
 };
@@ -607,13 +607,13 @@ public:
 InputStrDialog::~InputStrDialog() {}
 
 
-carray<unicode_t> InputStringDialog( NCDialogParent* parent, const unicode_t* message, const unicode_t* str )
+std::vector<unicode_t> InputStringDialog( NCDialogParent* parent, const unicode_t* message, const unicode_t* str )
 {
 	InputStrDialog d( parent, message, str );
 
 	d.SetEnterCmd( CMD_OK );
 	int r = d.DoModal();
-	carray<unicode_t> ret;
+	std::vector<unicode_t> ret;
 
 	if ( r != CMD_OK ) { return ret; }
 

@@ -28,7 +28,7 @@ class PanelSearchWin: public Win
 	EditLine _edit;
 	StaticLine _static;
 	Layout _lo;
-	carray<unicode_t> oldMask;
+	std::vector<unicode_t> oldMask;
 public:
 	cptr<cevent_key> ret_key;
 	PanelSearchWin( PanelWin* parent, cevent_key* key );

@@ -12,7 +12,7 @@ class ToolBar: public Win
 		crect rect;
 		int cmd;
 		cptr<cicon> icon;
-		carray<unicode_t> tipText;
+		std::vector<unicode_t> tipText;
 		Node(): rect( 0, 0, 0, 0 ), cmd( 0 ) {}
 	};
 	void RecalcItems();

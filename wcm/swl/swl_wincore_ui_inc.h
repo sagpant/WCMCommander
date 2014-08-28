@@ -38,8 +38,8 @@ namespace wal
 
 	class UiStreamFile: public UiStream
 	{
-		carray<sys_char_t> _name;
-		carray<char> _name_utf8;
+		std::vector<sys_char_t> _name;
+		std::vector<char> _name_utf8;
 		BFile _f;
 	public:
 		UiStreamFile( const sys_char_t* s ): _name( new_sys_str( s ) ), _name_utf8( sys_to_utf8( s ) ) { _f.Open( s ); }
@@ -72,7 +72,7 @@ namespace wal
 
 	struct UiParzerBuf
 	{
-		carray<char> data;
+		std::vector<char> data;
 		int size;
 		int pos;
 		UiParzerBuf(): size( 0 ), pos( 0 ) {}
@@ -85,7 +85,7 @@ namespace wal
 		if ( pos >= size )
 		{
 			int n = ( pos + 1 ) * 2;
-			carray<char> p( n );
+			std::vector<char> p( n );
 
 			if ( pos > 0 )
 			{

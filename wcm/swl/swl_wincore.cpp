@@ -230,15 +230,6 @@ namespace wal
 	bool Win::IsVisible()
 	{
 		return ( state & S_VISIBLE ) != 0;
-
-		/* for (Win *p =this; p; p=p->parent)
-		   {
-		      if (!(p->state & S_VISIBLE)) return false;
-		      if (p->Type() == Win::WT_MAIN || p->Type() == Win::WT_POPUP) break;
-		   }
-		*/
-//	return true;
-
 	}
 
 	void Win::Enable( bool en )
@@ -919,7 +910,7 @@ namespace wal
 
 		for ( i = 0; i < a.list.count(); i++ )
 		{
-			carray<unicode_t> p = new unicode_t[BUF_SIZE];
+			std::vector<unicode_t> p( BUF_SIZE );
 			memcpy( p.data(), a.list.const_item( i ).data(), BUF_SIZE * sizeof( unicode_t ) );
 			list.append( p );
 		}
@@ -958,7 +949,7 @@ namespace wal
 
 		while ( list.count() < bc )
 		{
-			carray<unicode_t> p = new unicode_t[BUF_SIZE];
+			std::vector<unicode_t> p( BUF_SIZE );
 			list.append( p );
 		}
 
@@ -981,23 +972,14 @@ namespace wal
 
 	void Image32::alloc( int w, int h )
 	{
-		wal::carray<unsigned32> d( w * h );
-		wal::carray<unsigned32*> l( h );
-
-		if ( d.data() )
-		{
-			unsigned32* p = d.data();
-
-			for ( int i = 0; i < h; i++, p += w ) { l[i] = p; }
-		}
+		std::vector<unsigned32> d( w * h );
 
 		_data = d;
-		_lines = l;
 		_width = w;
 		_height = h;
 	}
 
-	void Image32::clear() { _width = _height = 0; _data.clear(); _lines.clear(); }
+	void Image32::clear() { _width = _height = 0; _data.clear(); }
 
 	void Image32::fill( int left, int top, int right, int bottom,  unsigned c )
 	{
@@ -1013,7 +995,7 @@ namespace wal
 
 		for ( int i = top; i < bottom; i++ )
 		{
-			unsigned32* p = _lines[i];
+			unsigned32* p = &_data[i*_width];
 			unsigned32* end = p + right;
 			p += left;
 
@@ -1028,9 +1010,6 @@ namespace wal
 		if ( _width > 0 && _height > 0 )
 		{
 			memcpy( _data.data(), a._data.data(), _width * _height * sizeof( unsigned32 ) );
-			unsigned32* p = _data.data();
-
-			for ( int i = 0; i < _height; i++, p += _width ) { _lines[i] = p; }
 		}
 	}
 
@@ -1059,7 +1038,7 @@ namespace wal
 
 		//упрощенная схема, не очень качественно, зато быстро
 
-		carray<int[2]> p( w );
+		std::vector<int[2]> p( w );
 
 		int x;
 		int wN = a._width / w;
@@ -1084,12 +1063,12 @@ namespace wal
 		for ( y = 0; y < h; y++ )
 		{
 
-			unsigned32* line =  _lines[y];
+			unsigned32* line =  &_data[y*_width];
 			int hN2 = hN / 2;
 
 			if ( !hN )
 			{
-				const unsigned32* a_line =  a._lines.const_item( ( y * a._height ) / h );
+				const unsigned32* a_line =  &a._data[ ( ( y * a._height ) / h ) * a._width ];
 
 				if ( !wN )
 					for ( x = 0; x < w; x++ ) { line[x] = a_line[p[x][0]]; }
@@ -1127,7 +1106,7 @@ namespace wal
 
 					for ( int iy = t1; iy < t2; iy++ )
 					{
-						const unsigned32* a_line =  a._lines.const_item( iy );
+						const unsigned32* a_line =  &a._data[ iy * a._width ];
 
 						for ( int i = n1; i < n2; i++ ) { FROM_RGBA32_PLUS( a_line[i], R, G, B, A ); }
 					}
@@ -1152,14 +1131,9 @@ namespace wal
 
 		alloc( w, h );
 
-		for ( int y = 0; y < h; y++ )
+		for ( size_t i = 0; i != _data.size( ); i++, data++ )
 		{
-			unsigned32* line =  _lines[y];
-
-			for ( int x = 0; x < w; x++, line++, data++ )
-			{
-				*line = ( *data >= 0 ) ? colors[*data] : 0xFF000000;
-			}
+			_data[i] = ( *data >= 0 ) ? colors[*data] : 0xFF000000;
 		}
 	}
 
