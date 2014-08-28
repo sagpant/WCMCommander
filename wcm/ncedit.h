@@ -718,8 +718,6 @@ inline EditString::EditString( const EditString& a )
 	   flags( a.flags ),
 	   data( a.data )
 {
-	set_const_data<int>( &a.size, 0 );
-	set_const_data<int>( &a.len, 0 );
 }
 
 
@@ -831,8 +829,6 @@ inline void EditString::operator = ( const EditString& a )
 	shlId = a.shlId;
 	flags = a.flags;
 	data = a.data;
-	set_const_data<int>( &a.size, 0 );
-	set_const_data<int>( &a.len, 0 );
 }
 
 #endif

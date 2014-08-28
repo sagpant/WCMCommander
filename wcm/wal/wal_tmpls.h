@@ -37,13 +37,6 @@
 
 namespace wal
 {
-
-	//Для cptr и std::vector
-	template <class T> void set_const_data( const T* ptr, T data )
-	{
-		*( ( T* )ptr ) = data;
-	}
-
 	/*
 	smart pointer объект
 	*/
@@ -113,7 +106,7 @@ namespace wal
 	template <class T> inline cptr<T>::cptr( const cptr& a )
 	{
 		m_data = a.m_data;
-		set_const_data<T*>( &a.m_data, NULL );
+		const_cast<cptr&>(a).m_data = NULL;
 	}
 
 	template <class T> inline void cptr<T>::clear()
@@ -151,7 +144,7 @@ namespace wal
 		}
 
 		m_data = a.m_data;
-		set_const_data<T*>( &a.m_data, NULL );
+		const_cast<cptr&>( a ).m_data = NULL;
 
 		return *this;
 
