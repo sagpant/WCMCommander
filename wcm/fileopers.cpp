@@ -191,10 +191,18 @@ void OperRDThread::Run()
 	}
 
 	cptr<FSList> list = new FSList;
-	int ret = fs->ReadDir(list.ptr(), path, &ret_err, Info());
-	if (ret) 
-		throw_msg("%s", fs->StrError(ret_err).GetUtf8());
-	
+
+	// if directory is not readable, try .. path
+	// "Stat" call above does not catch this: it checks only folder existence, but not accessibilly
+	while (fs->ReadDir(list.ptr(), path, &ret_err, Info()))
+		if (!path.IsAbsolute() || !path.Pop())
+			throw_msg("%s", fs->StrError(ret_err).GetUtf8());
+
+	// yell immediately if the dir is unreadable (orig behavior)
+	//int ret = fs->ReadDir(list.ptr(), path, &ret_err, Info());
+	//if (ret)
+	//	throw_msg("%s", fs->StrError(ret_err).GetUtf8());
+
 	MutexLock lock(Node().GetMutex()); //!!!
 	if (Node().NBStopped()) return;
 	OperRDData *data = ((OperRDData*)Node().Data());
