@@ -275,7 +275,7 @@ struct UndoRec
 
 		if ( size > 0 )
 		{
-			data.alloc( size );
+			data.resize( size );
 			memcpy( data.ptr(), s, size );
 		}
 	}
@@ -729,7 +729,7 @@ inline void EditString::Set( const char* s, int l )
 
 	if ( l > size )
 	{
-		data.alloc( l );
+		data.resize( l );
 		size = l;
 	}
 

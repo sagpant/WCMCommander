@@ -466,7 +466,7 @@ namespace wal
 
 			if ( passwordMode && cnt > 0 )
 			{
-				pwTextArray.alloc( cnt );
+				pwTextArray.resize( cnt );
 
 				for ( int i = 0; i < cnt; i++ ) { pwTextArray[i] = passwordSymbol; }
 

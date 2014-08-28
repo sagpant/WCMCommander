@@ -17,7 +17,7 @@ class EmulatorCLList
 public:
 	EmulatorCLList(): dataSize( 0x100 ), data( 0x100 ), count( 0 ) {}
 	void SetAll( bool b ) { for ( int i = 0; i < count; i++ ) { data[i] = b; } }
-	void SetSize( int size ) { if ( dataSize < size ) { data.alloc( size ); dataSize = size; } count = size; SetAll( true ); }
+	void SetSize( int size ) { if ( dataSize < size ) { data.resize( size ); dataSize = size; } count = size; SetAll( true ); }
 	void Set( int n, bool b ) { if ( n >= 0 && n < count ) { data[n] = b; } }
 	bool Get( int n ) { return ( n >= 0 && n < count ) ? data[n] : false; }
 };

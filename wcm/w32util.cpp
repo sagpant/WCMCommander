@@ -50,7 +50,7 @@ carray<wchar_t> RegKey::GetString( const wchar_t* name, const wchar_t* def )
 	if ( lResult == ERROR_SUCCESS )
 	{
 		int n = dwSize / sizeof( wchar_t );
-		strValue.alloc( n + 1 );
+		strValue.resize( n + 1 );
 		strValue[n] = 0;
 
 		lResult = RegQueryValueExW( key, name, NULL, &dwType,
@@ -74,7 +74,7 @@ carray<wchar_t> RegKey::SubKey( int n )
 	if ( res == ERROR_MORE_DATA )
 	{
 		size++;
-		name.alloc( size );
+		name.resize( size );
 		res = RegEnumKeyExW( key, n, name.ptr(), &size, 0, 0, 0, 0 );
 	}
 

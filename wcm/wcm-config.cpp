@@ -477,7 +477,7 @@ carray<char> RegReadString( char const* sect, const char* what, const char* def 
 	if ( lResult == ERROR_SUCCESS )
 	{
 		ASSERT( dwType == REG_SZ );
-		strValue.alloc( dwCount + 1 );
+		strValue.resize( dwCount + 1 );
 		strValue[dwCount] = 0;
 
 		lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,

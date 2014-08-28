@@ -48,7 +48,7 @@ struct VSData
 	carray<unicode_t> data;
 	carray<char> attr;
 
-	void SetDataSize( int n ) { if ( dataSize < n ) { data.alloc( n ); attr.alloc( n ); dataSize = n; } };
+	void SetDataSize( int n ) { if ( dataSize < n ) { data.resize( n ); attr.resize( n ); dataSize = n; } };
 
 	void _CopyData( const VSData& a )
 	{

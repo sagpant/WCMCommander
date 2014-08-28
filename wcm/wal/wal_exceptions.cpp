@@ -82,7 +82,7 @@ namespace wal
 	{
 		if ( !s ) { return; }
 
-		_msg.alloc( strlen( s ) + 1 );
+		_msg.resize( strlen( s ) + 1 );
 		strcpy( _msg.ptr(), s );
 	}
 

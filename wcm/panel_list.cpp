@@ -24,7 +24,7 @@ void PanelList::MakeList()
 	if ( data.ptr() && data->Count() > 0 )
 	{
 		int n = data->Count();
-		list.alloc( n );
+		list.resize( n );
 
 		int i = 0;
 

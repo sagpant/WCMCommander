@@ -429,7 +429,7 @@ void HelpNodeTable::Init( HelpGC& gc )
 		return;
 	}
 
-	_colPair.alloc( _cols );
+	_colPair.resize( _cols );
 
 	for ( i = 0; i < _tab.count(); i++ )
 	{

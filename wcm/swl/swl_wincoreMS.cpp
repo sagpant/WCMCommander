@@ -1503,7 +1503,7 @@ namespace wal
 				{
 					if ( !masked )
 					{
-						mask.alloc( w * h );
+						mask.resize( w * h );
 						memset( mask.ptr(), 1, w * h );
 						masked = true;
 						m = mask.ptr() + y * w;

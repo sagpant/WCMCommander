@@ -1612,7 +1612,7 @@ void EditWin::EnableShl( bool on )
 			EditString& str = text.Get( EditList::Pos() );
 			int len = str.len;
 
-			firstLine.alloc( len + 1 );
+			firstLine.resize( len + 1 );
 
 			char* s = firstLine.ptr();
 

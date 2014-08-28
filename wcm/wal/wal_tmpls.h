@@ -57,7 +57,7 @@ namespace wal
 		void drop(); //отцепляет объект
 		carray& operator = ( T* p );
 		carray& operator = ( const carray& a );
-		void alloc( int n );
+		void resize( int n );
 		T* ptr();
 		const T* const_ptr() const;
 		T& operator [] ( int n );
@@ -187,7 +187,7 @@ namespace wal
 		return *this;
 	}
 
-	template <class T> inline void carray<T>::alloc( int n )
+	template <class T> inline void carray<T>::resize( int n )
 	{
 		ASSERT( n >= 0 );
 		T* p = n > 0 ? new T[n] : ( T* )NULL;
@@ -327,7 +327,7 @@ namespace wal
 	{
 		ASSERT( n >= 0 );
 		int x = ( n + step - 1 ) / step;
-		m_data.alloc( x * step );
+		m_data.resize( x * step );
 		cnt = n;
 	}
 

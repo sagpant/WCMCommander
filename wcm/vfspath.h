@@ -180,7 +180,7 @@ class FSPath
 	{
 		if ( cacheSize >= n ) { return; }
 
-		cache.alloc( n );
+		cache.resize( n );
 		cacheSize = n;
 	}
 

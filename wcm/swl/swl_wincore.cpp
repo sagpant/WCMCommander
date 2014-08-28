@@ -1335,11 +1335,11 @@ namespace wal
 			return false;
 		}
 
-		colors.alloc( nc );
+		colors.resize( nc );
 		{
 			for ( int i = 0; i < nc; i++ ) { colors[i] = 0; }
 		}
-		data.alloc( w * h );
+		data.resize( w * h );
 		{
 			int* p = data.ptr();
 

@@ -53,7 +53,7 @@ namespace SHL
 
 		if ( l >= sizeof( buf ) )
 		{
-			buf2.alloc( l + 1 );
+			buf2.resize( l + 1 );
 			p = buf2.ptr();
 		}
 		else
@@ -1363,7 +1363,7 @@ begin:
 				{
 					p++;
 					int l = p - utf8path.ptr();
-					dirPath.alloc( l + 1 );
+					dirPath.resize( l + 1 );
 
 					char* dir = dirPath.ptr();
 
