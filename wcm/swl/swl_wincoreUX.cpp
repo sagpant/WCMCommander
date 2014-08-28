@@ -1469,8 +1469,8 @@ namespace wal
 			return ret;
 		}
 
-		carray<char> GetArray() { carray<char> p; if ( count > 0 ) { p.alloc( count ); Get( p.ptr(), count ); } return p; }
-		carray<char> GetArray( int* pCount ) { int n = count; carray<char> p; if ( count > 0 ) { p.alloc( count ); Get( p.ptr(), count ); } if ( pCount ) { *pCount = n; } return p; }
+		carray<char> GetArray() { carray<char> p; if ( count > 0 ) { p.resize( count ); Get( p.ptr(), count ); } return p; }
+		carray<char> GetArray( int* pCount ) { int n = count; carray<char> p; if ( count > 0 ) { p.resize( count ); Get( p.ptr(), count ); } if ( pCount ) { *pCount = n; } return p; }
 
 		~CharQueue() { Clear(); }
 	};
@@ -3148,7 +3148,7 @@ stopped:
 			unsigned32* p = _image.line( 0 );
 			int count = im.width() * im.height();
 
-			node->mask.alloc( count );
+			node->mask.resize( count );
 			char* m = node->mask.ptr();
 
 			for ( ; count > 0; count--, p++, m++ )
@@ -3281,7 +3281,7 @@ stopped:
 		if ( visualInfo.c_class == TrueColor )
 		{
 			im.format =  ZPixmap ;
-			data.alloc( w * h * 4 ); //32 bit
+			data.resize( w * h * 4 ); //32 bit
 			im.data = data.ptr();
 			im.byte_order = ( ( ( char* )&byte_order_test )[0] == 0x77 ) ? LSBFirst : MSBFirst;
 			im.bitmap_unit = 32;
@@ -3298,7 +3298,7 @@ stopped:
 		{
 			im.format = XYPixmap;
 			im.bytes_per_line = ( w + 31 ) / 32 * 4;
-			data.alloc( im.bytes_per_line * visualInfo.depth * h ); //32 bit
+			data.resize( im.bytes_per_line * visualInfo.depth * h ); //32 bit
 			im.data = data.ptr();
 			im.byte_order = ( ( ( char* )&byte_order_test )[0] == 0x77 ) ? LSBFirst : MSBFirst;
 			im.bitmap_unit = 32;
@@ -3339,7 +3339,7 @@ stopped:
 					{
 						if ( !masked )
 						{
-							mask.alloc( w * h );
+							mask.resize( w * h );
 							memset( mask.ptr(), 1, w * h );
 							masked = true;
 							m = mask.ptr() + y * w;
@@ -3388,7 +3388,7 @@ stopped:
 		return;
 
 haveMask:
-		mask.alloc( w * h );
+		mask.resize( w * h );
 		memset( mask.ptr(), 1, w * h );
 
 		char* m = mask.ptr() + w * h - n;

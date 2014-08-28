@@ -27,7 +27,7 @@ class TextInStream
 	int pos, count;
 	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.ptr(), bufSize ); pos = 0; return count > 0; }
 public:
-	TextInStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), count( 1 ), pos( 1 ) { buffer.alloc( bufSize ); }
+	TextInStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), count( 1 ), pos( 1 ) { buffer.resize( bufSize ); }
 	int GetC() { FillBuffer(); return pos < count ? buffer[pos++] : EOF; }
 	bool GetLine( char* s, int size );
 	~TextInStream() {}
@@ -86,7 +86,7 @@ class TextOutStream
 	carray<char> buffer;
 	int pos;
 public:
-	TextOutStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), pos( 0 ) { buffer.alloc( bufSize ); }
+	TextOutStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), pos( 0 ) { buffer.resize( bufSize ); }
 	void Flush() {  if ( pos > 0 ) { Write( buffer.ptr(), pos ); pos = 0; } }
 	void PutC( int c ) { if ( pos >= bufSize ) { Flush(); } buffer[pos++] = c; }
 	void Put( const char* s, int size );

@@ -332,7 +332,7 @@ FSPtr ParzeCurrentSystemURL( FSPath& path )
 		}
 
 		bufSize *= 2;
-		buf.alloc( bufSize );
+		buf.resize( bufSize );
 	}
 
 	path.Set( sys_charset_id, buf.ptr() );

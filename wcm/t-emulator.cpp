@@ -978,11 +978,11 @@ EmulatorScreen::EmulatorScreen( int r, int c, EmulatorCLList* cl )
 
 	if ( lineSize < 80 ) { lineSize = 80; }
 
-	list.alloc( lineCount );
+	list.resize( lineCount );
 
 	for ( int i = 0; i < lineCount; i++ )
 	{
-		list[i].alloc( lineSize );
+		list[i].resize( lineSize );
 		ClearEmulatorLine( list[i].ptr(), lineSize );
 	}
 }
@@ -1006,7 +1006,7 @@ void EmulatorScreen::SetSize( int r, int c )
 
 		for ( i = 0; i < n; i++ )
 		{
-			t[i].alloc( lineSize );
+			t[i].resize( lineSize );
 			ClearEmulatorLine( t[i].ptr(), lineSize );
 		}
 
