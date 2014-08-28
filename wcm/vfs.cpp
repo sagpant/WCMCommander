@@ -516,7 +516,18 @@ int FSSys::Stat(FSPath &path, FSStat *fsStat, int *err, FSCInfo *info)
 
 int64 FSSys::GetFileSystemFreeSpace(FSPath &path, int *err)
 {
-	return -1;
+	DWORD SectorsPerCluster;
+	DWORD BytesPerSector;
+	DWORD NumberOfFreeClusters;
+	DWORD TotalNumberOfClusters;
+
+	int d = Drive();
+
+	char RootPath[] = { d + 'A', ':', '\\', 0 };
+
+	if ( GetDiskFreeSpace( RootPath, &SectorsPerCluster, &BytesPerSector, &NumberOfFreeClusters, &TotalNumberOfClusters ) != TRUE ) return -1;
+
+	return (int64)SectorsPerCluster*(int64)BytesPerSector*(int64)NumberOfFreeClusters;
 }
 
 int FSSys::FStat(int fd, FSStat *fsStat, int *err, FSCInfo *info)
