@@ -23,6 +23,7 @@ int FS::ReadDir	(FSList *list, FSPath &path,  int *err,FSCInfo *info)		{ SetErro
 int FS::Stat(FSPath &path, FSStat *st, int *err, FSCInfo *info)			{ SetError(err,0); return -1; }
 int FS::FStat(int fd, FSStat *st, int *err, FSCInfo *info)		{ SetError(err,0); return -1; }
 int FS::Symlink	(FSPath &path, FSString &str, int *err, FSCInfo *info)		{ SetError(err,0); return -1; }
+int64 FS::GetFileSystemFreeSpace(FSPath &path, int *err) { SetError(err,0); return -1; }
 
 unicode_t* FS::GetUserName(int user, unicode_t buf[64]){ buf[0]=0; return buf; };
 unicode_t* FS::GetGroupName(int group, unicode_t buf[64]){ buf[0]=0; return buf; };
@@ -513,6 +514,11 @@ int FSSys::Stat(FSPath &path, FSStat *fsStat, int *err, FSCInfo *info)
 	return -1;
 }
 
+int64 FSSys::GetFileSystemFreeSpace(FSPath &path, int *err)
+{
+	return -1;
+}
+
 int FSSys::FStat(int fd, FSStat *fsStat, int *err, FSCInfo *info)
 {
 	BY_HANDLE_FILE_INFORMATION e;
@@ -840,14 +846,12 @@ FSWin32Net::~FSWin32Net(){}
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/time.h>
-
-
-
+#include <sys/statfs.h>
 
 #ifdef __linux__
-#define OPENFLAG_LARGEFILE (O_LARGEFILE)
+#	define OPENFLAG_LARGEFILE (O_LARGEFILE)
 #else 
-#define OPENFLAG_LARGEFILE (0)
+#	define OPENFLAG_LARGEFILE (0)
 #endif
 
 unsigned	FSSys::Flags() { return HAVE_READ | HAVE_WRITE | HAVE_SYMLINK | HAVE_SEEK; }
@@ -1032,6 +1036,19 @@ int FSSys::ReadDir(FSList *list, FSPath & _path, int *err, FSCInfo *info)
 		closedir(d);
 		throw;
 	}
+}
+
+int64 FSSys::GetFileSystemFreeSpace(FSPath &path, int *err)
+{
+	struct statfs64 s;
+
+	if ( statfs64( path.GetUtf8(), &s ) == -1 )
+	{
+		SetError(err, errno);
+		return -1;
+	}
+
+	return (int64)(s.f_bfree) * (int64)(s.f_bsize);
 }
 
 int FSSys::Stat(FSPath &path, FSStat *fsStat, int *err, FSCInfo *info)

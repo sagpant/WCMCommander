@@ -41,6 +41,7 @@ private:
 	static unicode_t emptyStr[];
 	static unicode_t upperStr[];
 
+	PanelCounter filesCnNoDirs;
 	PanelCounter filesCn;
 	PanelCounter selectedCn;
 	PanelCounter hiddenCn;
@@ -67,7 +68,7 @@ public:
 	bool AscSort() const { return ascSort; }
 	SORT_MODE SortMode() const { return sortMode; }
 	
-	PanelCounter FilesCounter() const { return filesCn; }
+	PanelCounter FilesCounter(bool ShowDirs) const { return ShowDirs ? filesCn : filesCnNoDirs; }
 	PanelCounter SelectedCounter() const { return selectedCn; }
 	PanelCounter HiddenCounter() const { return hiddenCn; }
 	

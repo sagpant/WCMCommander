@@ -137,11 +137,12 @@ struct FSNode {
 	FSStat st;
 	FSString name;
 	FSNode *next;
+	FSNode *originNode;
 	
-	FSNode():isSelected(false), extType(0), next(0){}
-	FSNode(const FSNode&a): isSelected(a.isSelected), extType(a.extType), st(a.st), next(0){ name.Copy(a.name); }
+	FSNode():isSelected(false), extType(0), next(0), originNode(0) {}
+	FSNode(const FSNode&a): isSelected(a.isSelected), extType(a.extType), st(a.st), next(0), originNode(0) { name.Copy(a.name); }
 	FSNode& operator = (const FSNode&a)
-		{ isSelected = a.isSelected; extType = a.extType; st = a.st; next=0; name.Copy(a.name); return *this;}
+		{ isSelected = a.isSelected; extType = a.extType; st = a.st; next=0; name.Copy(a.name); originNode = a.originNode; return *this;}
 	
 	FSString& Name(){ return name; } 		
 	int64 Size() const { return st.size; }
@@ -167,7 +168,7 @@ struct FSNode {
 	
 	int GetUID() const { return st.uid; }
 	int GetGID() const { return st.gid; }
-	
+
 	int CmpByName(FSNode &a, bool case_sensitive){ return case_sensitive ? name.Cmp(a.name) : name.CmpNoCase(a.name); }
 	int CmpByExt(FSNode &a, bool case_sensitive);
 
@@ -431,6 +432,7 @@ public:
 	virtual int Stat(FSPath &path, FSStat *st, int *err, FSCInfo *info);
 	virtual int FStat(int fd, FSStat *st, int *err, FSCInfo *info);
 	virtual int Symlink	(FSPath &path, FSString &str, int *err, FSCInfo *info);
+	virtual int64 GetFileSystemFreeSpace(FSPath &path, int *err);
 	
 	virtual FSString Uri(FSPath &path)							= 0;
 	
@@ -534,6 +536,7 @@ public:
 	virtual int FStat(int fd, FSStat *st, int *err, FSCInfo *info);
 	virtual int Symlink	(FSPath &path, FSString &str, int *err, FSCInfo *info);
 	virtual FSString Uri(FSPath &path);
+	virtual int64 GetFileSystemFreeSpace(FSPath &path, int *err);
 	
 	virtual unicode_t* GetUserName(int user, unicode_t buf[64]);
 	virtual unicode_t* GetGroupName(int group, unicode_t buf[64]);

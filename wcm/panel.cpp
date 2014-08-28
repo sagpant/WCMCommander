@@ -4,6 +4,9 @@
 
 //#define panelColors !!!
 
+#include <stdint.h>
+#include <inttypes.h>
+
 #include "wcm-config.h"
 #include "ncfonts.h"
 #include "ncwin.h"
@@ -1095,8 +1098,6 @@ void PanelWin::DrawFooter(wal::GC &gc)
 	UiCondList ucl;
 	if (IsSelectedPanel()) ucl.Set(uiSelectedPanel, true);
 	if (_inOperState) ucl.Set(uiOperState, true);
-	if (selectedCn.count > 0) ucl.Set(uiHaveSelected, true);
-
 	int color_text = UiGetColor(uiColor, uiFooter, &ucl, 0x0);
 	int color_bg = UiGetColor(uiBackground, uiFooter, &ucl, 0xFFFFFF);
 
@@ -1119,11 +1120,40 @@ void PanelWin::DrawFooter(wal::GC &gc)
 		return;
 	};
 
+	//print free space
+	FS *pFs = this->GetFS();
+	if (pFs)
+	{
+		int Err;
+		int64 FreeSpace = pFs->GetFileSystemFreeSpace( GetPath(), &Err );
+
+		if ( FreeSpace >= 0 )
+		{
+			char Num[128];
+			sprintf(Num, _LT("%" PRId64), FreeSpace );
+
+			char SplitNum[128];
+			SplitNumber_3(Num, SplitNum);
+
+			char b[128];
+			sprintf(b, _LT("%s"), SplitNum );
+
+			unicode_t ub[512];
+			utf8_to_unicode( ub, b);
+
+			gc.SetTextColor(UiGetColor(uiSummary, uiFooter, &ucl, 0xFF));
+			cpoint size = gc.GetTextExtents(ub);
+			int x = (tRect.Width()-size.x);
+			if (x < 10) x = 10;
+			gc.TextOutF(x, tRect.top + 3, ub);
+		}
+	}
 
 	{ //print files count and size
+		if (selectedCn.count > 0) ucl.Set(uiHaveSelected, true);
 
 		PanelCounter selectedCn = _list.SelectedCounter();
-		PanelCounter filesCn = _list.FilesCounter();
+		PanelCounter filesCn = _list.FilesCounter(wcmConfig.panelSelectFolders);
 		int hiddenCount = _list.HiddenCounter().count;
 
 		char b1[64];
@@ -1135,10 +1165,10 @@ void PanelWin::DrawFooter(wal::GC &gc)
 		if (hiddenCount) sprintf(b3, _LT("(%i hidden)"), hiddenCount);
 
 		char b2[128];
-				if (selectedCn.count)
-			sprintf(b2, _LT("%s bytes in %i selected files%s"), b11, selectedCn.count, b3);
+		if (selectedCn.count)
+			sprintf(b2, _LT( ( selectedCn.count == 1 ) ? "%s bytes in %i file %s" : "%s bytes in %i files %s"), b11, selectedCn.count, b3);
 		else
-			sprintf(b2, _LT("%s bytes in %i files%s"), b11, filesCn.count, b3);
+			sprintf(b2, _LT("%s (%i) %s"), b11, filesCn.count, b3);
 
 
 		unicode_t ub[512];

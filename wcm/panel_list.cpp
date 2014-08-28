@@ -16,6 +16,7 @@ void PanelList::MakeList()
 	listCount = 0;
 	list.clear();
 		
+	filesCnNoDirs.Clear();
 	filesCn.Clear();
 	selectedCn.Clear();
 	hiddenCn.Clear();
@@ -32,6 +33,7 @@ void PanelList::MakeList()
 				list[ i++ ] = p;
 				filesCn.AddOne(p->st.size);
 				if (p->IsSelected()) selectedCn.AddOne(p->st.size);
+				if (!p->IsDir()) filesCnNoDirs.AddOne(p->st.size);
 			} else {
 				p->ClearSelected();
 				hiddenCn.AddOne(p->st.size);
