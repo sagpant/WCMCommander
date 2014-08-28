@@ -23,7 +23,7 @@ namespace wal
 	{
 		GC gc( this );
 		gc.Set( GetFont() );
-		cpoint p = gc.GetTextExtents( text.ptr() );
+		cpoint p = gc.GetTextExtents( text.data() );
 
 		if ( icon.ptr() )
 		{
@@ -208,7 +208,7 @@ namespace wal
 
 		gc.SetTextColor( /*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ UiGetColor( uiColor, 0, 0, 0 ) );
 		gc.Set( GetFont() );
-		cpoint tsize = gc.GetTextExtents( text.ptr() );
+		cpoint tsize = gc.GetTextExtents( text.data() );
 
 		/*
 		int l = tsize.x + (icon.ptr() ? icon->Width() + ICONX_RIGHTSPACE : 0);
@@ -233,7 +233,7 @@ namespace wal
 		}
 
 		gc.SetClipRgn( &rect );
-		gc.TextOutF( x, rect.top + ( rect.Height() - tsize.y ) / 2 + ( pressed ? 2 : 0 ), text.ptr() );
+		gc.TextOutF( x, rect.top + ( rect.Height() - tsize.y ) / 2 + ( pressed ? 2 : 0 ), text.data() );
 	}
 
 	Button::~Button() {}

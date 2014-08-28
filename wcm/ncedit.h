@@ -276,7 +276,7 @@ struct UndoRec
 		if ( size > 0 )
 		{
 			data.resize( size );
-			memcpy( data.ptr(), s, size );
+			memcpy( data.data(), s, size );
 		}
 	}
 };
@@ -485,7 +485,7 @@ public:
 
 		if ( c >= ce ) { return; }
 
-		for ( EditScreenChar* p = data[r].ptr() + c; c < ce; c++, p++ ) { p->Set( ch, fc, bc ); }
+		for ( EditScreenChar* p = data[r].data() + c; c < ce; c++, p++ ) { p->Set( ch, fc, bc ); }
 	}
 
 	void SetCursor( int r, int c ) { cursor.line = r; cursor.pos = c; }
@@ -493,7 +493,7 @@ public:
 	int Rows() const { return rows; }
 	int Cols() const { return cols; }
 
-	EditScreenChar* Line( int r ) { return r >= 0 && r < rows ? data[r].ptr() : 0; }
+	EditScreenChar* Line( int r ) { return r >= 0 && r < rows ? data[r].data() : 0; }
 
 	~EditScreen() {}
 };
@@ -733,7 +733,7 @@ inline void EditString::Set( const char* s, int l )
 		size = l;
 	}
 
-	memcpy( data.ptr(), s, l );
+	memcpy( data.data(), s, l );
 	len = l;
 }
 
@@ -754,7 +754,7 @@ inline void EditString::Insert( char* s, int n, int count )
 
 		if ( len > 0 )
 		{
-			memcpy( p.ptr(), data.ptr(), len * sizeof( char ) );
+			memcpy( p.data(), data.data(), len * sizeof( char ) );
 		}
 
 		data = p;
@@ -763,12 +763,12 @@ inline void EditString::Insert( char* s, int n, int count )
 
 	if ( n < len )
 	{
-		memmove( data.ptr() + n + count, data.ptr() + n, ( len - n )*sizeof( char ) );
+		memmove( data.data() + n + count, data.data() + n, ( len - n )*sizeof( char ) );
 	}
 
 	if ( count > 0 )
 	{
-		memcpy( data.ptr() + n, s, count * sizeof( char ) );
+		memcpy( data.data() + n, s, count * sizeof( char ) );
 	}
 
 	len = len + count;
@@ -788,7 +788,7 @@ inline void EditString::Delete( int n, int count )
 
 	if ( n + count < len )
 	{
-		memmove( data.ptr() + n, data.ptr() + n + count, sizeof( char ) * ( len - n - count ) );
+		memmove( data.data() + n, data.data() + n + count, sizeof( char ) * ( len - n - count ) );
 	}
 
 	len -= count;
@@ -818,7 +818,7 @@ inline void EditString::Clear( int fl )
 
 inline int EditString::Len() { return len; }
 
-inline char* EditString::Get() { return data.ptr(); }
+inline char* EditString::Get() { return data.data(); }
 
 
 inline void EditString::operator = ( const EditString& a )

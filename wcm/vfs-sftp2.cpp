@@ -116,7 +116,7 @@ static carray<char> CopyToStrZ( const char* s, int size )
 
 	carray<char> p( size + 1 );
 
-	if ( size > 0 ) { memcpy( p.ptr(), s, size ); }
+	if ( size > 0 ) { memcpy( p.data(), s, size ); }
 
 	p[size] = 0;
 	return p;
@@ -147,27 +147,27 @@ void KbIntCallback(
 		for ( i = 0; i < num_prompts; i++ )
 		{
 			pData[i].visible = prompts[i].echo != 0;
-			pData[i].prompt = utf8_to_unicode( CopyToStrZ( prompts[i].text, prompts[i].length ).ptr() ).ptr();
+			pData[i].prompt = utf8_to_unicode( CopyToStrZ( prompts[i].text, prompts[i].length ).data() ).data();
 		}
 
 		static unicode_t userSymbol = '@';
 
 		if ( !kbdIntInfo->Prompt(
-		        utf8_to_unicode( "SFTP" ).ptr(),
-		        carray_cat<unicode_t>( kbdIntParam->user.Data(), &userSymbol, kbdIntParam->server.Data() ).ptr(),
-		        pData.ptr(), num_prompts ) ) { return; }
+		        utf8_to_unicode( "SFTP" ).data(),
+		        carray_cat<unicode_t>( kbdIntParam->user.Data(), &userSymbol, kbdIntParam->server.Data() ).data(),
+		        pData.data(), num_prompts ) ) { return; }
 
 		for ( i = 0; i < num_prompts; i++ )
 		{
 			carray<char> str = new_char_str( ( char* )FSString( pData[i].prompt.Data() ).Get( kbdIntParam->charset ) );
 
-			if ( str.ptr() )
+			if ( str.data() )
 			{
-				int l = strlen( str.ptr() );
+				int l = strlen( str.data() );
 				responses[i].length = l;
 				responses[i].text = ( char* ) malloc( l + 1 );
 
-				if ( responses[i].text ) { strcpy( responses[i].text, str.ptr() ); }
+				if ( responses[i].text ) { strcpy( responses[i].text, str.data() ); }
 
 			}
 		}
@@ -195,7 +195,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 		unsigned ip;
 		int e;
 
-		if ( !GetHostIp( unicode_to_utf8( _operParam.server.Data() ).ptr(), &ip, &e ) )
+		if ( !GetHostIp( unicode_to_utf8( _operParam.server.Data() ).data(), &ip, &e ) )
 		{
 			throw int( e );
 		}
@@ -264,11 +264,11 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 			{
 				FSPromptData data;
 				data.visible = false;
-				data.prompt = utf8_to_unicode( "Password:" ).ptr();
+				data.prompt = utf8_to_unicode( "Password:" ).data();
 
 				if ( !info->Prompt(
-				        utf8_to_unicode( "SFTP_" ).ptr(),
-				        carray_cat<unicode_t>( userName.GetUnicode(), &userSymbol, _operParam.server.Data() ).ptr(),
+				        utf8_to_unicode( "SFTP_" ).data(),
+				        carray_cat<unicode_t>( userName.GetUnicode(), &userSymbol, _operParam.server.Data() ).data(),
 				        &data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
 
 				int ret;
@@ -1245,7 +1245,7 @@ FSString FSSftp::Uri( FSPath& path )
 	FSString user( _infoParam.user.Data() );
 	a = carray_cat<char>( "sftp://", user.GetUtf8(), "@",  server.GetUtf8(), port, path.GetUtf8( '/' ) );
 
-	return FSString( CS_UTF8, a.ptr() );
+	return FSString( CS_UTF8, a.data() );
 }
 
 

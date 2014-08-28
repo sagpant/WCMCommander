@@ -393,7 +393,7 @@ namespace wal
 		int l = sys_symbol_count( s, size );
 		carray<unicode_t> p( l + 1 );
 
-		if ( l > 0 ) { sys_to_unicode( p.ptr(), s, size ); }
+		if ( l > 0 ) { sys_to_unicode( p.data(), s, size ); }
 
 		p[l] = 0;
 		return p;
@@ -404,7 +404,7 @@ namespace wal
 		int l = sys_string_buffer_len( s, size );
 		carray<sys_char_t> p( l + 1 );
 
-		if ( l > 0 ) { unicode_to_sys( p.ptr(), s, size ); }
+		if ( l > 0 ) { unicode_to_sys( p.data(), s, size ); }
 
 		p[l] = 0;
 		return p;

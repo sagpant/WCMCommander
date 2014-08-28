@@ -103,7 +103,7 @@ inline carray<wchar_t> UnicodeToUtf16_cat( const unicode_t* s, wchar_t* cat )
 	carray<wchar_t> p( unicode_strlen( s ) + lcat + 1 );
 	wchar_t* d;
 
-	for ( d = p.ptr(); *s; s++, d++ ) { *d = *s; }
+	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
 
 	for ( ; *cat; cat++, d++ ) { *d = *cat; }
 
@@ -156,7 +156,7 @@ static carray<wchar_t> SysPathStr(int drive, const unicode_t *s)
 static carray<wchar_t> SysPathStr( int drive, const unicode_t* s )
 {
 	carray<wchar_t> p( 10 + unicode_strlen( s ) + 1 ); //+10 прозапас, вообще +8 (макс \\?\UNC\)
-	wchar_t* d = p.ptr();
+	wchar_t* d = p.data();
 
 	d[0] = '\\';
 	d[1] = '\\';
@@ -194,7 +194,7 @@ int FSSys::OpenRead  ( FSPath& path, int flags, int* err, FSCInfo* info )
 
 	if ( flags & FS::SHARE_WRITE ) { shareFlags |= FILE_SHARE_WRITE; }
 
-	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).ptr(), GENERIC_READ, shareFlags, 0, OPEN_EXISTING, 0, 0 );
+	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), GENERIC_READ, shareFlags, 0, OPEN_EXISTING, 0, 0 );
 
 	//file_open(SysPathStr(_drive, path.GetUnicode('\\')).ptr());
 	if ( h == INVALID_HANDLE_VALUE )
@@ -225,7 +225,7 @@ int FSSys::OpenCreate   ( FSPath& path, bool overwrite, int mode, int flags,  in
 	DWORD creationDisposition = ( overwrite ) ? CREATE_ALWAYS  : CREATE_NEW;
 //???
 
-	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).ptr(), diseredAccess, FILE_SHARE_WRITE, 0, creationDisposition, 0, 0 );
+	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), diseredAccess, FILE_SHARE_WRITE, 0, creationDisposition, 0, 0 );
 
 	if ( h == INVALID_HANDLE_VALUE )
 	{
@@ -325,8 +325,8 @@ int FSSys::Seek( int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet,  int* er
 int FSSys::Rename ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info )
 {
 	if ( MoveFileW(
-	        SysPathStr( _drive, oldpath.GetUnicode( '\\' ) ).ptr(),
-	        SysPathStr( _drive, newpath.GetUnicode( '\\' ) ).ptr()
+	        SysPathStr( _drive, oldpath.GetUnicode( '\\' ) ).data(),
+	        SysPathStr( _drive, newpath.GetUnicode( '\\' ) ).data()
 	     ) ) { return 0; }
 
 	SetError( err, GetLastError() );
@@ -335,7 +335,7 @@ int FSSys::Rename ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info 
 
 int FSSys::MkDir( FSPath& path, int mode, int* err,  FSCInfo* info )
 {
-	if ( CreateDirectoryW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).ptr(), 0 ) ) { return 0; }
+	if ( CreateDirectoryW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), 0 ) ) { return 0; }
 
 	DWORD e = GetLastError();
 
@@ -349,13 +349,13 @@ int FSSys::Delete( FSPath& path, int* err, FSCInfo* info )
 {
 	carray<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
 
-	if ( DeleteFileW( sp.ptr() ) ) { return 0; }
+	if ( DeleteFileW( sp.data() ) ) { return 0; }
 
 	DWORD lastError  = GetLastError();
 
 	if ( lastError == ERROR_ACCESS_DENIED ) //возможно read only аттрибут, пытаемся сбросить
 	{
-		if ( SetFileAttributesW( sp.ptr(), 0 ) && DeleteFileW( sp.ptr() ) ) { return 0; }
+		if ( SetFileAttributesW( sp.data(), 0 ) && DeleteFileW( sp.data() ) ) { return 0; }
 
 		lastError  = GetLastError();
 	}
@@ -368,13 +368,13 @@ int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 {
 	carray<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
 
-	if ( RemoveDirectoryW( sp.ptr() ) ) { return 0; }
+	if ( RemoveDirectoryW( sp.data() ) ) { return 0; }
 
 	DWORD lastError  = GetLastError();
 
 	if ( lastError == ERROR_ACCESS_DENIED ) //возможно read only аттрибут, пытаемся сбросить
 	{
-		if ( SetFileAttributesW( sp.ptr(), 0 ) && RemoveDirectoryW( sp.ptr() ) ) { return 0; }
+		if ( SetFileAttributesW( sp.data(), 0 ) && RemoveDirectoryW( sp.data() ) ) { return 0; }
 
 		lastError  = GetLastError();
 	}
@@ -385,8 +385,7 @@ int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 
 int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
-	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).ptr(),
-	                        FILE_WRITE_ATTRIBUTES , 0, 0, OPEN_EXISTING, 0, 0 );
+	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), FILE_WRITE_ATTRIBUTES , 0, 0, OPEN_EXISTING, 0, 0 );
 
 	if ( h == INVALID_HANDLE_VALUE )
 	{
@@ -435,7 +434,7 @@ static carray<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t* cat 
 	int lcat = Utf16Chars( cat );
 
 	carray<wchar_t> p( 10 + unicode_strlen( s ) + lcat + 1 );
-	wchar_t* d = p.ptr();
+	wchar_t* d = p.data();
 
 	d[0] = '\\';
 	d[1] = '\\';
@@ -474,7 +473,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 	FSPath path( _path );
 	WIN32_FIND_DATAW ent;
 
-	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).ptr(), &ent );
+	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).data(), &ent );
 
 	if ( handle == INVALID_HANDLE_VALUE )
 	{
@@ -500,7 +499,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 			if ( !( ent.cFileName[0] == '.' && ( !ent.cFileName[1] || ( ent.cFileName[1] == '.' && !ent.cFileName[2] ) ) ) )
 			{
 				cptr<FSNode> pNode = new FSNode();
-				pNode->name.Set( CS_UNICODE, Utf16ToUnicode( ent.cFileName ).ptr() );
+				pNode->name.Set( CS_UNICODE, Utf16ToUnicode( ent.cFileName ).data() );
 
 				pNode->st.dwFileAttributes = ent.dwFileAttributes;
 				pNode->st.size = ( seek_t( ent.nFileSizeHigh ) << 32 ) + ent.nFileSizeLow;
@@ -558,7 +557,7 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	}
 
 	WIN32_FIND_DATAW ent;
-	HANDLE handle = FindFirstFileW( SysPathStr( _drive, path.GetUnicode() ).ptr(), &ent );
+	HANDLE handle = FindFirstFileW( SysPathStr( _drive, path.GetUnicode() ).data(), &ent );
 
 	if ( handle == INVALID_HANDLE_VALUE )
 	{
@@ -672,7 +671,7 @@ FSString FSSys::Uri( FSPath& path )
 
 	*p = 0;
 
-	return FSString( carray_cat<unicode_t>( pref, path.GetUnicode() ).ptr() );
+	return FSString( carray_cat<unicode_t>( pref, path.GetUnicode() ).data() );
 }
 
 static cinthash<int, carray<unicode_t> > userList;
@@ -825,7 +824,7 @@ public:
 
 		if ( count < 0 ) { return 0; }
 
-		NETRESOURCEW* p = ( ( NETRESOURCEW* )buf.ptr() ) + pos;
+		NETRESOURCEW* p = ( ( NETRESOURCEW* )buf.data() ) + pos;
 		pos++;
 		return p;
 	}
@@ -839,7 +838,7 @@ bool WNetEnumerator::Fill( DWORD* pErr )
 
 	DWORD n = -1;
 	DWORD bSize = BUFSIZE;
-	DWORD res = WNetEnumResourceW( handle, &n, buf.ptr(), &bSize );
+	DWORD res = WNetEnumResourceW( handle, &n, buf.data(), &bSize );
 
 	if ( res == ERROR_NO_MORE_ITEMS )
 	{
@@ -921,7 +920,7 @@ int FSWin32Net::ReadDir ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 
 			cptr<FSNode> pNode = new FSNode();
 
-			pNode->name.Set( CS_UNICODE, Utf16ToUnicode( pName ).ptr() );
+			pNode->name.Set( CS_UNICODE, Utf16ToUnicode( pName ).data() );
 			pNode->st.mode = S_IFDIR;
 			pNode->st.mode |= 0664;
 
@@ -969,7 +968,7 @@ FSString FSWin32Net::Uri( FSPath& path )
 
 	if ( p && p->lpRemoteName )
 	{
-		return FSString( Utf16ToUnicode( p->lpRemoteName ).ptr() );
+		return FSString( Utf16ToUnicode( p->lpRemoteName ).data() );
 	}
 
 	return FSString( "Network" );

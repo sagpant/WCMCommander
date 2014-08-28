@@ -199,7 +199,7 @@ void VSearcher::Set( unicode_t* uStr, bool sens, charset_struct* charset ) //thr
 		if ( !node.Set( *uStr, sens, charset ) )
 		{
 			unicode_t x[2] = { *uStr, 0};
-			throw_msg( "symbol '%s' not exist in charset '%s'", unicode_to_utf8( x ).ptr(), charset->name );
+			throw_msg( "symbol '%s' not exist in charset '%s'", unicode_to_utf8( x ).data(), charset->name );
 		}
 
 		int n = node.MaxLen();

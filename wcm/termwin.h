@@ -48,10 +48,10 @@ struct TScreen
 
 		rows = r;
 		cols = c;
-		memset( buf.ptr(), 0, bufSize * sizeof( TermChar ) );
+		memset( buf.data(), 0, bufSize * sizeof( TermChar ) );
 	}
 
-	TermChar* Get( int r ) { return buf.ptr() + r * cols; }
+	TermChar* Get( int r ) { return buf.data() + r * cols; }
 	TermChar GetChar( int r, int c ) { return ( r >= 0 && r < rows && c >= 0 && c < cols ) ? Get( r )[c] : ' '; }
 
 };

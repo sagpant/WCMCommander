@@ -51,12 +51,12 @@ void PanelList::MakeList()
 
 void PanelList::Sort()
 {
-	if ( !list.ptr() || !listCount )
+	if ( !list.data() || !listCount )
 	{
 		return;
 	}
 
-	FSNode** p = list.ptr();
+	FSNode** p = list.data();
 	int count = listCount;
 
 	switch ( sortMode )
@@ -197,7 +197,7 @@ void PanelList::InvertSelection()
 
 	for ( int i = 0; i < n; i++ )
 	{
-		FSNode* p = list.ptr()[i];
+		FSNode* p = list.data()[i];
 
 		if ( p->IsSelected() )
 		{

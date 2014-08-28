@@ -32,7 +32,7 @@ PanelSearchWin::PanelSearchWin( PanelWin* parent, cevent_key* key )
 	:  Win( Win::WT_CHILD, 0, parent, 0, uiPanelSearchWin ),
 	   _parent( parent ),
 	   _edit( 0, this, 0, 0, 16, true ),
-	   _static( 0, this, utf8_to_unicode( _LT( "Search:" ) ).ptr() ),
+	   _static( 0, this, utf8_to_unicode( _LT( "Search:" ) ).data() ),
 	   _lo( 3, 4 )
 {
 	_lo.AddWin( &_static, 1, 1 );
@@ -89,10 +89,10 @@ bool PanelSearchWin::Command( int id, int subId, Win* win, void* data )
 	{
 		carray<unicode_t> text = _edit.GetText();
 
-		if ( !_parent->Search( text.ptr(), false ) )
+		if ( !_parent->Search( text.data(), false ) )
 		{
 			unicode_t empty = 0;
-			_edit.SetText( oldMask.ptr() ? oldMask.ptr() : &empty );
+			_edit.SetText( oldMask.data() ? oldMask.data() : &empty );
 		}
 		else
 		{
@@ -151,7 +151,7 @@ bool PanelSearchWin::EventChildKey( Win* child, cevent_key* pEvent )
 	if ( ctrl && pEvent->Key() == VK_RETURN )
 	{
 		carray<unicode_t> text = _edit.GetText();
-		_parent->Search( text.ptr(), true );
+		_parent->Search( text.data(), true );
 		return false;
 	}
 
@@ -1602,23 +1602,23 @@ void PanelWin::Paint( wal::GC& gc, const crect& paintRect )
 			switch ( _list.SortMode() )
 			{
 				case PanelList::SORT_NONE:
-					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "u" : "U" ) ).ptr() );
+					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "u" : "U" ) ).data() );
 					break;
 
 				case PanelList::SORT_NAME:
-					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "n" : "N" ) ).ptr() );
+					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "n" : "N" ) ).data() );
 					break;
 
 				case PanelList::SORT_EXT:
-					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "x" : "X" ) ).ptr() );
+					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "x" : "X" ) ).data() );
 					break;
 
 				case PanelList::SORT_SIZE:
-					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "S" : "s" ) ).ptr() );
+					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "S" : "s" ) ).data() );
 					break;
 
 				case PanelList::SORT_MTIME:
-					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "w" : "W" ) ).ptr() );
+					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "w" : "W" ) ).data() );
 					break;
 			};
 		}
@@ -1644,7 +1644,7 @@ void PanelWin::LoadPathStringSafe( const char* path )
 
 	FSPath fspath;
 
-	FSPtr fs = ParzeURI( utf8_to_unicode( path ).ptr(), fspath, 0, 0 );
+	FSPtr fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, 0, 0 );
 
 	this->LoadPath( fs, fspath, 0, 0, PanelWin::SET );
 }
@@ -1863,7 +1863,7 @@ bool PanelWin::DirUp()
 				if ( _place.Count() <= 2 )
 				{
 					static unicode_t aa[] = {'\\', '\\', 0};
-					carray<wchar_t> name = UnicodeToUtf16( carray_cat<unicode_t>( aa, GetPath().GetItem( 1 )->GetUnicode() ).ptr() );
+					carray<wchar_t> name = UnicodeToUtf16( carray_cat<unicode_t>( aa, GetPath().GetItem( 1 )->GetUnicode() ).data() );
 
 					NETRESOURCEW r;
 					r.dwScope = RESOURCE_GLOBALNET;
@@ -1871,7 +1871,7 @@ bool PanelWin::DirUp()
 					r.dwDisplayType = RESOURCEDISPLAYTYPE_GENERIC;
 					r.dwUsage = RESOURCEUSAGE_CONTAINER;
 					r.lpLocalName = 0;
-					r.lpRemoteName = name.ptr();
+					r.lpRemoteName = name.data();
 					r.lpComment = 0;
 					r.lpProvider = 0;
 					FSPtr netFs = new FSWin32Net( &r );
@@ -1953,7 +1953,7 @@ void PanelWin::DirEnter()
 		if ( node->extType == FSNode::FILESHARE )
 		{
 			FSPath path;
-			FSPtr newFs = ParzeURI( Utf16ToUnicode( nr->lpRemoteName ).ptr(), path, 0, 0 );
+			FSPtr newFs = ParzeURI( Utf16ToUnicode( nr->lpRemoteName ).data(), path, 0, 0 );
 			LoadPath( newFs, path, 0, 0, PUSH );
 		}
 		else

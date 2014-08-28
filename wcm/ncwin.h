@@ -30,7 +30,7 @@ class StringWin: public Win
 public:
 	StringWin( Win* parent );
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
-	const unicode_t* Get() { return text.ptr(); }
+	const unicode_t* Get() { return text.data(); }
 	void Set( const unicode_t* txt );
 	virtual void OnChangeStyles();
 	virtual int UiGetClassId();

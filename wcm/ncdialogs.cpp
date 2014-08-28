@@ -133,7 +133,7 @@ NCDialog::NCDialog( bool asChild, int nId, NCDialogParent* parent, const unicode
 		for ( ; blist->utf8text && n < 7; blist++, n++ )
 		{
 
-			cptr<Button> p = new Button( 0, this, utf8_to_unicode( _LT( carray_cat<char>( "DB>", blist->utf8text ).ptr(), blist->utf8text ) ).ptr(), blist->cmd );
+			cptr<Button> p = new Button( 0, this, utf8_to_unicode( _LT( carray_cat<char>( "DB>", blist->utf8text ).data(), blist->utf8text ) ).data(), blist->cmd );
 
 			p->Show();
 			p->Enable();
@@ -493,7 +493,7 @@ int NCMessageBox( NCDialogParent* parent, const char* utf8head, const char* utf8
 	carray<unicode_t> str = utf8_to_unicode( utf8txt );
 	ccollect<unicode_t> buf;
 
-	unicode_t* s = str.ptr();
+	unicode_t* s = str.data();
 	int lLine = 0;
 
 	for ( ; *s; s++ )
@@ -516,7 +516,7 @@ int NCMessageBox( NCDialogParent* parent, const char* utf8head, const char* utf8
 	buf.append( 0 );
 
 
-	NCDialog d( ::createDialogAsChild, red ? uiNCRedMessageBox : uiNCMessageBox, parent, utf8_to_unicode( utf8head ).ptr(), buttonList ); //, red ? 0xFF:0xD8E9EC, red ? 0xFFFFFF :0x1);
+	NCDialog d( ::createDialogAsChild, red ? uiNCRedMessageBox : uiNCMessageBox, parent, utf8_to_unicode( utf8head ).data(), buttonList ); //, red ? 0xFF:0xD8E9EC, red ? 0xFFFFFF :0x1);
 	StaticLine text( 0, &d, buf.ptr() );
 
 	text.Show();
@@ -539,7 +539,7 @@ class GoToDialog: public NCVertDialog
 	EditLine edit;
 public:
 	GoToDialog( int nId, NCDialogParent* parent )
-		:  NCVertDialog( ::createDialogAsChild, nId, parent, utf8_to_unicode( "Go to line" ).ptr(), bListOkCancel ), //0xD8E9EC, 0),
+		:  NCVertDialog( ::createDialogAsChild, nId, parent, utf8_to_unicode( "Go to line" ).data(), bListOkCancel ), //0xD8E9EC, 0),
 		   edit( 0, ( Win* )this, 0, 0 )
 	{
 		edit.Enable();
@@ -568,7 +568,7 @@ int GoToLineDialog( NCDialogParent* parent )
 
 	carray<unicode_t> str = d.GetText();
 	int n = 0;
-	unicode_t* s = str.ptr();
+	unicode_t* s = str.data();
 
 	while ( *s == ' ' ) { s++; }
 
@@ -625,7 +625,7 @@ int uiKillCmdDialog = GetUiID( "KillCmdDialog" );
 
 int KillCmdDialog( NCDialogParent* parent, const unicode_t* cmd )
 {
-	NCDialog d( ::createDialogAsChild, uiKillCmdDialog, parent, utf8_to_unicode( "Kill command" ).ptr(), bListKill ); //,  0xD8E9EC, 0);
+	NCDialog d( ::createDialogAsChild, uiKillCmdDialog, parent, utf8_to_unicode( "Kill command" ).data(), bListKill ); //,  0xD8E9EC, 0);
 	StaticLine text( 0, &d, cmd );
 
 	text.Show();
@@ -646,7 +646,7 @@ int KillCmdDialog( NCDialogParent* parent, const unicode_t* cmd )
 ////////////////////////////////////////////////////////////////////////////
 
 CmdHistoryDialog::CmdHistoryDialog( int nId, NCDialogParent* parent, NCHistory& history )
-	:  NCDialog( createDialogAsChild, nId, parent, utf8_to_unicode( " History " ).ptr(), bListOkCancel ),
+	:  NCDialog( createDialogAsChild, nId, parent, utf8_to_unicode( " History " ).data(), bListOkCancel ),
 	   _history( history ),
 	   _selected( history.Count() - 1 ),
 	   _list( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
@@ -722,7 +722,7 @@ void DlgMenuData::Add( const unicode_t* name, const unicode_t* comment, int cmd 
 
 void DlgMenuData::Add( const char* utf8name, const char* utf8coment, int cmd )
 {
-	Add( utf8name ? utf8_to_unicode( utf8name ).ptr() : 0, utf8coment ? utf8_to_unicode( utf8coment ).ptr() : 0, cmd );
+	Add( utf8name ? utf8_to_unicode( utf8name ).data() : 0, utf8coment ? utf8_to_unicode( utf8coment ).data() : 0, cmd );
 }
 
 void DlgMenuData::AddSplitter()
@@ -817,7 +817,7 @@ DlgMenu::DlgMenu( Win* parent, DlgMenuData* data )
 
 	for ( int i = 0 ; i < _data->Count(); i++ )
 	{
-		unicode_t* name = _data->list[i].name.ptr();
+		unicode_t* name = _data->list[i].name.data();
 
 		if ( _data->list[i].cmd != 0 )
 		{
@@ -828,7 +828,7 @@ DlgMenu::DlgMenu( Win* parent, DlgMenuData* data )
 				if ( _nameW < p.x ) { _nameW = p.x; }
 			}
 
-			unicode_t* comment = _data->list[i].comment.ptr();
+			unicode_t* comment = _data->list[i].comment.data();
 
 			if ( comment )
 			{
@@ -901,12 +901,12 @@ bool DlgMenu::EventKey( cevent_key* pEvent )
 				int count = _data->Count();
 
 				for ( i = 0; i < count; i++ )
-					if ( EqFirst( _data->list[i].name.ptr(), c ) ) { n++; }
+					if ( EqFirst( _data->list[i].name.data(), c ) ) { n++; }
 
 				if ( n == 1 )
 				{
 					for ( i = 0; i < count; i++ )
-						if ( EqFirst( _data->list[i].name.ptr(), c ) )
+						if ( EqFirst( _data->list[i].name.data(), c ) )
 						{
 							_current = i;
 							Command( _data->list[i].cmd, 0, this, 0 );
@@ -919,10 +919,10 @@ bool DlgMenu::EventKey( cevent_key* pEvent )
 				if ( n > 1 )
 				{
 					for ( i = _current + 1; i < count; i++ )
-						if ( EqFirst( _data->list[i].name.ptr(), c ) ) { goto t; }
+						if ( EqFirst( _data->list[i].name.data(), c ) ) { goto t; }
 
 					for ( i = 0; i <= _current && i < count; i++ )
-						if ( EqFirst( _data->list[i].name.ptr(), c ) ) { goto t; }
+						if ( EqFirst( _data->list[i].name.data(), c ) ) { goto t; }
 
 t:
 					;
@@ -1044,8 +1044,8 @@ void DlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 			gc.SetTextColor( textColor );
 			int x = 16 + 5;
 
-			const unicode_t* name = _data->list[i].name.ptr();
-			const unicode_t* comment = _data->list[i].comment.ptr();
+			const unicode_t* name = _data->list[i].name.data();
+			const unicode_t* comment = _data->list[i].comment.data();
 
 			if ( name )
 			{
@@ -1072,7 +1072,7 @@ int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, DlgMenuData
 {
 	if ( !data || data->Count() <= 0 ) { return CMD_CANCEL; }
 
-	NCDialog dlg( true, nUi, parent, utf8_to_unicode( header ).ptr(), 0 ); //, ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000, 0xFFFFFF);
+	NCDialog dlg( true, nUi, parent, utf8_to_unicode( header ).data(), 0 ); //, ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000, 0xFFFFFF);
 	DlgMenu mtable( &dlg, data );
 	mtable.Show();
 	mtable.Enable();

@@ -301,8 +301,8 @@ struct FSFtpParam
 
 	void GetConf( StrConfig& conf )
 	{
-		conf.Set( "SERVER", unicode_to_utf8( server.Data() ).ptr() );
-		conf.Set( "USER", unicode_to_utf8( user.Data() ).ptr() );
+		conf.Set( "SERVER", unicode_to_utf8( server.Data() ).data() );
+		conf.Set( "USER", unicode_to_utf8( user.Data() ).data() );
 		conf.Set( "PORT", port );
 		conf.Set( "ANONYMOUS", anonymous ? 1 : 0 );
 		conf.Set( "PASSIVE", passive ? 1 : 0 );
@@ -315,11 +315,11 @@ struct FSFtpParam
 	{
 		const char* s = conf.GetStrVal( "SERVER" );
 
-		if ( s ) { server.Set( utf8_to_unicode( s ).ptr() ); }
+		if ( s ) { server.Set( utf8_to_unicode( s ).data() ); }
 
 		s = conf.GetStrVal( "USER" );
 
-		if ( s ) { user.Set( utf8_to_unicode( s ).ptr() ); }
+		if ( s ) { user.Set( utf8_to_unicode( s ).data() ); }
 
 		int n = conf.GetIntVal( "PORT" );
 
@@ -359,8 +359,8 @@ struct FSSftpParam
 
 	void GetConf( StrConfig& conf )
 	{
-		conf.Set( "SERVER", unicode_to_utf8( server.Data() ).ptr() );
-		conf.Set( "USER", unicode_to_utf8( user.Data() ).ptr() );
+		conf.Set( "SERVER", unicode_to_utf8( server.Data() ).data() );
+		conf.Set( "USER", unicode_to_utf8( user.Data() ).data() );
 		conf.Set( "PORT", port );
 		conf.Set( "CHARSET", charset_table.NameById( charset ) );
 	}
@@ -369,11 +369,11 @@ struct FSSftpParam
 	{
 		const char* s = conf.GetStrVal( "SERVER" );
 
-		if ( s ) { server.Set( utf8_to_unicode( s ).ptr() ); }
+		if ( s ) { server.Set( utf8_to_unicode( s ).data() ); }
 
 		s = conf.GetStrVal( "USER" );
 
-		if ( s ) { user.Set( utf8_to_unicode( s ).ptr() ); }
+		if ( s ) { user.Set( utf8_to_unicode( s ).data() ); }
 
 		int n = conf.GetIntVal( "PORT" );
 

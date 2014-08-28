@@ -108,9 +108,9 @@ ShellLoadDirDialog::~ShellLoadDirDialog()
 }
 
 ShellLoadDirDialog::ShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "TAB" ).ptr(), bListCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "TAB" ).data(), bListCancel ),
 	   data( 0 ),
-	   _text( 0, this, utf8_to_unicode( "Read ..." ).ptr() ),
+	   _text( 0, this, utf8_to_unicode( "Read ..." ).data() ),
 	   _fs( fs ),
 	   _path( path )
 {
@@ -316,7 +316,7 @@ struct ShellFileDlgData
 	ShellFileDlgData( cptr<FSList> l, const unicode_t* s ): list( l )
 	{
 		sorted = list->GetArray();
-		FSList::SortByName( sorted.ptr(), list->Count(), true,
+		FSList::SortByName( sorted.data(), list->Count(), true,
 #ifdef _WIN32
 		                    false
 #else
@@ -345,7 +345,7 @@ void ShellFileDlgData::RefreshList( carray<unicode_t> m )
 #else
 			   accmask_begin0
 #endif
-			   ( sorted[i]->GetUnicodeName(), mask.ptr() ) )
+			   ( sorted[i]->GetUnicodeName(), mask.data() ) )
 			{
 				p->append( sorted[i] );
 			}
@@ -367,7 +367,7 @@ class ShellFileDlg: public NCDialog
 	ShellFileDlgData* data;
 public:
 	ShellFileDlg( NCDialogParent* parent, ShellFileDlgData* d )
-		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( " TAB " ).ptr(), bListOkCancel ), //BGCOLOR),
+		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( " TAB " ).data(), bListOkCancel ), //BGCOLOR),
 		   layout( 10, 10 ),
 		   list( this, 15 ),
 		   line( 0, this, 0, 0, 20 ),
@@ -380,7 +380,7 @@ public:
 		line.Enable();
 		line.Show();
 
-		if ( data->mask.ptr() ) { line.SetText( data->mask.ptr() ); }
+		if ( data->mask.data() ) { line.SetText( data->mask.data() ); }
 
 		line.SetFocus();
 		AddLayout( &layout );
@@ -553,7 +553,7 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 
 		buf[i] = 0;
 
-		FSPtr f1 = ParzeURI( buf.ptr(), searchPath, &fs, 1 );
+		FSPtr f1 = ParzeURI( buf.data(), searchPath, &fs, 1 );
 
 		if ( !f1.Ptr() ) { return 0; }
 
@@ -566,7 +566,7 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 	{
 
 		FSNode* p = 0;
-		ShellFileDlgData data( list, mask.ptr() );
+		ShellFileDlgData data( list, mask.data() );
 
 		if ( data.filtered.ptr() )
 		{

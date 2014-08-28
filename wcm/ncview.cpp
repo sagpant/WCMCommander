@@ -117,7 +117,7 @@ public:
 	unicode_t Last() { return len > 0 ? data[len - 1].ch : 0; }
 	void Pop() { if ( len > 0 ) { len--; } }
 	bool Full() const { return len >= dataSize; }
-	Node* Data() { return data.ptr(); }
+	Node* Data() { return data.data(); }
 	~ViewerString() {}
 };
 
@@ -1498,8 +1498,8 @@ void* ViewerThread( void* param )
 			if ( mode.hex )
 			{
 				int count = size.rows * size.cols;
-				unicode_t* p = ret.data.ptr();
-				char* attr = ret.attr.ptr();
+				unicode_t* p = ret.data.data();
+				char* attr = ret.attr.data();
 
 				seek_t offset = pos.begin;
 
@@ -1537,8 +1537,8 @@ void* ViewerThread( void* param )
 				ViewerString str;
 				tData->File()->ReadString( offset, str, charset, &tData->info );
 				int col = pos.col;
-				unicode_t* p = ret.data.ptr();
-				char* attr = ret.attr.ptr();
+				unicode_t* p = ret.data.data();
+				char* attr = ret.attr.data();
 				int r;
 
 				for ( r = 0; r < size.rows; r++, p += size.cols, attr += size.cols )
@@ -1593,8 +1593,8 @@ void* ViewerThread( void* param )
 			{
 				seek_t offset = pos.begin;
 				ViewerString str;
-				unicode_t* p = ret.data.ptr();
-				char* attr = ret.attr.ptr();
+				unicode_t* p = ret.data.data();
+				char* attr = ret.attr.data();
 				int r;
 
 				for ( r = 0; r < size.rows;
@@ -1868,14 +1868,14 @@ void ViewWin::ThreadSignal( int id, int data )
 		MutexLock lock( &threadData->mutex );
 		drawLoading = false;
 
-		if ( threadData->error.ptr() )
+		if ( threadData->error.data() )
 		{
 			carray<char> s = threadData->error;
 
 			lock.Unlock(); //!!!
 			ClearFile();
 			Parent()->Command( ID_QUIT, 0, this, 0 );
-			NCMessageBox( ( NCDialogParent* )Parent(), "Viewer", s.ptr(),  true );
+			NCMessageBox( ( NCDialogParent* )Parent(), "Viewer", s.data(),  true );
 			return; //!!!
 
 		}
@@ -2071,8 +2071,8 @@ static void ViewPreparHexModeText( unicode_t* inStr, char* inAttr, unicode_t* u,
 
 	for ( i = 0; i < count; i++ ) { str[i] = inStr[i]; }
 
-	char* e = str.ptr() + count;
-	char* s = str.ptr();
+	char* e = str.data() + count;
+	char* s = str.data();
 	i = 0;
 
 	while ( i < count )
@@ -2198,18 +2198,18 @@ void ViewWin::Paint( wal::GC& gc, const crect& paintRect )
 		//gc.SetTextColor(0xFFFFFF);
 		int y = viewRect.top;
 		int x = viewRect.left;
-		unicode_t* p = lastResult.data.ptr();
+		unicode_t* p = lastResult.data.data();
 
 		int bytes = size.cols * size.rows;
 		carray<unicode_t> txtDataBuf( bytes );
 		carray<char> txtAttrBuf( bytes );
 
-		ViewPreparHexModeText( lastResult.data.ptr(), lastResult.attr.ptr(), txtDataBuf.ptr(), txtAttrBuf.ptr(), bytes, charset );
+		ViewPreparHexModeText( lastResult.data.data(), lastResult.attr.data(), txtDataBuf.data(), txtAttrBuf.data(), bytes, charset );
 
-		char* txtAttr = txtAttrBuf.ptr();
-		unicode_t* txt = txtDataBuf.ptr();
+		char* txtAttr = txtAttrBuf.data();
+		unicode_t* txt = txtDataBuf.data();
 
-		char* attr = lastResult.attr.ptr();
+		char* attr = lastResult.attr.data();
 		seek_t offset = lastPos.begin;
 
 		int w = ( 10 + 2 + size.cols * 3 + 1 + size.cols + size.cols / 8 ) * charW;
@@ -2311,8 +2311,8 @@ void ViewWin::Paint( wal::GC& gc, const crect& paintRect )
 
 		int y = viewRect.top;
 		int x = viewRect.left;
-		unicode_t* p = lastResult.data.ptr();
-		char* attr = lastResult.attr.ptr();
+		unicode_t* p = lastResult.data.data();
+		char* attr = lastResult.attr.data();
 
 		for ( int i = 0; i < size.rows; i++, p += size.cols, attr += size.cols, y += charH )
 		{
@@ -2334,15 +2334,15 @@ void ViewWin::Paint( wal::GC& gc, const crect& paintRect )
 		}
 	}
 
-	if ( drawLoading && loadingText.ptr() )
+	if ( drawLoading && loadingText.data() )
 	{
-		cpoint pt = gc.GetTextExtents( loadingText.ptr() );
+		cpoint pt = gc.GetTextExtents( loadingText.data() );
 		gc.SetFillColor( colors.loadBg );
 		gc.SetTextColor( colors.loadFg );
 		int x = ( rect.Width() - pt.x ) / 2;
 		int y = ( rect.Height() - pt.y ) / 2;
 		gc.FillRect( crect( x, y - pt.y, x + pt.x, y ) );
-		gc.TextOutF( x, y, loadingText.ptr() );
+		gc.TextOutF( x, y, loadingText.data() );
 		gc.FillRect( crect( x, y + pt.y, x + pt.x, y + 2 * pt.y ) );
 	}
 }
@@ -2552,7 +2552,7 @@ void* VSThreadFunc( void* ptr )
 	try
 	{
 		VSearcher search;
-		search.Set( data->str.ptr(), data->sensitive, data->charset );
+		search.Set( data->str.data(), data->sensitive, data->charset );
 
 		int maxLen = search.MaxLen();
 		int minLen = search.MinLen();
@@ -2567,7 +2567,7 @@ void* VSThreadFunc( void* ptr )
 		seek_t nrSize = data->file->Size() - offset;
 
 		int n = bufSize > nrSize ? nrSize : bufSize;
-		int bytes = data->file->ReadBlock( offset, buf.ptr(), n, &data->info );
+		int bytes = data->file->ReadBlock( offset, buf.data(), n, &data->info );
 
 		if ( bytes > 0 )
 		{
@@ -2580,18 +2580,18 @@ void* VSThreadFunc( void* ptr )
 				{
 					int n = count - maxLen + 1;
 					int fBytes = 0;
-					char* s = search.Search( buf.ptr(), buf.ptr() + n, &fBytes );
+					char* s = search.Search( buf.data(), buf.data() + n, &fBytes );
 
 					if ( s )
 					{
-						begin = offset + ( s - buf.ptr() );
+						begin = offset + ( s - buf.data() );
 						end = begin + fBytes;
 						break;
 					}
 
 					int t = count - n;
 
-					if ( t > 0 ) { memmove( buf.ptr(), buf.ptr() + n, t ); }
+					if ( t > 0 ) { memmove( buf.data(), buf.data() + n, t ); }
 
 					count = t;
 					offset += n;
@@ -2606,7 +2606,7 @@ void* VSThreadFunc( void* ptr )
 
 				if ( n > nrSize ) { n = nrSize; }
 
-				int bytes = data->file->ReadBlock( offset + count, buf.ptr() + count, n, &data->info );
+				int bytes = data->file->ReadBlock( offset + count, buf.data() + count, n, &data->info );
 
 				if ( bytes <= 0 ) { break; }
 
@@ -2630,11 +2630,11 @@ void* VSThreadFunc( void* ptr )
 
 						int n = count - maxLen + 1;
 						int fBytes = 0;
-						char* s = search.Search( buf.ptr(), buf.ptr() + n, &fBytes );
+						char* s = search.Search( buf.data(), buf.data() + n, &fBytes );
 
 						if ( s )
 						{
-							begin = offset + ( s - buf.ptr() );
+							begin = offset + ( s - buf.data() );
 							end = begin + fBytes;
 						}
 					}
@@ -2683,7 +2683,7 @@ class VSearchDialog: public NCDialog
 public:
 	VSTData* data;
 	VSearchDialog( NCDialogParent* parent, VFilePtr file, const unicode_t* str, bool sensitive, charset_struct* charset, bool hex, seek_t from )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).ptr(), bListCancel ) //, 0xD8E9EC, 0)
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListCancel ) //, 0xD8E9EC, 0)
 	{
 		SetPosition();
 		data = new VSTData( file, str, sensitive, charset, hex, from );
@@ -2759,9 +2759,9 @@ bool ViewWin::Search( const unicode_t* str, bool sensitive )
 
 	if ( !dlg.data ) { return true; }
 
-	if ( dlg.data->err.ptr() )
+	if ( dlg.data->err.data() )
 	{
-		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Search" ), dlg.data->err.ptr(), true );
+		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Search" ), dlg.data->err.data(), true );
 		return true;
 	}
 

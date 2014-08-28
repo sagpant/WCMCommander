@@ -201,7 +201,7 @@ static carray<unicode_t> ScanedDirString( const unicode_t* dirName )
 	}
 
 	list.append( 0 );
-	return carray_cat<unicode_t>( utf8_to_unicode( _LT( "Folder:" ) ).ptr(), utf8_to_unicode( " \"" ).ptr(), list.ptr(), utf8_to_unicode( "\"" ).ptr() );
+	return carray_cat<unicode_t>( utf8_to_unicode( _LT( "Folder:" ) ).data(), utf8_to_unicode( " \"" ).data(), list.ptr(), utf8_to_unicode( "\"" ).data() );
 }
 
 class DirCalcThreadWin: public NCDialog
@@ -230,7 +230,7 @@ class DirCalcThreadWin: public NCDialog
 	void RefreshCounters();
 public:
 	DirCalcThreadWin( NCDialogParent* parent, const char* name, OperDirCalcData* pD, const unicode_t* dirName )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).ptr(), bListOk ),
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListOk ),
 		   pData( pD ),
 		   lo( 12, 10 ),
 		   cPathWin( this ),
@@ -238,15 +238,15 @@ public:
 		   curFolderCount( -1 ),
 		   curSumSize( -1 ),
 		   curBadDirs( -1 ),
-		   dirString( 0, this, ScanedDirString( dirName ).ptr() ),
-		   fileCountName( 0, this, utf8_to_unicode( _LT( "Files:" ) ).ptr() ),
-		   fileCountNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).ptr() ),
-		   folderCountName( 0, this, utf8_to_unicode( _LT( "Folders:" ) ).ptr() ),
-		   folderCountNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).ptr() ),
-		   sumSizeName( 0, this, utf8_to_unicode( _LT( "Files size:" ) ).ptr() ),
-		   sumSizeNum( 0, this, utf8_to_unicode( "AAAAAAAAAAAAAAAAAAAA" ).ptr() ),
-		   badDirsName( 0, this, utf8_to_unicode( _LT( "Not readable folders:" ) ).ptr() ),
-		   badDirsNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).ptr() )
+		   dirString( 0, this, ScanedDirString( dirName ).data() ),
+		   fileCountName( 0, this, utf8_to_unicode( _LT( "Files:" ) ).data() ),
+		   fileCountNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
+		   folderCountName( 0, this, utf8_to_unicode( _LT( "Folders:" ) ).data() ),
+		   folderCountNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
+		   sumSizeName( 0, this, utf8_to_unicode( _LT( "Files size:" ) ).data() ),
+		   sumSizeNum( 0, this, utf8_to_unicode( "AAAAAAAAAAAAAAAAAAAA" ).data() ),
+		   badDirsName( 0, this, utf8_to_unicode( _LT( "Not readable folders:" ) ).data() ),
+		   badDirsNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() )
 	{
 		lo.AddWin( &dirString, 0, 0, 0, 3 );
 		lo.AddWin( &cPathWin, 9, 0, 9, 3 );
@@ -450,7 +450,7 @@ bool DirCalcThreadWin::Command( int id, int subId, Win* win, void* data )
 
 void DirCalcThreadWin::OperThreadStopped()
 {
-	cPathWin.SetText( utf8_to_unicode( _LT( "Scan done" ) ).ptr() );
+	cPathWin.SetText( utf8_to_unicode( _LT( "Scan done" ) ).data() );
 	RefreshCounters();
 }
 

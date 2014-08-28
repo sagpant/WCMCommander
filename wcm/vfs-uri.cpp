@@ -241,7 +241,7 @@ FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
 			if ( path.Count() == 2 )
 			{
 				static unicode_t aa[] = {'\\', '\\', 0};
-				carray<wchar_t> name = UnicodeToUtf16( carray_cat<unicode_t>( aa, path.GetItem( 1 )->GetUnicode() ).ptr() );
+				carray<wchar_t> name = UnicodeToUtf16( carray_cat<unicode_t>( aa, path.GetItem( 1 )->GetUnicode() ).data() );
 
 				NETRESOURCEW r;
 				r.dwScope = RESOURCE_GLOBALNET;
@@ -249,7 +249,7 @@ FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
 				r.dwDisplayType = RESOURCEDISPLAYTYPE_GENERIC;
 				r.dwUsage = RESOURCEUSAGE_CONTAINER;
 				r.lpLocalName = 0;
-				r.lpRemoteName = name.ptr();
+				r.lpRemoteName = name.data();
 				r.lpComment = 0;
 				r.lpProvider = 0;
 

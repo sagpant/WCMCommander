@@ -215,7 +215,7 @@ public:
 
 	bool IsAbsolute() { return Count() > 0 && data[0].IsEmpty(); }
 
-	const void* GetString( int cs, char delimiter = DIR_SPLITTER ) { if ( cacheCs != cs || cacheSplitter != delimiter ) { MakeCache( cs, delimiter ); } return cache.ptr(); }
+	const void* GetString( int cs, char delimiter = DIR_SPLITTER ) { if ( cacheCs != cs || cacheSplitter != delimiter ) { MakeCache( cs, delimiter ); } return cache.data(); }
 	const unicode_t* GetUnicode( char delimiter = DIR_SPLITTER ) { return ( const unicode_t* ) GetString( CS_UNICODE, delimiter ); }
 	const char* GetUtf8( char delimiter = DIR_SPLITTER ) { return ( const char* ) GetString( CS_UTF8, delimiter ); }
 

@@ -14,7 +14,7 @@ namespace SHL
 	int ShlStream::Next() { return EOFCHAR; }
 	ShlStream::~ShlStream() {}
 
-	const char* ShlStreamFile::Name() { return _name_utf8.ptr(); }
+	const char* ShlStreamFile::Name() { return _name_utf8.data(); }
 	int ShlStreamFile::Next() { return _f.GetC(); }
 	ShlStreamFile::~ShlStreamFile() {}
 
@@ -32,13 +32,13 @@ namespace SHL
 			carray<char> p( strlen( s ) + 1 );
 			char* t;
 
-			for ( t = p.ptr(); *s; s++, t++ )
+			for ( t = p.data(); *s; s++, t++ )
 			{
 				*t = ToUpper( *s );
 			}
 
 			*t = 0;
-			_hash[p.ptr()] = color;
+			_hash[p.data()] = color;
 		}
 	}
 
@@ -54,7 +54,7 @@ namespace SHL
 		if ( l >= sizeof( buf ) )
 		{
 			buf2.resize( l + 1 );
-			p = buf2.ptr();
+			p = buf2.data();
 		}
 		else
 		{
@@ -361,7 +361,7 @@ namespace SHL
 
 			if ( pos > 0 )
 			{
-				memcpy( p.ptr(), data.ptr(), pos );
+				memcpy( p.data(), data.data(), pos );
 			}
 
 			data = p;
@@ -395,7 +395,7 @@ namespace SHL
 		void Syntax( const char* s = "" );
 		ShlParzer( ShlStream* stream );
 		int Tok() const { return _tok; }
-		const char* Str() { return _buf.data.ptr(); }
+		const char* Str() { return _buf.data.data(); }
 		int Next();
 		void Skip( int tok );
 		void SkipAll( int tok, int mincount = 1 );
@@ -1269,12 +1269,12 @@ begin:
 
 		if ( node->shl.ptr() ) { return node->shl.ptr(); }
 
-		if ( !node->shlFileName.ptr() ) { return 0; }
+		if ( !node->shlFileName.data() ) { return 0; }
 
 		try
 		{
 			cptr<Shl> shl = new Shl();
-			ShlStreamFile stream( utf8_to_sys( node->shlFileName.ptr() ).ptr() );
+			ShlStreamFile stream( utf8_to_sys( node->shlFileName.data() ).data() );
 			shl->Parze( &stream, colors );
 			node->shl = shl;
 			return node->shl.ptr();
@@ -1309,9 +1309,9 @@ begin:
 						{
 							for ( StrList::Node* p = r->list.first; p; p = p->next )
 							{
-								if ( p->str.ptr() && accmask( firstLine, p->str.ptr() ) )
+								if ( p->str.data() && accmask( firstLine, p->str.data() ) )
 								{
-									id = r->id.ptr();
+									id = r->id.data();
 									break;
 								}
 							}
@@ -1323,9 +1323,9 @@ begin:
 					{
 						for ( StrList::Node* p = r->list.first; p; p = p->next )
 						{
-							if ( p->str.ptr() && accmask( path, p->str.ptr() ) )
+							if ( p->str.data() && accmask( path, p->str.data() ) )
 							{
-								id = r->id.ptr();
+								id = r->id.data();
 								break;
 							}
 						}
@@ -1356,18 +1356,18 @@ begin:
 				const char* p = 0;
 				const char* s;
 
-				for ( s = utf8path.ptr(); *s; s++ )
+				for ( s = utf8path.data(); *s; s++ )
 					if ( *s == DIR_SPLITTER ) { p = s; }
 
 				if ( p )
 				{
 					p++;
-					int l = p - utf8path.ptr();
+					int l = p - utf8path.data();
 					dirPath.resize( l + 1 );
 
-					char* dir = dirPath.ptr();
+					char* dir = dirPath.data();
 
-					for ( s = utf8path.ptr(); s < p; s++, dir++ )
+					for ( s = utf8path.data(); s < p; s++, dir++ )
 					{
 						*dir = *s;
 					}
@@ -1421,18 +1421,18 @@ begin:
 #endif
 							)
 							{
-								int l1 = strlen( dirPath.ptr() );
+								int l1 = strlen( dirPath.data() );
 								int l2 = strlen( parzer.Str() );
 								carray<char> fp( l1 + l2 + 1 );
 
 								if ( l1 )
 								{
-									memcpy( fp.ptr(), dirPath.ptr(), l1 );
+									memcpy( fp.data(), dirPath.data(), l1 );
 								}
 
 								if ( l2 )
 								{
-									memcpy( fp.ptr() + l1, parzer.Str(), l2 );
+									memcpy( fp.data() + l1, parzer.Str(), l2 );
 								}
 
 								fp[l1 + l2] = 0;
@@ -1456,10 +1456,10 @@ begin:
 
 					parzer.Skip( '}' );
 
-					if ( node->shlFileName.ptr() )
+					if ( node->shlFileName.data() )
 					{
 //printf("add %s\n", id.ptr());
-						hash[id.ptr()] = node;
+						hash[id.data()] = node;
 					}
 				}
 				else if ( !strcmp( parzer.Str(), "rule" ) )

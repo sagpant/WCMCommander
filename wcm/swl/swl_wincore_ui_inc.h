@@ -62,7 +62,7 @@ namespace wal
 	int UiStream::Next() { return EOFCHAR; }
 	UiStream::~UiStream() {}
 
-	const char* UiStreamFile::Name() { return _name_utf8.ptr(); }
+	const char* UiStreamFile::Name() { return _name_utf8.data(); }
 	int UiStreamFile::Next() { return _f.GetC(); }
 	UiStreamFile::~UiStreamFile() {}
 
@@ -89,7 +89,7 @@ namespace wal
 
 			if ( pos > 0 )
 			{
-				memcpy( p.ptr(), data.ptr(), pos );
+				memcpy( p.data(), data.data(), pos );
 			}
 
 			data = p;
@@ -127,7 +127,7 @@ namespace wal
 		UiParzer( UiStream* stream );
 		int Tok() const { return _tok; }
 		int64 Int() const { return _i; }
-		const char* Str() { return _buf.data.ptr(); }
+		const char* Str() { return _buf.data.data(); }
 		int Next();
 		void Skip( int tok );
 		void SkipAll( int tok, int mincount = 1 );
@@ -340,7 +340,7 @@ begin:
 			if ( !( flags & STR ) ) { return 0; }
 
 			int64 n = 0;
-			char* t = s.ptr();
+			char* t = s.data();
 
 			if ( !t || !*t ) { return 0; }
 
@@ -375,7 +375,7 @@ begin:
 			flags |= STR;
 		}
 
-		return s.ptr();
+		return s.data();
 	}
 
 	class UiValue;

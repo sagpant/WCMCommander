@@ -128,7 +128,7 @@ public:
 
 		for ( int i = 0; i < n; i++ )
 		{
-			FSNode* p = list.ptr()[i];
+			FSNode* p = list.data()[i];
 
 			if ( p->IsSelected() )
 			{
@@ -148,7 +148,7 @@ public:
 
 		for ( int i = 0; i < n; i++ )
 		{
-			FSNode* p = list.ptr()[i];
+			FSNode* p = list.data()[i];
 
 			if ( ph->exist( p->GetUnicodeName() ) )
 			{
@@ -166,7 +166,7 @@ public:
 
 		for ( int i = 0; i < n; i++ )
 		{
-			FSNode* p = list.ptr()[i];
+			FSNode* p = list.data()[i];
 
 			if ( resList->exist( p->GetUnicodeName() ) && p->IsSelected() )
 			{
@@ -187,7 +187,7 @@ public:
 
 		for ( int i = 0; i < n; i++ )
 		{
-			FSNode* p = list.ptr()[i];
+			FSNode* p = list.data()[i];
 
 			if ( p && p->IsSelected() )
 			{

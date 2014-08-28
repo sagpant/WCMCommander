@@ -28,7 +28,7 @@ void InitFonts()
 	helpBoldFont = 0;
 	helpHeadFont = 0;
 
-	IFE( &panelFont,   wcmConfig.panelFontUri.ptr() );
+	IFE( &panelFont,   wcmConfig.panelFontUri.data() );
 #ifdef _WIN32
 	//IFE(&panelFont, "-100:Consola:B");
 	IFE( &panelFont, "-100:Arial:B" );
@@ -36,7 +36,7 @@ void InitFonts()
 	IFE( &panelFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &dialogFont, wcmConfig.dialogFontUri.ptr() );
+	IFE( &dialogFont, wcmConfig.dialogFontUri.data() );
 #ifdef _WIN32
 	IFE( &dialogFont, "-80:MS Sans Serif:B" );
 #else
@@ -44,7 +44,7 @@ void InitFonts()
 #endif
 
 
-	IFE( &viewerFont, wcmConfig.viewerFontUri.ptr() );
+	IFE( &viewerFont, wcmConfig.viewerFontUri.data() );
 #ifdef _WIN32
 	IFE( &viewerFont, "-120:Lucida Console:FN" );
 #else
@@ -52,35 +52,35 @@ void InitFonts()
 #endif
 
 
-	IFE( &editorFont, wcmConfig.editorFontUri.ptr() );
+	IFE( &editorFont, wcmConfig.editorFontUri.data() );
 #ifdef _WIN32
 	IFE( &editorFont, "-120:Lucida Console:FN" );
 #else
 	IFE( &editorFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &terminalFont, wcmConfig.terminalFontUri.ptr() );
+	IFE( &terminalFont, wcmConfig.terminalFontUri.data() );
 #ifdef _WIN32
 	IFE( &terminalFont, "-100:Lucida Console:FN" );
 #else
 	IFE( &terminalFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &helpTextFont, wcmConfig.helpTextFontUri.ptr() );
+	IFE( &helpTextFont, wcmConfig.helpTextFontUri.data() );
 #ifdef _WIN32
 	IFE( &helpTextFont, "-100:Arial:N" );
 #else
 	IFE( &helpTextFont, "-*-fixed-medium-r-*-*-*-120-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &helpBoldFont, wcmConfig.helpBoldFontUri.ptr() );
+	IFE( &helpBoldFont, wcmConfig.helpBoldFontUri.data() );
 #ifdef _WIN32
 	IFE( &helpBoldFont, "-90:Arial:B" );
 #else
 	IFE( &helpBoldFont, "-*-fixed-bold-r-*-*-*-120-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &helpHeadFont, wcmConfig.helpHeadFontUri.ptr() );
+	IFE( &helpHeadFont, wcmConfig.helpHeadFontUri.data() );
 #ifdef _WIN32
 	IFE( &helpHeadFont, "-110:Arial:B" );
 #else

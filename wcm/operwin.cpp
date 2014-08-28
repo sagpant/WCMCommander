@@ -42,7 +42,7 @@ void OperThreadWin::DBGPrintStoppingList()
 	for ( p = operStopList; p; p = p->next )
 	{
 		MutexLock lock2( &p->mutex );
-		printf( "stopped thread %s\n", p->threadInfo.ptr() ? p->threadInfo.ptr() : "<empty info>" );
+		printf( "stopped thread %s\n", p->threadInfo.data() ? p->threadInfo.data() : "<empty info>" );
 	}
 }
 
@@ -131,7 +131,7 @@ void* __123___OperThread( void* param )
 	lockNode.Unlock(); //!!!
 
 #ifdef _DEBUG
-	printf( "stop: %s\n", tp.node->threadInfo.ptr() );
+	printf( "stop: %s\n", tp.node->threadInfo.data() );
 #endif
 
 	delete tp.node;

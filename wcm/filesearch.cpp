@@ -153,7 +153,7 @@ int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher,
 		int bufSize = 16000 + maxLen;
 		carray<char> buf( bufSize );
 
-		bytes =  fs->Read( fd, buf.ptr(), bufSize, err, info );
+		bytes =  fs->Read( fd, buf.data(), bufSize, err, info );
 
 		if ( bytes > 0 )
 		{
@@ -165,7 +165,7 @@ int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher,
 				{
 					int n = count - maxLen + 1;
 					int fBytes = 0;
-					sResult = pSearcher->Search( buf.ptr(), buf.ptr() + n, &fBytes, rCS );
+					sResult = pSearcher->Search( buf.data(), buf.data() + n, &fBytes, rCS );
 
 					if ( sResult )
 					{
@@ -174,13 +174,13 @@ int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher,
 
 					int t = count - n;
 
-					if ( t > 0 ) { memmove( buf.ptr(), buf.ptr() + n, t ); }
+					if ( t > 0 ) { memmove( buf.data(), buf.data() + n, t ); }
 
 					count = t;
 				}
 
 				int n = bufSize - count;
-				bytes = fs->Read( fd, buf.ptr(), bufSize, err, info );
+				bytes = fs->Read( fd, buf.data(), bufSize, err, info );
 
 				if ( bytes <= 0 ) { break; }
 
@@ -200,7 +200,7 @@ int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher,
 				{
 					int n = count - maxLen + 1;
 					int fBytes = 0;
-					sResult = pSearcher->Search( buf.ptr(), buf.ptr() + n, &fBytes, rCS );
+					sResult = pSearcher->Search( buf.data(), buf.data() + n, &fBytes, rCS );
 				}
 
 			}
@@ -256,10 +256,10 @@ void OperSearchThread::SearchDir( FS* fs, FSPath path, MegaSearcher* pSearcher )
 
 	carray<FSNode*> p = list.GetArray();
 
-	list.SortByName( p.ptr(), count, true, false );
+	list.SortByName( p.data(), count, true, false );
 
 	//check by mask
-	unicode_t* mask = this->searchParams.mask.ptr();
+	unicode_t* mask = this->searchParams.mask.data();
 
 	int lastPathPos = path.Count();
 
@@ -504,7 +504,7 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 				{
 					gc.Set( GetFont() );
 					gc.SetTextColor( textColor );
-					gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( itemList[n].cs->name ).ptr() );
+					gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( itemList[n].cs->name ).data() );
 				}
 			}
 
@@ -568,7 +568,7 @@ class SearchFileThreadWin: public NCDialog
 	void RefreshCounters();
 public:
 	SearchFileThreadWin( NCDialogParent* parent, const char* name, OperSearchData* pD )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).ptr(), bListOkCancel ),
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListOkCancel ),
 		   pData( pD ),
 		   lo( 10, 10 ),
 		   listWin( this ),
@@ -576,12 +576,12 @@ public:
 		   curFound( -1 ),
 		   curBadDirs( -1 ),
 		   curBadFiles( -1 ),
-		   foundName( 0, this, utf8_to_unicode( _LT( "Files found:" ) ).ptr() ),
-		   foundCount( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).ptr() ),
-		   badDirsName( 0, this, utf8_to_unicode( _LT( "Bad directories:" ) ).ptr() ),
-		   badDirsCount( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).ptr() ),
-		   badFilesName( 0, this, utf8_to_unicode( _LT( "Not opened files:" ) ).ptr() ),
-		   badFilesCount( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).ptr() )
+		   foundName( 0, this, utf8_to_unicode( _LT( "Files found:" ) ).data() ),
+		   foundCount( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
+		   badDirsName( 0, this, utf8_to_unicode( _LT( "Bad directories:" ) ).data() ),
+		   badDirsCount( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
+		   badFilesName( 0, this, utf8_to_unicode( _LT( "Not opened files:" ) ).data() ),
+		   badFilesCount( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() )
 	{
 		listWin.Show();
 		listWin.Enable();
@@ -699,7 +699,7 @@ bool SearchFileThreadWin::Command( int id, int subId, Win* win, void* data )
 
 void SearchFileThreadWin::OperThreadStopped()
 {
-	cPathWin.SetText( utf8_to_unicode( _LT( "Search done" ) ).ptr() );
+	cPathWin.SetText( utf8_to_unicode( _LT( "Search done" ) ).data() );
 
 	if ( pData->res.ptr() )
 	{
@@ -756,17 +756,17 @@ bool SearchFile( FSPtr f, FSPath p, NCDialogParent* parent, FSPath* retPath )
 		return false;
 	}
 
-	if ( !searchParams.mask.ptr() || !searchParams.mask[0] ) { return false; }
+	if ( !searchParams.mask.data() || !searchParams.mask[0] ) { return false; }
 
-	carray<char> utf8Mask = unicode_to_utf8( searchParams.mask.ptr() );
+	carray<char> utf8Mask = unicode_to_utf8( searchParams.mask.data() );
 
 	cptr<MegaSearcher> megaSearcher;
 
-	if ( searchParams.txt.ptr() && searchParams.txt[0] )
+	if ( searchParams.txt.data() && searchParams.txt[0] )
 	{
 		megaSearcher = new MegaSearcher();
 
-		if ( !megaSearcher->Set( searchParams.txt.ptr(), searchParams.sens, 0 ) )
+		if ( !megaSearcher->Set( searchParams.txt.data(), searchParams.sens, 0 ) )
 		{
 			NCMessageBox( parent,  _LT( "File search" ) ,  _LT( "can't search this text" ) ,  true );
 			return false;
@@ -775,7 +775,7 @@ bool SearchFile( FSPtr f, FSPath p, NCDialogParent* parent, FSPath* retPath )
 
 
 	OperSearchData data( parent, searchParams, f, p, megaSearcher );
-	SearchFileThreadWin dlg( parent, carray_cat<char>( _LT( "Search:" ), utf8Mask.ptr() ).ptr(), &data );
+	SearchFileThreadWin dlg( parent, carray_cat<char>( _LT( "Search:" ), utf8Mask.data() ).data(), &data );
 	dlg.RunNewThread( "Search file", SearchFileThreadFunc, &data ); //может быть исключение
 	dlg.Enable();
 	dlg.Show();

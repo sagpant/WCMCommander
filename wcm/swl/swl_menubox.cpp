@@ -261,7 +261,7 @@ namespace wal
 
 		gc.SetTextColor( color_text );
 
-		const unicode_t* text = list[n].text.ptr();
+		const unicode_t* text = list[n].text.data();
 		cpoint tsize = gc.GetTextExtents( text );
 		int x = itemRect.left + ( itemRect.Width() - tsize.x ) / 2;
 		int y = itemRect.top + ( itemRect.Height() - tsize.y ) / 2;
@@ -296,7 +296,7 @@ namespace wal
 
 			for ( int i = 0; i < list.count(); i++ )
 			{
-				cpoint textSize = gc.GetTextExtents( list[i].text.ptr() );
+				cpoint textSize = gc.GetTextExtents( list[i].text.data() );
 				int x2 = x + textSize.x + spaceWidth * 2 + 2 ;
 				crect itemRect( x, 1, x2 , wRect.bottom - 1 );
 				x = x2;

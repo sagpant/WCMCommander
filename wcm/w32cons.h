@@ -29,8 +29,8 @@ public:
 	}
 	int Rows() const { return rows; }
 	int Cols() const { return cols; }
-	T* Ptr() { return data.ptr(); }
-	T* Line( int n ) { ASSERT( n >= 0 && n < rows ); return data.ptr() + cols * n; }
+	T* Ptr() { return data.data(); }
+	T* Line( int n ) { ASSERT( n >= 0 && n < rows ); return data.data() + cols * n; }
 	T* operator []( int n ) { ASSERT( n >= 0 && n < rows ); return Line( n ); }
 	~Buf2D() {}
 };

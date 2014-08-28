@@ -378,7 +378,7 @@ int FSFtp::GetFreeNode( int* err, FSCInfo* info )
 			unsigned ip; // = inet_addr(unicode_to_utf8(_param.server.Data()).ptr());
 			int e;
 
-			if ( !GetHostIp( unicode_to_utf8( _param.server.Data() ).ptr(), &ip, &e ) )
+			if ( !GetHostIp( unicode_to_utf8( _param.server.Data() ).data(), &ip, &e ) )
 			{
 				throw int( e );
 			}
@@ -1301,7 +1301,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 
 		for ( int i = 0; i < ftp_list.count(); i++ )
 		{
-			char* s = ftp_list[i].ptr();
+			char* s = ftp_list[i].data();
 
 			if ( !s ) { continue; }
 
@@ -1499,7 +1499,7 @@ FSString FSFtp::Uri( FSPath& path )
 		a = carray_cat<char>( "ftp://", server.GetUtf8(), port, path.GetUtf8( '/' ) );
 	}
 
-	return FSString( CS_UTF8, a.ptr() );
+	return FSString( CS_UTF8, a.data() );
 }
 
 

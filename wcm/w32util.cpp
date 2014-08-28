@@ -53,8 +53,7 @@ carray<wchar_t> RegKey::GetString( const wchar_t* name, const wchar_t* def )
 		strValue.resize( n + 1 );
 		strValue[n] = 0;
 
-		lResult = RegQueryValueExW( key, name, NULL, &dwType,
-		                            ( LPBYTE )strValue.ptr(), &dwSize );
+		lResult = RegQueryValueExW( key, name, NULL, &dwType, ( LPBYTE )strValue.data(), &dwSize );
 
 		if ( lResult == ERROR_SUCCESS )
 		{
@@ -69,13 +68,13 @@ carray<wchar_t> RegKey::SubKey( int n )
 {
 	DWORD size = 0x100;
 	carray<wchar_t> name( size );
-	LONG res = RegEnumKeyExW( key, n, name.ptr(), &size, 0, 0, 0, 0 );
+	LONG res = RegEnumKeyExW( key, n, name.data(), &size, 0, 0, 0, 0 );
 
 	if ( res == ERROR_MORE_DATA )
 	{
 		size++;
 		name.resize( size );
-		res = RegEnumKeyExW( key, n, name.ptr(), &size, 0, 0, 0, 0 );
+		res = RegEnumKeyExW( key, n, name.data(), &size, 0, 0, 0, 0 );
 	}
 
 	if ( res == ERROR_SUCCESS ) { return name; }

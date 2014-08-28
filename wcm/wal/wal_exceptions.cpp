@@ -83,12 +83,12 @@ namespace wal
 		if ( !s ) { return; }
 
 		_msg.resize( strlen( s ) + 1 );
-		strcpy( _msg.ptr(), s );
+		strcpy( _msg.data(), s );
 	}
 
 	const char* cmsg::message()
 	{
-		return _msg.ptr() ? _msg.ptr() : "<?>";
+		return _msg.data() ? _msg.data() : "<?>";
 	}
 
 	cmsg::~cmsg() {}
@@ -140,7 +140,7 @@ namespace wal
 
 		strncat( buf, " (", MAXMSGSTR );
 
-		strncat( buf, sys_error_utf8( err ).ptr(), MAXMSGSTR );
+		strncat( buf, sys_error_utf8( err ).data(), MAXMSGSTR );
 
 		strncat( buf, ")", MAXMSGSTR );
 

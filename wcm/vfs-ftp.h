@@ -95,7 +95,7 @@ public:
 	const unicode_t* GetName( int id )
 	{
 		MutexLock lock( &mutex );
-		return ( id >= 0 && id < byId.count() && byId[id].ptr() ) ? byId[id].ptr() : &u0;
+		return ( id >= 0 && id < byId.count() && byId[id].data() ) ? byId[id].data() : &u0;
 	}
 
 	int GetId( const unicode_t* name )

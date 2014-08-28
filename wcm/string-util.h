@@ -19,7 +19,7 @@ inline carray<wchar_t> UnicodeToUtf16( const unicode_t* s )
 	carray<wchar_t> p( unicode_strlen( s ) + 1 );
 	wchar_t* d;
 
-	for ( d = p.ptr(); *s; s++, d++ ) { *d = *s; }
+	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
 
 	*d = 0;
 	return p;
@@ -30,7 +30,7 @@ inline carray<unicode_t> Utf16ToUnicode( const wchar_t* s )
 	carray<unicode_t> p( wcslen( s ) + 1 );
 	unicode_t* d;
 
-	for ( d = p.ptr(); *s; s++, d++ ) { *d = *s; }
+	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
 
 	*d = 0;
 	return p;
@@ -47,7 +47,7 @@ inline carray<wchar_t> new_wchar_str( const wchar_t* str )
 	carray<wchar_t> p( l + 1 );
 	wchar_t* t;
 
-	for ( t = p.ptr(); *str; t++, str++ ) { *t = *str; }
+	for ( t = p.data(); *str; t++, str++ ) { *t = *str; }
 
 	*t = 0;
 	return p;
@@ -67,7 +67,7 @@ template <class T> inline carray<T> carray_cat( const T* a1, const T* a2 )
 	X( 1 );
 	X( 2 );
 	carray<T> str( n1 + n2 + 1 );
-	T* s = str.ptr();
+	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
 	*s = 0;
@@ -80,7 +80,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	X( 2 );
 	X( 3 );
 	carray<T> str( n1 + n2 + n3 + 1 );
-	T* s = str.ptr();
+	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
 	CP( 3 );
@@ -95,7 +95,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	X( 3 );
 	X( 4 );
 	carray<T> str( n1 + n2 + n3 + n4 + 1 );
-	T* s = str.ptr();
+	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
 	CP( 3 );
@@ -113,7 +113,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	X( 4 );
 	X( 5 );
 	carray<T> str( n1 + n2 + n3 + n4 + n5 + 1 );
-	T* s = str.ptr();
+	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
 	CP( 3 );
@@ -132,7 +132,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	X( 5 );
 	X( 6 );
 	carray<T> str( n1 + n2 + n3 + n4 + n5 + n6 + 1 );
-	T* s = str.ptr();
+	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
 	CP( 3 );
@@ -153,7 +153,7 @@ template <class T> inline  carray<T> carray_cat( const T* a1, const T* a2, const
 	X( 6 );
 	X( 7 )
 	carray<T> str( n1 + n2 + n3 + n4 + n5 + n6 + n7 + 1 );
-	T* s = str.ptr();
+	T* s = str.data();
 	CP( 1 );
 	CP( 2 );
 	CP( 3 );

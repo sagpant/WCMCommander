@@ -8,13 +8,13 @@ static cstrhash< carray<char> > lText;
 const char* LText( const char* index )
 {
 	carray<char>* p = lText.exist( index );
-	return ( p && p->ptr() ) ? p->ptr() : index;
+	return ( p && p->data() ) ? p->data() : index;
 }
 
 const char* LText( const char* index, const char* def )
 {
 	carray<char>* p = lText.exist( index );
-	return ( p && p->ptr() ) ? p->ptr() : def;
+	return ( p && p->data() ) ? p->data() : def;
 }
 
 inline char* SS( char* s )

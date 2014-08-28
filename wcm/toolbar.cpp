@@ -213,9 +213,9 @@ void ToolBar::EventTimer( int tid )
 		{
 			_curTip = _nextTip;
 
-			if ( _nextTip && _nextTip->tipText.ptr() && _nextTip->tipText[0] )
+			if ( _nextTip && _nextTip->tipText.data() && _nextTip->tipText[0] )
 			{
-				ToolTipShow( this, _nextTip->rect.left + 3, _nextTip->rect.bottom + 5, _nextTip->tipText.ptr() );
+				ToolTipShow( this, _nextTip->rect.left + 3, _nextTip->rect.bottom + 5, _nextTip->tipText.data() );
 			}
 		}
 	}

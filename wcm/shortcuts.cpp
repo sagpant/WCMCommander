@@ -58,10 +58,10 @@ private:
 
 		for ( int i = 0; i < list.count(); i++ )
 		{
-			if ( list[i].ptr() )
+			if ( list[i].data() )
 			{
 				cptr<StrConfig> cfg = new StrConfig();
-				cfg->Load( list[i].ptr() );
+				cfg->Load( list[i].data() );
 				const char* name = cfg->GetStrVal( "name" );
 
 				if ( name )
@@ -168,14 +168,14 @@ void SCListWin::Sort()
 
 	int cur = GetCurrent();
 
-	const unicode_t* sel = ( cur >= 0 && cur < count ) ? itemList[cur].name.ptr() : 0;
+	const unicode_t* sel = ( cur >= 0 && cur < count ) ? itemList[cur].name.data() : 0;
 
 	sort2m<Node>( itemList.ptr(), count );
 
 	if ( sel )
 	{
 		for ( int i = 0; i < count; i++ )
-			if ( !CmpNoCase( sel, itemList[i].name.ptr() ) )
+			if ( !CmpNoCase( sel, itemList[i].name.data() ) )
 			{
 				SetCurrent( i );
 				Invalidate();
@@ -198,10 +198,10 @@ void SCListWin::Next( int ch )
 	int current = GetCurrent();
 
 	for ( i = current + 1; i < count; i++ )
-		if ( EqFirst( itemList[i].name.ptr(), c ) ) { goto t; }
+		if ( EqFirst( itemList[i].name.data(), c ) ) { goto t; }
 
 	for ( i = 0; i <= current && i < count; i++ )
-		if ( EqFirst( itemList[i].name.ptr(), c ) ) { goto t; }
+		if ( EqFirst( itemList[i].name.data(), c ) ) { goto t; }
 
 	return;
 t:
@@ -218,9 +218,9 @@ void SCListWin::Save()
 	ccollect< carray<char> > list;
 
 	for ( int i = 0; i < itemList.count(); i++ )
-		if ( itemList[i].conf.ptr() && itemList[i].name.ptr() )
+		if ( itemList[i].conf.ptr() && itemList[i].name.data() )
 		{
-			itemList[i].conf->Set( "name", unicode_to_utf8( itemList[i].name.ptr() ).ptr() );
+			itemList[i].conf->Set( "name", unicode_to_utf8( itemList[i].name.data() ).data() );
 			list.append( itemList[i].conf->GetConfig() );
 		}
 
@@ -253,7 +253,7 @@ void SCListWin::DrawItem( wal::GC& gc, int n, crect rect )
 		gc.SetFillColor( bg );
 		gc.FillRect( rect );
 
-		unicode_t* name = itemList[n].name.ptr();
+		unicode_t* name = itemList[n].name.data();
 
 		if ( name )
 		{
@@ -292,12 +292,12 @@ public:
 	SCListWin::Node* retData;
 
 	ShortcutWin( NCDialogParent* parent, FSPtr* fp, FSPath* pPath )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Shortcuts" ) ).ptr(), bListOkCancel ),
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Shortcuts" ) ).data(), bListOkCancel ),
 		   lo( 10, 10 ),
 		   listWin( this ),
-		   addCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).ptr(), CMD_PLUS ),
-		   delButton( 0, this, utf8_to_unicode( "- (Del)" ).ptr(), CMD_MINUS ),
-		   renameButton( 0, this, utf8_to_unicode( _LT( "Rename" ) ).ptr(), CMD_RENAME ),
+		   addCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).data(), CMD_PLUS ),
+		   delButton( 0, this, utf8_to_unicode( "- (Del)" ).data(), CMD_MINUS ),
+		   renameButton( 0, this, utf8_to_unicode( _LT( "Rename" ) ).data(), CMD_RENAME ),
 		   fs( fp ),
 		   path( pPath ),
 		   retData( 0 )
@@ -362,7 +362,7 @@ void ShortcutWin::Selected()
 {
 	SCListWin::Node* node = listWin.GetCurrentData();
 
-	if ( node && node->conf.ptr() && node->name.ptr() )
+	if ( node && node->conf.ptr() && node->name.data() )
 	{
 		retData = node;
 		EndModal( CMD_OK );
@@ -387,10 +387,10 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 	{
 		SCListWin::Node* node = listWin.GetCurrentData();
 
-		if ( !node || !node->name.ptr() ) { return true; }
+		if ( !node || !node->name.data() ) { return true; }
 
 		if ( NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Delete item" ),
-		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( node->name.ptr() ).ptr() , "' ?" ).ptr(),
+		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( node->name.data() ).data() , "' ?" ).data(),
 		                   false, bListOkCancel ) == CMD_OK )
 		{
 			listWin.Del();
@@ -404,14 +404,14 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 	{
 		SCListWin::Node* node = listWin.GetCurrentData();
 
-		if ( !node || !node->name.ptr() ) { return true; }
+		if ( !node || !node->name.data() ) { return true; }
 
-		carray<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Rename item" ) ).ptr(),
-		                                            node->name.ptr() );
+		carray<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Rename item" ) ).data(),
+		                                            node->name.data() );
 
-		if ( name.ptr() )
+		if ( name.data() )
 		{
-			listWin.Rename( name.ptr() );
+			listWin.Rename( name.data() );
 		}
 
 		return true;
@@ -470,12 +470,12 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 
 						return false;
 
-			carray<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Enter shortcut name" ) ).ptr(),
+			carray<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Enter shortcut name" ) ).data(),
 			                                            fs[0]->Uri( *path ).GetUnicode() );
 
-			if ( name.ptr() )
+			if ( name.data() )
 			{
-				listWin.Ins( name.ptr(), cfg );
+				listWin.Ins( name.data(), cfg );
 			}
 
 		}

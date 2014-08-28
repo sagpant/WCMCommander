@@ -140,7 +140,7 @@ ttt:
 		if ( res > 0 )
 		{
 			carray<char> a( res );
-			int n = Read( a.ptr(), res );
+			int n = Read( a.data(), res );
 			ASSERT( n == res );
 			return a;
 		}

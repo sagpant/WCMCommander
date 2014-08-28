@@ -57,8 +57,8 @@ struct VSData
 
 		if ( n > 0 )
 		{
-			memcpy( data.ptr(), a.data.const_ptr(), n * sizeof( unicode_t ) );
-			memcpy( attr.ptr(), a.attr.const_ptr(), n * sizeof( char ) );
+			memcpy( data.data(), a.data.const_ptr(), n * sizeof( unicode_t ) );
+			memcpy( attr.data(), a.attr.const_ptr(), n * sizeof( char ) );
 		}
 	}
 

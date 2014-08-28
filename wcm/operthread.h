@@ -28,7 +28,7 @@ class OperThread
 public:
 	OperThread( const char* opName, NCDialogParent* p, OperThreadNode* n );
 	OperThreadNode& Node() { return *node; }
-	const char* OperName() { return operName.ptr(); }
+	const char* OperName() { return operName.data(); }
 	virtual void Run();
 	virtual ~OperThread();
 protected:

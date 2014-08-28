@@ -58,7 +58,7 @@ namespace wal
 		carray& operator = ( T* p );
 		carray& operator = ( const carray& a );
 		void resize( int n );
-		T* ptr();
+		T* data();
 		const T* const_ptr() const;
 		T& operator [] ( int n );
 		const T& const_item( int n ) const;
@@ -214,7 +214,7 @@ namespace wal
 	}
 
 
-	template <class T> inline T* carray<T>::ptr()
+	template <class T> inline T* carray<T>::data()
 	{
 		return m_data;
 	}
@@ -405,7 +405,7 @@ namespace wal
 
 	template <class T, int step> inline T* ccollect<T, step>::ptr()
 	{
-		return m_data.ptr();
+		return m_data.data();
 	}
 
 	template <class T, int step> carray<T> ccollect<T, step>::grab()
@@ -775,7 +775,7 @@ namespace wal
 
 		LT** p;
 
-		for ( p = table.ptr() + n; *p; p = &( p[0]->next ) )
+		for ( p = table.data() + n; *p; p = &( p[0]->next ) )
 
 			//порядок операндов сравнений важен
 			//чтобы определять только встроенный оператор == в KT
@@ -940,7 +940,7 @@ namespace wal
 			throw;
 		}
 
-		if ( table.ptr() )
+		if ( table.data() )
 		{
 			destroy_hash_table<LT>( table, tableSize );
 		}

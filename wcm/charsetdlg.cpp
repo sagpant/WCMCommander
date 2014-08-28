@@ -27,7 +27,7 @@ void InitOperCharsets()
 	{
 		for ( i = 0; i < stringList.count(); i++ )
 		{
-			charset_struct** p = hash.exist( stringList[i].ptr() );
+			charset_struct** p = hash.exist( stringList[i].data() );
 
 			if ( p ) { csList.append( *p ); }
 		}
@@ -187,8 +187,8 @@ void CharsetListWin::DrawItem( wal::GC& gc, int n, crect rect )
 		const unicode_t* txt = 0;
 
 		gc.SetTextColor( textColor );
-		gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( cList[n]->name ).ptr() );
-		gc.TextOutF( rect.left + 10 + 15 * fontW, rect.top + 2, utf8_to_unicode( cList[n]->comment ).ptr() );
+		gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( cList[n]->name ).data() );
+		gc.TextOutF( rect.left + 10 + 15 * fontW, rect.top + 2, utf8_to_unicode( cList[n]->comment ).data() );
 	}
 	else
 	{
@@ -214,12 +214,12 @@ class CharsetDlg1: public NCDialog
 	Button delButton;
 public:
 	CharsetDlg1( NCDialogParent* parent, int curCharset )
-		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Charset" ) ).ptr(), bListOkCancel ),
+		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Charset" ) ).data(), bListOkCancel ),
 		   layout( 10, 10 ),
 		   list( this, 7 ),
-		   otherButton( 0, this, utf8_to_unicode( _LT( "Other..." ) ).ptr(), CMD_OTHER ),
-		   addButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "Add..." ), "(Ins)" ).ptr() ).ptr(), CMD_ADD ),
-		   delButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "Del..." ), "(Del)" ).ptr() ).ptr(), CMD_DEL )
+		   otherButton( 0, this, utf8_to_unicode( _LT( "Other..." ) ).data(), CMD_OTHER ),
+		   addButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "Add..." ), "(Ins)" ).data() ).data(), CMD_ADD ),
+		   delButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "Del..." ), "(Del)" ).data() ).data(), CMD_DEL )
 	{
 		int i;
 
@@ -303,7 +303,7 @@ void CharsetDlg1::Del()
 
 	if ( n >= 0 && n < csList.count() && csList.count() > 1 &&
 	     NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Del" ),
-	                   carray_cat<char>( _LT( "Delete element" ), " '", csList[n]->name , "' ?" ).ptr(), false, bListOkCancel ) == CMD_OK )
+	                   carray_cat<char>( _LT( "Delete element" ), " '", csList[n]->name , "' ?" ).data(), false, bListOkCancel ) == CMD_OK )
 	{
 		csList.del( n );
 		list.SetList( csList.ptr(), csList.count() );
@@ -370,7 +370,7 @@ class CharsetDialog: public NCDialog
 	CharsetListWin _list;
 public:
 	CharsetDialog( NCDialogParent* parent, int curCharset, const char* headerText, charset_struct** cslist, int csCount )
-		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( headerText ).ptr(), bListOkCancel ),
+		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( headerText ).data(), bListOkCancel ),
 		   _list( this, 15 )
 	{
 		_list.SetList( cslist, csCount );

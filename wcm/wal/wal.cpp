@@ -28,7 +28,7 @@ namespace wal
 		int len = p - s;
 		carray<unicode_t> r( len + 1 );
 
-		if ( len ) { memcpy( r.ptr(), s, len * sizeof( unicode_t ) ); }
+		if ( len ) { memcpy( r.data(), s, len * sizeof( unicode_t ) ); }
 
 		r[len] = 0;
 		return r;
@@ -41,7 +41,7 @@ namespace wal
 		int len = sys_strlen( s );
 		carray<sys_char_t> r( len + 1 );
 
-		if ( len ) { memcpy( r.ptr(), s, len * sizeof( sys_char_t ) ); }
+		if ( len ) { memcpy( r.data(), s, len * sizeof( sys_char_t ) ); }
 
 		r[len] = 0;
 		return r;
@@ -56,7 +56,7 @@ namespace wal
 
 		if ( len )
 		{
-			memcpy( r.ptr(), s, len * sizeof( char ) );
+			memcpy( r.data(), s, len * sizeof( char ) );
 		}
 
 		r[len] = 0;
@@ -70,11 +70,11 @@ namespace wal
 
 		int symbolCount = utf8_symbol_count( s );
 		carray<unicode_t> unicodeBuf( symbolCount + 1 );
-		utf8_to_unicode( unicodeBuf.ptr(), s );
+		utf8_to_unicode( unicodeBuf.data(), s );
 
-		int sys_len = sys_string_buffer_len( unicodeBuf.ptr(), symbolCount );
+		int sys_len = sys_string_buffer_len( unicodeBuf.data(), symbolCount );
 		carray<sys_char_t> sysBuf( sys_len + 1 );
-		unicode_to_sys( sysBuf.ptr(), unicodeBuf.ptr(), symbolCount );
+		unicode_to_sys( sysBuf.data(), unicodeBuf.data(), symbolCount );
 		return sysBuf;
 	};
 
@@ -85,10 +85,10 @@ namespace wal
 
 		int symbolCount = sys_symbol_count( s );
 		carray<unicode_t> unicodeBuf( symbolCount + 1 );
-		sys_to_unicode( unicodeBuf.ptr(), s );
-		int utf8Len = utf8_string_buffer_len( unicodeBuf.ptr(), symbolCount );
+		sys_to_unicode( unicodeBuf.data(), s );
+		int utf8Len = utf8_string_buffer_len( unicodeBuf.data(), symbolCount );
 		carray<char> utf8Buf( utf8Len + 1 );
-		unicode_to_utf8( utf8Buf.ptr(), unicodeBuf.ptr(), symbolCount );
+		unicode_to_utf8( utf8Buf.data(), unicodeBuf.data(), symbolCount );
 		return utf8Buf;
 	}
 
@@ -99,7 +99,7 @@ namespace wal
 
 		int symbolCount = utf8_symbol_count( s );
 		carray<unicode_t> unicodeBuf( symbolCount + 1 );
-		utf8_to_unicode( unicodeBuf.ptr(), s );
+		utf8_to_unicode( unicodeBuf.data(), s );
 		return unicodeBuf;
 	}
 
@@ -109,7 +109,7 @@ namespace wal
 
 		int size = utf8_string_buffer_len( u );
 		carray<char> s( size + 1 );
-		unicode_to_utf8( s.ptr(), u );
+		unicode_to_utf8( s.data(), u );
 		return s;
 	}
 
@@ -118,10 +118,10 @@ namespace wal
 
 	void File::Throw( const sys_char_t* name )
 	{
-		if ( !name ) { name = _fileName.ptr(); }
+		if ( !name ) { name = _fileName.data(); }
 
 		static const char noname[] = "<NULL>";
-		throw_syserr( 0, "'%s'", name ? sys_to_utf8( name ).ptr() : noname );
+		throw_syserr( 0, "'%s'", name ? sys_to_utf8( name ).data() : noname );
 	}
 
 	void File::Throw() { Throw( 0 ); }

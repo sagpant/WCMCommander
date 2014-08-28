@@ -224,11 +224,11 @@ NCWin::NCWin()
 	_mdOptions.AddCmd( ID_CONFIG_SAVE,   _LT( "Save setup" ),   "Shift-F9" );
 
 
-	_menu.Add( &_mdLeft, utf8_to_unicode( _LT( "Left" ) ).ptr() );
-	_menu.Add( &_mdFiles, utf8_to_unicode( _LT( "Files" ) ).ptr() );
-	_menu.Add( &_mdCommands, utf8_to_unicode( _LT( "Commands" ) ).ptr() );
-	_menu.Add( &_mdOptions, utf8_to_unicode( _LT( "Options" ) ).ptr() );
-	_menu.Add( &_mdRight, utf8_to_unicode( _LT( "Right" ) ).ptr() );
+	_menu.Add( &_mdLeft, utf8_to_unicode( _LT( "Left" ) ).data() );
+	_menu.Add( &_mdFiles, utf8_to_unicode( _LT( "Files" ) ).data() );
+	_menu.Add( &_mdCommands, utf8_to_unicode( _LT( "Commands" ) ).data() );
+	_menu.Add( &_mdOptions, utf8_to_unicode( _LT( "Options" ) ).data() );
+	_menu.Add( &_mdRight, utf8_to_unicode( _LT( "Right" ) ).data() );
 
 	_mdFiles.AddCmd( ID_VIEW, _LT( "View" ),  "F3" );
 	_mdFiles.AddCmd( ID_EDIT, _LT( "Edit" ),  "F4" );
@@ -269,7 +269,7 @@ NCWin::NCWin()
 
 	hostName[len] = 0;
 
-	_editPref.Set( utf8_to_unicode( hostName ).ptr() );
+	_editPref.Set( utf8_to_unicode( hostName ).data() );
 
 	SetName( appName );
 
@@ -285,11 +285,11 @@ NCWin::NCWin()
 	}
 
 	// apply saved panel paths
-//	printf( "Left = %s\n", wcmConfig.leftPanelPath.ptr() );
-//	printf( "Right = %s\n", wcmConfig.rightPanelPath.ptr() );
+//	printf( "Left = %s\n", wcmConfig.leftPanelPath.data() );
+//	printf( "Right = %s\n", wcmConfig.rightPanelPath.data() );
 
-	_leftPanel.LoadPathStringSafe( wcmConfig.leftPanelPath.ptr() );
-	_rightPanel.LoadPathStringSafe( wcmConfig.rightPanelPath.ptr() );
+	_leftPanel.LoadPathStringSafe( wcmConfig.leftPanelPath.data() );
+	_rightPanel.LoadPathStringSafe( wcmConfig.rightPanelPath.data() );
 }
 
 bool NCWin::EventClose()
@@ -441,7 +441,7 @@ void NCWin::ExecuteFile()
 
 #ifdef _WIN32
 		static unicode_t w[2] = {'"', 0};
-		StartExecute( carray_cat<unicode_t>( w, _panel->UriOfCurrent().GetUnicode(), w ).ptr(), _panel->GetFS(), _panel->GetPath() );
+		StartExecute( carray_cat<unicode_t>( w, _panel->UriOfCurrent().GetUnicode(), w ).data(), _panel->GetFS(), _panel->GetPath() );
 		return;
 #else
 		const unicode_t*   fName = p->GetUnicodeName();
@@ -449,9 +449,9 @@ void NCWin::ExecuteFile()
 		carray<unicode_t> cmd( 2 + len + 1 );
 		cmd[0] = '.';
 		cmd[1] = '/';
-		memcpy( cmd.ptr() + 2, fName, len * sizeof( unicode_t ) );
+		memcpy( cmd.data() + 2, fName, len * sizeof( unicode_t ) );
 		cmd[2 + len] = 0;
-		StartExecute( cmd.ptr(), _panel->GetFS(), _panel->GetPath() );
+		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
 		return;
 #endif
 	}
@@ -494,7 +494,7 @@ void NCWin::PanelEnter()
 	{
 #ifndef _WIN32
 
-		if ( wcmConfig.systemAskOpenExec && cmd.ptr() )
+		if ( wcmConfig.systemAskOpenExec && cmd.data() )
 		{
 
 			ButtonDataNode bListOpenExec[] = { {"Open", CMD_OPEN_FILE}, {"Execute", CMD_EXEC_FILE}, {"Cancel", CMD_CANCEL}, {0, 0}};
@@ -504,7 +504,7 @@ void NCWin::PanelEnter()
 			if ( !pAppName ) { pAppName = emptyStr; }
 
 			int ret = NCMessageBox( this, "Open",
-			                        carray_cat<char>( "Executable file: ", p->name.GetUtf8(), "\ncan be opened by: ", unicode_to_utf8( pAppName ).ptr(), "\nExecute or Open?" ).ptr(),
+			                        carray_cat<char>( "Executable file: ", p->name.GetUtf8(), "\ncan be opened by: ", unicode_to_utf8( pAppName ).data(), "\nExecute or Open?" ).data(),
 			                        false, bListOpenExec );
 
 			if ( ret == CMD_CANCEL ) { return; }
@@ -515,13 +515,13 @@ void NCWin::PanelEnter()
 
 				if ( !terminal )
 				{
-					ExecNoTerminalProcess( cmd.ptr() );
+					ExecNoTerminalProcess( cmd.data() );
 					return;
 				};
 
 #endif
 
-				StartExecute( cmd.ptr(), _panel->GetFS(), _panel->GetPath() );
+				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
 
 				return;
 			}
@@ -537,19 +537,19 @@ void NCWin::PanelEnter()
 		cmd = GetOpenCommand( _panel->UriOfCurrent().GetUnicode(), &terminal, 0 );
 	}
 
-	if ( cmd.ptr() )
+	if ( cmd.data() )
 	{
 #ifndef _WIN32
 
 		if ( !terminal )
 		{
-			ExecNoTerminalProcess( cmd.ptr() );
+			ExecNoTerminalProcess( cmd.data() );
 			return;
 		}
 
 #endif
 
-		StartExecute( cmd.ptr(), _panel->GetFS(), _panel->GetPath() );
+		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
 	}
 }
 
@@ -584,12 +584,12 @@ MenuData* AppMenuData::AppendAppList( AppList* list )
 		if ( list->list[i].sub.ptr() )
 		{
 			MenuData* sub = AppendAppList( list->list[i].sub.ptr() );
-			p->AddSub( list->list[i].name.ptr(), sub );
+			p->AddSub( list->list[i].name.data(), sub );
 		}
 		else
 		{
-			p->AddCmd( nodeList.count() + CMD_RC_OPEN_0, list->list[i].name.ptr() );
-			nodeList.append( Node( list->list[i].cmd.ptr(), list->list[i].terminal ) );
+			p->AddCmd( nodeList.count() + CMD_RC_OPEN_0, list->list[i].name.data() );
+			nodeList.append( Node( list->list[i].cmd.data(), list->list[i].terminal ) );
 		}
 	}
 
@@ -610,7 +610,7 @@ void NCWin::RightButtonPressed( cpoint point )
 
 	cptr<AppList> appList = GetAppList( _panel->UriOfCurrent().GetUnicode() );
 
-	//if (!appList.ptr()) return;
+	//if (!appList.data()) return;
 
 	AppMenuData data;
 	MenuData mdRes, *md = data.AppendAppList( appList.ptr() );
@@ -684,23 +684,23 @@ void NCWin::Home( PanelWin* p )
 
 		if ( l1 > 0 && l1 < 0x100 && l2 > 0 && l2 < 0x100 )
 		{
-			homeUri = carray_cat<unicode_t>( Utf16ToUnicode( homeDrive ).ptr(), Utf16ToUnicode( homePath ).ptr() );
+			homeUri = carray_cat<unicode_t>( Utf16ToUnicode( homeDrive ).data(), Utf16ToUnicode( homePath ).data() );
 		}
 	}
 
-	if ( homeUri.ptr() )
+	if ( homeUri.data() )
 	{
 		FSPtr checkFS[2];
 		checkFS[0] = p->GetFSPtr();
 		checkFS[1] = p == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
 
 		FSPath path;
-		FSPtr fs = ParzeURI( homeUri.ptr(), path, checkFS, 2 );
+		FSPtr fs = ParzeURI( homeUri.data(), path, checkFS, 2 );
 
 		if ( fs.IsNull() )
 		{
 			char buf[4096];
-			FSString name = homeUri.ptr();
+			FSString name = homeUri.data();
 			snprintf( buf, sizeof( buf ), "bad home path: %s\n", name.GetUtf8() );
 			NCMessageBox( this, "Home", buf, true );
 		}
@@ -803,11 +803,11 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 
 		if ( l1 > 0 && l1 < 0x100 && l2 > 0 && l2 < 0x100 )
 		{
-			homeUri = carray_cat<unicode_t>( Utf16ToUnicode( homeDrive ).ptr(), Utf16ToUnicode( homePath ).ptr() );
+			homeUri = carray_cat<unicode_t>( Utf16ToUnicode( homeDrive ).data(), Utf16ToUnicode( homePath ).data() );
 		}
 	}
 
-	if ( homeUri.ptr() )
+	if ( homeUri.data() )
 	{
 		mData.Add( _LT( "Home" ), 0, ID_DEV_HOME );
 	}
@@ -879,9 +879,9 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 		{
 			//ccollect<carray<char> > strHeap;
 
-			carray<unicode_t> un = sys_to_unicode_array( mntList[i].path.ptr() );
+			carray<unicode_t> un = sys_to_unicode_array( mntList[i].path.data() );
 			static int maxNLen = 20;
-			int nLen = unicode_strlen( un.ptr() );
+			int nLen = unicode_strlen( un.data() );
 
 			if ( nLen > maxNLen )
 			{
@@ -890,14 +890,14 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 				un[n2 - 1] = '.';
 				un[n2 - 2] = '.';
 				un[n2 - 3] = '.';
-				un = carray_cat<unicode_t>( un.ptr(), un.ptr() + nLen - n2 );
+				un = carray_cat<unicode_t>( un.data(), un.data() + nLen - n2 );
 			}
 
-			carray<unicode_t> ut = sys_to_unicode_array( mntList[i].type.ptr() );
+			carray<unicode_t> ut = sys_to_unicode_array( mntList[i].type.data() );
 
 			static int maxTLen = 10;
 
-			if ( unicode_strlen( ut.ptr() ) > maxTLen )
+			if ( unicode_strlen( ut.data() ) > maxTLen )
 			{
 				ut[maxTLen] = 0;
 				ut[maxTLen - 1] = '.';
@@ -908,7 +908,7 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 			char buf[64];
 			snprintf( buf, sizeof( buf ), "%i ", i + 1 );
 
-			mData.Add( carray_cat<unicode_t>( utf8_to_unicode( buf ).ptr(), un.ptr() ).ptr(), ut.ptr(), ID_MNT_UX0 + i );
+			mData.Add( carray_cat<unicode_t>( utf8_to_unicode( buf ).data(), un.data() ).data(), ut.data(), ID_MNT_UX0 + i );
 		}
 	}
 #endif
@@ -970,7 +970,7 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 		if ( n < 0 || n >= mntList.count() ) { return; }
 
 		FSPtr fs = new FSSys();
-		FSPath path( sys_charset_id, mntList[n].path.ptr() );
+		FSPath path( sys_charset_id, mntList[n].path.data() );
 		p->LoadPath( fs, path, 0, 0, PanelWin::SET );
 		return;
 	}
@@ -1091,21 +1091,21 @@ void NCWin::CreateDirectory()
 
 	try
 	{
-		carray<unicode_t> dir = InputStringDialog( this, utf8_to_unicode( _LT( "Create new directory" ) ).ptr() );
+		carray<unicode_t> dir = InputStringDialog( this, utf8_to_unicode( _LT( "Create new directory" ) ).data() );
 
-		if ( !dir.ptr() ) { return; }
+		if ( !dir.data() ) { return; }
 
 		FSPtr checkFS[2];
 		checkFS[0] = _panel->GetFSPtr();
 		checkFS[1] = GetOtherPanel()->GetFSPtr();
 
 		FSPath path = _panel->GetPath();
-		FSPtr fs = ParzeURI( dir.ptr(), path, checkFS, 2 );
+		FSPtr fs = ParzeURI( dir.data(), path, checkFS, 2 );
 
 		if ( fs.IsNull() )
 		{
 			char buf[4096];
-			FSString name = dir.ptr();
+			FSString name = dir.data();
 			snprintf( buf, sizeof( buf ), _LT( "can`t create directory:%s\n" ),
 			          name.GetUtf8() );
 			NCMessageBox( this, "CD", buf, true );
@@ -1215,15 +1215,15 @@ void NCWin::Edit( bool enterFileName )
 		if ( enterFileName )
 		{
 			static carray<unicode_t> savedUri;
-			carray<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "File to edit" ) ).ptr(), savedUri.ptr() );
+			carray<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "File to edit" ) ).data(), savedUri.data() );
 
-			if ( !uri.ptr() ) { return; }
+			if ( !uri.data() ) { return; }
 
-			savedUri = new_unicode_str( uri.ptr() );
+			savedUri = new_unicode_str( uri.data() );
 
 			FSPtr cFs[2] = {fs, GetOtherPanel()->GetFSPtr() };
 
-			fs = ParzeURI( uri.ptr(), path, cFs, 2 );
+			fs = ParzeURI( uri.data(), path, cFs, 2 );
 
 			if ( !fs.Ptr() ) { return; }
 
@@ -1397,7 +1397,7 @@ void NCWin::Delete()
 	if ( n == 1 )
 	{
 		if ( NCMessageBox( this, _LT( "Delete" ),
-		                   carray_cat<char>( _LT( "Do you wish to delete\n" ), list->First()->Name().GetUtf8() ).ptr(), false, bListOkCancel ) != CMD_OK )
+		                   carray_cat<char>( _LT( "Do you wish to delete\n" ), list->First()->Name().GetUtf8() ).data(), false, bListOkCancel ) != CMD_OK )
 		{
 			return;
 		}
@@ -1457,13 +1457,13 @@ void NCWin::Copy( bool shift )
 
 	FSString uri = GetOtherPanel()->UriOfDir();
 
-	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Copy" ) ).ptr(),
+	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Copy" ) ).data(),
 	                                            shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
-	if ( !str.ptr() || !str[0] ) { return; }
+	if ( !str.data() || !str[0] ) { return; }
 
 	const unicode_t* a = uri.GetUnicode();
-	const unicode_t* b = str.ptr();
+	const unicode_t* b = str.data();
 
 	while ( *a && *b && *a == *b ) { a++; b++; }
 
@@ -1474,7 +1474,7 @@ void NCWin::Copy( bool shift )
 		checkFS[1] = GetOtherPanel()->GetFSPtr();
 
 		destPath = srcPath;
-		destFs = ParzeURI( str.ptr(), destPath, checkFS, 2 );
+		destFs = ParzeURI( str.data(), destPath, checkFS, 2 );
 	}
 
 	cptr<cstrhash<bool, unicode_t> > resList = CopyFiles( srcFs, srcPath, list, destFs, destPath, this );
@@ -1513,13 +1513,13 @@ void NCWin::Move( bool shift )
 
 	FSString uri = GetOtherPanel()->UriOfDir();
 
-	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Move" ) ).ptr(),
+	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Move" ) ).data(),
 	                                            shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
-	if ( !str.ptr() || !str[0] ) { return; }
+	if ( !str.data() || !str[0] ) { return; }
 
 	const unicode_t* a = uri.GetUnicode();
-	const unicode_t* b = str.ptr();
+	const unicode_t* b = str.data();
 
 	while ( *a && *b && *a == *b ) { a++; b++; }
 
@@ -1530,7 +1530,7 @@ void NCWin::Move( bool shift )
 		checkFS[1] = GetOtherPanel()->GetFSPtr();
 
 		destPath = srcPath;
-		destFs = ParzeURI( str.ptr(), destPath, checkFS, 2 );
+		destFs = ParzeURI( str.data(), destPath, checkFS, 2 );
 	}
 
 	MoveFiles( srcFs, srcPath, list, destFs, destPath, this );
@@ -1545,11 +1545,11 @@ void NCWin::Mark( bool enable )
 {
 	if ( _mode != PANEL ) { return; }
 
-	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( enable ? "Select" : "Deselect" ) ).ptr(), utf8_to_unicode( "*" ).ptr() );
+	carray<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( enable ? "Select" : "Deselect" ) ).data(), utf8_to_unicode( "*" ).data() );
 
-	if ( !str.ptr() || !str[0] ) { return; }
+	if ( !str.data() || !str[0] ) { return; }
 
-	_panel->Mark( str.ptr(), enable );
+	_panel->Mark( str.data(), enable );
 }
 
 void NCWin::OnOffShl()
@@ -1627,15 +1627,15 @@ bool NCWin::EditSave( bool saveAs )
 		if ( saveAs )
 		{
 			static carray<unicode_t> savedUri;
-			carray<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "Save file as ..." ) ).ptr(), savedUri.ptr() );
+			carray<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "Save file as ..." ) ).data(), savedUri.data() );
 
-			if ( !uri.ptr() ) { return false; }
+			if ( !uri.data() ) { return false; }
 
-			savedUri = new_unicode_str( uri.ptr() );
+			savedUri = new_unicode_str( uri.data() );
 
 			FSPtr cFs[2] = {fs, GetOtherPanel()->GetFSPtr() };
 
-			fs = ParzeURI( uri.ptr(), path, cFs, 2 );
+			fs = ParzeURI( uri.data(), path, cFs, 2 );
 
 			if ( !fs.Ptr() ) { return false; }
 
@@ -1687,9 +1687,9 @@ void NCWin::EditSearch( bool next )
 {
 	if ( _mode != EDIT ) { return; }
 
-	if ( ( next || DoSearchDialog( this, &searchParams ) ) && searchParams.txt.ptr() && searchParams.txt[0] )
+	if ( ( next || DoSearchDialog( this, &searchParams ) ) && searchParams.txt.data() && searchParams.txt[0] )
 	{
-		if ( !_editor.Search( searchParams.txt.ptr(), searchParams.sens ) )
+		if ( !_editor.Search( searchParams.txt.data(), searchParams.sens ) )
 		{
 			NCMessageBox( this, _LT( "Search" ), _LT( "String not found" ), true );
 		}
@@ -1700,12 +1700,12 @@ void NCWin::EditReplace()
 {
 	if ( _mode != EDIT ) { return; }
 
-	if ( DoReplaceEditDialog( this, &searchParams ) && searchParams.txt.ptr() && searchParams.txt[0] )
+	if ( DoReplaceEditDialog( this, &searchParams ) && searchParams.txt.data() && searchParams.txt[0] )
 	{
 		static unicode_t empty = 0;
-		unicode_t* to = searchParams.to.ptr() && searchParams.to[0] ? searchParams.to.ptr() : &empty;
+		unicode_t* to = searchParams.to.data() && searchParams.to[0] ? searchParams.to.data() : &empty;
 
-		if ( !_editor.Replace( searchParams.txt.ptr(), to, searchParams.sens ) )
+		if ( !_editor.Replace( searchParams.txt.data(), to, searchParams.sens ) )
 		{
 			NCMessageBox( this, _LT( "Replace" ), _LT( "String not found" ), true );
 		}
@@ -1716,9 +1716,9 @@ void NCWin::ViewSearch( bool next )
 {
 	if ( _mode != VIEW ) { return; }
 
-	if ( ( next || DoSearchDialog( this, &searchParams ) ) && searchParams.txt.ptr() && searchParams.txt[0] )
+	if ( ( next || DoSearchDialog( this, &searchParams ) ) && searchParams.txt.data() && searchParams.txt[0] )
 	{
-		if ( !_viewer.Search( searchParams.txt.ptr(), searchParams.sens ) )
+		if ( !_viewer.Search( searchParams.txt.data(), searchParams.sens ) )
 		{
 			NCMessageBox( this, _LT( "Search" ), _LT( "String not found" ), true );
 		}
@@ -1851,11 +1851,11 @@ void NCWin::Tab( bool forceShellTab )
 	else
 	{
 		int cursor = _edit.GetCursorPos();
-		carray<unicode_t> p = ShellTabKey( this,  _panel->GetFSPtr(), _panel->GetPath(), _edit.GetText().ptr(), &cursor );
+		carray<unicode_t> p = ShellTabKey( this,  _panel->GetFSPtr(), _panel->GetPath(), _edit.GetText().data(), &cursor );
 
-		if ( p.ptr() )
+		if ( p.data() )
 		{
-			_edit.SetText( p.ptr() );
+			_edit.SetText( p.data() );
 			_edit.SetCursorPos( cursor );
 			_edit.Invalidate();
 		}
@@ -2162,7 +2162,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				{
 					// command line is not empty - copy it to clipboard
 					carray<unicode_t> txt = _edit.GetText();
-					const unicode_t* p = txt.ptr();
+					const unicode_t* p = txt.data();
 
 					if ( p )
 					{
@@ -2294,7 +2294,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				if ( _edit.IsVisible() )
 				{
 					carray<unicode_t> txt = _edit.GetText();
-					unicode_t* p = txt.ptr();
+					unicode_t* p = txt.data();
 
 					while ( *p == ' ' ) { p++; }
 
@@ -2324,7 +2324,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 								if ( home )
 								{
 									uHome = sys_to_unicode_array( home );
-									p = uHome.ptr();
+									p = uHome.data();
 								}
 							}
 
@@ -2408,7 +2408,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 							if ( fs && fs->Type() == FS::SYSTEM )
 							{
-								StartExecute( txt.ptr(), _panel->GetFS(), _panel->GetPath() );
+								StartExecute( txt.data(), _panel->GetFS(), _panel->GetPath() );
 							}
 							else
 							{
@@ -3371,7 +3371,7 @@ void ButtonWin::Set( ButtonWinData* list )
 	{
 		for ( int i = 0; i < 10 && list->txt; i++, list++ )
 		{
-			_buttons[i]->Set( utf8_to_unicode( _LT( carray_cat<char>( "BB>", list->txt ).ptr(), list->txt ) ).ptr(), list->commandId ); //, 12, 12);
+			_buttons[i]->Set( utf8_to_unicode( _LT( carray_cat<char>( "BB>", list->txt ).data(), list->txt ) ).data(), list->commandId ); //, 12, 12);
 			_buttons[i]->Enable( list->commandId != 0 );
 		}
 	}
@@ -3417,14 +3417,14 @@ StringWin::StringWin( Win* parent )
 
 void StringWin::OnChangeStyles()
 {
-	if ( !text.ptr() )
+	if ( !text.data() )
 	{
 		SetLSize( LSize( cpoint( 0, 0 ) ) );
 		return;
 	}
 
 	defaultGC->Set( GetFont() );
-	textSize = defaultGC->GetTextExtents( text.ptr() );
+	textSize = defaultGC->GetTextExtents( text.data() );
 	LSize ls( textSize );
 	ls.y.maximal = 1000;
 	ls.x.maximal = textSize.x;
@@ -3438,7 +3438,7 @@ void StringWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.SetFillColor( UiGetColor( uiBackground, 0, 0, 0 ) );
 	gc.FillRect( r );
 	gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0xFFFFFF ) );
-	gc.TextOutF( 0, ( r.Height() - textSize.y ) / 2, text.ptr() );
+	gc.TextOutF( 0, ( r.Height() - textSize.y ) / 2, text.data() );
 }
 
 void StringWin::Set( const unicode_t* txt )
@@ -3517,7 +3517,7 @@ int EditorHeadWin::UiGetClassId() { return uiClassEditorHeadWin; };
 
 EditorHeadWin::EditorHeadWin( Win* parent, EditWin* pEdit )
 	:  Win( WT_CHILD, 0, parent, 0 ),
-	   prefixString( utf8_to_unicode( _LT( "Edit:" ) ).ptr() ),
+	   prefixString( utf8_to_unicode( _LT( "Edit:" ) ).data() ),
 	   _edit( pEdit )
 {
 	OnChangeStyles();
@@ -3740,7 +3740,7 @@ int ViewerHeadWin::UiGetClassId() { return uiClassViewerHeadWin; }
 
 ViewerHeadWin::ViewerHeadWin( Win* parent, ViewWin* pView )
 	:  Win( WT_CHILD, 0, parent, 0 ),
-	   prefixString( utf8_to_unicode( _LT( "View:" ) ).ptr() ),
+	   prefixString( utf8_to_unicode( _LT( "View:" ) ).data() ),
 	   _view( pView )
 {
 	OnChangeStyles();

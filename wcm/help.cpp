@@ -603,7 +603,7 @@ HelpNodeWord::HelpNodeWord( HelpStyle* style, const char* utf8, const char* addr
 void HelpNodeWord::Init( HelpGC& gc )
 {
 	gc.Set( _style->Font() );
-	_size = gc.GetTextExtents( _txt.ptr() );
+	_size = gc.GetTextExtents( _txt.data() );
 	_min = _max = _size.x;
 }
 
@@ -614,7 +614,7 @@ void HelpNodeWord::Paint( HelpGC& gc, int x, int y, bool selected, crect visible
 	gc.Set( _style->Font() );
 	gc.SetFillColor( _style->Bg() );
 	gc.SetTextColor( _style->Fg() );
-	gc.TextOutF( x, y, _txt.ptr() );
+	gc.TextOutF( x, y, _txt.data() );
 }
 
 
@@ -1322,10 +1322,10 @@ bool HelpFile::LoadFile( sys_char_t* name )
 
 					str.append( 0 );
 
-					if ( thName.ptr() )
+					if ( thName.data() )
 					{
 						collector.append( 0 );
-						hash[thName.ptr()] = collector.grab();
+						hash[thName.data()] = collector.grab();
 					}
 
 					thName = str.grab();
@@ -1333,7 +1333,7 @@ bool HelpFile::LoadFile( sys_char_t* name )
 				}
 			}
 
-			if ( thName.ptr() )
+			if ( thName.data() )
 			{
 				int n = strlen( buf );
 				collector.append_list( buf, n );
@@ -1341,10 +1341,10 @@ bool HelpFile::LoadFile( sys_char_t* name )
 
 		}
 
-		if ( thName.ptr() )
+		if ( thName.data() )
 		{
 			collector.append( 0 );
-			hash[thName.ptr()] = collector.grab();
+			hash[thName.data()] = collector.grab();
 		}
 
 		f.Close();
@@ -1366,20 +1366,20 @@ void HelpFile::Load()
 
 	loaded = true;
 
-	const char* langId = wcmConfig.systemLang.ptr() ? wcmConfig.systemLang.ptr() : "+";
+	const char* langId = wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+";
 
 	if ( langId[0] == '-' ) { return; }
 
 	if ( langId[0] != '+' )
 	{
 #ifdef _WIN32
-		LoadFile( carray_cat<sys_char_t>( GetAppPath().ptr(),
-		                                  utf8_to_sys( carray_cat<char>( "\\lang\\help.", langId ).ptr() ).ptr() ).ptr() );
+		LoadFile( carray_cat<sys_char_t>( GetAppPath().data(),
+		                                  utf8_to_sys( carray_cat<char>( "\\lang\\help.", langId ).data() ).data() ).data() );
 #else
 
-		if ( !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", langId ).ptr() ).ptr() ) )
+		if ( !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", langId ).data() ).data() ) )
 		{
-			LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", langId ).ptr() ).ptr() );
+			LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", langId ).data() ).data() );
 		}
 
 #endif
@@ -1387,11 +1387,11 @@ void HelpFile::Load()
 	};
 
 #ifdef _WIN32
-	if ( !LoadFile( carray_cat<sys_char_t>( GetAppPath().ptr(),
-	                                        utf8_to_sys( carray_cat<char>( "\\lang\\help.", sys_locale_lang_ter() ).ptr() ).ptr() ).ptr() )
+	if ( !LoadFile( carray_cat<sys_char_t>( GetAppPath().data(),
+	                                        utf8_to_sys( carray_cat<char>( "\\lang\\help.", sys_locale_lang_ter() ).data() ).data() ).data() )
 	   )
-		LoadFile( carray_cat<sys_char_t>( GetAppPath().ptr(),
-		                                  utf8_to_sys( carray_cat<char>( "\\lang\\help.", sys_locale_lang() ).ptr() ).ptr() ).ptr() );
+		LoadFile( carray_cat<sys_char_t>( GetAppPath().data(),
+		                                  utf8_to_sys( carray_cat<char>( "\\lang\\help.", sys_locale_lang() ).data() ).data() ).data() );
 
 #else
 
@@ -1411,7 +1411,7 @@ const char* HelpFile::GetTheme( const char* theme )
 {
 	Load();
 	carray<char>* p = hash.exist( theme );
-	return p ? p->ptr() : 0;
+	return p ? p->data() : 0;
 }
 
 
@@ -1847,9 +1847,9 @@ class HelpDlg: public NCDialog
 //	cstrhash<HelpStyle> styles;
 public:
 	HelpDlg( NCDialogParent* parent, const char* name, const char* theme )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).ptr(), bListCancel ),
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListCancel ),
 		   lo( 10, 10 ),
-		   ver( 0, this, utf8_to_unicode( verString ).ptr() ),
+		   ver( 0, this, utf8_to_unicode( verString ).data() ),
 		   helpWin( theme, this,  0 )
 	{
 		lo.SetColGrowth( 0 );

@@ -63,7 +63,7 @@ public:
 	int Cols() const { return cols; }
 	void Clear();
 	void SetSize( int r, int c );
-	TermChar* Get( int n ) { return n > 0 && n < rows ? list[n].ptr() : list[0].ptr(); }
+	TermChar* Get( int n ) { return n > 0 && n < rows ? list[n].data() : list[0].data(); }
 	void ScrollUp( int a, int b, int count, unsigned ch ); //a<=b
 	void ScrollDown( int a, int b, int count, unsigned ch ); //a<=b
 	void SetLineChar( int ln, int c, int count, unsigned ch );

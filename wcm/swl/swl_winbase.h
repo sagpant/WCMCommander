@@ -127,7 +127,7 @@ namespace wal
 		void Backspace();
 		void Set( const unicode_t* s, bool mark = false );
 
-		unicode_t* Ptr() { return data.ptr(); }
+		unicode_t* Ptr() { return data.data(); }
 		unicode_t operator []( int n ) { return data[n]; }
 
 		int   Count()  const { return count; }
@@ -361,7 +361,7 @@ namespace wal
 		void Append( const unicode_t* txt, int i = 0, void* p = 0 );
 		void DataRefresh();
 
-		const unicode_t* GetCurrentString() { int cnt = list.count(), c = GetCurrent(); return c < 0 || c >= cnt ? 0 : list.get( c ).str.ptr(); }
+		const unicode_t* GetCurrentString() { int cnt = list.count(), c = GetCurrent(); return c < 0 || c >= cnt ? 0 : list.get( c ).str.data(); }
 		void* GetCurrentPtr() { int cnt = list.count(), c = GetCurrent(); return c < 0 || c >= cnt ? 0 : list.get( c ).ptrData; }
 		int GetCurrentInt() { int cnt = list.count(), c = GetCurrent(); return c < 0 || c >= cnt ? -1 : list.get( c ).intData; }
 
@@ -411,10 +411,10 @@ namespace wal
 		MenuData();
 		int Count() { return list.count(); }
 		void AddCmd( int id, const unicode_t* s, const unicode_t* rt = 0 ) { Node node( CMD, id, s, rt, 0 ); list.append( node ); }
-		void AddCmd( int id, const char* s, const char* rt = 0 ) { AddCmd( id, utf8_to_unicode( s ).ptr(), rt ? utf8_to_unicode( rt ).ptr() : 0 ); }
+		void AddCmd( int id, const char* s, const char* rt = 0 ) { AddCmd( id, utf8_to_unicode( s ).data(), rt ? utf8_to_unicode( rt ).data() : 0 ); }
 		void AddSplit() { Node node( SPLIT, 0, 0, 0, 0 ); list.append( node ); }
 		void AddSub( const unicode_t* s, MenuData* data ) { Node node( SUB, 0, s, 0, data ); list.append( node ); }
-		void AddSub( const char* s, MenuData* data ) { AddSub( utf8_to_unicode( s ).ptr(), data ); }
+		void AddSub( const char* s, MenuData* data ) { AddSub( utf8_to_unicode( s ).data(), data ); }
 		~MenuData() {}
 	};
 

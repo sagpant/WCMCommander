@@ -12,16 +12,16 @@ static carray<wchar_t> GetOpenApp( wchar_t* ext )
 
 	RegKey key;
 
-	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext ).ptr() ) )
+	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext ).data() ) )
 	{
 		key.Open( HKEY_CLASSES_ROOT, ext );
 	}
 
 	carray<wchar_t> p = key.GetString();
 
-	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.ptr(), L"\\shell\\open\\command" ).ptr() ) )
+	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.data(), L"\\shell\\open\\command" ).data() ) )
 	{
-		key.Open( HKEY_CLASSES_ROOT, carray_cat<wchar_t>( p.ptr(), L"\\shell\\open\\command" ).ptr() );
+		key.Open( HKEY_CLASSES_ROOT, carray_cat<wchar_t>( p.data(), L"\\shell\\open\\command" ).data() );
 	}
 
 	return key.GetString();
@@ -82,7 +82,7 @@ static carray<unicode_t> NormalizeStr( unicode_t* s )
 
 	int n = unicode_strlen( s );
 	carray<unicode_t> p( n + 1 );
-	unicode_t* t = p.ptr();
+	unicode_t* t = p.data();
 
 	for ( ; *s; s++ ) if ( *s != '&' ) { *( t++ ) = *s; }
 
@@ -94,22 +94,22 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 {
 	carray<wchar_t> ext = GetFileExt( uri );
 
-	if ( !ext.ptr() ) { return 0; }
+	if ( !ext.data() ) { return 0; }
 
 	RegKey key;
 
-	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext.ptr() ).ptr() ) )
+	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext.data() ).data() ) )
 	{
-		key.Open( HKEY_CLASSES_ROOT, ext.ptr() );
+		key.Open( HKEY_CLASSES_ROOT, ext.data() );
 	}
 
 	carray<wchar_t> p = key.GetString();
 
 	RegKey key2;
 
-	if ( !key2.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.ptr(), L"\\shell" ).ptr() ) )
+	if ( !key2.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.data(), L"\\shell" ).data() ) )
 	{
-		key2.Open( HKEY_CLASSES_ROOT, carray_cat<wchar_t>( p.ptr(), L"\\shell" ).ptr() );
+		key2.Open( HKEY_CLASSES_ROOT, carray_cat<wchar_t>( p.data(), L"\\shell" ).data() );
 	}
 
 
@@ -123,10 +123,10 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 	{
 		carray<wchar_t> sub = key2.SubKey( i );
 
-		if ( !sub.ptr() ) { break; }
+		if ( !sub.data() ) { break; }
 
 		RegKey key25;
-		key25.Open( key2.Key(), sub.ptr() );
+		key25.Open( key2.Key(), sub.data() );
 
 		if ( !key25.Ok() ) { continue; }
 
@@ -136,13 +136,13 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 		key3.Open( key25.Key(), L"command" );
 		carray<wchar_t> command = key3.GetString();
 
-		if ( command.ptr() )
+		if ( command.data() )
 		{
 			AppList::Node node;
-			node.name = NormalizeStr( Utf16ToUnicode( name.ptr() && name[0] ? name.ptr() : sub.ptr() ).ptr() );
-			node.cmd = CfgStringToCommand( command.ptr(), uri );
+			node.name = NormalizeStr( Utf16ToUnicode( name.data() && name[0] ? name.data() : sub.data() ).data() );
+			node.cmd = CfgStringToCommand( command.data(), uri );
 
-			if ( ( pref.ptr() && !wcsicmp( pref.ptr(), sub.ptr() ) || !pref.ptr() && !wcsicmp( L"Open", sub.ptr() ) ) && ret->list.count() > 0 )
+			if ( ( pref.data() && !wcsicmp( pref.data(), sub.data() ) || !pref.data() && !wcsicmp( L"Open", sub.data() ) ) && ret->list.count() > 0 )
 			{
 				ret->list.insert( 0 );
 				ret->list[0] = node;
@@ -164,18 +164,18 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 		{
 			carray<wchar_t> sub = key2.SubKey( i );
 
-			if ( !sub.ptr() ) { break; }
+			if ( !sub.data() ) { break; }
 
 			RegKey keyApplication;
 			keyApplication.Open( HKEY_CLASSES_ROOT,
-			                     carray_cat<wchar_t>( L"Applications\\", sub.ptr(), L"\\shell\\open\\command" ).ptr() );
+			                     carray_cat<wchar_t>( L"Applications\\", sub.data(), L"\\shell\\open\\command" ).data() );
 			carray<wchar_t> command = keyApplication.GetString();
 
-			if ( command.ptr() )
+			if ( command.data() )
 			{
 				AppList::Node node;
-				node.name = NormalizeStr( Utf16ToUnicode( sub.ptr() ).ptr() );
-				node.cmd = CfgStringToCommand( command.ptr(), uri );
+				node.name = NormalizeStr( Utf16ToUnicode( sub.data() ).data() );
+				node.cmd = CfgStringToCommand( command.data(), uri );
 				openWith->list.append( node );
 			}
 		}
@@ -196,11 +196,11 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 
 carray<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName )
 {
-	carray<wchar_t> wCmd = GetOpenApp( GetFileExt( uri ).ptr() );
+	carray<wchar_t> wCmd = GetOpenApp( GetFileExt( uri ).data() );
 
-	if ( !wCmd.ptr() ) { return carray<unicode_t>(); }
+	if ( !wCmd.data() ) { return carray<unicode_t>(); }
 
-	return CfgStringToCommand( wCmd.ptr(), uri );
+	return CfgStringToCommand( wCmd.data(), uri );
 }
 
 

@@ -920,8 +920,7 @@ namespace wal
 		for ( i = 0; i < a.list.count(); i++ )
 		{
 			carray<unicode_t> p = new unicode_t[BUF_SIZE];
-			memcpy( p.ptr(), a.list.const_item( i ).const_ptr(),
-			        BUF_SIZE * sizeof( unicode_t ) );
+			memcpy( p.data(), a.list.const_item( i ).const_ptr(), BUF_SIZE * sizeof( unicode_t ) );
 			list.append( p );
 		}
 
@@ -985,9 +984,9 @@ namespace wal
 		wal::carray<unsigned32> d( w * h );
 		wal::carray<unsigned32*> l( h );
 
-		if ( d.ptr() )
+		if ( d.data() )
 		{
-			unsigned32* p = d.ptr();
+			unsigned32* p = d.data();
 
 			for ( int i = 0; i < h; i++, p += w ) { l[i] = p; }
 		}
@@ -1028,8 +1027,8 @@ namespace wal
 
 		if ( _width > 0 && _height > 0 )
 		{
-			memcpy( _data.ptr(), a._data.const_ptr(), _width * _height * sizeof( unsigned32 ) );
-			unsigned32* p = _data.ptr();
+			memcpy( _data.data(), a._data.const_ptr(), _width * _height * sizeof( unsigned32 ) );
+			unsigned32* p = _data.data();
 
 			for ( int i = 0; i < _height; i++, p += _width ) { _lines[i] = p; }
 		}
@@ -1341,7 +1340,7 @@ namespace wal
 		}
 		data.resize( w * h );
 		{
-			int* p = data.ptr();
+			int* p = data.data();
 
 			for ( int n = w * h; n > 0; n--, p++ ) { *p = -1; }
 		}
@@ -1418,7 +1417,7 @@ namespace wal
 
 		}
 
-		int* dataPtr = data.ptr();
+		int* dataPtr = data.data();
 
 		for ( i = 0; i < h && count > 0; i++, count--, list++, dataPtr += width )
 		{

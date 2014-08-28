@@ -636,7 +636,7 @@ bool EditWin::Undo()
 				case UndoRec::DELTEXT:
 				{
 					EditString& str = text.Get( r->line );
-					str.Insert( r->data.ptr(), r->pos, r->dataSize );
+					str.Insert( r->data.data(), r->pos, r->dataSize );
 				}
 				break;
 
@@ -644,7 +644,7 @@ bool EditWin::Undo()
 				{
 					int n = r->line;
 					text.Insert( n, 1, r->attr );
-					text.Get( n ).Set( r->data.ptr(), r->dataSize );
+					text.Get( n ).Set( r->data.data(), r->dataSize );
 				}
 				break;
 
@@ -705,7 +705,7 @@ bool EditWin::Redo()
 				case UndoRec::INSTEXT:
 				{
 					EditString& str = text.Get( r->line );
-					str.Insert( r->data.ptr(), r->pos, r->dataSize );
+					str.Insert( r->data.data(), r->pos, r->dataSize );
 				}
 				break;
 
@@ -727,7 +727,7 @@ bool EditWin::Redo()
 				{
 					int n = r->line;
 					text.Insert( n, 1, r->attr );
-					text.Get( n ).Set( r->data.ptr(), r->dataSize );
+					text.Get( n ).Set( r->data.data(), r->dataSize );
 				}
 				break;
 
@@ -1614,11 +1614,11 @@ void EditWin::EnableShl( bool on )
 
 			firstLine.resize( len + 1 );
 
-			char* s = firstLine.ptr();
+			char* s = firstLine.data();
 
 			if ( len > 0 )
 			{
-				memcpy( firstLine.ptr(), str.Get(), len );
+				memcpy( firstLine.data(), str.Get(), len );
 			}
 
 			firstLine[len] = 0;
@@ -1637,13 +1637,13 @@ void EditWin::EnableShl( bool on )
 		_shlConf = new SHL::ShlConf();
 #ifdef _WIN32
 		wal::carray<wchar_t> path = GetAppPath();
-		_shlConf->Parze( carray_cat<wchar_t>( GetAppPath().ptr(), utf8_to_sys( "\\shl\\config.cfg" ).ptr() ).ptr() );
+		_shlConf->Parze( carray_cat<wchar_t>( GetAppPath().data(), utf8_to_sys( "\\shl\\config.cfg" ).data() ).data() );
 #else
 		_shlConf->Parze( ( sys_char_t* ) UNIX_CONFIG_DIR_PATH "/shl/config.cfg" );
 #endif
 		_shlLine = -1;
 		//надо сделать не utf8 а текущий cs
-		_shl = _shlConf->Get( _path.GetUnicode() , utf8_to_unicode( firstLine.ptr() ).ptr(), colors );
+		_shl = _shlConf->Get( _path.GetUnicode() , utf8_to_unicode( firstLine.data() ).data(), colors );
 	}
 
 	__RefreshScreenData();
@@ -1761,12 +1761,12 @@ void EditWin::__RefreshScreenData()
 
 //TEMP
 			carray<char> colId( str.len + 1 );
-			memset( colId.ptr(), -1, str.len + 1 );
+			memset( colId.data(), -1, str.len + 1 );
 
 			if ( _shl )
 			{
 				RefreshShl( line );
-				_shl->ScanLine( ( unsigned char* )str.Get(), colId.ptr(), str.len, str.shlId );
+				_shl->ScanLine( ( unsigned char* )str.Get(), colId.data(), str.len, str.shlId );
 			}
 
 			int ce = col;
@@ -2385,7 +2385,7 @@ bool EditWin::Search( const unicode_t* arg, bool sens )
 	carray<unicode_t> search = new_unicode_str( arg );
 
 	if ( !sens )
-		for ( unicode_t* u = search.ptr(); *u; u++ ) { *u = UnicodeLC( *u ); }
+		for ( unicode_t* u = search.data(); *u; u++ ) { *u = UnicodeLC( *u ); }
 
 	int line =  cursor.line;
 
@@ -2403,7 +2403,7 @@ bool EditWin::Search( const unicode_t* arg, bool sens )
 	{
 		while ( s )
 		{
-			const unicode_t* sPtr = search.ptr();
+			const unicode_t* sPtr = search.data();
 
 			for ( char* p = s; ; p = charset->GetNext( p, end ), sPtr++ )
 			{
@@ -2457,7 +2457,7 @@ bool EditWin::Replace( const unicode_t* from, const unicode_t* to, bool sens )
 	carray<unicode_t> search = new_unicode_str( from );
 
 	if ( !sens )
-		for ( unicode_t* u = search.ptr(); *u; u++ ) { *u = UnicodeLC( *u ); }
+		for ( unicode_t* u = search.data(); *u; u++ ) { *u = UnicodeLC( *u ); }
 
 	ccollect<char> rep;
 	charset_struct* cs = charset;
@@ -2499,7 +2499,7 @@ bool EditWin::Replace( const unicode_t* from, const unicode_t* to, bool sens )
 
 restart:
 
-				const unicode_t* sPtr = search.ptr();
+				const unicode_t* sPtr = search.data();
 
 				for ( char* p = s; ; p = charset->GetNext( p, end ), sPtr++ )
 				{

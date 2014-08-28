@@ -25,7 +25,7 @@ class TextInStream
 	int bufSize;
 	carray<char> buffer;
 	int pos, count;
-	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.ptr(), bufSize ); pos = 0; return count > 0; }
+	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.data(), bufSize ); pos = 0; return count > 0; }
 public:
 	TextInStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), count( 1 ), pos( 1 ) { buffer.resize( bufSize ); }
 	int GetC() { FillBuffer(); return pos < count ? buffer[pos++] : EOF; }
@@ -50,23 +50,23 @@ bool TextInStream::GetLine( char* s, int size )
 	{
 		if ( pos >= count && !FillBuffer() ) { break; }
 
-		char* b = buffer.ptr() + pos;
-		char* e = buffer.ptr() + count;
+		char* b = buffer.data() + pos;
+		char* e = buffer.data() + count;
 
 		for ( ; b < e; b++ ) if ( *b == '\n' ) { break; }
 
 		if ( size > 0 )
 		{
-			int n = b - ( buffer.ptr() + pos );
+			int n = b - ( buffer.data() + pos );
 
 			if ( n > size ) { n = size; }
 
-			memcpy( s, buffer.ptr() + pos, n );
+			memcpy( s, buffer.data() + pos, n );
 			size -= n;
 			s += n;
 		}
 
-		pos = b - buffer.ptr();
+		pos = b - buffer.data();
 
 		if ( b < e )
 		{
@@ -108,7 +108,7 @@ void TextOutStream::Put( const char* s, int size )
 
 		if ( n > size ) { n = size; }
 
-		memcpy( buffer.ptr() + pos, s, n );
+		memcpy( buffer.data() + pos, s, n );
 		pos += n;
 		size -= n;
 		s += n;
@@ -252,7 +252,7 @@ void IniHash::Load( const sys_char_t* fileName )
 		}
 		else
 		{
-			if ( !section.ptr() ) { continue; }
+			if ( !section.data() ) { continue; }
 
 			char* t = s;
 
@@ -276,7 +276,7 @@ void IniHash::Load( const sys_char_t* fileName )
 
 			*t = 0;
 
-			SetStrValue( section.ptr(), s, v );
+			SetStrValue( section.data(), s, v );
 		}
 	}
 
@@ -291,7 +291,7 @@ void IniHash::Save( const sys_char_t* fileName )
 	if ( hash.count() > 0 )
 	{
 		carray<const char*> secList = hash.keys();
-		sort2m<const char*>( secList.ptr(), hash.count(), strless< const char* > );
+		sort2m<const char*>( secList.data(), hash.count(), strless< const char* > );
 
 		for ( int i = 0; i < hash.count(); i++ )
 		{
@@ -303,7 +303,7 @@ void IniHash::Save( const sys_char_t* fileName )
 			if ( !h ) { continue; }
 
 			carray<const char*> varList = h->keys();
-			sort2m<const char*>( varList.ptr(), h->count(), strless< const char* > );
+			sort2m<const char*>( varList.data(), h->count(), strless< const char* > );
 
 			for ( int j = 0; j < h->count(); j++ )
 			{
@@ -331,7 +331,7 @@ bool LoadStringList( const char* section, ccollect< carray<char> >& list )
 		SysTextFileIn in;
 
 		FSPath path = configDirPath;
-		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).ptr() );
+		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).data() );
 		in.Open( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
 		char buf[4096];
@@ -362,14 +362,14 @@ void SaveStringList( const char* section, ccollect< carray<char> >& list )
 		SysTextFileOut out;
 
 		FSPath path = configDirPath;
-		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).ptr() );
+		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).data() );
 		out.Open( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
 		for ( int i = 0; i < list.count(); i++ )
 		{
-			if ( list[i].ptr() && list[i][0] )
+			if ( list[i].data() && list[i][0] )
 			{
-				out.Put( list[i].ptr() );
+				out.Put( list[i].data() );
 				out.PutC( '\n' );
 			}
 		}
@@ -481,7 +481,7 @@ carray<char> RegReadString( char const* sect, const char* what, const char* def 
 		strValue[dwCount] = 0;
 
 		lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,
-		                           ( LPBYTE )strValue.ptr(), &dwCount );
+		                           ( LPBYTE )strValue.data(), &dwCount );
 	}
 
 	RegCloseKey( hsect );
@@ -587,7 +587,7 @@ bool LoadStringList( const char* section, ccollect< carray<char> >& list )
 		snprintf( name, sizeof( name ), "v%i", i );
 		carray<char> s = RegReadString( section, name, "" );
 
-		if ( !s.ptr() || !s[0] ) { break; }
+		if ( !s.data() || !s[0] ) { break; }
 
 		list.append( s );
 	}
@@ -602,11 +602,11 @@ void SaveStringList( const char* section, ccollect< carray<char> >& list )
 
 	for ( int i = 0; i < list.count(); i++ )
 	{
-		if ( list[i].ptr() && list[i][0] )
+		if ( list[i].data() && list[i][0] )
 		{
 			snprintf( name, sizeof( name ), "v%i", n );
 
-			if ( !RegWriteString( section, name, list[i].ptr() ) )
+			if ( !RegWriteString( section, name, list[i].data() ) )
 			{
 				break;
 			}
@@ -845,7 +845,7 @@ void WcmConfig::Save( NCWin* nc )
 		}
 		else if ( node.type == MT_STR && node.ptr.pStr != 0 )
 		{
-			RegWriteString( node.section, node.name, node.ptr.pStr->ptr() );
+			RegWriteString( node.section, node.name, node.ptr.pStr->data() );
 		}
 	}
 
@@ -946,12 +946,12 @@ public:
 PanelOptDialog::~PanelOptDialog() {}
 
 PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show hidden files" ) ).ptr(), 0, wcmConfig.panelShowHiddenFiles ),
-	   showIconsButton( 0, this, utf8_to_unicode( _LT( "Show icons" ) ).ptr(), 0, wcmConfig.panelShowIcons ),
-	   caseSensitive( 0, this, utf8_to_unicode( _LT( "Case sensitive sort" ) ).ptr(), 0, wcmConfig.panelCaseSensitive ),
-	   selectFolders( 0, this, utf8_to_unicode( _LT( "Select folders" ) ).ptr(), 0, wcmConfig.panelSelectFolders )
+	   showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles ),
+	   showIconsButton( 0, this, utf8_to_unicode( _LT( "Show icons" ) ).data(), 0, wcmConfig.panelShowIcons ),
+	   caseSensitive( 0, this, utf8_to_unicode( _LT( "Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive ),
+	   selectFolders( 0, this, utf8_to_unicode( _LT( "Select folders" ) ).data(), 0, wcmConfig.panelSelectFolders )
 {
 	iL.AddWin( &showHiddenButton,  0, 0 );
 	showHiddenButton.Enable();
@@ -1018,18 +1018,18 @@ public:
 EditOptDialog::~EditOptDialog() {}
 
 EditOptDialog::EditOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Editor" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Editor" ) ).data(), bListOkCancel ),
 	   iL( 16, 2 ),
 
-	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file position" ) ).ptr(), 0, wcmConfig.editSavePos ),
-	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto indent" ) ).ptr(), 0, wcmConfig.editAutoIdent ),
-	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax highlighting" ) ).ptr(), 0, wcmConfig.editShl ),
-	   tabText( 0, this, utf8_to_unicode( _LT( "Tab size:" ) ).ptr() ),
+	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file position" ) ).data(), 0, wcmConfig.editSavePos ),
+	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto indent" ) ).data(), 0, wcmConfig.editAutoIdent ),
+	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax highlighting" ) ).data(), 0, wcmConfig.editShl ),
+	   tabText( 0, this, utf8_to_unicode( _LT( "Tab size:" ) ).data() ),
 	   tabEdit( 0, this, 0, 0, 16 )
 {
 	char buf[0x100];
 	snprintf( buf, sizeof( buf ) - 1, "%i", wcmConfig.editTabSize );
-	tabEdit.SetText( utf8_to_unicode( buf ).ptr(), true );
+	tabEdit.SetText( utf8_to_unicode( buf ).data(), true );
 
 	iL.AddWin( &saveFilePosButton, 0, 0, 0, 1 );
 	saveFilePosButton.Enable();
@@ -1069,7 +1069,7 @@ bool DoEditConfigDialog( NCDialogParent* parent )
 		wcmConfig.editAutoIdent = dlg.autoIdentButton.IsSet();
 		wcmConfig.editShl = dlg.shlButton.IsSet();
 
-		int tabSize = atoi( unicode_to_utf8( dlg.tabEdit.GetText().ptr() ).ptr() );
+		int tabSize = atoi( unicode_to_utf8( dlg.tabEdit.GetText().data() ).data() );
 
 		if ( tabSize > 0 && tabSize <= 64 )
 		{
@@ -1149,30 +1149,30 @@ void StyleOptDialog::RefreshFontInfo()
 		}
 	}
 
-	fontNameStatic.SetText( utf8_to_unicode( s ).ptr() );
+	fontNameStatic.SetText( utf8_to_unicode( s ).data() );
 }
 
 #define CMD_CHFONT 1000
 #define CMD_CHFONTX11 1001
 
 StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Style" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Style" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   pList( p ),
-	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).ptr() ),
-	   styleDefButton( 0, this, utf8_to_unicode( _LT( "Default colors" ) ).ptr(), 1, wcmConfig.panelColorMode != 1 && wcmConfig.panelColorMode != 2 ),
-	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "Black" ) ).ptr(), 1, wcmConfig.panelColorMode == 1 ),
-	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "White" ) ).ptr(), 1, wcmConfig.panelColorMode == 2 ),
+	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
+	   styleDefButton( 0, this, utf8_to_unicode( _LT( "Default colors" ) ).data(), 1, wcmConfig.panelColorMode != 1 && wcmConfig.panelColorMode != 2 ),
+	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "Black" ) ).data(), 1, wcmConfig.panelColorMode == 1 ),
+	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "White" ) ).data(), 1, wcmConfig.panelColorMode == 2 ),
 
-	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).ptr() ),
-	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show toolbar" ) ).ptr(), 0, wcmConfig.showToolBar ),
-	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show buttonbar" ) ).ptr(), 0, wcmConfig.showButtonBar ),
+	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
+	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show toolbar" ) ).data(), 0, wcmConfig.showToolBar ),
+	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show buttonbar" ) ).data(), 0, wcmConfig.showButtonBar ),
 
-	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).ptr() ),
+	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
 	   fontList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
-	   fontNameStatic( 0, this, utf8_to_unicode( "--------------------------------------------------" ).ptr() ),
-	   changeButton( 0, this, utf8_to_unicode( _LT( "Set font..." ) ).ptr(), CMD_CHFONT ),
-	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set X11 font..." ) ).ptr(), CMD_CHFONTX11 )
+	   fontNameStatic( 0, this, utf8_to_unicode( "--------------------------------------------------" ).data() ),
+	   changeButton( 0, this, utf8_to_unicode( _LT( "Set font..." ) ).data(), CMD_CHFONT ),
+	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set X11 font..." ) ).data(), CMD_CHFONTX11 )
 {
 	iL.AddWin( &colorStatic, 0, 0 );
 	colorStatic.Enable();
@@ -1207,7 +1207,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 
 	for ( int i = 0; i < pList->count(); i++ )
 	{
-		fontList.Append( utf8_to_unicode( pList->get( i ).name.ptr() ).ptr(), i );
+		fontList.Append( utf8_to_unicode( pList->get( i ).name.data() ).data(), i );
 	}
 
 	fontList.MoveCurrent( 0 );
@@ -1297,7 +1297,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		LOGFONT lf;
 		carray<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
-		cfont::UriToLogFont( &lf, pUri && pUri->ptr() ?  pUri->ptr() : 0 );
+		cfont::UriToLogFont( &lf, pUri && pUri->data() ?  pUri->data() : 0 );
 
 		CHOOSEFONT cf;
 		memset( &cf, 0, sizeof( cf ) );
@@ -1314,7 +1314,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		if ( ChooseFont( &cf ) )
 		{
-			cptr<cfont> p = new cfont( cfont::LogFontToUru( lf ).ptr() );
+			cptr<cfont> p = new cfont( cfont::LogFontToUru( lf ).data() );
 
 			if ( p.ptr() )
 			{
@@ -1339,7 +1339,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		cptr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->ptr() ) ? pUri->ptr() : 0 );
 
-		if ( p.ptr() )
+		if ( p.data() )
 		{
 			pList->get( fontList.GetCurrentInt() ).newFont = p;
 			RefreshFontInfo();
@@ -1357,7 +1357,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		cptr<cfont> p = SelectX11Font( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed );
 
-		if ( p.ptr() )
+		if ( p.data() )
 		{
 			pList->get( fontList.GetCurrentInt() ).newFont = p;
 			RefreshFontInfo();
@@ -1454,18 +1454,18 @@ class CfgLangDialog: public NCDialog
 	ccollect<LangListNode>* nodeList;
 public:
 	CfgLangDialog( NCDialogParent* parent, char* id, ccollect<LangListNode>* nl )
-		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Language" ) ).ptr(), bListOkCancel ),
+		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Language" ) ).data(), bListOkCancel ),
 		   _selected( 0 ),
 		   _list( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
 		   nodeList( nl )
 
 	{
-		_list.Append( utf8_to_unicode( _LT( "Autodetect" ) ).ptr() ); //0
-		_list.Append( utf8_to_unicode( _LT( "English" ) ).ptr() ); //1
+		_list.Append( utf8_to_unicode( _LT( "Autodetect" ) ).data() ); //0
+		_list.Append( utf8_to_unicode( _LT( "English" ) ).data() ); //1
 
 		for ( int i = 0; i < nl->count(); i++ )
 		{
-			_list.Append( utf8_to_unicode( nl->get( i ).name.ptr() ).ptr() );
+			_list.Append( utf8_to_unicode( nl->get( i ).name.data() ).data() );
 		}
 
 		int cur = 0;
@@ -1475,7 +1475,7 @@ public:
 		else
 		{
 			for ( int i = 0; i < nl->count(); i++ )
-				if ( !strcmp( id, nl->get( i ).id.ptr() ) )
+				if ( !strcmp( id, nl->get( i ).id.data() ) )
 				{
 					cur = i + 2;
 					break;
@@ -1516,7 +1516,7 @@ const char* CfgLangDialog::GetId()
 
 	if ( n >= nodeList->count() ) { return "+"; }
 
-	return nodeList->get( n ).id.ptr();
+	return nodeList->get( n ).id.data();
 }
 
 bool CfgLangDialog::Command( int id, int subId, Win* win, void* data )
@@ -1627,40 +1627,40 @@ void SysOptDialog::SetCurLang( const char* id )
 
 	if ( id[0] == '-' )
 	{
-		langVal.SetText( utf8_to_unicode( _LT( "English" ) ).ptr() );
+		langVal.SetText( utf8_to_unicode( _LT( "English" ) ).data() );
 	}
 	else if ( id[0] == '+' )
 	{
-		langVal.SetText( utf8_to_unicode( _LT( "Autodetect" ) ).ptr() );
+		langVal.SetText( utf8_to_unicode( _LT( "Autodetect" ) ).data() );
 	}
 	else
 	{
 		for ( int i = 0; i < list.count(); i++ )
 		{
-			if ( !strcmp( list[i].id.ptr(), id ) )
+			if ( !strcmp( list[i].id.data(), id ) )
 			{
-				langVal.SetText( utf8_to_unicode( list[i].name.ptr() ).ptr() );
+				langVal.SetText( utf8_to_unicode( list[i].name.data() ).data() );
 				return;
 			}
 		}
 
-		langVal.SetText( utf8_to_unicode( id ).ptr() );
+		langVal.SetText( utf8_to_unicode( id ).data() );
 	}
 }
 
 SysOptDialog::~SysOptDialog() {}
 
 SysOptDialog::SysOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "System settings" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "System settings" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 )
 
-	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).ptr(), 0, wcmConfig.systemAskOpenExec )
-	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable ESC key to show/hide panels" ) ).ptr(), 0, wcmConfig.systemEscPanel )
-	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable BACKSPACE key to go up dir" ) ).ptr(), 0, wcmConfig.systemBackSpaceUpDir )
-//	,intLocale(this, utf8_to_unicode( _LT("Interface localisation (save config and restart)") ).ptr(), 0, wcmConfig.systemIntLocale)
-	   , langStatic( 0, this, utf8_to_unicode( _LT( "Language:" ) ).ptr() )
-	   , langVal( 0, this, utf8_to_unicode( "______________________" ).ptr() )
-	   , langButton( 0, this, utf8_to_unicode( ">" ).ptr(), 1000 )
+	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, wcmConfig.systemAskOpenExec )
+	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
+	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
+//	,intLocale(this, utf8_to_unicode( _LT("Interface localisation (save config and restart)") ).data(), 0, wcmConfig.systemIntLocale)
+	   , langStatic( 0, this, utf8_to_unicode( _LT( "Language:" ) ).data() )
+	   , langVal( 0, this, utf8_to_unicode( "______________________" ).data() )
+	   , langButton( 0, this, utf8_to_unicode( ">" ).data(), 1000 )
 {
 
 #ifndef _WIN32
@@ -1701,24 +1701,24 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	SetPosition();
 
 #ifdef _WIN32
-	LangListLoad( carray_cat<sys_char_t>( GetAppPath().ptr(), utf8_to_sys( "\\lang\\list" ).ptr() ).ptr(), list );
+	LangListLoad( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "\\lang\\list" ).data() ).data(), list );
 #else
 
-	if ( !LangListLoad( utf8_to_sys( "install-files/share/wcm/lang/list" ).ptr(), list ) )
+	if ( !LangListLoad( utf8_to_sys( "install-files/share/wcm/lang/list" ).data(), list ) )
 	{
-		LangListLoad( utf8_to_sys( UNIX_CONFIG_DIR_PATH "/lang/list" ).ptr(), list );
+		LangListLoad( utf8_to_sys( UNIX_CONFIG_DIR_PATH "/lang/list" ).data(), list );
 	}
 
 #endif
 
-	SetCurLang( wcmConfig.systemLang.ptr() ? wcmConfig.systemLang.ptr() : "+" );
+	SetCurLang( wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+" );
 }
 
 bool SysOptDialog::Command( int id, int subId, Win* win, void* data )
 {
 	if ( id == 1000 )
 	{
-		CfgLangDialog dlg( ( NCDialogParent* )Parent(), curLangId.ptr(), &list );
+		CfgLangDialog dlg( ( NCDialogParent* )Parent(), curLangId.data(), &list );
 
 		if ( dlg.DoModal() == CMD_OK )
 		{
@@ -1755,12 +1755,12 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 		wcmConfig.systemAskOpenExec = dlg.askOpenExecButton.IsSet();
 		wcmConfig.systemEscPanel = dlg.escPanelButton.IsSet();
 		wcmConfig.systemBackSpaceUpDir = dlg.backUpDirButton.IsSet();
-		const char* s = wcmConfig.systemLang.ptr();
+		const char* s = wcmConfig.systemLang.data();
 
 		if ( !s ) { s = "+"; }
 
-		bool langChanged = strcmp( dlg.curLangId.ptr(), s ) != 0;
-		wcmConfig.systemLang = new_char_str( dlg.curLangId.ptr() );
+		bool langChanged = strcmp( dlg.curLangId.data(), s ) != 0;
+		wcmConfig.systemLang = new_char_str( dlg.curLangId.data() );
 
 		if ( langChanged )
 		{
@@ -1793,11 +1793,11 @@ public:
 
 
 TerminalOptDialog::TerminalOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Terminal options" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Terminal options" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   backspaceKeyStatic( 0, this, utf8_to_unicode( _LT( "Backspace key:" ) ).ptr() ),
-	   backspaceAsciiButton( 0, this, utf8_to_unicode( "ASCII DEL" ).ptr(), 1, wcmConfig.terminalBackspaceKey == 0 ),
-	   backspaceCtrlHButton( 0, this,  utf8_to_unicode( "Ctrl H" ).ptr(), 1, wcmConfig.terminalBackspaceKey == 1 )
+	   backspaceKeyStatic( 0, this, utf8_to_unicode( _LT( "Backspace key:" ) ).data() ),
+	   backspaceAsciiButton( 0, this, utf8_to_unicode( "ASCII DEL" ).data(), 1, wcmConfig.terminalBackspaceKey == 0 ),
+	   backspaceCtrlHButton( 0, this,  utf8_to_unicode( "Ctrl H" ).data(), 1, wcmConfig.terminalBackspaceKey == 1 )
 {
 	iL.AddWin( &backspaceKeyStatic,   0, 0, 0, 1 );
 	backspaceKeyStatic.Enable();
