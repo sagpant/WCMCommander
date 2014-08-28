@@ -7,11 +7,11 @@
 
 
 //windows
-#define WIN_REGISTRY_FIRM	"Wal" //firm name in windows registry
-#define WIN_REGISTRY_APP	"Wal commander" //app name in windows registry
+#define WIN_REGISTRY_FIRM  "Wal" //firm name in windows registry
+#define WIN_REGISTRY_APP   "Wal commander" //app name in windows registry
 
 
 ////////////////////////////////
-#define UNIX_CONFIG_DIR_PATH	UNIX_PREFIX "/share" "/" UNIX_APP_NAME
+#define UNIX_CONFIG_DIR_PATH  UNIX_PREFIX "/share" "/" UNIX_APP_NAME
 
 #endif

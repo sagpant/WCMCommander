@@ -3,11 +3,12 @@
 
 #include <wal.h>
 
-struct MntListNode{
+struct MntListNode
+{
 	wal::carray<char> path; //в системной кодировке
 	wal::carray<char> type;
 };
 
-bool UxMntList( wal::ccollect< MntListNode > *pList);
+bool UxMntList( wal::ccollect< MntListNode >* pList );
 
 #endif

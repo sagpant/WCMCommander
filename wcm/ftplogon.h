@@ -3,6 +3,6 @@
 
 #include "vfs-ftp.h"
 
-bool GetFtpLogon(NCDialogParent *parent, FSFtpParam &params);
+bool GetFtpLogon( NCDialogParent* parent, FSFtpParam& params );
 
 #endif

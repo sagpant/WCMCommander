@@ -5,18 +5,20 @@
 using namespace wal;
 
 
-inline void InitExtensionApp(){};
+inline void InitExtensionApp() {};
 
-struct AppList {
-	struct Node {
+struct AppList
+{
+	struct Node
+	{
 		carray<unicode_t> name;
-		
+
 		bool terminal;
 		carray<unicode_t> cmd;
 		//or
 		cptr<AppList> sub;
 
-		Node():terminal(0){}
+		Node(): terminal( 0 ) {}
 	};
 	ccollect<Node> list;
 	int Count() const { return list.count(); }
@@ -24,9 +26,9 @@ struct AppList {
 };
 
 
-carray<unicode_t> GetOpenCommand(const unicode_t *uri, bool *needTerminal, const unicode_t **pAppName);
+carray<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName );
 
-cptr<AppList> GetAppList(const unicode_t *uri);
+cptr<AppList> GetAppList( const unicode_t* uri );
 
 
 #endif

@@ -5,26 +5,34 @@
 #include <wal.h>
 using namespace wal;
 
-static int  GetNWords(char *str, char **a, int n)
+static int  GetNWords( char* str, char** a, int n )
 {
-	int i=0;
-	char *s = str;
-	char *t = str;
-	while (true) 
+	int i = 0;
+	char* s = str;
+	char* t = str;
+
+	while ( true )
 	{
-		while (*s>0 && *s <= ' ') s++; //пропустить пробелы
-		if (i < n) { a[i] = s; i++; }
-		
-		while (*t<0 || *t>32) t++; //пропустить НЕ пробелы
-		
-		if (*t) {
-			*t=0;
+		while ( *s > 0 && *s <= ' ' ) { s++; } //пропустить пробелы
+
+		if ( i < n ) { a[i] = s; i++; }
+
+		while ( *t < 0 || *t > 32 ) { t++; } //пропустить НЕ пробелы
+
+		if ( *t )
+		{
+			*t = 0;
 			t++;
-			s=t;
-		} else break;
+			s = t;
+		}
+		else { break; }
 	}
-	for (int j=i; j<n; j++) //заполнить осталное пустыми строками
-		a[j]=t;
+
+	for ( int j = i; j < n; j++ ) //заполнить осталное пустыми строками
+	{
+		a[j] = t;
+	}
+
 	return i > n ? n : i;
 }
 
@@ -47,43 +55,56 @@ gvfs-fuse-daemon /home/wal/.gvfs fuse.gvfs-fuse-daemon rw,nosuid,nodev,relatime,
 */
 
 
-bool UxMntList( wal::ccollect< MntListNode > *pList)
+bool UxMntList( wal::ccollect< MntListNode >* pList )
 {
-	if (!pList) return false;
-	try {
+	if ( !pList ) { return false; }
+
+	try
+	{
 
 		BFile f;
-		f.Open((sys_char_t*)"/proc/mounts"); 
+		f.Open( ( sys_char_t* )"/proc/mounts" );
 
 		char buf[4096];
-		while (f.GetStr(buf, sizeof(buf)))
-		{
-			char *w[3];
-			int n = GetNWords(buf, w, 3);
-			if (n<3) continue;
-			
-			if (!strcmp(w[0], "none")) continue;
-			if (!strcmp(w[1], "/")) continue;
-			if (!strcmp(w[2], "tmpfs")) continue;
-			if (!strcmp(w[2], "sysfs")) continue;
-			if (!strcmp(w[2], "cgroup")) continue;
-			
-			
-			char *p =w[1];
-			if (p[0]=='/' && p[1]=='p' && p[2]=='r' && p[3]=='o' && p[4]=='c'&& (p[5]=='/' || !p[5])) continue; // skip /proc[/...]
-			if (p[0]=='/' && p[1]=='d' && p[2]=='e' && p[3]=='v' && (p[4]=='/' || !p[4])) continue;	//skip /dev[/...]
 
-			
+		while ( f.GetStr( buf, sizeof( buf ) ) )
+		{
+			char* w[3];
+			int n = GetNWords( buf, w, 3 );
+
+			if ( n < 3 ) { continue; }
+
+			if ( !strcmp( w[0], "none" ) ) { continue; }
+
+			if ( !strcmp( w[1], "/" ) ) { continue; }
+
+			if ( !strcmp( w[2], "tmpfs" ) ) { continue; }
+
+			if ( !strcmp( w[2], "sysfs" ) ) { continue; }
+
+			if ( !strcmp( w[2], "cgroup" ) ) { continue; }
+
+
+			char* p = w[1];
+
+			if ( p[0] == '/' && p[1] == 'p' && p[2] == 'r' && p[3] == 'o' && p[4] == 'c' && ( p[5] == '/' || !p[5] ) ) { continue; } // skip /proc[/...]
+
+			if ( p[0] == '/' && p[1] == 'd' && p[2] == 'e' && p[3] == 'v' && ( p[4] == '/' || !p[4] ) ) { continue; } //skip /dev[/...]
+
+
 			MntListNode node;
-			node.path = new_char_str(w[1]);
-			node.type = new_char_str(w[2]);
-			pList->append(node);
-			
+			node.path = new_char_str( w[1] );
+			node.type = new_char_str( w[2] );
+			pList->append( node );
+
 		}
-	} catch (cexception *ex) {
+	}
+	catch ( cexception* ex )
+	{
 		ex->destroy();
 		return false;
 	}
+
 	return true;
 }
 

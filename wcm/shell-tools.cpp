@@ -3,7 +3,8 @@
 #include "vfs-uri.h"
 //#include "string-util.h"
 
-struct ShellLoadDirTD {
+struct ShellLoadDirTD
+{
 	FSPtr fs;
 	FSPath path;
 
@@ -13,35 +14,52 @@ struct ShellLoadDirTD {
 	FSCSimpleInfo info;
 	cptr<FSList> list;
 	carray<char> err;
-	ShellLoadDirTD(FSPtr f, FSPath &p):fs(f), path(p), winClosed(false), threadStopped(false) {}
+	ShellLoadDirTD( FSPtr f, FSPath& p ): fs( f ), path( p ), winClosed( false ), threadStopped( false ) {}
 };
 
-void *ShellLoadDirThreadFunc(void *ptr) 
+void* ShellLoadDirThreadFunc( void* ptr )
 {
-	ShellLoadDirTD *data = (ShellLoadDirTD*)ptr;
+	ShellLoadDirTD* data = ( ShellLoadDirTD* )ptr;
 
 	cptr<FSList> list;
 
-	try {
+	try
+	{
 		list = new FSList();
-		if (data->fs.Ptr())
+
+		if ( data->fs.Ptr() )
 		{
 			int err;
-			if (data->fs->ReadDir(list.ptr(), data->path, &err, &data->info))
-				data->err = new_char_str(data->fs->StrError(err).GetUtf8());
+
+			if ( data->fs->ReadDir( list.ptr(), data->path, &err, &data->info ) )
+			{
+				data->err = new_char_str( data->fs->StrError( err ).GetUtf8() );
+			}
 		}
-	} catch (cexception *ex) {
-		MutexLock lock(&data->mutex);
-		try { data->err = new_char_str(ex->message()); } catch (cexception *x) { x->destroy(); }
+	}
+	catch ( cexception* ex )
+	{
+		MutexLock lock( &data->mutex );
+
+		try { data->err = new_char_str( ex->message() ); }
+		catch ( cexception* x ) { x->destroy(); }
+
 		ex->destroy();
-	} catch (...) {
-		MutexLock lock(&data->mutex);
-		try { data->err = new_char_str("BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) "); } catch (cexception *x) { x->destroy(); }
+	}
+	catch ( ... )
+	{
+		MutexLock lock( &data->mutex );
+
+		try { data->err = new_char_str( "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) " ); }
+		catch ( cexception* x ) { x->destroy(); }
 	}
 
-	{//lock
-		MutexLock lock(&data->mutex);
-		if (data->winClosed) {
+	{
+		//lock
+		MutexLock lock( &data->mutex );
+
+		if ( data->winClosed )
+		{
 			lock.Unlock(); //!!!
 			delete data;
 			return 0;
@@ -49,33 +67,39 @@ void *ShellLoadDirThreadFunc(void *ptr)
 
 		data->threadStopped = true;
 		data->list  = list;
-		WinThreadSignal(0); //???
+		WinThreadSignal( 0 ); //???
 	}
-	
+
 	return 0;
 }
 
-class ShellLoadDirDialog: public NCVertDialog {
-public:	
-	ShellLoadDirTD *data;
+class ShellLoadDirDialog: public NCVertDialog
+{
+public:
+	ShellLoadDirTD* data;
 	StaticLine _text;
 	FSPtr _fs;
-	FSPath &_path;
+	FSPath& _path;
 
-	ShellLoadDirDialog(NCDialogParent *parent, FSPtr fs, FSPath &path);
-	virtual void ThreadStopped(int id, void* data);
+	ShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path );
+	virtual void ThreadStopped( int id, void* data );
 	virtual ~ShellLoadDirDialog();
 };
 
 ShellLoadDirDialog::~ShellLoadDirDialog()
 {
-	if (data) {
-		MutexLock lock(&data->mutex);
-		if (data->threadStopped) {
+	if ( data )
+	{
+		MutexLock lock( &data->mutex );
+
+		if ( data->threadStopped )
+		{
 			lock.Unlock(); //!!!
 			delete data;
 			data = 0;
-		} else {
+		}
+		else
+		{
 			data->winClosed = true;
 			data->info.SetStop();
 			data = 0;
@@ -83,199 +107,250 @@ ShellLoadDirDialog::~ShellLoadDirDialog()
 	}
 }
 
-ShellLoadDirDialog::ShellLoadDirDialog(NCDialogParent *parent, FSPtr fs, FSPath &path)
-:	NCVertDialog(::createDialogAsChild, 0, parent, utf8_to_unicode("TAB").ptr(), bListCancel),
-	data(0),
-	_text(0, this, utf8_to_unicode("Read ...").ptr()),
-	_fs(fs),
-	_path(path)
+ShellLoadDirDialog::ShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "TAB" ).ptr(), bListCancel ),
+	   data( 0 ),
+	   _text( 0, this, utf8_to_unicode( "Read ..." ).ptr() ),
+	   _fs( fs ),
+	   _path( path )
 {
-	_text.Enable(); _text.Show();
-	AddWin(&_text);
-	SetEnterCmd(CMD_CANCEL);
+	_text.Enable();
+	_text.Show();
+	AddWin( &_text );
+	SetEnterCmd( CMD_CANCEL );
 	SetPosition();
-	data = new ShellLoadDirTD(fs, path);
-	try {
-			this->ThreadCreate(1, ShellLoadDirThreadFunc, data);
-	} catch (...) {
+	data = new ShellLoadDirTD( fs, path );
+
+	try
+	{
+		this->ThreadCreate( 1, ShellLoadDirThreadFunc, data );
+	}
+	catch ( ... )
+	{
 		delete data;
 		data = 0;
 		throw;
 	}
 }
 
-void ShellLoadDirDialog::ThreadStopped(int id, void* data)
+void ShellLoadDirDialog::ThreadStopped( int id, void* data )
 {
-	EndModal(CMD_OK);
+	EndModal( CMD_OK );
 }
 
 ////////////////////////////////////
 
-class ShellFileListWin: public VListWin {
+class ShellFileListWin: public VListWin
+{
 	cptr< ccollect<FSNode*, 0x100> > pList;
 	int fontW;
 	int fontH;
 public:
-	ShellFileListWin(Win *parent, int H)
-	:	VListWin(Win::WT_CHILD, 0 /*WH_TABFOCUS | WH_CLICKFOCUS*/, 0, parent,VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0)
+	ShellFileListWin( Win* parent, int H )
+		:  VListWin( Win::WT_CHILD, 0 /*WH_TABFOCUS | WH_CLICKFOCUS*/, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
 	{
-		wal::GC gc(this);
-		gc.Set(GetFont());
-		cpoint ts = gc.GetTextExtents(ABCString);
-		fontW = (ts.x /ABCStringLen);
+		wal::GC gc( this );
+		gc.Set( GetFont() );
+		cpoint ts = gc.GetTextExtents( ABCString );
+		fontW = ( ts.x / ABCStringLen );
 		fontH = ts.y + 4;
 
-		this->SetItemSize( (fontH > 16 ? fontH: 16)+1, 100);
+		this->SetItemSize( ( fontH > 16 ? fontH : 16 ) + 1, 100 );
 
 		LSize ls;
 		ls.x.maximal = 10000;
-		ls.x.ideal = ls.x.minimal = fontW*57;
-		if (ls.x.minimal<100) ls.x.minimal = 100;
+		ls.x.ideal = ls.x.minimal = fontW * 57;
+
+		if ( ls.x.minimal < 100 ) { ls.x.minimal = 100; }
 
 		ls.y.maximal = 10000;
-		ls.y.ideal = ls.y.minimal = fontH*H;
-		if (ls.y.minimal<100) ls.y.minimal = 100;
+		ls.y.ideal = ls.y.minimal = fontH * H;
 
-		SetLSize(ls);
+		if ( ls.y.minimal < 100 ) { ls.y.minimal = 100; }
+
+		SetLSize( ls );
 	}
 
-	void SetList(cptr< ccollect<FSNode*, 0x100> > p){ pList = p; SetCount(pList.ptr() ? pList->count() : 0); }
+	void SetList( cptr< ccollect<FSNode*, 0x100> > p ) { pList = p; SetCount( pList.ptr() ? pList->count() : 0 ); }
 
-	virtual void DrawItem(wal::GC &gc, int n, crect rect);
-	FSNode *GetCurrentNode(){ int n = GetCurrent(); return n>=0 && pList.ptr() && n < pList->count() ? pList->get(n) : 0; }
-	
+	virtual void DrawItem( wal::GC& gc, int n, crect rect );
+	FSNode* GetCurrentNode() { int n = GetCurrent(); return n >= 0 && pList.ptr() && n < pList->count() ? pList->get( n ) : 0; }
+
 	virtual ~ShellFileListWin();
 };
 
 
-static int uiDir = GetUiID("dir");
+static int uiDir = GetUiID( "dir" );
 
-void ShellFileListWin::DrawItem(wal::GC &gc, int n, crect rect)
+void ShellFileListWin::DrawItem( wal::GC& gc, int n, crect rect )
 {
-	if (pList.ptr() && n >= 0 && n < pList->count())
+	if ( pList.ptr() && n >= 0 && n < pList->count() )
 	{
-		FSNode *p = pList->get(n);
-		
-		
-		UiCondList ucl;
-		if ( (n % 2) == 0 ) ucl.Set(uiOdd, true);
-		if (n == GetCurrent())	ucl.Set(uiCurrentItem, true);
-		if (p->IsDir()) ucl.Set(uiDir, true);
-		
-		unsigned bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
-		unsigned fg = UiGetColor(uiColor, uiItem, &ucl, 0);
+		FSNode* p = pList->get( n );
 
-		gc.Set(GetFont());
-		gc.SetFillColor(bg);
-		gc.SetTextColor(fg);
-		gc.FillRect(rect);
+
+		UiCondList ucl;
+
+		if ( ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
+
+		if ( n == GetCurrent() ) { ucl.Set( uiCurrentItem, true ); }
+
+		if ( p->IsDir() ) { ucl.Set( uiDir, true ); }
+
+		unsigned bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
+		unsigned fg = UiGetColor( uiColor, uiItem, &ucl, 0 );
+
+		gc.Set( GetFont() );
+		gc.SetFillColor( bg );
+		gc.SetTextColor( fg );
+		gc.FillRect( rect );
 
 		static unicode_t dirChar = DIR_SPLITTER;
 
-		if (fg = p->IsDir())
-			gc.TextOutF(rect.left, rect.top, &dirChar, 1);
-		gc.TextOutF(rect.left+fontW, rect.top, p->Name().GetUnicode());
-	} else {
-		gc.SetFillColor(UiGetColor(uiBackground, uiItem, 0, 0xFFFFFF));
-		gc.FillRect(rect); 
+		if ( fg = p->IsDir() )
+		{
+			gc.TextOutF( rect.left, rect.top, &dirChar, 1 );
+		}
+
+		gc.TextOutF( rect.left + fontW, rect.top, p->Name().GetUnicode() );
+	}
+	else
+	{
+		gc.SetFillColor( UiGetColor( uiBackground, uiItem, 0, 0xFFFFFF ) );
+		gc.FillRect( rect );
 	}
 }
 
-ShellFileListWin::~ShellFileListWin(){};
+ShellFileListWin::~ShellFileListWin() {};
 
 /////////////////////////////////////////
 
-static bool accmask_begin0(const unicode_t *name, const unicode_t *mask)
+static bool accmask_begin0( const unicode_t* name, const unicode_t* mask )
 {
-	
-	while (true) 
+
+	while ( true )
 	{
-		switch (*mask) {
-		case 0:
-			return true;
-		case '?': break;
-		case '*':
-			while (*mask == '*') mask++;
-			if (!*mask) return true;
-			for (; *name; name++ )
-				if (accmask_begin0(name, mask)) 
-					return true;
-			return false;
-		default:
-			if (*name != *mask) 
-				return false; 
+		switch ( *mask )
+		{
+			case 0:
+				return true;
+
+			case '?':
+				break;
+
+			case '*':
+				while ( *mask == '*' ) { mask++; }
+
+				if ( !*mask ) { return true; }
+
+				for ( ; *name; name++ )
+					if ( accmask_begin0( name, mask ) )
+					{
+						return true;
+					}
+
+				return false;
+
+			default:
+				if ( *name != *mask )
+				{
+					return false;
+				}
 		}
-		name++; mask++;
+
+		name++;
+		mask++;
 	}
 }
 
-extern unsigned  UnicodeLC(unsigned ch);
+extern unsigned  UnicodeLC( unsigned ch );
 
-static bool accmask_nocase_begin0(const unicode_t *name, const unicode_t *mask)
+static bool accmask_nocase_begin0( const unicode_t* name, const unicode_t* mask )
 {
-	
-	while (true) 
+
+	while ( true )
 	{
-		switch (*mask) {
-		case 0:
-			return true;
-		case '?': break;
-		case '*':
-			while (*mask == '*') mask++;
-			if (!*mask) return true;
-			for (; *name; name++ )
-				if (accmask_nocase_begin0(name, mask)) 
-					return true;
-			return false;
-		default:
-			if (UnicodeLC(*name) != UnicodeLC(*mask)) 
-				return false; 
+		switch ( *mask )
+		{
+			case 0:
+				return true;
+
+			case '?':
+				break;
+
+			case '*':
+				while ( *mask == '*' ) { mask++; }
+
+				if ( !*mask ) { return true; }
+
+				for ( ; *name; name++ )
+					if ( accmask_nocase_begin0( name, mask ) )
+					{
+						return true;
+					}
+
+				return false;
+
+			default:
+				if ( UnicodeLC( *name ) != UnicodeLC( *mask ) )
+				{
+					return false;
+				}
 		}
-		name++; mask++;
+
+		name++;
+		mask++;
 	}
 }
 
 
-struct ShellFileDlgData{
+struct ShellFileDlgData
+{
 	cptr<FSList> list;
 	carray<FSNode*> sorted;
 	carray<unicode_t> mask;
 	cptr< ccollect<FSNode*, 0x100> > filtered;
 
-	void RefreshList(carray<unicode_t> mask);
+	void RefreshList( carray<unicode_t> mask );
 
-	ShellFileDlgData(cptr<FSList> l, const unicode_t *s):list(l)
+	ShellFileDlgData( cptr<FSList> l, const unicode_t* s ): list( l )
 	{
-			sorted = list->GetArray();
-			FSList::SortByName(sorted.ptr(), list->Count(), true, 
+		sorted = list->GetArray();
+		FSList::SortByName( sorted.ptr(), list->Count(), true,
 #ifdef _WIN32
-				false
+		                    false
 #else
-				true
+		                    true
 #endif
-				);
-			RefreshList(new_unicode_str(s));
+		                  );
+		RefreshList( new_unicode_str( s ) );
 	}
 };
 
-void ShellFileDlgData::RefreshList(carray<unicode_t> m)
+void ShellFileDlgData::RefreshList( carray<unicode_t> m )
 {
 	filtered = 0;
 	mask = m;
-	if (list->Count())
+
+	if ( list->Count() )
 	{
 		cptr< ccollect<FSNode*, 0x100> > p = new ccollect<FSNode*, 0x100>;
 		int n = list->Count();
-		for (int i = 0; i<n; i++) {
+
+		for ( int i = 0; i < n; i++ )
+		{
 			if (
 #ifdef _WIN32
-			accmask_nocase_begin0
+			   accmask_nocase_begin0
 #else
-			accmask_begin0
+			   accmask_begin0
 #endif
-			(sorted[i]->GetUnicodeName(), mask.ptr()))
-				p->append(sorted[i]);
+			   ( sorted[i]->GetUnicodeName(), mask.ptr() ) )
+			{
+				p->append( sorted[i] );
+			}
 		}
+
 		filtered = p;
 	}
 }
@@ -284,196 +359,272 @@ void ShellFileDlgData::RefreshList(carray<unicode_t> m)
 //#define FGCOLOR 0xFFFFFF
 
 
-class ShellFileDlg: public NCDialog {
+class ShellFileDlg: public NCDialog
+{
 	Layout layout;
 	ShellFileListWin list;
 	EditLine line;
-	ShellFileDlgData *data;
+	ShellFileDlgData* data;
 public:
-	ShellFileDlg(NCDialogParent *parent, ShellFileDlgData *d)
-	:	NCDialog(createDialogAsChild, 0, parent, utf8_to_unicode(" TAB ").ptr(), bListOkCancel), //BGCOLOR), 
-		layout(10,10),
-		list(this, 15),
-		line(0, this, 0, 0, 20),
-		data(d)
-	{ 
-		layout.AddWin(&list,0,0); list.Enable(); list.Show(); 
-		layout.AddWin(&line,1,0); line.Enable(); line.Show(); 
-		if (data->mask.ptr()) line.SetText(data->mask.ptr());
+	ShellFileDlg( NCDialogParent* parent, ShellFileDlgData* d )
+		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( " TAB " ).ptr(), bListOkCancel ), //BGCOLOR),
+		   layout( 10, 10 ),
+		   list( this, 15 ),
+		   line( 0, this, 0, 0, 20 ),
+		   data( d )
+	{
+		layout.AddWin( &list, 0, 0 );
+		list.Enable();
+		list.Show();
+		layout.AddWin( &line, 1, 0 );
+		line.Enable();
+		line.Show();
+
+		if ( data->mask.ptr() ) { line.SetText( data->mask.ptr() ); }
+
 		line.SetFocus();
-		AddLayout(&layout);
-		SetEnterCmd(CMD_OK);
+		AddLayout( &layout );
+		SetEnterCmd( CMD_OK );
 		SetPosition();
 
-		list.SetList(data->filtered);
-		list.MoveCurrent(0);
+		list.SetList( data->filtered );
+		list.MoveCurrent( 0 );
 	};
-	virtual bool Command(int id, int subId, Win *win, void *data);
-	virtual bool EventChildKey(Win* child, cevent_key* pEvent);
+	virtual bool Command( int id, int subId, Win* win, void* data );
+	virtual bool EventChildKey( Win* child, cevent_key* pEvent );
 	virtual int UiGetClassId();
-	FSNode *GetCurrent(){ return list.GetCurrentNode(); }
+	FSNode* GetCurrent() { return list.GetCurrentNode(); }
 	virtual ~ShellFileDlg();
 };
 
-int ShellFileDlg::UiGetClassId(){ return GetUiID("TabDialog"); }
+int ShellFileDlg::UiGetClassId() { return GetUiID( "TabDialog" ); }
 
-bool ShellFileDlg::Command(int id, int subId, Win *win, void *d)
+bool ShellFileDlg::Command( int id, int subId, Win* win, void* d )
 {
-	if (id == CMD_ITEM_CLICK && win == &list)
-		EndModal(CMD_OK);
-	else
-	if (id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_CHANGED && win == &line)
+	if ( id == CMD_ITEM_CLICK && win == &list )
 	{
-		data->RefreshList(line.GetText());
-		list.SetList(data->filtered);
-		list.MoveCurrent(0);
-		if (list.IsVisible()) list.Invalidate();
+		EndModal( CMD_OK );
+	}
+	else if ( id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_CHANGED && win == &line )
+	{
+		data->RefreshList( line.GetText() );
+		list.SetList( data->filtered );
+		list.MoveCurrent( 0 );
+
+		if ( list.IsVisible() ) { list.Invalidate(); }
+
 		return true;
 	};
 
-	return NCDialog::Command(id, subId, win, data);
+	return NCDialog::Command( id, subId, win, data );
 }
 
-bool ShellFileDlg::EventChildKey(Win* child, cevent_key* pEvent)
+bool ShellFileDlg::EventChildKey( Win* child, cevent_key* pEvent )
 {
-	switch (pEvent->Key()) {
-	case VK_UP:
-	case VK_DOWN:
-	case VK_NEXT:
-	case VK_PRIOR:
-		return list.EventKey(pEvent);
-	}; 
+	switch ( pEvent->Key() )
+	{
+		case VK_UP:
+		case VK_DOWN:
+		case VK_NEXT:
+		case VK_PRIOR:
+			return list.EventKey( pEvent );
+	};
 
- 	return NCDialog::EventChildKey(child, pEvent);
+	return NCDialog::EventChildKey( child, pEvent );
 }
 
-ShellFileDlg::~ShellFileDlg(){}
+ShellFileDlg::~ShellFileDlg() {}
 
 
 
 /////////////////////////////////////
 
-static cptr<FSList> DoShellLoadDirDialog(NCDialogParent *parent, FSPtr fs, FSPath &path)
+static cptr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
 {
-	ShellLoadDirDialog dlg(parent, fs, path);
-	if (dlg.DoModal() == CMD_OK && dlg.data && dlg.data->list.ptr() && dlg.data->list->Count())
+	ShellLoadDirDialog dlg( parent, fs, path );
+
+	if ( dlg.DoModal() == CMD_OK && dlg.data && dlg.data->list.ptr() && dlg.data->list->Count() )
+	{
 		return dlg.data->list;
+	}
+
 	return 0;
 }
 
 
-carray<unicode_t> ShellTabKey(NCDialogParent *par, FSPtr fs, FSPath &path, const unicode_t *str, int *cursor)
+carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, const unicode_t* str, int* cursor )
 {
-	if (fs->Type() != FS::SYSTEM) return 0;
+	if ( fs->Type() != FS::SYSTEM ) { return 0; }
 
-	int len = unicode_strlen(str);
+	int len = unicode_strlen( str );
 	int n = len;
-	if (cursor && *cursor>=0 && *cursor<n) n = *cursor;
+
+	if ( cursor && *cursor >= 0 && *cursor < n ) { n = *cursor; }
 
 	int b = -1;
 	int ds  = -1;
 	int i;
 	unicode_t strChar = 0;
-	for (i = 0; i<n; i++) {
+
+	for ( i = 0; i < n; i++ )
+	{
 		unicode_t c = str[i];
-		if (c<=32) {
-			if (!strChar) b = -1;
-		} else if (c == '"' || c == '\'') {
-			if (strChar) {
-				if (strChar == c) {
+
+		if ( c <= 32 )
+		{
+			if ( !strChar ) { b = -1; }
+		}
+		else if ( c == '"' || c == '\'' )
+		{
+			if ( strChar )
+			{
+				if ( strChar == c )
+				{
 					strChar = 0;
 					b = -1;
 				}
-			} else {
-				strChar = c;
-				b = i+1;
 			}
-		} else {
-			if (c == DIR_SPLITTER)	ds = i;
-			if (b < 0) 	b = i;
+			else
+			{
+				strChar = c;
+				b = i + 1;
+			}
+		}
+		else
+		{
+			if ( c == DIR_SPLITTER ) { ds = i; }
+
+			if ( b < 0 ) { b = i; }
 		}
 	}
 
 	int e;
-	for (e = n; e<len; e++)
+
+	for ( e = n; e < len; e++ )
 	{
 		unicode_t c = str[e];
-		if (c <= 32) {
-			if (!strChar) break;
-		} else if (c == '"' || c == '\'') {
-			if (strChar) {
-				if (strChar == c) break;
-			} else 
+
+		if ( c <= 32 )
+		{
+			if ( !strChar ) { break; }
+		}
+		else if ( c == '"' || c == '\'' )
+		{
+			if ( strChar )
+			{
+				if ( strChar == c ) { break; }
+			}
+			else
+			{
 				break;
-		} else {
-			if (c == DIR_SPLITTER)	break;
+			}
+		}
+		else
+		{
+			if ( c == DIR_SPLITTER ) { break; }
 		}
 	}
 
-	if (b<0) b = n;
-	if (b >= e) return 0;
+	if ( b < 0 ) { b = n; }
+
+	if ( b >= e ) { return 0; }
 
 	FSPath searchPath = path;
 	int bm = ds >= b ? ds + 1 : b;
 	int maskLen = e - bm;
-	carray<unicode_t> mask(maskLen+1);
-	for (i = 0; i<maskLen; i++)
-		mask[i] = str[bm+i];
-	mask[i]=0;
+	carray<unicode_t> mask( maskLen + 1 );
 
-	if (ds>=b)
+	for ( i = 0; i < maskLen; i++ )
 	{
-		int l = ds-b+1;
-		carray<unicode_t> buf(l+1);
-		for (i = 0; i<l; i++)
-			buf[i] = str[b+i];
-		buf[i]=0;
+		mask[i] = str[bm + i];
+	}
 
-		FSPtr f1 = ParzeURI(buf.ptr(), searchPath, &fs, 1);
-		if (!f1.Ptr()) return 0;
+	mask[i] = 0;
+
+	if ( ds >= b )
+	{
+		int l = ds - b + 1;
+		carray<unicode_t> buf( l + 1 );
+
+		for ( i = 0; i < l; i++ )
+		{
+			buf[i] = str[b + i];
+		}
+
+		buf[i] = 0;
+
+		FSPtr f1 = ParzeURI( buf.ptr(), searchPath, &fs, 1 );
+
+		if ( !f1.Ptr() ) { return 0; }
+
 		fs = f1;
 	}
 
-	cptr<FSList> list = DoShellLoadDirDialog(par, fs, searchPath);
-	if (list.ptr())
+	cptr<FSList> list = DoShellLoadDirDialog( par, fs, searchPath );
+
+	if ( list.ptr() )
 	{
 
-		FSNode *p = 0;
-		ShellFileDlgData data(list, mask.ptr());
-		if (data.filtered.ptr()) 
+		FSNode* p = 0;
+		ShellFileDlgData data( list, mask.ptr() );
+
+		if ( data.filtered.ptr() )
 		{
-			if (!data.filtered->count()) return 0;
-			if (data.filtered->count()==1)
-				p = data.filtered->get(0);
-			else {
-				ShellFileDlg dlg(par, &data);
-				if (dlg.DoModal() == CMD_OK)
-					p = dlg.GetCurrent(); 
+			if ( !data.filtered->count() ) { return 0; }
+
+			if ( data.filtered->count() == 1 )
+			{
+				p = data.filtered->get( 0 );
+			}
+			else
+			{
+				ShellFileDlg dlg( par, &data );
+
+				if ( dlg.DoModal() == CMD_OK )
+				{
+					p = dlg.GetCurrent();
+				}
 			}
 		}
 
-		if (p) {
+		if ( p )
+		{
 
-			const unicode_t *name = p->GetUnicodeName();
-			if (!name) return 0; //???
-			int nLen = unicode_strlen(name);
+			const unicode_t* name = p->GetUnicodeName();
+
+			if ( !name ) { return 0; } //???
+
+			int nLen = unicode_strlen( name );
 
 			ccollect<unicode_t, 0x100> buf;
-			for (i = 0; i<b; i++)
-				buf.append(str[i]);
-			for (i = b; i<=ds; i++)
-				buf.append(str[i]);
-			for (;*name;name++)
-				buf.append(*name);
 
-			if (cursor) *cursor = i + nLen;
+			for ( i = 0; i < b; i++ )
+			{
+				buf.append( str[i] );
+			}
 
-			for (i = e; i<len; i++)
-				buf.append(str[i]);
-			buf.append(0);
-			
+			for ( i = b; i <= ds; i++ )
+			{
+				buf.append( str[i] );
+			}
+
+			for ( ; *name; name++ )
+			{
+				buf.append( *name );
+			}
+
+			if ( cursor ) { *cursor = i + nLen; }
+
+			for ( i = e; i < len; i++ )
+			{
+				buf.append( str[i] );
+			}
+
+			buf.append( 0 );
+
 			return buf.grab();
 		}
 	}
-	return carray<unicode_t>(0);
+
+	return carray<unicode_t>( 0 );
 }

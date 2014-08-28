@@ -3,6 +3,6 @@
 
 #include "ncdialogs.h"
 
-void Help(NCDialogParent *parent, const char * theme);
+void Help( NCDialogParent* parent, const char* theme );
 
 #endif

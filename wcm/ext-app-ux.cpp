@@ -1,6 +1,6 @@
 #include <wal.h>
 using namespace wal;
-#include "bfile.h"                                                                                                                                                           
+#include "bfile.h"
 #include "string-util.h"
 #include "ext-app.h"
 
@@ -14,142 +14,150 @@ using namespace wal;
 
 
 /*
-	как выяснилось (описания не нашел)
-	
-	/usr/share/mime/globs
-		application/msword:*.doc
-		text/plain:*.doc
+   как выяснилось (описания не нашел)
 
-	/usr/share/mime/globs2 ??? хрен знает зачем он
-		75:application/pkcs8:*.p8
-		55:application/x-pkcs12:*.pfx
-		50:application/msword:*.doc
-		50:text/plain:*.doc
-		50:application/msword:*.doc
-		10:text/x-readme:readme*
-		10:text/x-makefile:makefile.*
-			
-	/usr/share/mime/aliases			
-		application/x-msword application/msword
-		application/x-netscape-bookmarks application/x-mozilla-bookmarks
-			
-	/usr/share/mime/subclasses
-		application/x-cdrdao-toc text/plain
-		application/pkix-crl+pem application/x-pem-file
-		application/x-ruby application/x-executable
-			
-	/usr/share/applications/defaults.list 
-		[Default Applications]
-		application/csv=libreoffice-calc.desktop      !!! может содержать несколько файлов описаний приложений через ';' (в ming например)
-		application/excel=libreoffice-calc.desktop
-		application/msexcel=libreoffice-calc.desktop
-		...
+   /usr/share/mime/globs
+      application/msword:*.doc
+      text/plain:*.doc
+
+   /usr/share/mime/globs2 ??? хрен знает зачем он
+      75:application/pkcs8:*.p8
+      55:application/x-pkcs12:*.pfx
+      50:application/msword:*.doc
+      50:text/plain:*.doc
+      50:application/msword:*.doc
+      10:text/x-readme:readme*
+      10:text/x-makefile:makefile.*
+
+   /usr/share/mime/aliases
+      application/x-msword application/msword
+      application/x-netscape-bookmarks application/x-mozilla-bookmarks
+
+   /usr/share/mime/subclasses
+      application/x-cdrdao-toc text/plain
+      application/pkix-crl+pem application/x-pem-file
+      application/x-ruby application/x-executable
+
+   /usr/share/applications/defaults.list
+      [Default Applications]
+      application/csv=libreoffice-calc.desktop      !!! может содержать несколько файлов описаний приложений через ';' (в ming например)
+      application/excel=libreoffice-calc.desktop
+      application/msexcel=libreoffice-calc.desktop
+      ...
 
 */
 
 
-class MimeGlobs {
-            carray<char> fileName;
-            time_t mtime;
-           
-            cstrhash< ccollect<int, 1>, unicode_t> extMimeHash;
-           
-            void AddExt(const char *s, int m);
-           
-            struct MaskNode {
-                        carray<unicode_t> mask;
-                        int mime;
-                        MaskNode *next;
-                        MaskNode(const unicode_t *s, int m):mask(new_unicode_str(s)), mime(m), next(0){ }
-            };
-           
-            MaskNode *maskList;
-            void AddMask(const char *s, int m);
-            void ClearMaskList(){ while (maskList){ MaskNode *p = maskList->next; delete maskList; maskList = p; } }
+class MimeGlobs
+{
+	carray<char> fileName;
+	time_t mtime;
+
+	cstrhash< ccollect<int, 1>, unicode_t> extMimeHash;
+
+	void AddExt( const char* s, int m );
+
+	struct MaskNode
+	{
+		carray<unicode_t> mask;
+		int mime;
+		MaskNode* next;
+		MaskNode( const unicode_t* s, int m ): mask( new_unicode_str( s ) ), mime( m ), next( 0 ) { }
+	};
+
+	MaskNode* maskList;
+	void AddMask( const char* s, int m );
+	void ClearMaskList() { while ( maskList ) { MaskNode* p = maskList->next; delete maskList; maskList = p; } }
 public:
-            MimeGlobs(const char *fname):fileName(new_char_str(fname)), mtime(0), maskList(0){ }
-            int GetMimeList(const unicode_t *fileName, ccollect<int> &list);
-            void Refresh();
-            ~MimeGlobs();
+	MimeGlobs( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ), maskList( 0 ) { }
+	int GetMimeList( const unicode_t* fileName, ccollect<int>& list );
+	void Refresh();
+	~MimeGlobs();
 };
 
-class MimeSubclasses {
+class MimeSubclasses
+{
 	carray<char> fileName;
 	time_t mtime;
 	cinthash< int, ccollect<int> > hash;
 public:
-	MimeSubclasses(const char *fn):fileName(new_char_str(fn)), mtime(0){ }
-	int GetParentList(int mime, ccollect<int> &list);
+	MimeSubclasses( const char* fn ): fileName( new_char_str( fn ) ), mtime( 0 ) { }
+	int GetParentList( int mime, ccollect<int>& list );
 	void Refresh();
 	~MimeSubclasses();
 };
 
-class MimeAliases {
-            carray<char> fileName;
-            time_t mtime;
-            cinthash<int, int> data;
+class MimeAliases
+{
+	carray<char> fileName;
+	time_t mtime;
+	cinthash<int, int> data;
 public:
-	MimeAliases(const char *fname):fileName(new_char_str(fname)), mtime(0){ }
+	MimeAliases( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
 	void Refresh();
-	
-            int Check(int mime)
-            {
-                        int *pn = data.exist(mime);
-                        return pn ? *pn : mime;
-            }
-            ~MimeAliases();
+
+	int Check( int mime )
+	{
+		int* pn = data.exist( mime );
+		return pn ? *pn : mime;
+	}
+	~MimeAliases();
 };
 
-class MimeDB {
+class MimeDB
+{
 	MimeGlobs globs;
 	MimeSubclasses subclasses;
 	MimeAliases aliases;
-	void AddParentsRecursive(int mime, ccollect<int> *pList, cinthash<int, bool> *pHash);
+	void AddParentsRecursive( int mime, ccollect<int>* pList, cinthash<int, bool>* pHash );
 public:
-	MimeDB(const char *location);
+	MimeDB( const char* location );
 	void Refresh();
-	int GetMimeList(const unicode_t *fileName, ccollect<int> &list);
-	int CheckAlias(int id);
+	int GetMimeList( const unicode_t* fileName, ccollect<int>& list );
+	int CheckAlias( int id );
 	~MimeDB();
 };
 
-class AppDefListFile {
+class AppDefListFile
+{
 	carray<char> fileName;
 	time_t mtime;
 	cinthash<int, ccollect<int, 1> > hash;
 public:
-	AppDefListFile(const char *fname):fileName(new_char_str(fname)), mtime(0){ }
+	AppDefListFile( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
 	void Refresh();
-	int GetAppList(int mime, ccollect<int> &appList);
+	int GetAppList( int mime, ccollect<int>& appList );
 	~AppDefListFile();
 };
 
 
-struct AppNode {
+struct AppNode
+{
 	carray<unicode_t> name;
 	carray<unicode_t> exec;
 	bool terminal;
-	AppNode():terminal(true){}
+	AppNode(): terminal( true ) {}
 };
 
 
-class AppDB {
+class AppDB
+{
 	carray<char> appDefsPrefix;
 	cinthash<int, cptr<AppNode> > apps;
 	cinthash<int, ccollect<int> > mimeMapHash;
-	
-	bool ReadAppDesctopFile(const char *fName);
-	
+
+	bool ReadAppDesctopFile( const char* fName );
+
 	AppDefListFile defList;
 public:
-	AppDB(const char *prefix);
-		
-	int GetAppList(int mime, ccollect<int> &appList);
-	
-	void Refresh(){ defList.Refresh(); }
-	
-	AppNode* GetApp(int id);
-	
+	AppDB( const char* prefix );
+
+	int GetAppList( int mime, ccollect<int>& appList );
+
+	void Refresh() { defList.Refresh(); }
+
+	AppNode* GetApp( int id );
+
 	~AppDB();
 };
 
@@ -157,42 +165,53 @@ public:
 
 
 //добавляет в хэш имена выполняемых файлов из указанного каталога
-static void SearchExe(const char *dirName, cstrhash<bool> &hash)
+static void SearchExe( const char* dirName, cstrhash<bool>& hash )
 {
-	DIR *d = opendir(dirName);
-	
-	if (!d) return;
-	
-	try {
+	DIR* d = opendir( dirName );
+
+	if ( !d ) { return; }
+
+	try
+	{
 		struct dirent ent, *pEnt;
-		
-		while (true) 
+
+		while ( true )
 		{
-			if (readdir_r( d, &ent, &pEnt))	goto err;
-			if (!pEnt) break;
+			if ( readdir_r( d, &ent, &pEnt ) ) { goto err; }
+
+			if ( !pEnt ) { break; }
 
 			//skip . and ..
-			if (ent.d_name[0]=='.' && (!ent.d_name[1] || (ent.d_name[1]=='.' && !ent.d_name[2])))
+			if ( ent.d_name[0] == '.' && ( !ent.d_name[1] || ( ent.d_name[1] == '.' && !ent.d_name[2] ) ) )
+			{
 				continue;
-				
-			carray<char> filePath = carray_cat<char>(dirName, "/", ent.d_name);	
-				
+			}
+
+			carray<char> filePath = carray_cat<char>( dirName, "/", ent.d_name );
+
 			struct stat sb;
-			if (stat(filePath.ptr(), &sb)) continue;
-	
-			if ( (sb.st_mode & S_IFMT) == S_IFREG && (sb.st_mode & 0111) != 0)
+
+			if ( stat( filePath.ptr(), &sb ) ) { continue; }
+
+			if ( ( sb.st_mode & S_IFMT ) == S_IFREG && ( sb.st_mode & 0111 ) != 0 )
+			{
 				hash[ent.d_name] = true;
+			}
 		};
-			
-		closedir(d);
+
+		closedir( d );
+
 		return;
-			
-	err:
-		closedir(d);
+
+err:
+		closedir( d );
+
 		return;
-			
-	} catch (...) {
-		closedir(d);
+
+	}
+	catch ( ... )
+	{
+		closedir( d );
 		throw;
 	}
 }
@@ -201,308 +220,383 @@ static cptr<cstrhash<bool> > pathExeList;
 
 //определяет наличие исполняемого файла в каталогах в PATH
 //списки кэшируются
-bool ExeFileExist(const char *name)
+bool ExeFileExist( const char* name )
 {
-	if (name[0] == '/') //абсолютный путь
+	if ( name[0] == '/' ) //абсолютный путь
 	{
 		struct stat sb;
-		if (stat(name, &sb)) return false;
-		
+
+		if ( stat( name, &sb ) ) { return false; }
+
 		return true;
-			
-		return  ( (sb.st_mode & S_IFMT) == S_IFREG && (sb.st_mode & 0111) != 0);
+
+		return  ( ( sb.st_mode & S_IFMT ) == S_IFREG && ( sb.st_mode & 0111 ) != 0 );
 	}
 
-	if (!pathExeList.ptr()) 
+	if ( !pathExeList.ptr() )
 	{
 		pathExeList = new cstrhash<bool>;
-		const char *pl = getenv("PATH");
-		if (!pl) return false;
-		carray<char> paths = new_char_str(pl);
-		char *s = paths.ptr();
-		
-		while (*s) 
+		const char* pl = getenv( "PATH" );
+
+		if ( !pl ) { return false; }
+
+		carray<char> paths = new_char_str( pl );
+		char* s = paths.ptr();
+
+		while ( *s )
 		{
-			char *t = s;
-			while (*t && *t !=':') t++;
-			if (*t) 
+			char* t = s;
+
+			while ( *t && *t != ':' ) { t++; }
+
+			if ( *t )
 			{
 				*t = 0;
 				t++;
 			}
-			
-			SearchExe(s, *(pathExeList.ptr()));
+
+			SearchExe( s, *( pathExeList.ptr() ) );
 			s = t;
 		}
 	}
-	return pathExeList->exist(name) != 0;
+
+	return pathExeList->exist( name ) != 0;
 }
 
 
-extern unsigned  UnicodeLC(unsigned ch);
+extern unsigned  UnicodeLC( unsigned ch );
 
 #define MIMEDEBUG
 
 #ifdef MIMEDEBUG
 static cinthash<int, carray<char> > mimeIdToNameHash;
-const char *GetMimeName(int n)
+const char* GetMimeName( int n )
 {
-	carray<char> *p = mimeIdToNameHash.exist(n);
+	carray<char>* p = mimeIdToNameHash.exist( n );
 	return p ? p->ptr() : "";
 }
 #endif
 
-static int GetMimeID(const char *mimeName)
+static int GetMimeID( const char* mimeName )
 {
 	static cstrhash<int> hash;
 	static int id = 0;
-            
-	int *pn = hash.exist(mimeName);
-	if (pn) return *pn;
-	
+
+	int* pn = hash.exist( mimeName );
+
+	if ( pn ) { return *pn; }
+
 	id++;
 	hash[mimeName] = id;
-	
+
 #ifdef MIMEDEBUG
-	mimeIdToNameHash[id] = new_char_str(mimeName);
-#endif	
+	mimeIdToNameHash[id] = new_char_str( mimeName );
+#endif
 	return id;
 }
 
 static cinthash<int, carray<char> > appIdToNameHash;
 
-static int GetAppID(const char *appName)
+static int GetAppID( const char* appName )
 {
 	static cstrhash<int> hash;
 	static int id = 0;
-            
-	int *pn = hash.exist(appName);
-	if (pn) return *pn;
-	
+
+	int* pn = hash.exist( appName );
+
+	if ( pn ) { return *pn; }
+
 	id++;
 	hash[appName] = id;
 
-	appIdToNameHash[id] = new_char_str(appName);
+	appIdToNameHash[id] = new_char_str( appName );
 	return id;
 }
 
-static const char *GetAppName(int id)
+static const char* GetAppName( int id )
 {
-	carray<char> *p = appIdToNameHash.exist(id);
+	carray<char>* p = appIdToNameHash.exist( id );
 	return p ? p->ptr() : "";
 }
 
 
-inline time_t GetMTime(const char *fileName)
+inline time_t GetMTime( const char* fileName )
 {
-            struct stat st;
-            return stat(fileName, &st)!=0 ? 0 : st.st_mtime;
+	struct stat st;
+	return stat( fileName, &st ) != 0 ? 0 : st.st_mtime;
 }
 
-static carray<unicode_t> GetFileExtLC(const unicode_t *uri)
+static carray<unicode_t> GetFileExtLC( const unicode_t* uri )
 {
-	if (!uri) return 0;
-	const unicode_t *ext = find_right_char<unicode_t>(uri,'.');
-	if (!ext || !*ext) return carray<unicode_t>();
-	
-	carray<unicode_t> a = new_unicode_str(ext + 1); //пропустить точку
-	unicode_t *s = a.ptr();
-	for (;*s; s++) *s = UnicodeLC(*s);
-	
+	if ( !uri ) { return 0; }
+
+	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
+
+	if ( !ext || !*ext ) { return carray<unicode_t>(); }
+
+	carray<unicode_t> a = new_unicode_str( ext + 1 ); //пропустить точку
+	unicode_t* s = a.ptr();
+
+	for ( ; *s; s++ ) { *s = UnicodeLC( *s ); }
+
 	return a;
 }
 
 
- 
+
 ////////////////// MimeGlobs //////////////////////////
 
-inline bool IsSpace(int c){ return c>0 && c<=32; }
-inline char *SS(char *s){ while(IsSpace(*s)) s++; return s; }
-inline char *SNotS(char *s){ while(*s && !IsSpace(*s)) s++; return s; }
-inline char *SNotC(char *s, int c){ while(*s && *s != c) s++; return s; }
- 
-inline void MimeGlobs::AddExt(const char *s, int m)
+inline bool IsSpace( int c ) { return c > 0 && c <= 32; }
+inline char* SS( char* s ) { while ( IsSpace( *s ) ) { s++; } return s; }
+inline char* SNotS( char* s ) { while ( *s && !IsSpace( *s ) ) { s++; } return s; }
+inline char* SNotC( char* s, int c ) { while ( *s && *s != c ) { s++; } return s; }
+
+inline void MimeGlobs::AddExt( const char* s, int m )
 {
-            unicode_t buf[100];
-            int len = 0;
-            for ( ;*s && len < 100-1; s++, len++)
-                        buf[len] = UnicodeLC(*s);
-            buf[len] = 0;
-            extMimeHash[buf].append(m);
+	unicode_t buf[100];
+	int len = 0;
+
+	for ( ; *s && len < 100 - 1; s++, len++ )
+	{
+		buf[len] = UnicodeLC( *s );
+	}
+
+	buf[len] = 0;
+	extMimeHash[buf].append( m );
 }
- 
- 
-inline void MimeGlobs::AddMask(const char *s, int m)
+
+
+inline void MimeGlobs::AddMask( const char* s, int m )
 {
-            unicode_t buf[100];
-            int len = 0;
-            for ( ;*s && len < 100-1; s++, len++)
-                        buf[len] = UnicodeLC(*s);
-            buf[len] = 0;
-           
-            MaskNode *node = new MaskNode(buf, m);
-            node->next = maskList;
-            maskList = node;
+	unicode_t buf[100];
+	int len = 0;
+
+	for ( ; *s && len < 100 - 1; s++, len++ )
+	{
+		buf[len] = UnicodeLC( *s );
+	}
+
+	buf[len] = 0;
+
+	MaskNode* node = new MaskNode( buf, m );
+	node->next = maskList;
+	maskList = node;
 }
- 
+
 void MimeGlobs::Refresh()
 {
-            time_t tim = GetMTime(fileName.ptr());
-            if (tim == mtime) return;
+	time_t tim = GetMTime( fileName.ptr() );
 
-            mtime = tim;
-            extMimeHash.clear();
-            ClearMaskList();
-           
-            try {
-                        BFile f;
-                        f.Open(fileName.ptr()); //"/usr/share/mime/glibs");
-                        char buf[4096];
+	if ( tim == mtime ) { return; }
 
-                        while (f.GetStr(buf, sizeof(buf)))
-                        {
-                                   char *s = SS(buf);
-                                   if (*s == '#') continue; //комментарий
-                                  
-                                   //text/plain:*.doc
-                                  
-                                   char *e = SNotC(s, ':');
-                                   if (!e) continue;
-                                   *e = 0;
-                                   e++;
-                                   e = SS(e);
-                                  
-                                   int mimeId = GetMimeID(s);
-                                  
-                                   if (e[0] == '*' && e[1] == '.')
-                                   {
-                                               e += 2;
-                                               char *t = SNotS(e);
-                                               if (*t) *t = 0;
-                                               AddExt(e, mimeId);
-                                   } else {
-                                               char *t = SNotS(e);
-                                               if (*t) *t = 0;
-                                               AddMask(e, mimeId);
-                                   }
-                        }
-            } catch (cexception *ex) {
-                        ex->destroy();
-                        return;
-            }
+	mtime = tim;
+	extMimeHash.clear();
+	ClearMaskList();
 
-            return;
-}
-
-static bool accmask(const unicode_t *name, const unicode_t *mask)
-{
-	if (!*mask) 
-		return *name == 0;
-	
-	while (true) 
+	try
 	{
-		switch (*mask) {
-		case 0:
-			for ( ; *name ; name++) 
-				if (*name != '*') 
-					return false;
-			return true;
-		case '?': break;
-		case '*':
-			while (*mask == '*') mask++;
-			if (!*mask) return true;
-			for (; *name; name++ )
-				if (accmask(name, mask)) 
-					return true;
-			return false;
-		default:
-			if (*name != *mask) 
-				return false; 
-		}
-		name++; mask++;
-	}
-}
+		BFile f;
+		f.Open( fileName.ptr() ); //"/usr/share/mime/glibs");
+		char buf[4096];
 
- 
-int MimeGlobs::GetMimeList(const unicode_t *fileName, ccollect<int> &list)
-{
-	carray<unicode_t> ext = GetFileExtLC(fileName);
-	if (ext.ptr())
-	{
-		ccollect<int, 1> *p = extMimeHash.exist(ext.ptr());
-		if (p)
+		while ( f.GetStr( buf, sizeof( buf ) ) )
 		{
-			for (int i = 0, cnt = p->count(); i<cnt; i++)
-				list.append(p->get(i));
+			char* s = SS( buf );
+
+			if ( *s == '#' ) { continue; } //комментарий
+
+			//text/plain:*.doc
+
+			char* e = SNotC( s, ':' );
+
+			if ( !e ) { continue; }
+
+			*e = 0;
+			e++;
+			e = SS( e );
+
+			int mimeId = GetMimeID( s );
+
+			if ( e[0] == '*' && e[1] == '.' )
+			{
+				e += 2;
+				char* t = SNotS( e );
+
+				if ( *t ) { *t = 0; }
+
+				AddExt( e, mimeId );
+			}
+			else
+			{
+				char* t = SNotS( e );
+
+				if ( *t ) { *t = 0; }
+
+				AddMask( e, mimeId );
+			}
 		}
 	}
-	
-	{ //пробег по маскам
-		const unicode_t *fn = find_right_char<unicode_t>(fileName,'/');
-		if (fn) fn++; else fn = fileName;
+	catch ( cexception* ex )
+	{
+		ex->destroy();
+		return;
+	}
 
-		carray<unicode_t> str(unicode_strlen(fn)+1);
-		unicode_t *s = str.ptr();
-		while (*fn) *(s++) = UnicodeLC(*(fn++));
+	return;
+}
+
+static bool accmask( const unicode_t* name, const unicode_t* mask )
+{
+	if ( !*mask )
+	{
+		return *name == 0;
+	}
+
+	while ( true )
+	{
+		switch ( *mask )
+		{
+			case 0:
+				for ( ; *name ; name++ )
+					if ( *name != '*' )
+					{
+						return false;
+					}
+
+				return true;
+
+			case '?':
+				break;
+
+			case '*':
+				while ( *mask == '*' ) { mask++; }
+
+				if ( !*mask ) { return true; }
+
+				for ( ; *name; name++ )
+					if ( accmask( name, mask ) )
+					{
+						return true;
+					}
+
+				return false;
+
+			default:
+				if ( *name != *mask )
+				{
+					return false;
+				}
+		}
+
+		name++;
+		mask++;
+	}
+}
+
+
+int MimeGlobs::GetMimeList( const unicode_t* fileName, ccollect<int>& list )
+{
+	carray<unicode_t> ext = GetFileExtLC( fileName );
+
+	if ( ext.ptr() )
+	{
+		ccollect<int, 1>* p = extMimeHash.exist( ext.ptr() );
+
+		if ( p )
+		{
+			for ( int i = 0, cnt = p->count(); i < cnt; i++ )
+			{
+				list.append( p->get( i ) );
+			}
+		}
+	}
+
+	{
+		//пробег по маскам
+		const unicode_t* fn = find_right_char<unicode_t>( fileName, '/' );
+
+		if ( fn ) { fn++; }
+		else { fn = fileName; }
+
+		carray<unicode_t> str( unicode_strlen( fn ) + 1 );
+		unicode_t* s = str.ptr();
+
+		while ( *fn ) { *( s++ ) = UnicodeLC( *( fn++ ) ); }
+
 		*s = 0;
 
-		for (MaskNode *p = maskList; p; p=p->next) 
-			if (p->mask.ptr() && accmask(str.ptr(), p->mask.ptr())) 
-				list.append(p->mime);
+		for ( MaskNode* p = maskList; p; p = p->next )
+			if ( p->mask.ptr() && accmask( str.ptr(), p->mask.ptr() ) )
+			{
+				list.append( p->mime );
+			}
 	}
-	
+
 	return list.count();
 }
- 
-MimeGlobs::~MimeGlobs(){ ClearMaskList(); }
+
+MimeGlobs::~MimeGlobs() { ClearMaskList(); }
 
 
 
 //////////////////////////// MimeSubclasses ////////////////////////////////
 
-MimeSubclasses::~MimeSubclasses(){};
+MimeSubclasses::~MimeSubclasses() {};
 
 void MimeSubclasses::Refresh()
 {
-	time_t tim = GetMTime(fileName.ptr());
-	if (tim == mtime) return;
-	
+	time_t tim = GetMTime( fileName.ptr() );
+
+	if ( tim == mtime ) { return; }
+
 	mtime = tim;
 	hash.clear();
 
-	try {
+	try
+	{
 		BFile f;
-		f.Open(fileName.ptr()); //"/usr/share/mime/subclasses");
+		f.Open( fileName.ptr() ); //"/usr/share/mime/subclasses");
 		char buf[4096];
-		while (f.GetStr(buf, sizeof(buf)))
+
+		while ( f.GetStr( buf, sizeof( buf ) ) )
 		{
-			char *s = SS(buf);
-			if (*s == '#') continue; //комментарий
-			
-			char *parent = SNotS(s);
-			if (!parent) continue;
-			*parent =0;
+			char* s = SS( buf );
+
+			if ( *s == '#' ) { continue; } //комментарий
+
+			char* parent = SNotS( s );
+
+			if ( !parent ) { continue; }
+
+			*parent = 0;
 			parent++;
-			parent = SS(parent);
-			char *t = SNotS(parent);
-			if (t) *t = 0;
-			
-			hash[GetMimeID(s)].append(GetMimeID(parent));
+			parent = SS( parent );
+			char* t = SNotS( parent );
+
+			if ( t ) { *t = 0; }
+
+			hash[GetMimeID( s )].append( GetMimeID( parent ) );
 		}
-	} catch (cexception *ex) {
+	}
+	catch ( cexception* ex )
+	{
 		ex->destroy();
 		return;
 	}
 }
 
-int MimeSubclasses::GetParentList(int mime, ccollect<int> &list)
+int MimeSubclasses::GetParentList( int mime, ccollect<int>& list )
 {
-	ccollect<int> *p = hash.exist(mime);
-	if (p)
+	ccollect<int>* p = hash.exist( mime );
+
+	if ( p )
 	{
-		for (int i=0, cnt=p->count(); i<cnt; i++)
-			list.append(p->get(i));
+		for ( int i = 0, cnt = p->count(); i < cnt; i++ )
+		{
+			list.append( p->get( i ) );
+		}
 	}
+
 	return list.count();
 }
 
@@ -511,64 +605,76 @@ int MimeSubclasses::GetParentList(int mime, ccollect<int> &list)
 
 void MimeAliases::Refresh()
 {
-	time_t tim = GetMTime(fileName.ptr());
-	if (tim == mtime) return;
+	time_t tim = GetMTime( fileName.ptr() );
+
+	if ( tim == mtime ) { return; }
+
 	mtime = tim;
 	data.clear();
 
-	try {
+	try
+	{
 		BFile f;
-		f.Open(fileName.ptr()); //"/usr/share/mime/aliases");
+		f.Open( fileName.ptr() ); //"/usr/share/mime/aliases");
 		char buf[4096];
-		while (f.GetStr(buf, sizeof(buf)))
+
+		while ( f.GetStr( buf, sizeof( buf ) ) )
 		{
-			char *s = SS(buf);
-			if (*s == '#') continue; //комментарий
-			
-			char *p = SNotS(s);
-			if (!p) continue;
-			*p =0;
+			char* s = SS( buf );
+
+			if ( *s == '#' ) { continue; } //комментарий
+
+			char* p = SNotS( s );
+
+			if ( !p ) { continue; }
+
+			*p = 0;
 			p++;
-			p = SS(p);
-			char *t = SNotS(p);
-			if (t) *t = 0;
-			
-			data[GetMimeID(s)] = GetMimeID(p);
+			p = SS( p );
+			char* t = SNotS( p );
+
+			if ( t ) { *t = 0; }
+
+			data[GetMimeID( s )] = GetMimeID( p );
 		}
-	} catch (cexception *ex) {
+	}
+	catch ( cexception* ex )
+	{
 		ex->destroy();
 		return;
 	}
 }
 
-MimeAliases::~MimeAliases(){}
- 
+MimeAliases::~MimeAliases() {}
+
 
 ///////////////////////////// MimeDB //////////////////////////////////////////////////
 
-MimeDB::MimeDB(const char *location)
-:	globs(carray_cat<char>(location, "globs").ptr()), 
-	subclasses(carray_cat<char>(location, "subclasses").ptr()),
-	aliases(carray_cat<char>(location, "aliases").ptr())
+MimeDB::MimeDB( const char* location )
+	:  globs( carray_cat<char>( location, "globs" ).ptr() ),
+	   subclasses( carray_cat<char>( location, "subclasses" ).ptr() ),
+	   aliases( carray_cat<char>( location, "aliases" ).ptr() )
 {
 }
 
 
-void MimeDB::AddParentsRecursive(int mime, ccollect<int> *pList, cinthash<int, bool> *pHash)
+void MimeDB::AddParentsRecursive( int mime, ccollect<int>* pList, cinthash<int, bool>* pHash )
 {
 	ccollect<int> parentList;
-	if (subclasses.GetParentList(mime, parentList))
+
+	if ( subclasses.GetParentList( mime, parentList ) )
 	{
 		int i;
-		for (i=0; i<parentList.count(); i++)
-			if (!pHash->exist(parentList[i])) 
+
+		for ( i = 0; i < parentList.count(); i++ )
+			if ( !pHash->exist( parentList[i] ) )
 			{
-				pList->append(parentList[i]);
-				pHash->get(parentList[i]) = true;
-				
-				AddParentsRecursive(parentList[i], pList, pHash);
+				pList->append( parentList[i] );
+				pHash->get( parentList[i] ) = true;
+
+				AddParentsRecursive( parentList[i], pList, pHash );
 			}
-			
+
 //		for (i=0; i<parentList.count(); i++)
 //			AddParentsRecursive(parentList[i], pList, pHash);
 	}
@@ -581,24 +687,25 @@ void MimeDB::Refresh()
 	aliases.Refresh();
 }
 
-int MimeDB::GetMimeList(const unicode_t *fileName, ccollect<int> &outList)
+int MimeDB::GetMimeList( const unicode_t* fileName, ccollect<int>& outList )
 {
-	ccollect<int> temp1;	
+	ccollect<int> temp1;
 
-	if (globs.GetMimeList(fileName, temp1)>0)
+	if ( globs.GetMimeList( fileName, temp1 ) > 0 )
 	{
 
 		cinthash<int, bool> hash;
 		int i;
-		for (i=0; i<temp1.count(); i++)
-			if (!hash.exist(temp1[i])) 
+
+		for ( i = 0; i < temp1.count(); i++ )
+			if ( !hash.exist( temp1[i] ) )
 			{
-				outList.append(temp1[i]);
+				outList.append( temp1[i] );
 				hash[temp1[i]] = true;
-				
-				AddParentsRecursive(temp1[i], &outList, &hash);
+
+				AddParentsRecursive( temp1[i], &outList, &hash );
 			}
-			
+
 //		for (i=0; i<temp1.count(); i++)
 //			AddParentsRecursive(temp1[i], &outList, &hash);
 	}
@@ -606,115 +713,134 @@ int MimeDB::GetMimeList(const unicode_t *fileName, ccollect<int> &outList)
 	return outList.count();
 }
 
-MimeDB::~MimeDB(){}
+MimeDB::~MimeDB() {}
 
 
 
 
 /////////////////////// AppDefListFile ////////////////////////////////
 
-AppDefListFile::~AppDefListFile(){}
+AppDefListFile::~AppDefListFile() {}
 
-int AppDefListFile::GetAppList(int mime, ccollect<int> &appList)
+int AppDefListFile::GetAppList( int mime, ccollect<int>& appList )
 {
-	ccollect<int, 1> *p = hash.exist(mime);
+	ccollect<int, 1>* p = hash.exist( mime );
 
-	if (p) {
-		for (int i = 0, cnt = p->count(); i< cnt; i++)
-			appList.append(p->get(i));
+	if ( p )
+	{
+		for ( int i = 0, cnt = p->count(); i < cnt; i++ )
+		{
+			appList.append( p->get( i ) );
+		}
 	}
 
 	return appList.count();
 }
 
-inline void EraseLastSpaces(char *s)
+inline void EraseLastSpaces( char* s )
 {
-	char *ls = 0;
-	for (;*s;s++) if (!IsSpace(*s)) ls=s;
-	if (ls) ls[1]=0;
+	char* ls = 0;
+
+	for ( ; *s; s++ ) if ( !IsSpace( *s ) ) { ls = s; }
+
+	if ( ls ) { ls[1] = 0; }
 }
 
-inline int UCase(int c) { return (c>='a' && c<='z') ? c-'a'+'A' : c; }
+inline int UCase( int c ) { return ( c >= 'a' && c <= 'z' ) ? c - 'a' + 'A' : c; }
 
-static int CmpNoCase(const char *a, const char *b)
+static int CmpNoCase( const char* a, const char* b )
 {
-	for (;*a && *b; a++, b++)
+	for ( ; *a && *b; a++, b++ )
 	{
-		int ca = UCase(*a), cb = UCase(*b);
-		if (ca != cb)
-			return ca<cb ? -1 : 1;
+		int ca = UCase( *a ), cb = UCase( *b );
+
+		if ( ca != cb )
+		{
+			return ca < cb ? -1 : 1;
+		}
 	}
+
 	return *a ? 1 : *b ? -1 : 0;
-} 
+}
 
 
 void AppDefListFile::Refresh()
 {
 
-	time_t tim = GetMTime(fileName.ptr());
-	if (tim == mtime) return;
+	time_t tim = GetMTime( fileName.ptr() );
+
+	if ( tim == mtime ) { return; }
+
 	mtime = tim;
 	hash.clear();
 
-	try {
+	try
+	{
 		BFile f;
-		
-		f.Open(fileName.ptr());
-		
+
+		f.Open( fileName.ptr() );
+
 		char buf[4096];
 		bool readLine = false;
-		while (f.GetStr(buf, sizeof(buf)))
+
+		while ( f.GetStr( buf, sizeof( buf ) ) )
 		{
-			EraseLastSpaces(buf);
-			char *s = buf;
-			s = SS(s);
-			
-			if (*s=='[') 
+			EraseLastSpaces( buf );
+			char* s = buf;
+			s = SS( s );
+
+			if ( *s == '[' )
 			{
-				readLine = !CmpNoCase(s,"[Default Applications]") || 
-						!CmpNoCase(s,"[Added Associations]");
+				readLine = !CmpNoCase( s, "[Default Applications]" ) ||
+				           !CmpNoCase( s, "[Added Associations]" );
 				continue;
 			}
-			
-			if (!readLine) continue;
-			
-			char *mimeStr = s;
-			
-			while (*s && !IsSpace(*s) && *s!='=') s++;
-			if (IsSpace(*s)) {
-			
-				*s=0; s++;
-				s = SS(s);
+
+			if ( !readLine ) { continue; }
+
+			char* mimeStr = s;
+
+			while ( *s && !IsSpace( *s ) && *s != '=' ) { s++; }
+
+			if ( IsSpace( *s ) )
+			{
+
+				*s = 0;
+				s++;
+				s = SS( s );
 			}
-			
-			if (*s != '=') 
+
+			if ( *s != '=' )
 			{
 				continue;
 			}
-			*s=0;
+
+			*s = 0;
 			s++;
-			s = SS(s);
-			
-			int mimeId = GetMimeID(mimeStr);
+			s = SS( s );
+
+			int mimeId = GetMimeID( mimeStr );
 
 			//в mint бывает несколько файлов описания приложений через ';' причем каких то файлов может не быть
-			while (*s) 
+			while ( *s )
 			{
-				
-				char *t = SNotC(s, ';');
-				
-				if (*t) 
+
+				char* t = SNotC( s, ';' );
+
+				if ( *t )
 				{
 					*t = 0;
 					t++;
 				}
 
-				hash[mimeId].append(GetAppID(s));
+				hash[mimeId].append( GetAppID( s ) );
 				s = t;
 			}
 		}
-		
-	} catch (cexception *ex) {
+
+	}
+	catch ( cexception* ex )
+	{
 		ex->destroy();
 	}
 }
@@ -722,199 +848,235 @@ void AppDefListFile::Refresh()
 
 //////////////////////////////// AppDB /////////////////////////////////////
 
-AppDB::AppDB(const char *prefix)
-:	appDefsPrefix(new_char_str(prefix)), 
-	defList(carray_cat<char>(prefix, "defaults.list").ptr())
+AppDB::AppDB( const char* prefix )
+	:  appDefsPrefix( new_char_str( prefix ) ),
+	   defList( carray_cat<char>( prefix, "defaults.list" ).ptr() )
 {
-	DIR *d = opendir(prefix);
-	
-	if (!d) return;
-	
-	try {
+	DIR* d = opendir( prefix );
+
+	if ( !d ) { return; }
+
+	try
+	{
 		struct dirent ent, *pEnt;
-		
-		while (true) 
+
+		while ( true )
 		{
-			if (readdir_r( d, &ent, &pEnt))	goto err;
-			if (!pEnt) break;
+			if ( readdir_r( d, &ent, &pEnt ) ) { goto err; }
+
+			if ( !pEnt ) { break; }
 
 			//skip . and ..
-			if (ent.d_name[0]=='.' && (!ent.d_name[1] || (ent.d_name[1]=='.' && !ent.d_name[2])))
+			if ( ent.d_name[0] == '.' && ( !ent.d_name[1] || ( ent.d_name[1] == '.' && !ent.d_name[2] ) ) )
+			{
 				continue;
-				
-			ReadAppDesctopFile(ent.d_name);
+			}
+
+			ReadAppDesctopFile( ent.d_name );
 		};
-			
-		closedir(d);
+
+		closedir( d );
+
 		return;
-			
-	err:
-		closedir(d);
+
+err:
+		closedir( d );
+
 		return;
-			
-	} catch (cexception *ex) {
-		closedir(d);
+
+	}
+	catch ( cexception* ex )
+	{
+		closedir( d );
 		ex->destroy();
 		throw;
-	} catch (...) {
-		closedir(d);
+	}
+	catch ( ... )
+	{
+		closedir( d );
 		throw;
 	}
 }
 
-AppNode* AppDB::GetApp(int id)
+AppNode* AppDB::GetApp( int id )
 {
-	cptr<AppNode> *p = apps.exist(id);
-	if (!p) 
+	cptr<AppNode>* p = apps.exist( id );
+
+	if ( !p )
 	{
-		if (!ReadAppDesctopFile(GetAppName(id))) return 0;
-		p = apps.exist(id);
+		if ( !ReadAppDesctopFile( GetAppName( id ) ) ) { return 0; }
+
+		p = apps.exist( id );
 	}
-	
+
 	return p ? p->ptr() : 0;
 }
 
-int AppDB::GetAppList(int mime, ccollect<int> &appList)
+int AppDB::GetAppList( int mime, ccollect<int>& appList )
 {
-	defList.GetAppList(mime, appList);
-	ccollect<int> *p = mimeMapHash.exist(mime);
-	if (p) 
+	defList.GetAppList( mime, appList );
+	ccollect<int>* p = mimeMapHash.exist( mime );
+
+	if ( p )
 	{
-		for (int i = 0, cnt = p->count(); i< cnt; i++)
-			appList.append(p->get(i));
+		for ( int i = 0, cnt = p->count(); i < cnt; i++ )
+		{
+			appList.append( p->get( i ) );
+		}
 	}
 
 	return appList.count();
 }
 
-AppDB::~AppDB(){}
+AppDB::~AppDB() {}
 
 
-bool AppDB::ReadAppDesctopFile(const char *name)
+bool AppDB::ReadAppDesctopFile( const char* name )
 {
-	int id = GetAppID(name);
+	int id = GetAppID( name );
 
-	if (apps.exist(id)) return true;
-	
+	if ( apps.exist( id ) ) { return true; }
+
 	cptr<AppNode> app = new AppNode();
-	
-	try {
+
+	try
+	{
 		BFile f;
-		f.Open(carray_cat<char>(appDefsPrefix.ptr(), name).ptr());
+		f.Open( carray_cat<char>( appDefsPrefix.ptr(), name ).ptr() );
 
 		char buf[4096];
 		bool ok = false;
-		
+
 		bool application = false;
-		
+
 		ccollect<int> mimeList;
-		
-		while (f.GetStr(buf, sizeof(buf)))
+
+		while ( f.GetStr( buf, sizeof( buf ) ) )
 		{
-			EraseLastSpaces(buf);
-			char *s = buf;
-			s = SS(s);
-			if (*s == '[') 
+			EraseLastSpaces( buf );
+			char* s = buf;
+			s = SS( s );
+
+			if ( *s == '[' )
 			{
-				ok = !CmpNoCase(s,"[Desktop Entry]");
+				ok = !CmpNoCase( s, "[Desktop Entry]" );
 				continue;
 			}
-			if (!ok) continue;
-			
-			char *vname = s;
-			while (*s && !IsSpace(*s) && *s!='=') s++;
-			if (IsSpace(*s)) 
+
+			if ( !ok ) { continue; }
+
+			char* vname = s;
+
+			while ( *s && !IsSpace( *s ) && *s != '=' ) { s++; }
+
+			if ( IsSpace( *s ) )
 			{
-				*s=0; s++;
-				s = SS(s);
+				*s = 0;
+				s++;
+				s = SS( s );
 			}
-			
-			if (*s != '=') 
+
+			if ( *s != '=' )
 			{
 				continue;
 			}
-			*s=0;
+
+			*s = 0;
 			s++;
-			s = SS(s);
-			
-			if (!CmpNoCase(vname, "TYPE"))
+			s = SS( s );
+
+			if ( !CmpNoCase( vname, "TYPE" ) )
 			{
-				if (!CmpNoCase(s, "APPLICATION")) application = true;
-				continue;
-			} 
+				if ( !CmpNoCase( s, "APPLICATION" ) ) { application = true; }
 
-
-			if (!CmpNoCase(vname, "NAME"))
-			{
-
-				app->name = utf8_to_unicode(s); 
-				continue;
-			} 
-
-			if (!CmpNoCase(vname, "EXEC"))
-			{
-				app->exec = utf8_to_unicode(s); 
 				continue;
 			}
-			 
-			if (!CmpNoCase(vname, "TRYEXEC")) //проверяем сразу, чего каждый раз проверять 
+
+
+			if ( !CmpNoCase( vname, "NAME" ) )
 			{
-				if (!ExeFileExist(s)) 
+
+				app->name = utf8_to_unicode( s );
+				continue;
+			}
+
+			if ( !CmpNoCase( vname, "EXEC" ) )
+			{
+				app->exec = utf8_to_unicode( s );
+				continue;
+			}
+
+			if ( !CmpNoCase( vname, "TRYEXEC" ) ) //проверяем сразу, чего каждый раз проверять
+			{
+				if ( !ExeFileExist( s ) )
 				{
 					apps[id] = 0;
 					return 0;
 				}
+
 				continue;
 			}
-			 
-			if (!CmpNoCase(vname, "TERMINAL"))
+
+			if ( !CmpNoCase( vname, "TERMINAL" ) )
 			{
-				if (!CmpNoCase(s, "TRUE"))
-					app->terminal = true;
-				else if (!CmpNoCase(s, "FALSE"))
-						app->terminal = false;
-				
-				continue;
-			}
-			
-			if (!CmpNoCase(vname, "MIMETYPE"))
-			{
-				while (*s) 
+				if ( !CmpNoCase( s, "TRUE" ) )
 				{
-					s = SS(s);
-					char *m = s;
-					while (*s && *s!=';') s++;
-					if (*s==';'){ *s=0; s++; }
-					
-					if (*m) 
-						mimeList.append( GetMimeID(m) );
+					app->terminal = true;
 				}
+				else if ( !CmpNoCase( s, "FALSE" ) )
+				{
+					app->terminal = false;
+				}
+
 				continue;
-			}			 
+			}
+
+			if ( !CmpNoCase( vname, "MIMETYPE" ) )
+			{
+				while ( *s )
+				{
+					s = SS( s );
+					char* m = s;
+
+					while ( *s && *s != ';' ) { s++; }
+
+					if ( *s == ';' ) { *s = 0; s++; }
+
+					if ( *m )
+					{
+						mimeList.append( GetMimeID( m ) );
+					}
+				}
+
+				continue;
+			}
 		}
-		
-		if (!app->exec.ptr() || !application) 
+
+		if ( !app->exec.ptr() || !application )
 		{
 			apps[id] = 0;
 			return false;
 		}
 
-		AppNode *pNode = app.ptr();
-		
+		AppNode* pNode = app.ptr();
+
 //printf("read %s - ok\n", name);
 
 		apps[id] = app;
-		
-		for (int i = 0; i<mimeList.count(); i++)
+
+		for ( int i = 0; i < mimeList.count(); i++ )
 		{
-			mimeMapHash[mimeList[i]].append(id);
+			mimeMapHash[mimeList[i]].append( id );
 		}
-		
+
 		return true;
-		
-	} catch (cexception *ex) {
+
+	}
+	catch ( cexception* ex )
+	{
 		ex->destroy();
 	}
+
 	apps[id] = 0;
 	return false;
 }
@@ -925,187 +1087,227 @@ static cptr<MimeDB> mimeDb;
 static cptr<AppDB> appDb;
 static cptr<AppDefListFile> userDefApp;
 
-static bool FileIsExist(const char *s)
+static bool FileIsExist( const char* s )
 {
 	struct stat sb;
-	if (stat(s, &sb)) return false;
-	return (sb.st_mode & S_IFMT) == S_IFREG;
+
+	if ( stat( s, &sb ) ) { return false; }
+
+	return ( sb.st_mode & S_IFMT ) == S_IFREG;
 }
 
-static bool DirIsExist(const char *s)
+static bool DirIsExist( const char* s )
 {
 	struct stat sb;
-	if (stat(s, &sb)) return false;
-	return (sb.st_mode & S_IFMT) == S_IFDIR;
+
+	if ( stat( s, &sb ) ) { return false; }
+
+	return ( sb.st_mode & S_IFMT ) == S_IFDIR;
 }
 
 
-static int _GetAppList(const unicode_t *fileName, ccollect<AppNode*> &list)
+static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 {
-	if (!mimeDb.ptr())
+	if ( !mimeDb.ptr() )
 	{
-		if (FileIsExist("/usr/share/mime/globs"))
-			mimeDb = new MimeDB("/usr/share/mime/");
-		else 
-			mimeDb = new MimeDB("/usr/local/share/mime/");
+		if ( FileIsExist( "/usr/share/mime/globs" ) )
+		{
+			mimeDb = new MimeDB( "/usr/share/mime/" );
+		}
+		else
+		{
+			mimeDb = new MimeDB( "/usr/local/share/mime/" );
+		}
 	}
-	
-	if (!appDb.ptr())
+
+	if ( !appDb.ptr() )
 	{
-		if (DirIsExist("/usr/share/applications"))
-			appDb = new AppDB("/usr/share/applications/");
-		else 
-			appDb = new AppDB("/usr/local/share/applications/");
+		if ( DirIsExist( "/usr/share/applications" ) )
+		{
+			appDb = new AppDB( "/usr/share/applications/" );
+		}
+		else
+		{
+			appDb = new AppDB( "/usr/local/share/applications/" );
+		}
 	}
-	
-	if (!userDefApp.ptr())
+
+	if ( !userDefApp.ptr() )
 	{
-		const char *home = getenv("HOME");
-		if (home) 
-			userDefApp = new AppDefListFile(carray_cat<char>(home, "/.local/share/applications/mimeapps.list").ptr());
+		const char* home = getenv( "HOME" );
+
+		if ( home )
+		{
+			userDefApp = new AppDefListFile( carray_cat<char>( home, "/.local/share/applications/mimeapps.list" ).ptr() );
+		}
 	}
-	
+
 	mimeDb->Refresh();
 	appDb->Refresh();
-	if (userDefApp.ptr()) 
+
+	if ( userDefApp.ptr() )
+	{
 		userDefApp->Refresh();
-	
+	}
+
 	ccollect<int> mimeList;
-	if (mimeDb->GetMimeList(fileName, mimeList))
+
+	if ( mimeDb->GetMimeList( fileName, mimeList ) )
 	{
 		int i;
 		cinthash<int, bool> hash;
-		for (i=0; i<mimeList.count(); i++)
+
+		for ( i = 0; i < mimeList.count(); i++ )
 		{
 			ccollect<int> appList;
-			
-			if (userDefApp.ptr())
-				userDefApp->GetAppList(mimeList[i], appList);
-			
-			appDb->GetAppList(mimeList[i], appList);
-			for (int j = 0; j < appList.count(); j++)
-				if (!hash.exist(appList[j]))
+
+			if ( userDefApp.ptr() )
+			{
+				userDefApp->GetAppList( mimeList[i], appList );
+			}
+
+			appDb->GetAppList( mimeList[i], appList );
+
+			for ( int j = 0; j < appList.count(); j++ )
+				if ( !hash.exist( appList[j] ) )
 				{
 					hash[appList[j]] = true;
-					
-					AppNode *p = appDb->GetApp(appList[j]);
-					if (p && p->exec.ptr()) 
-						list.append(p);
+
+					AppNode* p = appDb->GetApp( appList[j] );
+
+					if ( p && p->exec.ptr() )
+					{
+						list.append( p );
+					}
 				}
 		}
 	}
-	
+
 	return list.count();
 }
 
 
-static carray<unicode_t> PrepareCommandString(const unicode_t *exec, const unicode_t *uri)
+static carray<unicode_t> PrepareCommandString( const unicode_t* exec, const unicode_t* uri )
 {
-	if (!exec || !uri) return 0;
-	
+	if ( !exec || !uri ) { return 0; }
+
 	ccollect<unicode_t, 0x100> cmd;
-	
-	const unicode_t *s = exec;
-	
-	
+
+	const unicode_t* s = exec;
+
+
 	int uriInserted = 0;
-	
-	while (*s) {
-		for (;*s && *s != '%'; s++) cmd.append(*s);
-		
-		if (*s) {
-			switch (s[1]) {
-			case 'f':
-			case 'F':
-			case 'u': 
-			case 'U':
+
+	while ( *s )
+	{
+		for ( ; *s && *s != '%'; s++ ) { cmd.append( *s ); }
+
+		if ( *s )
+		{
+			switch ( s[1] )
+			{
+				case 'f':
+				case 'F':
+				case 'u':
+				case 'U':
 				{
-					cmd.append('"');
-					for(const unicode_t *t = uri; *t; t++) cmd.append(*t);
-					cmd.append('"');
+					cmd.append( '"' );
+
+					for ( const unicode_t* t = uri; *t; t++ ) { cmd.append( *t ); }
+
+					cmd.append( '"' );
 					uriInserted++;
 				}
+
 				s += 2;
 				break;
-			default:
-				cmd.append('%');
-				s++;
+
+				default:
+					cmd.append( '%' );
+					s++;
 			};
 		}
 	}
-	
-	if (!uriInserted) //все равно добавим
+
+	if ( !uriInserted ) //все равно добавим
 	{
-		cmd.append(' ');
-		cmd.append('"');
-		for(const unicode_t *t = uri; *t; t++) cmd.append(*t);
-		cmd.append('"');
+		cmd.append( ' ' );
+		cmd.append( '"' );
+
+		for ( const unicode_t* t = uri; *t; t++ ) { cmd.append( *t ); }
+
+		cmd.append( '"' );
 	}
-	
-	cmd.append(0);
+
+	cmd.append( 0 );
 	return cmd.grab();
 }
 
 
-carray<unicode_t> GetOpenCommand(const unicode_t *uri, bool *needTerminal, const unicode_t **pAppName)
+carray<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName )
 {
 	ccollect<AppNode*> list;
-	_GetAppList(uri, list);
-	
-	if (list.count() > 0) {
-		if (needTerminal) *needTerminal = list[0]->terminal;
-		if (pAppName)  *pAppName = list[0]->name.ptr();
-		return PrepareCommandString(list[0]->exec.ptr(), uri);
+	_GetAppList( uri, list );
+
+	if ( list.count() > 0 )
+	{
+		if ( needTerminal ) { *needTerminal = list[0]->terminal; }
+
+		if ( pAppName ) { *pAppName = list[0]->name.ptr(); }
+
+		return PrepareCommandString( list[0]->exec.ptr(), uri );
 	}
-		
+
 	return 0;
 }
 
 
-cptr<AppList> GetAppList(const unicode_t *uri)
+cptr<AppList> GetAppList( const unicode_t* uri )
 {
 	ccollect<AppNode*> list;
-	_GetAppList(uri, list);
+	_GetAppList( uri, list );
 
-	if (!list.count()) return 0;
-	
+	if ( !list.count() ) { return 0; }
+
 	cptr<AppList> ret = new AppList();
 
-	{ //open item
-		AppNode *p = list[0];
-		
+	{
+		//open item
+		AppNode* p = list[0];
+
 		AppList::Node node;
 		node.terminal = p->terminal;
-		
-		static unicode_t ustr1[]={'O','p','e','n',' ','(',0};
-		static unicode_t ustr2[]={')',0};
-		
-		node.name = carray_cat<unicode_t>(ustr1, p->name.ptr(), ustr2);
-		node.cmd = PrepareCommandString(p->exec.ptr(), uri);
-		ret->list.append(node);
-	}	
-	
+
+		static unicode_t ustr1[] = {'O', 'p', 'e', 'n', ' ', '(', 0};
+		static unicode_t ustr2[] = {')', 0};
+
+		node.name = carray_cat<unicode_t>( ustr1, p->name.ptr(), ustr2 );
+		node.cmd = PrepareCommandString( p->exec.ptr(), uri );
+		ret->list.append( node );
+	}
+
 
 	cptr<AppList> openWith = new AppList();
-	
-	for (int i = 1; i<list.count(); i++)
+
+	for ( int i = 1; i < list.count(); i++ )
 	{
 		AppList::Node node;
 		node.terminal = list[i]->terminal;
-		node.name = new_unicode_str(list[i]->name.ptr());
-		node.cmd = PrepareCommandString(list[i]->exec.ptr(), uri);
-		openWith->list.append(node);
+		node.name = new_unicode_str( list[i]->name.ptr() );
+		node.cmd = PrepareCommandString( list[i]->exec.ptr(), uri );
+		openWith->list.append( node );
 	}
-	
-	if (openWith->Count()>0) {
+
+	if ( openWith->Count() > 0 )
+	{
 		AppList::Node node;
-		static unicode_t openWidthString[]={ 'O','p','e','n',' ','w','i','t','h', 0};
-		node.name = new_unicode_str(openWidthString);
+		static unicode_t openWidthString[] = { 'O', 'p', 'e', 'n', ' ', 'w', 'i', 't', 'h', 0};
+		node.name = new_unicode_str( openWidthString );
 		node.sub = openWith;
-		ret->list.append(node);
+		ret->list.append( node );
 	}
-	
-	
+
+
 	return ret->Count() ? ret : 0;
 }
 

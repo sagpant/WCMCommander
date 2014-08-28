@@ -1,5 +1,5 @@
 /*
-	Copyright (c) by Valery Goryachev (Wal)
+   Copyright (c) by Valery Goryachev (Wal)
 */
 
 #ifndef _WIN32
@@ -10,20 +10,21 @@
 
 using namespace wal;
 
-class Shell {
+class Shell
+{
 	pid_t pid;
 	int in, out;
-	
+
 	void Stop();
 	void Run();
 	carray<char> slaveName;
 public:
-	Shell(const char *slave);
-	
-	pid_t Exec(const char *cmd);
-	int Wait(pid_t pid, int *pStatus);
-	int CD(const char *path);
-	
+	Shell( const char* slave );
+
+	pid_t Exec( const char* cmd );
+	int Wait( pid_t pid, int* pStatus );
+	int CD( const char* path );
+
 	~Shell();
 };
 

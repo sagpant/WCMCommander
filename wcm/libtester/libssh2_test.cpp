@@ -3,7 +3,8 @@
 
 int main()
 {
-	if (libssh2_init(0)) return 1;
-	return 0; 
+	if ( libssh2_init( 0 ) ) { return 1; }
+
+	return 0;
 }
 
