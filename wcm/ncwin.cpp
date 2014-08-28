@@ -776,7 +776,7 @@ void NCWin::StartExecute( const unicode_t* cmd, FS* fs,  FSPath& path )
 
 static int uiDriveDlg = GetUiID( "drive-dlg" );
 
-void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
+void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 {
 	if ( _mode != PANEL ) { return; }
 
@@ -786,9 +786,9 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 #endif
 	DlgMenuData mData;
 
-	const unicode_t* path = OtherPanelPath.GetUnicode();
+	FSString OtherPanelPath = OtherPanel->UriOfDir();
 
-	mData.Add( path, 0, ID_DEV_OTHER_PANEL );
+	mData.Add( OtherPanelPath.GetUnicode(), 0, ID_DEV_OTHER_PANEL );
 	mData.AddSplitter();
 
 #ifdef _WIN32
@@ -918,8 +918,8 @@ void NCWin::SelectDrive( PanelWin* p, FSPath& OtherPanelPath )
 
 	if ( res == ID_DEV_OTHER_PANEL )
 	{
-		FSPtr fs = _panel->GetFSPtr();
-		p->LoadPath( fs, OtherPanelPath, 0, 0, PanelWin::SET );
+		FSPtr fs = OtherPanel->GetFSPtr();
+		p->LoadPath( fs, OtherPanel->GetPath(), 0, 0, PanelWin::SET );
 		return;
 	}
 
@@ -2040,7 +2040,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				case FC( VK_PRIOR, KM_CTRL ):
 					if ( !_panel->DirUp() )
 					{
-						SelectDrive( _panel, GetOtherPanel()->GetPath() );
+						SelectDrive( _panel, GetOtherPanel() );
 					}
 
 					return true;
@@ -2102,12 +2102,12 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				case FC( VK_F1, KM_SHIFT ):
 				case FC( VK_F1, KM_ALT ):
-					SelectDrive( &_leftPanel, _rightPanel.GetPath() );
+					SelectDrive( &_leftPanel, &_rightPanel );
 					return true;
 
 				case FC( VK_F2, KM_SHIFT ):
 				case FC( VK_F2, KM_ALT ):
-					SelectDrive( &_rightPanel, _leftPanel.GetPath() );
+					SelectDrive( &_rightPanel, &_leftPanel );
 					return true;
 
 				case FC( VK_F7, KM_SHIFT ):
@@ -2937,11 +2937,11 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 				return true;
 
 			case ID_DEV_SELECT_LEFT:
-				SelectDrive( &_leftPanel, _rightPanel.GetPath() );
+				SelectDrive( &_leftPanel, &_rightPanel );
 				return true;
 
 			case ID_DEV_SELECT_RIGHT:
-				SelectDrive( &_rightPanel, _leftPanel.GetPath() );
+				SelectDrive( &_rightPanel, &_leftPanel );
 				return true;
 
 			case ID_CONFIG_SYSTEM:
