@@ -47,69 +47,74 @@ public:
 	virtual ~PanelSearchWin();
 };
 
-class PanelPlace
+class clPanelPlace
 {
 	struct Node
 	{
 		FSPtr fsPtr;
 		FSPath path;
-		Node* next;
 	};
-	Node* stack;
+	std::vector<Node> m_Stack;
+	FSPath m_EmptyPath;
+
 	void Clear( bool toSys = false )
 	{
-		while ( stack )
+		while ( !m_Stack.empty() )
 		{
-			if ( toSys && !stack->fsPtr.IsNull() && stack->fsPtr->Type() == FS::SYSTEM && !stack->next )
-			{
-				break;
-			}
+			bool HasFS       = !m_Stack.back( ).fsPtr.IsNull();
+			bool IsSystem    = m_Stack.back( ).fsPtr->Type( ) == FS::SYSTEM;
+			bool NoMoreNodes = m_Stack.size() == 1;
 
-			Node* p = stack;
-			stack = stack->next;
-			delete p;
+			if ( toSys && HasFS && IsSystem && NoMoreNodes ) break;
+
+			m_Stack.pop_back();
 		}
 	}
-	FSPath emptyPath;
+	
 public:
-	PanelPlace(): stack( 0 ) {}
+	clPanelPlace( ) : m_Stack( ), m_EmptyPath() {}
 
 	bool Pop()
 	{
-		if ( stack && stack->next ) { Node* p = stack; stack = stack->next; delete p; return true; }
+		// should be at least 1 item after popping
+		if ( m_Stack.size() < 2 ) return false;
 
-		return false;
+		m_Stack.pop_back();
+
+		return true;
 	}
 
 	bool Set( FSPtr fsPtr, FSPath& path, bool push )
 	{
 		if ( fsPtr.IsNull() ) { return false; }
 
-		cptr<Node> node = new Node;
-		node->fsPtr = fsPtr;
-		node->path = path;
+		Node node;
+		node.fsPtr = fsPtr;
+		node.path = path;
 
 		if ( !push )
 		{
 			Clear( fsPtr->Type() != FS::SYSTEM );
 		}
 
-		node->next = stack;
-		stack = node.ptr();
-		node.drop();
+		m_Stack.push_back( node );
+
 		return true;
 	}
 
-	int Count() { Node* p = stack; int n = 0; while ( p ) { p = p->next; n++; } return n; }
+	int Count() const
+	{
+		return m_Stack.size();
+	}
 
 	void Reset( FSPtr fsPtr, FSPath& path )
 	{
 		if ( fsPtr.IsNull() ) { return; }
 
-		if ( stack )
+		if ( !m_Stack.empty() )
 		{
-			stack->path = path;
-			stack->fsPtr = fsPtr;
+			m_Stack.back().path = path;
+			m_Stack.back( ).fsPtr = fsPtr;
 		}
 		else
 		{
@@ -117,13 +122,12 @@ public:
 		}
 	}
 
-	bool IsEmpty() const { return stack == 0; }
+	bool IsEmpty() const { return m_Stack.empty(); }
 
-	FS* GetFS() { return stack ? stack->fsPtr.Ptr() : 0; }
-	FSPtr GetFSPtr() { return stack ? stack->fsPtr : FSPtr(); }
-	FSPath* GetPathPtr() { return stack ? &stack->path : 0; }
-	FSPath& GetPath() { return stack ? stack->path : emptyPath; }
-	~PanelPlace() { Clear(); }
+	FS* GetFS() { return !m_Stack.empty() ? m_Stack.back().fsPtr.Ptr() : 0; }
+	FSPtr GetFSPtr() const { return !m_Stack.empty() ? m_Stack.back().fsPtr : FSPtr(); }
+	FSPath* GetPathPtr() { return !m_Stack.empty() ? &m_Stack.back().path : 0; }
+	FSPath& GetPath() { return !m_Stack.empty() ? m_Stack.back().path : m_EmptyPath; }
 };
 
 class PanelWin: public NCDialogParent
@@ -193,7 +197,7 @@ private:
 	void DrawFooter( wal::GC& gc );
 	void RedrawList( wal::GC& gc );
 
-	PanelPlace _place;
+	clPanelPlace _place;
 
 	unicode_t userNameBuf[64];
 	unicode_t groupNameBuf[64];
