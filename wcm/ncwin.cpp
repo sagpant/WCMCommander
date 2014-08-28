@@ -1118,9 +1118,9 @@ void NCWin::PastePanelPath(PanelWin* panel)
 	if (_mode != PANEL) return;
 	if (panel->IsVisible())
 	{
-		const unicode_t *p = panel->GetPath().GetUnicode();
+		FSString S = panel->UriOfDir();
 
-		PasteFileNameToCommandLine(p);
+		PasteFileNameToCommandLine( S.GetUnicode() );
 	}
 }
 
