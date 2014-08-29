@@ -53,8 +53,8 @@ struct PathBuffer
 PathBuffer::PathBuffer()
 	:  p( 16 ), size( 16 ), pos( 0 )
 {
-	strcpy( p.ptr(), "smb://" );
-	minPos = pos = strlen( p.ptr() );
+	strcpy( p.data(), "smb://" );
+	minPos = pos = strlen( p.data() );
 }
 
 void PathBuffer::Cut( const char* s )
@@ -67,14 +67,14 @@ void PathBuffer::Cut( const char* s )
 		nsize = ( ( nsize + 0x100 - 1 ) / 0x100 ) * 0x100;
 		std::vector<char> t( nsize );
 
-		if ( pos > 0 ) { memcpy( t.ptr(), p.ptr(), pos ); }
+		if ( pos > 0 ) { memcpy( t.data(), p.data(), pos ); }
 
 		t[pos] = 0;
 		p = t;
 		size = nsize;
 	}
 
-	memcpy( p.ptr() + pos, s, l + 1 );
+	memcpy( p.data() + pos, s, l + 1 );
 	pos += l;
 }
 
@@ -82,7 +82,7 @@ char* PathBuffer::Set( const char* path )
 {
 	Clear();
 
-	if ( !currentFsParam ) { return p.ptr(); }
+	if ( !currentFsParam ) { return p.data(); }
 
 	if ( currentFsParam->server[0] )
 	{
@@ -103,7 +103,7 @@ char* PathBuffer::Set( const char* path )
 		Cut( path );
 	}
 
-	return p.ptr();
+	return p.data();
 }
 
 static PathBuffer pathBuffer1;
@@ -476,7 +476,7 @@ FSString FSSmb::Uri( FSPath& path )
 		a = carray_cat<char>( "smb:/", path.GetUtf8() );
 	}
 
-	return FSString( CS_UTF8, a.ptr() );
+	return FSString( CS_UTF8, a.data() );
 }
 
 int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )

@@ -191,7 +191,7 @@ static void SearchExe( const char* dirName, cstrhash<bool>& hash )
 
 			struct stat sb;
 
-			if ( stat( filePath.ptr(), &sb ) ) { continue; }
+			if ( stat( filePath.data(), &sb ) ) { continue; }
 
 			if ( ( sb.st_mode & S_IFMT ) == S_IFREG && ( sb.st_mode & 0111 ) != 0 )
 			{
@@ -241,7 +241,7 @@ bool ExeFileExist( const char* name )
 		if ( !pl ) { return false; }
 
 		std::vector<char> paths = new_char_str( pl );
-		char* s = paths.ptr();
+		char* s = paths.data();
 
 		while ( *s )
 		{
@@ -273,7 +273,7 @@ static cinthash<int, std::vector<char> > mimeIdToNameHash;
 const char* GetMimeName( int n )
 {
 	std::vector<char>* p = mimeIdToNameHash.exist( n );
-	return p ? p->ptr() : "";
+	return p ? p->data() : "";
 }
 #endif
 
@@ -316,7 +316,7 @@ static int GetAppID( const char* appName )
 static const char* GetAppName( int id )
 {
 	std::vector<char>* p = appIdToNameHash.exist( id );
-	return p ? p->ptr() : "";
+	return p ? p->data() : "";
 }
 
 
@@ -328,14 +328,14 @@ inline time_t GetMTime( const char* fileName )
 
 static std::vector<unicode_t> GetFileExtLC( const unicode_t* uri )
 {
-	if ( !uri ) { return 0; }
+	if ( !uri ) { return std::vector<unicode_t>(1); }
 
 	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
 
 	if ( !ext || !*ext ) { return std::vector<unicode_t>(); }
 
 	std::vector<unicode_t> a = new_unicode_str( ext + 1 ); //пропустить точку
-	unicode_t* s = a.ptr();
+	unicode_t* s = a.data();
 
 	for ( ; *s; s++ ) { *s = UnicodeLC( *s ); }
 
@@ -385,7 +385,7 @@ inline void MimeGlobs::AddMask( const char* s, int m )
 
 void MimeGlobs::Refresh()
 {
-	time_t tim = GetMTime( fileName.ptr() );
+	time_t tim = GetMTime( fileName.data() );
 
 	if ( tim == mtime ) { return; }
 
@@ -396,7 +396,7 @@ void MimeGlobs::Refresh()
 	try
 	{
 		BFile f;
-		f.Open( fileName.ptr() ); //"/usr/share/mime/glibs");
+		f.Open( fileName.data() ); //"/usr/share/mime/glibs");
 		char buf[4096];
 
 		while ( f.GetStr( buf, sizeof( buf ) ) )
@@ -498,9 +498,9 @@ int MimeGlobs::GetMimeList( const unicode_t* fileName, ccollect<int>& list )
 {
 	std::vector<unicode_t> ext = GetFileExtLC( fileName );
 
-	if ( ext.ptr() )
+	if ( ext.data() )
 	{
-		ccollect<int, 1>* p = extMimeHash.exist( ext.ptr() );
+		ccollect<int, 1>* p = extMimeHash.exist( ext.data() );
 
 		if ( p )
 		{
@@ -519,14 +519,14 @@ int MimeGlobs::GetMimeList( const unicode_t* fileName, ccollect<int>& list )
 		else { fn = fileName; }
 
 		std::vector<unicode_t> str( unicode_strlen( fn ) + 1 );
-		unicode_t* s = str.ptr();
+		unicode_t* s = str.data();
 
 		while ( *fn ) { *( s++ ) = UnicodeLC( *( fn++ ) ); }
 
 		*s = 0;
 
 		for ( MaskNode* p = maskList; p; p = p->next )
-			if ( p->mask.ptr() && accmask( str.ptr(), p->mask.ptr() ) )
+			if ( p->mask.data() && accmask( str.data(), p->mask.data() ) )
 			{
 				list.append( p->mime );
 			}
@@ -545,7 +545,7 @@ MimeSubclasses::~MimeSubclasses() {};
 
 void MimeSubclasses::Refresh()
 {
-	time_t tim = GetMTime( fileName.ptr() );
+	time_t tim = GetMTime( fileName.data() );
 
 	if ( tim == mtime ) { return; }
 
@@ -555,7 +555,7 @@ void MimeSubclasses::Refresh()
 	try
 	{
 		BFile f;
-		f.Open( fileName.ptr() ); //"/usr/share/mime/subclasses");
+		f.Open( fileName.data() ); //"/usr/share/mime/subclasses");
 		char buf[4096];
 
 		while ( f.GetStr( buf, sizeof( buf ) ) )
@@ -605,7 +605,7 @@ int MimeSubclasses::GetParentList( int mime, ccollect<int>& list )
 
 void MimeAliases::Refresh()
 {
-	time_t tim = GetMTime( fileName.ptr() );
+	time_t tim = GetMTime( fileName.data() );
 
 	if ( tim == mtime ) { return; }
 
@@ -615,7 +615,7 @@ void MimeAliases::Refresh()
 	try
 	{
 		BFile f;
-		f.Open( fileName.ptr() ); //"/usr/share/mime/aliases");
+		f.Open( fileName.data() ); //"/usr/share/mime/aliases");
 		char buf[4096];
 
 		while ( f.GetStr( buf, sizeof( buf ) ) )
@@ -651,9 +651,9 @@ MimeAliases::~MimeAliases() {}
 ///////////////////////////// MimeDB //////////////////////////////////////////////////
 
 MimeDB::MimeDB( const char* location )
-	:  globs( carray_cat<char>( location, "globs" ).ptr() ),
-	   subclasses( carray_cat<char>( location, "subclasses" ).ptr() ),
-	   aliases( carray_cat<char>( location, "aliases" ).ptr() )
+	:  globs( carray_cat<char>( location, "globs" ).data() ),
+	   subclasses( carray_cat<char>( location, "subclasses" ).data() ),
+	   aliases( carray_cat<char>( location, "aliases" ).data() )
 {
 }
 
@@ -767,7 +767,7 @@ static int CmpNoCase( const char* a, const char* b )
 void AppDefListFile::Refresh()
 {
 
-	time_t tim = GetMTime( fileName.ptr() );
+	time_t tim = GetMTime( fileName.data() );
 
 	if ( tim == mtime ) { return; }
 
@@ -778,7 +778,7 @@ void AppDefListFile::Refresh()
 	{
 		BFile f;
 
-		f.Open( fileName.ptr() );
+		f.Open( fileName.data() );
 
 		char buf[4096];
 		bool readLine = false;
@@ -850,7 +850,7 @@ void AppDefListFile::Refresh()
 
 AppDB::AppDB( const char* prefix )
 	:  appDefsPrefix( new_char_str( prefix ) ),
-	   defList( carray_cat<char>( prefix, "defaults.list" ).ptr() )
+	   defList( carray_cat<char>( prefix, "defaults.list" ).data() )
 {
 	DIR* d = opendir( prefix );
 
@@ -942,7 +942,7 @@ bool AppDB::ReadAppDesctopFile( const char* name )
 	try
 	{
 		BFile f;
-		f.Open( carray_cat<char>( appDefsPrefix.ptr(), name ).ptr() );
+		f.Open( carray_cat<char>( appDefsPrefix.data(), name ).data() );
 
 		char buf[4096];
 		bool ok = false;
@@ -1052,7 +1052,7 @@ bool AppDB::ReadAppDesctopFile( const char* name )
 			}
 		}
 
-		if ( !app->exec.ptr() || !application )
+		if ( !app->exec.data() || !application )
 		{
 			apps[id] = 0;
 			return false;
@@ -1138,7 +1138,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 
 		if ( home )
 		{
-			userDefApp = new AppDefListFile( carray_cat<char>( home, "/.local/share/applications/mimeapps.list" ).ptr() );
+			userDefApp = new AppDefListFile( carray_cat<char>( home, "/.local/share/applications/mimeapps.list" ).data() );
 		}
 	}
 
@@ -1175,7 +1175,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 
 					AppNode* p = appDb->GetApp( appList[j] );
 
-					if ( p && p->exec.ptr() )
+					if ( p && p->exec.data() )
 					{
 						list.append( p );
 					}
@@ -1189,7 +1189,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 
 static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const unicode_t* uri )
 {
-	if ( !exec || !uri ) { return 0; }
+	if ( !exec || !uri ) { return std::vector<unicode_t>(1); }
 
 	ccollect<unicode_t, 0x100> cmd;
 
@@ -1253,12 +1253,12 @@ std::vector<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal,
 	{
 		if ( needTerminal ) { *needTerminal = list[0]->terminal; }
 
-		if ( pAppName ) { *pAppName = list[0]->name.ptr(); }
+		if ( pAppName ) { *pAppName = list[0]->name.data(); }
 
-		return PrepareCommandString( list[0]->exec.ptr(), uri );
+		return PrepareCommandString( list[0]->exec.data(), uri );
 	}
 
-	return 0;
+	return std::vector<unicode_t>(1);
 }
 
 
@@ -1281,8 +1281,8 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 		static unicode_t ustr1[] = {'O', 'p', 'e', 'n', ' ', '(', 0};
 		static unicode_t ustr2[] = {')', 0};
 
-		node.name = carray_cat<unicode_t>( ustr1, p->name.ptr(), ustr2 );
-		node.cmd = PrepareCommandString( p->exec.ptr(), uri );
+		node.name = carray_cat<unicode_t>( ustr1, p->name.data(), ustr2 );
+		node.cmd = PrepareCommandString( p->exec.data(), uri );
 		ret->list.append( node );
 	}
 
@@ -1293,8 +1293,8 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 	{
 		AppList::Node node;
 		node.terminal = list[i]->terminal;
-		node.name = new_unicode_str( list[i]->name.ptr() );
-		node.cmd = PrepareCommandString( list[i]->exec.ptr(), uri );
+		node.name = new_unicode_str( list[i]->name.data() );
+		node.cmd = PrepareCommandString( list[i]->exec.data(), uri );
 		openWith->list.append( node );
 	}
 

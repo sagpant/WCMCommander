@@ -27,7 +27,7 @@ public:
 	int Read( char* buf, int size ); // Read end Write can work in self threds
 	int Write( char* buf, int size ); //
 	int SetSize( int r, int c );
-	const char* SlaveName() { return _slaveName.ptr(); }
+	const char* SlaveName() { return _slaveName.data(); }
 	~TerminalStream();
 };
 

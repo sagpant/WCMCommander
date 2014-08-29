@@ -983,7 +983,7 @@ EmulatorScreen::EmulatorScreen( int r, int c, EmulatorCLList* cl )
 	for ( int i = 0; i < lineCount; i++ )
 	{
 		list[i].resize( lineSize );
-		ClearEmulatorLine( list[i].ptr(), lineSize );
+		ClearEmulatorLine( list[i].data(), lineSize );
 	}
 }
 
@@ -992,7 +992,7 @@ void EmulatorScreen::Clear()
 	if ( cols > 0 )
 		for ( int i = 0; i < rows; i++ )
 		{
-			ClearEmulatorLine( list[i].ptr(), lineSize );
+			ClearEmulatorLine( list[i].data(), lineSize );
 		}
 }
 
@@ -1007,7 +1007,7 @@ void EmulatorScreen::SetSize( int r, int c )
 		for ( i = 0; i < n; i++ )
 		{
 			t[i].resize( lineSize );
-			ClearEmulatorLine( t[i].ptr(), lineSize );
+			ClearEmulatorLine( t[i].data(), lineSize );
 		}
 
 		for ( i = 0; i < lineCount; i++ )
@@ -1027,10 +1027,10 @@ void EmulatorScreen::SetSize( int r, int c )
 
 			if ( cols > 0 )
 			{
-				memcpy( p.ptr(), list[i].ptr(), cols * sizeof( TermChar ) );
+				memcpy( p.data(), list[i].data(), cols * sizeof( TermChar ) );
 			}
 
-			ClearEmulatorLine( p.ptr() + cols, c - cols );
+			ClearEmulatorLine( p.data() + cols, c - cols );
 			list[i] = p;
 		}
 
@@ -1057,7 +1057,7 @@ void EmulatorScreen::ScrollUp( int a, int b, int count, unsigned ch ) //a<=b
 	{
 		for ( int i = a; i <= b; i++ )
 		{
-			ClearEmulatorLine( list[i].ptr(), cols, ch );
+			ClearEmulatorLine( list[i].data(), cols, ch );
 		}
 
 	}
@@ -1067,7 +1067,7 @@ void EmulatorScreen::ScrollUp( int a, int b, int count, unsigned ch ) //a<=b
 		for ( ; count > 0; count-- )
 		{
 			std::vector<TermChar> t = list[b];
-			ClearEmulatorLine( t.ptr(), cols, ch );
+			ClearEmulatorLine( t.data(), cols, ch );
 
 			for ( int i = b; i > a; i-- ) { list[i] = list[i - 1]; }
 
@@ -1090,14 +1090,14 @@ void EmulatorScreen::ScrollDown( int a, int b, int count, unsigned ch ) //a<=b
 
 	if ( n < count )
 	{
-		for ( int i = a; i <= b; i++ ) { ClearEmulatorLine( list[i].ptr(), cols, ch ); }
+		for ( int i = a; i <= b; i++ ) { ClearEmulatorLine( list[i].data(), cols, ch ); }
 	}
 	else
 	{
 		for ( ; count > 0; count-- )
 		{
 			std::vector<TermChar> t = list[a];
-			ClearEmulatorLine( t.ptr(), cols, ch );
+			ClearEmulatorLine( t.data(), cols, ch );
 
 			for ( int i = a; i < b; i++ ) { list[i] = list[i + 1]; }
 
@@ -1119,7 +1119,7 @@ void EmulatorScreen::SetLineChar( int ln, int c, int count, unsigned ch )
 
 	if ( c + count > cols ) { count = cols - c; }
 
-	TermChar* p = list[ln].ptr() + c;
+	TermChar* p = list[ln].data() + c;
 
 	for ( ; count > 0; count-- ) { *( p++ ) = ch; }
 
@@ -1141,7 +1141,7 @@ void EmulatorScreen::InsertLineChar( int ln, int c, int count, unsigned ch )
 
 	if ( c + count > cols ) { count = cols - c; }
 
-	TermChar* p = list[ln].ptr();
+	TermChar* p = list[ln].data();
 	int shn = cols - ( c + count );
 
 	if ( shn > 0 ) { memmove( p + c + count, p + c, shn * sizeof( TermChar ) ); }
@@ -1159,7 +1159,7 @@ void EmulatorScreen::DeleteLineChar( int ln, int c, int count, unsigned ch )
 
 	if ( c + count > cols ) { count = cols - c; }
 
-	TermChar* p = list[ln].ptr();
+	TermChar* p = list[ln].data();
 	int shn = cols - ( c + count );
 
 	if ( shn > 0 ) { memmove( p + c, p + c + count, shn * sizeof( TermChar ) ); }

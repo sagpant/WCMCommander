@@ -232,9 +232,9 @@ void* RunProcessThreadFunc( void* data )
 
 	if ( p )
 	{
-		if ( !p->shell->CD( p->path.ptr() ) )
+		if ( !p->shell->CD( p->path.data() ) )
 		{
-			pid_t pid = p->shell->Exec( p->cmd.ptr() );
+			pid_t pid = p->shell->Exec( p->cmd.data() );
 
 			if ( pid > 0 )
 			{

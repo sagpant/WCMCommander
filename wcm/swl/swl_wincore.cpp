@@ -1038,7 +1038,7 @@ namespace wal
 
 		//упрощенная схема, не очень качественно, зато быстро
 
-		std::vector<int[2]> p( w );
+		std::vector< std::pair<int, int> > p( w );
 
 		int x;
 		int wN = a._width / w;
@@ -1052,8 +1052,8 @@ namespace wal
 
 			if ( t2 == t1 ) { t2 = t1 + 1; }
 
-			p[x][0] = ( t1 >= 0 ) ? t1 : 0;
-			p[x][1] = ( t2 <= a._width ) ? t2 : a._width;
+			p[x].first  = ( t1 >= 0 ) ? t1 : 0;
+			p[x].second = ( t2 <= a._width ) ? t2 : a._width;
 		}
 
 		int hN = a._height / h;
@@ -1071,13 +1071,14 @@ namespace wal
 				const unsigned32* a_line =  &a._data[ ( ( y * a._height ) / h ) * a._width ];
 
 				if ( !wN )
-					for ( x = 0; x < w; x++ ) { line[x] = a_line[p[x][0]]; }
+					for ( x = 0; x < w; x++ ) { line[x] = a_line[p[x].first]; }
 				else
 				{
 					for ( x = 0; x < w; x++ )
 					{
 						unsigned R, G, B, A;
-						int n1 = p[x][0], n2 = p[x][1];
+						int n1 = p[x].first;
+						int n2 = p[x].second;
 						FROM_RGBA32( a_line[n1], R, G, B, A );
 
 						for ( int i = n1 + 1; i < n2; i++ ) { FROM_RGBA32_PLUS( a_line[i], R, G, B, A ); }
@@ -1102,7 +1103,8 @@ namespace wal
 				{
 
 					unsigned R = 0, G = 0, B = 0, A = 0;
-					int n1 = p[x][0], n2 = p[x][1];
+					int n1 = p[x].first;
+					int n2 = p[x].second;
 
 					for ( int iy = t1; iy < t2; iy++ )
 					{

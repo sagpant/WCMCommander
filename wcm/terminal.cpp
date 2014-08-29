@@ -190,7 +190,7 @@ static void Shell( int in, int out )
 
 					if ( pList.count() )
 					{
-						const char* params[] = {shell, "-c", pList[0].ptr(), NULL};
+						const char* params[] = {shell, "-c", pList[0].data(), NULL};
 						execv( shell, ( char** ) params );
 						printf( "error execute %s\n", shell );
 					}
@@ -207,7 +207,7 @@ static void Shell( int in, int out )
 
 				if ( WritePipe( out, 0, buf, ( const char* ) 0 ) ) { exit( 1 ); }
 
-				printf ( "exec '%s' (%i)\n", pList[0].ptr(), pid );
+				printf ( "exec '%s' (%i)\n", pList[0].data(), pid );
 
 			}
 			break;

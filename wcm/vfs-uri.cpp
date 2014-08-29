@@ -321,7 +321,7 @@ FSPtr ParzeCurrentSystemURL( FSPath& path )
 
 	while ( true )
 	{
-		if ( getcwd( buf.ptr(), bufSize ) )
+		if ( getcwd( buf.data(), bufSize ) )
 		{
 			break;
 		}
@@ -335,7 +335,7 @@ FSPtr ParzeCurrentSystemURL( FSPath& path )
 		buf.resize( bufSize );
 	}
 
-	path.Set( sys_charset_id, buf.ptr() );
+	path.Set( sys_charset_id, buf.data() );
 	return new FSSys(); //systemFSPtr;
 #endif
 }

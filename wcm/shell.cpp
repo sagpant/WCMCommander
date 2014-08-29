@@ -86,9 +86,9 @@ void Shell::Run()
 
 		if ( sid < 0 ) { printf( "setsid error\n" ); }
 
-		int slaveFd = open( slaveName.ptr(), O_RDWR );
+		int slaveFd = open( slaveName.data(), O_RDWR );
 
-		if ( slaveFd < 0 ) { printf( "can`t open slave terminal file '%s'\n", slaveName.ptr() ); }
+		if ( slaveFd < 0 ) { printf( "can`t open slave terminal file '%s'\n", slaveName.data() ); }
 
 		//недоделано
 		struct termios attr;
@@ -238,7 +238,7 @@ static bool WriteCmd( int fd, int cmd, ccollect<std::vector<char> >& list )
 		WritePipeChar( fd, cmd );
 		WritePipeChar( fd, list.count() );
 
-		for ( int i = 0; i < list.count(); i++ ) { WritePipeStr( fd, list[i].ptr() ); }
+		for ( int i = 0; i < list.count(); i++ ) { WritePipeStr( fd, list[i].data() ); }
 	}
 	catch ( int n )
 	{
@@ -301,7 +301,7 @@ static void ShellProc( int in, int out )
 
 					if ( pList.count() )
 					{
-						const char* params[] = {shell, "-c", pList[0].ptr(), NULL};
+						const char* params[] = {shell, "-c", pList[0].data(), NULL};
 						execv( shell, ( char** ) params );
 						printf( "error execute %s\n", shell );
 					}
@@ -328,7 +328,7 @@ static void ShellProc( int in, int out )
 				if ( pList.count() <= 0 ) { printf( "intermnal error 1\n" ); exit( 1 ); }
 
 				int status = 0;
-				int ret = waitpid( atoi( pList[0].ptr() ), &status, 0 );
+				int ret = waitpid( atoi( pList[0].data() ), &status, 0 );
 
 				pList.clear();
 				AddInt( pList, ret );
@@ -343,7 +343,7 @@ static void ShellProc( int in, int out )
 			{
 				if ( pList.count() <= 0 ) { printf( "intermnal error 2\n" ); exit( 1 ); }
 
-				int ret = chdir( pList[0].ptr() );
+				int ret = chdir( pList[0].data() );
 				pList.clear();
 				AddInt( pList, ret );
 				AddInt( pList, errno );
@@ -374,7 +374,7 @@ pid_t Shell::Exec( const char* cmd )
 
 	if ( list.count() <= 0 ) { Run(); return -1; }
 
-	return atoi( list[0].ptr() );
+	return atoi( list[0].data() );
 }
 
 int Shell::Wait( pid_t pid, int* pStatus )
@@ -391,7 +391,7 @@ int Shell::Wait( pid_t pid, int* pStatus )
 
 	if ( list.count() <= 0 ) { Run(); return -1; }
 
-	return atoi( list[0].ptr() );
+	return atoi( list[0].data() );
 }
 
 int Shell::CD( const char* path )
@@ -405,7 +405,7 @@ int Shell::CD( const char* path )
 
 	if ( list.count() <= 0 ) { Run(); return -1; }
 
-	return atoi( list[0].ptr() );
+	return atoi( list[0].data() );
 }
 
 

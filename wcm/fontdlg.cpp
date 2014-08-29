@@ -39,11 +39,11 @@ void FontExample::Paint( wal::GC& gc, const crect& paintRect )
 
 		gc.SetFillColor( bg );
 		gc.SetTextColor( color );
-		gc.TextOutF( 2, y, text.ptr() );
+		gc.TextOutF( 2, y, text.data() );
 
 		gc.SetFillColor( color );
 		gc.SetTextColor( bg );
-		gc.TextOutF( 2, y + gc.GetTextExtents( text.ptr() ).y, text.ptr() );
+		gc.TextOutF( 2, y + gc.GetTextExtents( text.data() ).y, text.data() );
 	}
 }
 
@@ -91,11 +91,11 @@ namespace wal
 
 
 FontDialogX::FontDialogX( NCDialogParent* parent, bool fixed )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Select X11 server font" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Select X11 server font" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   textList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
 	   filterEdit( 0, this, 0, 0, 16 ),
-	   example( this, utf8_to_unicode( "Example text: [{(123)}] <?`!@#$%^&*>" ).ptr() )
+	   example( this, utf8_to_unicode( "Example text: [{(123)}] <?`!@#$%^&*>" ).data() )
 {
 	iL.AddWin( &textList, 0, 0 );
 	textList.Enable();
@@ -123,7 +123,7 @@ FontDialogX::FontDialogX( NCDialogParent* parent, bool fixed )
 
 			for ( i = 0; i < count; i++ ) { origList.append( new_char_str( ret[i] ) ); }
 
-			for ( i = 0; i < origList.count(); i++ ) { sortedList.append( origList[i].ptr() ); }
+			for ( i = 0; i < origList.count(); i++ ) { sortedList.append( origList[i].data() ); }
 
 			sort2m<char*>( sortedList.ptr(), sortedList.count(), strless< char* > );
 		}
@@ -133,7 +133,7 @@ FontDialogX::FontDialogX( NCDialogParent* parent, bool fixed )
 
 	for ( int i = 0; i < sortedList.count(); i++ )
 	{
-		textList.Append( utf8_to_unicode( sortedList[i] ).ptr() );
+		textList.Append( utf8_to_unicode( sortedList[i] ).data() );
 	}
 
 	//MaximizeIfChild();
@@ -186,7 +186,7 @@ bool FontDialogX::Command( int id, int subId, Win* win, void* data )
 
 		if ( s )
 		{
-			example.SetFont( cfont::New( unicode_to_utf8( s ).ptr() ) );
+			example.SetFont( cfont::New( unicode_to_utf8( s ).data() ) );
 		}
 
 		return true;
@@ -197,10 +197,10 @@ bool FontDialogX::Command( int id, int subId, Win* win, void* data )
 	{
 		std::vector<unicode_t> a = filterEdit.GetText();
 
-		if ( !a.ptr() ) { return true; }
+		if ( !a.data() ) { return true; }
 
-		std::vector<char> str = unicode_to_utf8( a.ptr() );
-		char* s = str.ptr();
+		std::vector<char> str = unicode_to_utf8( a.data() );
+		char* s = str.data();
 
 		ccollect<std::vector<char> > flist;
 
@@ -234,12 +234,12 @@ bool FontDialogX::Command( int id, int subId, Win* win, void* data )
 
 			for ( int j = 0; j < flist.count() && ok; j++ )
 			{
-				ok = filter_word( s, flist[j].ptr() );
+				ok = filter_word( s, flist[j].data() );
 			}
 
 			if ( ok )
 			{
-				textList.Append( utf8_to_unicode( sortedList[i] ).ptr() );
+				textList.Append( utf8_to_unicode( sortedList[i] ).data() );
 			}
 		}
 
@@ -262,7 +262,7 @@ cptr<cfont> SelectX11Font( NCDialogParent* parent, bool fixed )
 
 	if ( !s ) { return 0; }
 
-	return cfont::New( unicode_to_utf8( s ).ptr() );
+	return cfont::New( unicode_to_utf8( s ).data() );
 }
 
 static const char* ftFontPathList[] =
@@ -329,11 +329,11 @@ static void ScanFontDir( const char* dirName, ccollect<FileNode>& list, int leve
 
 			struct stat sb;
 
-			if ( stat( filePath.ptr(), &sb ) ) { continue; }
+			if ( stat( filePath.data(), &sb ) ) { continue; }
 
 			if ( ( sb.st_mode & S_IFMT ) == S_IFDIR )
 			{
-				ScanFontDir( filePath.ptr(), list, level + 1 );
+				ScanFontDir( filePath.data(), list, level + 1 );
 			}
 			else if ( ( sb.st_mode & S_IFMT ) == S_IFREG )
 			{
@@ -370,7 +370,7 @@ static void GetFontFileList( ccollect<FileNode>& list )
 
 	if ( home )
 	{
-		ScanFontDir( carray_cat<char>( home, "/.wcm/fonts" ).ptr(), list );
+		ScanFontDir( carray_cat<char>( home, "/.wcm/fonts" ).data(), list );
 	}
 
 	const char** p = ftFontPathList;
@@ -400,7 +400,7 @@ class FontDialogFT: public NCVertDialog
 	{
 		const char* fileName;
 		cfont::FTInfo* info;
-		bool operator<=( const Node& a ) { return strcmp( info->name.ptr(), a.info->name.ptr() ) <= 0; }
+		bool operator<=( const Node& a ) { return strcmp( info->name.data(), a.info->name.data() ) <= 0; }
 		Node(): fileName( 0 ), info( 0 ) {}
 	};
 	ccollect<Node> list;
@@ -453,7 +453,7 @@ static int CheckFontSize( int n )
 void FontDialogFT::ReloadFiltred( const char* filter )
 {
 	std::vector<char> filtBuf  = new_char_str( filter );
-	char* s = filtBuf.ptr();
+	char* s = filtBuf.data();
 
 	ccollect<std::vector<char> > flist;
 
@@ -486,7 +486,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 	for ( i = 0; i < fileList->count(); i++ )
 	{
-		char* fileName = fileList->get( i ).path.ptr();
+		char* fileName = fileList->get( i ).path.data();
 
 		FileInfoNode* pfInfo = lastFileInfo.exist( fileName );
 
@@ -495,7 +495,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 		if ( fixed && !( pfInfo->info->flags & cfont::FTInfo::FIXED_WIDTH ) ) { continue; }
 
 		char buffer[0x100];
-		snprintf( buffer, sizeof( buffer ), "%s-%s", pfInfo->info->name.ptr(), pfInfo->info->styleName.ptr() );
+		snprintf( buffer, sizeof( buffer ), "%s-%s", pfInfo->info->name.data(), pfInfo->info->styleName.data() );
 
 		if ( fontNameHash.exist( buffer ) ) { continue; }
 
@@ -507,7 +507,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 		for ( int j = 0; j < flist.count() && ok; j++ )
 		{
-			ok = filter_word( s, flist[j].ptr() );
+			ok = filter_word( s, flist[j].data() );
 		}
 
 		if ( ok )
@@ -524,22 +524,22 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 	for ( i = 0; i < list.count(); i++ )
 	{
-		textList.Append( utf8_to_unicode( carray_cat<char>( list[i].info->name.ptr(), ", ", list[i].info->styleName.ptr() ).ptr() ).ptr(), i, &list[i] );
+		textList.Append( utf8_to_unicode( carray_cat<char>( list[i].info->name.data(), ", ", list[i].info->styleName.data() ).data() ).data(), i, &list[i] );
 	}
 }
 
 
 FontDialogFT::FontDialogFT( NCDialogParent* parent, bool _fixed, ccollect<FileNode>* flist, const char* currentUri )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Select font" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Select font" ) ).data(), bListOkCancel ),
 	   fixed( _fixed ),
 	   fontSize( 100 ),
 	   iL( 16, 2 ),
 	   fileList( flist ),
 	   textList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
-	   example( this, utf8_to_unicode( "Example text: [{(123)}] <?`!@#$%^&*>" ).ptr() ),
-	   filterStatic( 0, this, utf8_to_unicode( "Filter:" ).ptr() ),
+	   example( this, utf8_to_unicode( "Example text: [{(123)}] <?`!@#$%^&*>" ).data() ),
+	   filterStatic( 0, this, utf8_to_unicode( "Filter:" ).data() ),
 	   filterEdit( 0, this, 0, 0, 16 ),
-	   sizeStatic( 0, this, utf8_to_unicode( _LT( "Size:" ) ).ptr() ),
+	   sizeStatic( 0, this, utf8_to_unicode( _LT( "Size:" ) ).data() ),
 	   sizeEdit( 0, this, 0, 0, 16 )
 {
 	iL.AddWin( &textList,  0, 1 );
@@ -611,7 +611,7 @@ FontDialogFT::FontDialogFT( NCDialogParent* parent, bool _fixed, ccollect<FileNo
 
 	char buf[64];
 	snprintf( buf, sizeof( buf ), "%i.%01i", fontSize / 10, fontSize % 10 );
-	sizeEdit.SetText( utf8_to_unicode( buf ).ptr() );
+	sizeEdit.SetText( utf8_to_unicode( buf ).data() );
 
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
@@ -646,9 +646,9 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 	{
 		std::vector<unicode_t> a = filterEdit.GetText();
 
-		if ( !a.ptr() ) { return true; }
+		if ( !a.data() ) { return true; }
 
-		ReloadFiltred( unicode_to_utf8( a.ptr() ).ptr() );
+		ReloadFiltred( unicode_to_utf8( a.data() ).data() );
 
 		textList.DataRefresh();
 		textList.MoveCurrent( 0 );
@@ -661,10 +661,10 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 	{
 		std::vector<unicode_t> a = sizeEdit.GetText();
 
-		if ( !a.ptr() ) { return true; }
+		if ( !a.data() ) { return true; }
 
-		std::vector<char> str = unicode_to_utf8( a.ptr() );
-		char* s = str.ptr();
+		std::vector<char> str = unicode_to_utf8( a.data() );
+		char* s = str.data();
 
 		while ( *s && *s <= 32 ) { s++; }
 
@@ -714,7 +714,7 @@ cptr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* curren
 
 	for ( int i = 0; i < list.count(); i++ )
 	{
-		FileInfoNode* pfInfo = lastFileInfo.exist( list[i].path.ptr() );
+		FileInfoNode* pfInfo = lastFileInfo.exist( list[i].path.data() );
 
 		if ( pfInfo && pfInfo->mtime == list[i].mtime )
 		{
@@ -723,10 +723,10 @@ cptr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* curren
 
 		FileInfoNode node;
 
-		node.info = cfont::GetFTFileInfo( list[i].path.ptr() );
+		node.info = cfont::GetFTFileInfo( list[i].path.data() );
 		node.mtime = list[i].mtime;
 
-		lastFileInfo[list[i].path.ptr()] = node;
+		lastFileInfo[list[i].path.data()] = node;
 	};
 
 	FontDialogFT dlg( parent, fixed, &list, currentUri );

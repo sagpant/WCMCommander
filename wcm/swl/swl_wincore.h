@@ -592,7 +592,7 @@ namespace wal
 		void Set( Image32& image );
 		void Set( Image32& image, unsigned bgColor );
 		void Put( wal::GC& gc, int src_x, int src_y, int dest_x, int dest_y, int w, int h );
-		XImage* GetXImage() {return data.ptr() ? &im : 0; };
+		XImage* GetXImage() {return data.data() ? &im : 0; };
 		~IntXImage();
 	};
 #endif

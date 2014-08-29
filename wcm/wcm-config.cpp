@@ -87,7 +87,7 @@ class TextOutStream
 	int pos;
 public:
 	TextOutStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), pos( 0 ) { buffer.resize( bufSize ); }
-	void Flush() {  if ( pos > 0 ) { Write( buffer.ptr(), pos ); pos = 0; } }
+	void Flush() {  if ( pos > 0 ) { Write( buffer.data(), pos ); pos = 0; } }
 	void PutC( int c ) { if ( pos >= bufSize ) { Flush(); } buffer[pos++] = c; }
 	void Put( const char* s, int size );
 	void Put( const char* s ) { Put( s, strlen( s ) ); }
@@ -193,8 +193,8 @@ void IniHash::Delete( const char* section, const char* var ) { hash[section].del
 void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; std::vector<char>* p = Create( section, var ); if ( p ) { *p = new_char_str( value ); } }
 void IniHash::SetIntValue( const char* section, const char* var, int value ) { char buf[64]; int_to_char<int>( value, buf ); SetStrValue( section, var, buf ); }
 void IniHash::SetBoolValue( const char* section, const char* var, bool value ) { SetIntValue( section, var, value ? 1 : 0 ); }
-const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->ptr() ) ? p->ptr() : def; }
-int IniHash::GetIntValue( const char* section, const char* var, int def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->ptr() ) ? atoi( p->ptr() ) : def; }
+const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->data() ) ? p->data() : def; }
+int IniHash::GetIntValue( const char* section, const char* var, int def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->data() ) ? atoi( p->data() ) : def; }
 bool IniHash::GetBoolValue( const char* section, const char* var, bool def ) { int n = GetIntValue( section, var, def ? 1 : 0 ); return n ? true : false; }
 
 void IniHash::Clear() { hash.clear(); }
@@ -311,7 +311,7 @@ void IniHash::Save( const sys_char_t* fileName )
 				out.PutC( '=' );
 				std::vector<char>* p = h->exist( varList[j] );
 
-				if ( p && p->ptr() ) { out.Put( p->ptr() ); }
+				if ( p && p->data() ) { out.Put( p->data() ); }
 
 				out.PutC( '\n' );
 			}
@@ -806,7 +806,7 @@ void WcmConfig::Load()
 			const char* s = hash.GetStrValue( node.section, node.name, node.def.defStr );
 
 			if ( s ) { *node.ptr.pStr = new_char_str( s ); }
-			else { ( *node.ptr.pStr ) = 0; }
+			else { ( *node.ptr.pStr ).clear(); }
 		}
 
 	}
@@ -869,7 +869,7 @@ void WcmConfig::Save( NCWin* nc )
 		}
 		else if ( node.type == MT_STR && node.ptr.pStr != 0 )
 		{
-			hash.SetStrValue( node.section, node.name, node.ptr.pStr->ptr() );
+			hash.SetStrValue( node.section, node.name, node.ptr.pStr->data() );
 		}
 	}
 
@@ -1337,9 +1337,9 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		std::vector<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
 
-		cptr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->ptr() ) ? pUri->ptr() : 0 );
+		cptr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->data() ) ? pUri->data() : 0 );
 
-		if ( p.data() )
+		if ( p.ptr() )
 		{
 			pList->get( fontList.GetCurrentInt() ).newFont = p;
 			RefreshFontInfo();
@@ -1357,7 +1357,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		cptr<cfont> p = SelectX11Font( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed );
 
-		if ( p.data() )
+		if ( p.ptr() )
 		{
 			pList->get( fontList.GetCurrentInt() ).newFont = p;
 			RefreshFontInfo();

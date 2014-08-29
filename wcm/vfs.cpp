@@ -1331,7 +1331,7 @@ static unicode_t* GetOSUserName( int id )
 {
 	std::vector<unicode_t>* u = userList.exist( id );
 
-	if ( u ) { return u->ptr(); }
+	if ( u ) { return u->data(); }
 
 	setpwent();
 	struct passwd* p = getpwuid( id );
@@ -1341,7 +1341,7 @@ static unicode_t* GetOSUserName( int id )
 	if ( !p ) { sprintf( buf, "%i", id ); }
 
 	std::vector<unicode_t> str = sys_to_unicode_array( nameStr );
-	unicode_t* s = str.ptr();
+	unicode_t* s = str.data();
 	userList[id] = str;
 	endpwent();
 	return s;
@@ -1351,7 +1351,7 @@ static unicode_t* GetOSGroupName( int id )
 {
 	std::vector<unicode_t>* g = groupList.exist( id );
 
-	if ( g ) { return g->ptr(); }
+	if ( g ) { return g->data(); }
 
 	setgrent();
 	struct group* p = getgrgid( id );
@@ -1361,7 +1361,7 @@ static unicode_t* GetOSGroupName( int id )
 	if ( !p ) { sprintf( buf, "%i", id ); }
 
 	std::vector<unicode_t> str = sys_to_unicode_array( nameStr );
-	unicode_t* s = str.ptr();
+	unicode_t* s = str.data();
 	groupList[id] = str;
 	endgrent();
 	return s;

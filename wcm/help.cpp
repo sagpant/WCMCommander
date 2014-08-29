@@ -1396,12 +1396,12 @@ void HelpFile::Load()
 #else
 
 	if (
-	   !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", sys_locale_lang_ter() ).ptr() ).ptr() ) &&
-	   !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", sys_locale_lang() ).ptr() ).ptr() ) &&
-	   !LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", sys_locale_lang_ter() ).ptr() ).ptr() )
+	   !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", sys_locale_lang_ter() ).data() ).data() ) &&
+	   !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", sys_locale_lang() ).data() ).data() ) &&
+	   !LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", sys_locale_lang_ter() ).data() ).data() )
 	)
 	{
-		LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", sys_locale_lang() ).ptr() ).ptr() );
+		LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", sys_locale_lang() ).data() ).data() );
 	}
 
 #endif
