@@ -2,15 +2,6 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   19.08.2012 нужно переработать ccollect::del
-   при удалении объектов они фактически могут не удалиться из за шага (stop)
-   это чреваро (косяк повлиял на ошибку с Layout, пока эта дыра в Layout заткнута предварительным занулением перед удалением)
-*/
-
-
-
 #ifndef WAL_TMPLS_H
 #define WAL_TMPLS_H
 
@@ -58,12 +49,11 @@ namespace wal
 		T* m_data;
 	};
 
-	template <class T, int step = 16> class ccollect
+	template <class T, size_t Step = 16> class ccollect
 	{
 	public:
 		ccollect();
-		ccollect( int n );
-		ccollect( const ccollect& a );
+		explicit ccollect( size_t n );
 		void del( int n );
 		void del( int n, int count );
 		void set( int n, const T& a );
@@ -71,7 +61,7 @@ namespace wal
 		const T& const_item( int n ) const;
 		const T* const_ptr() const;
 		T* ptr();
-		std::vector<T> grab();
+		const std::vector<T>& grab() const;
 		T& operator [] ( int n );
 		void insert( int n );
 		void insert( int n, const T& a );
@@ -82,14 +72,9 @@ namespace wal
 		void append_n ( const T& p, int number );
 		void append ( const ccollect& a );
 		void clear();
-		ccollect& operator = ( const ccollect& a );
 		int count() const;
-		~ccollect();
 	private:
 		std::vector<T> m_data;
-		int cnt;
-		void realloc( int n );
-		void copy_from( const ccollect& a );
 	};
 
 /// cptr /////////////////////////////////////////////////////////////////////
@@ -176,156 +161,105 @@ namespace wal
 
 /// ccollect //////////////////////////////////////////////////////////
 
-	template <class T, int step> ccollect<T, step>::ccollect()
+	template <class T, size_t Step> ccollect<T, Step>::ccollect()
+	 : m_data( Step )
 	{
-		cnt = 0;
 	}
 
-	template <class T, int step> ccollect<T, step>::ccollect( int n )
+	template <class T, size_t Step> ccollect<T, Step>::ccollect( size_t n )
+	 : m_data( n )
 	{
-		ASSERT( n >= 0 );
-		int x = ( n + step - 1 ) / step;
-		m_data.resize( x * step );
-		cnt = n;
 	}
 
-	template <class T, int step> inline ccollect<T, step>::ccollect( const ccollect& a )
+	template <class T, size_t Step> void ccollect<T, Step>::del( int n )
 	{
-		copy_from( a );
+		ASSERT( n >= 0 && n < ( int )m_data.size( ) );
+
+		m_data.erase( m_data.begin( ) + n );
 	}
 
-	template <class T, int step> void ccollect<T, step>::realloc( int n )
-	{
-		ASSERT( n >= 0 );
-		int a = ( cnt + step - 1 ) / step, b = ( n + step - 1 ) / step;
-
-		if ( a != b )
-		{
-			std::vector<T> p( b * step );
-
-			for ( int i = cnt > n ? n - 1 : cnt - 1; i >= 0; i-- )
-			{
-				p[i] = m_data[i];
-			}
-
-			m_data = p;
-		}
-
-		cnt = n;
-	}
-
-//!!!проблема при удалении (если удалять последний элемент, то фактически он не всегда удаляется, а только при переходе шага (с объектами дерьмо получается))
-	template <class T, int step> void ccollect<T, step>::del( int n )
-	{
-		ASSERT( n >= 0 && n < cnt );
-		int i;
-
-		for ( i = n; i < cnt - 1; i++ )
-		{
-			m_data[i] = m_data[i + 1];
-		}
-
-		realloc( cnt - 1 );
-	}
-
-	template <class T, int step> void ccollect<T, step>::del( int n, int count )
+	template <class T, size_t Step> void ccollect<T, Step>::del( int n, int count )
 	{
 		ASSERT( n >= 0 );
 		ASSERT( count >= 0 );
-		ASSERT( n + count <= cnt );
+		ASSERT( n + count <= ( int )m_data.size( ) );
 
 		if ( count <= 0 )
 		{
 			return;
 		}
 
-		int i, x = cnt - count;
-
-		for ( i = n; i < x; i++ )
-		{
-			m_data[i] = m_data[i + count];
-		}
-
-		realloc( cnt - count );
+		m_data.erase( m_data.begin() + n, m_data.begin() + n + count );
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::set( int n, const T& a )
+	template <class T, size_t Step> inline void ccollect<T, Step>::set( int n, const T& a )
 	{
-		ASSERT( n >= 0 && n < cnt );
+		ASSERT( n >= 0 && n < (int)m_data.size() );
 		m_data[n] = a;
 	}
 
-	template <class T, int step> inline T& ccollect<T, step>::get( int n )
+	template <class T, size_t Step> inline T& ccollect<T, Step>::get( int n )
 	{
-		ASSERT( n >= 0 && n < cnt );
+		ASSERT( n >= 0 && n < ( int )m_data.size() );
 		return m_data[n];
 	}
 
-	template <class T, int step> inline T* ccollect<T, step>::ptr()
+	template <class T, size_t Step> inline T* ccollect<T, Step>::ptr()
 	{
 		return m_data.data();
 	}
 
-	template <class T, int step> std::vector<T> ccollect<T, step>::grab()
+	template <class T, size_t Step> const std::vector<T>& ccollect<T, Step>::grab() const
 	{
-		cnt = 0;
 		return m_data;
 	}
 
-	template <class T, int step> inline const T& ccollect<T, step>::const_item( int n ) const
+	template <class T, size_t Step> inline const T& ccollect<T, Step>::const_item( int n ) const
 	{
-		ASSERT( n >= 0 && n < cnt );
+		ASSERT( n >= 0 && n < ( int )m_data.size( ) );
 		return m_data[ n ];
 	}
 
-	template <class T, int step> inline const T* ccollect<T, step>::const_ptr() const
+	template <class T, size_t Step> inline const T* ccollect<T, Step>::const_ptr() const
 	{
 		return m_data.data();
 	}
 
-	template <class T, int step> T& ccollect<T, step>::operator [] ( int n )
+	template <class T, size_t Step> T& ccollect<T, Step>::operator [] ( int n )
 	{
-		ASSERT( n >= 0 && n < cnt );
-		return get( n );
+		ASSERT( n >= 0 && n < (int)m_data.size() );
+		return m_data[ n ];
 	}
 
 
-	template <class T, int step> inline void ccollect<T, step>::append()
+	template <class T, size_t Step> inline void ccollect<T, Step>::append()
 	{
-		realloc( cnt + 1 );
+		m_data.push_back( T() );
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::append ( const T& a )
+	template <class T, size_t Step> inline void ccollect<T, Step>::append ( const T& a )
 	{
-		realloc( cnt + 1 );
-		set( cnt - 1, a );
+		m_data.push_back( a );
 	}
 
 
-	template <class T, int step> void ccollect<T, step>::append_list ( const T* p, int number )
+	template <class T, size_t Step> void ccollect<T, Step>::append_list ( const T* p, int number )
 	{
-		int oldcount = cnt;
-		realloc( cnt + number );
+		m_data.reserve( m_data.size( ) + number );
 
 		for ( int i = 0; i < number; i++, p++ )
 		{
-			set( oldcount + i, *p );
+			m_data.push_back( *p );
 		}
 	}
 
-	template <class T, int step> void ccollect<T, step>::append_n( const T& p, int number )
+	template <class T, size_t Step> void ccollect<T, Step>::append_n( const T& p, int number )
 	{
-		int oldcount = cnt;
-		realloc( cnt + number );
-
-		for ( int i = 0; i < number; i++ )
-		{
-			set( oldcount + i, p );
-		}
+		m_data.insert( m_data.end(), number, p );
 	}
 
 
-	template <class T, int step> void ccollect<T, step>::append ( const ccollect& a )
+	template <class T, size_t Step> void ccollect<T, Step>::append ( const ccollect& a )
 	{
 		for ( int i = 0; i < a.count(); i++ )
 		{
@@ -333,67 +267,28 @@ namespace wal
 		}
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::insert( int n )
+	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n )
 	{
-		ASSERT( n >= 0 && n <= cnt );
-		realloc( cnt + 1 );
+		ASSERT( n >= 0 && n <= (int)m_data.size() );
 
-		for ( int i = cnt - 1; i >= n; i-- )
-		{
-			m_data[i + 1] = m_data[i];
-		}
+		m_data.insert( m_data.begin()+n, T() );
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::insert( int n, const T& a )
+	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n, const T& a )
 	{
-		ASSERT( n >= 0 && n <= cnt );
-		realloc( cnt + 1 );
+		ASSERT( n >= 0 && n <= ( int )m_data.size() );
 
-		for ( int i = cnt - 2; i >= n; i-- ) //cnt-1 Р·Р°РјРµРЅРµРЅРѕ РЅР° cnt-2 25.08.2011 Р±С‹Р» РєРѕСЃСЏРє
-		{
-			m_data[i + 1] = m_data[i];
-		}
-
-		m_data[n] = a;
+		m_data.insert( m_data.begin()+n, a );
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::clear()
+	template <class T, size_t Step> inline void ccollect<T, Step>::clear()
 	{
 		m_data.clear();
-		cnt = 0;
 	}
 
-	template <class T, int step> inline ccollect<T, step>& ccollect<T, step>::operator = ( const ccollect& a )
+	template <class T, size_t Step> inline int ccollect<T, Step>::count() const
 	{
-		copy_from( a );
-		return *this;
-	}
-
-
-
-	template <class T, int step> ccollect<T, step>::~ccollect()
-	{
-	}
-
-	template <class T, int step> inline int ccollect<T, step>::count() const
-	{
-		return cnt;
-	}
-
-	template <class T, int step> void ccollect<T, step>::copy_from( const ccollect& a )
-	{
-		if ( this != &a )
-		{
-			std::vector<T> x( a.cnt );
-
-			for ( int i = 0; i < a.cnt; i++ )
-			{
-				x[i] = a.m_data.at( i );
-			}
-
-			m_data = x;
-			cnt = a.cnt;
-		}
+		return m_data.size();
 	}
 
 /// hash tables ////////////////////////////////////////////////////////////////////////////
