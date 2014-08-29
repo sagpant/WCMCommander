@@ -78,7 +78,7 @@ static std::vector<wchar_t> GetFileExt( const unicode_t* uri )
 
 static std::vector<unicode_t> NormalizeStr( unicode_t* s )
 {
-	if ( !s ) { return std::vector<unicode_t>(1); }
+	if ( !s ) { return std::vector<unicode_t>(); }
 
 	int n = unicode_strlen( s );
 	std::vector<unicode_t> p( n + 1 );

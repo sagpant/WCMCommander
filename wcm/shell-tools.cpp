@@ -527,7 +527,7 @@ std::vector<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path,
 
 	if ( b < 0 ) { b = n; }
 
-	if ( b >= e ) { return std::vector<unicode_t>(1); }
+	if ( b >= e ) { return std::vector<unicode_t>(); }
 
 	FSPath searchPath = path;
 	int bm = ds >= b ? ds + 1 : b;
@@ -570,7 +570,7 @@ std::vector<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path,
 
 		if ( data.filtered.ptr() )
 		{
-			if ( !data.filtered->count() ) { return std::vector<unicode_t>( 1 ); }
+			if ( !data.filtered->count() ) { return std::vector<unicode_t>(); }
 
 			if ( data.filtered->count() == 1 )
 			{
@@ -592,7 +592,7 @@ std::vector<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path,
 
 			const unicode_t* name = p->GetUnicodeName();
 
-			if ( !name ) { return std::vector<unicode_t>(1); } //???
+			if ( !name ) { return std::vector<unicode_t>(); } //???
 
 			int nLen = unicode_strlen( name );
 
@@ -626,5 +626,5 @@ std::vector<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path,
 		}
 	}
 
-	return std::vector<unicode_t>( 0 );
+	return std::vector<unicode_t>();
 }

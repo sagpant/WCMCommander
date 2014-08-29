@@ -328,7 +328,7 @@ inline time_t GetMTime( const char* fileName )
 
 static std::vector<unicode_t> GetFileExtLC( const unicode_t* uri )
 {
-	if ( !uri ) { return std::vector<unicode_t>(1); }
+	if ( !uri ) { return std::vector<unicode_t>(); }
 
 	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
 
@@ -1189,7 +1189,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 
 static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const unicode_t* uri )
 {
-	if ( !exec || !uri ) { return std::vector<unicode_t>(1); }
+	if ( !exec || !uri ) { return std::vector<unicode_t>(); }
 
 	ccollect<unicode_t, 0x100> cmd;
 
@@ -1258,7 +1258,7 @@ std::vector<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal,
 		return PrepareCommandString( list[0]->exec.data(), uri );
 	}
 
-	return std::vector<unicode_t>(1);
+	return std::vector<unicode_t>();
 }
 
 
