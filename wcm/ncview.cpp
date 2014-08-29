@@ -2116,9 +2116,9 @@ static void ViewDrawPreparedText( ViewerColors* viewerColors,  wal::GC& gc, int 
 	while ( count > 0 )
 	{
 		char t = *type;
-		int i;
+		int i = 1;
 
-		for ( i = 1; i < count && type[i] == t; i++ ) { 0; }
+		while ( i < count && type[i] == t ) i++;
 
 		int fg;
 		int bg;

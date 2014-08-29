@@ -61,6 +61,9 @@ void PanelList::Sort()
 
 	switch ( sortMode )
 	{
+		case SORT_NONE:
+			break;
+
 		case SORT_NAME:
 			FSList::SortByName( p, count, ascSort, caseSensitive );
 			break;

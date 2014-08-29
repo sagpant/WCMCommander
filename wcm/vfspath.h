@@ -12,7 +12,7 @@ using namespace wal;
 
 template <class T> inline int CmpStr( T* a, T* b )
 {
-	for ( ; *a && *a == *b; a++, b++ ) { 0; }
+	for ( ; *a && *a == *b; a++, b++ );
 
 	return ( *a ? ( *b ? ( *a < *b ? -1 : ( *a == *b ? 0 : 1 ) ) : 1 ) : ( *b ? -1 : 0 ) );
 }

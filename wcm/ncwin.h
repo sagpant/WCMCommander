@@ -83,7 +83,7 @@ public:
 	UFStr() { data[0] = 0;}
 	void Set( const unicode_t* s ) { int i; for ( i = 0; i < N - 1 && *s; i++, s++ ) { data[i] = *s; } data[i] = 0; }
 	UFStr( const unicode_t* s ) { Set( s ); }
-	bool Eq( const unicode_t* s ) { int i; for ( i = 0; i < N - 1 && data[i] && data[i] == *s; i++, s++ ) { 0; } return data[i] == 0 && *s == 0 || i >= N; }
+	bool Eq( const unicode_t* s ) { int i = 0; while ( i < N - 1 && data[i] && data[i] == *s ) { i++; s++; }; return data[i] == 0 && *s == 0 || i >= N; }
 	unicode_t* Str() { return data; }
 };
 
