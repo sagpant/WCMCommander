@@ -677,21 +677,22 @@ FSString FSSys::Uri( FSPath& path )
 static cinthash<int, std::vector<unicode_t> > userList;
 static cinthash<int, std::vector<unicode_t> > groupList;
 
+static unicode_t c0 = 0;
+
 static unicode_t* GetOSUserName( int id )
 {
-	static unicode_t c0 = 0;
 	return &c0;
 }
 
 static unicode_t* GetOSGroupName( int id )
 {
-	static unicode_t c0 = 0;
 	return &c0;
 }
 
 unicode_t* FSSys::GetUserName( int user, unicode_t buf[64] )
 {
-	unicode_t* u = GetOSUserName( user ), *s = buf;
+	unicode_t* u = GetOSUserName( user );
+	unicode_t* s = buf;
 
 	for ( int n = 63; n > 0 && *u; n--, u++, s++ )
 	{
@@ -705,7 +706,8 @@ unicode_t* FSSys::GetUserName( int user, unicode_t buf[64] )
 
 unicode_t* FSSys::GetGroupName( int group, unicode_t buf[64] )
 {
-	unicode_t* g = GetOSGroupName( group ), *s = buf;
+	unicode_t* g = GetOSGroupName( group );
+	unicode_t* s = buf;
 
 	for ( int n = 63; n > 0 && *g; n--, g++, s++ )
 	{
@@ -1327,11 +1329,11 @@ FSString FSSys::Uri( FSPath& path )
 static cinthash<int, std::vector<unicode_t> > userList;
 static cinthash<int, std::vector<unicode_t> > groupList;
 
-static unicode_t* GetOSUserName( int id )
+static std::vector<unicode_t> GetOSUserName( int id )
 {
 	std::vector<unicode_t>* u = userList.exist( id );
 
-	if ( u ) { return u->data(); }
+	if ( u ) { return *u; }
 
 	setpwent();
 	struct passwd* p = getpwuid( id );
@@ -1341,17 +1343,16 @@ static unicode_t* GetOSUserName( int id )
 	if ( !p ) { sprintf( buf, "%i", id ); }
 
 	std::vector<unicode_t> str = sys_to_unicode_array( nameStr );
-	unicode_t* s = str.data();
 	userList[id] = str;
 	endpwent();
-	return s;
+	return str;
 }
 
-static unicode_t* GetOSGroupName( int id )
+static std::vector<unicode_t> GetOSGroupName( int id )
 {
 	std::vector<unicode_t>* g = groupList.exist( id );
 
-	if ( g ) { return g->data(); }
+	if ( g ) { return *g; }
 
 	setgrent();
 	struct group* p = getgrgid( id );
@@ -1361,15 +1362,16 @@ static unicode_t* GetOSGroupName( int id )
 	if ( !p ) { sprintf( buf, "%i", id ); }
 
 	std::vector<unicode_t> str = sys_to_unicode_array( nameStr );
-	unicode_t* s = str.data();
 	groupList[id] = str;
 	endgrent();
-	return s;
+	return str;
 }
 
 unicode_t* FSSys::GetUserName( int user, unicode_t buf[64] )
 {
-	unicode_t* u = GetOSUserName( user ), *s = buf;
+	std::vector<unicode_t> Name = GetOSUserName( user );
+	unicode_t* u = Name.data();
+	unicode_t* s = buf;
 
 	for ( int n = 63; n > 0 && *u; n--, u++, s++ )
 	{
@@ -1383,7 +1385,10 @@ unicode_t* FSSys::GetUserName( int user, unicode_t buf[64] )
 
 unicode_t* FSSys::GetGroupName( int group, unicode_t buf[64] )
 {
-	unicode_t* g = GetOSGroupName( group ), *s = buf;
+	std::vector<unicode_t> Name = GetOSGroupName( group );
+
+	unicode_t* g = Name.data();
+	unicode_t* s = buf;
 
 	for ( int n = 63; n > 0 && *g; n--, g++, s++ )
 	{
