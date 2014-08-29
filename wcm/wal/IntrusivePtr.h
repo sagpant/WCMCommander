@@ -135,6 +135,19 @@ public:
 	{
 		return FObject;
 	}
+	/// helpers
+	inline T* ptr() const
+	{
+		return FObject;
+	}
+	inline void drop()
+	{
+		FObject = NULL;
+	}
+	inline void clear()
+	{
+		*this = clPtr<T>();
+	}
 private:
 	T*    FObject;
 };
