@@ -362,7 +362,7 @@ int VSearcher::MaxLen()
 
 /*
 class MegaSearcher {
-   ccollect< cptr< VSearcher > > list;
+   ccollect< clPtr< VSearcher > > list;
 public:
    bool Set(unicode_t *uStr, bool sens, charset_struct *charset = 0);
    char *Search(char *s, char *end, int *fBytes, charset_struct **retcs);
@@ -375,7 +375,7 @@ bool MegaSearcher::Set( unicode_t* uStr, bool sens, charset_struct* charset )
 
 	if ( charset )
 	{
-		cptr<VSearcher> p = new VSearcher();
+		clPtr<VSearcher> p = new VSearcher();
 
 		try
 		{
@@ -396,7 +396,7 @@ bool MegaSearcher::Set( unicode_t* uStr, bool sens, charset_struct* charset )
 
 	for ( int i = 0; i < csCount; i++ )
 	{
-		cptr<VSearcher> p = new VSearcher();
+		clPtr<VSearcher> p = new VSearcher();
 
 		try
 		{

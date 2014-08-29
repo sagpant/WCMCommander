@@ -10,7 +10,7 @@ public:
 	FSPtr fs;
 	FSPath path;
 	FSString errorString;
-	cptr<MemFile> file;
+	clPtr<MemFile> file;
 	volatile bool notExist;
 
 	OperLoadFileData( NCDialogParent* p ): OperData( p ), executed( false ), notExist( false ) {}
@@ -49,7 +49,7 @@ void OperLoadFileThread::Run()
 	FSPath path = data->path;
 	lock.Unlock();
 
-	cptr<MemFile> file = new MemFile;
+	clPtr<MemFile> file = new MemFile;
 
 	int ret_error;
 	int f = fs->OpenRead( path, FS::SHARE_READ, &ret_error, Info() );
@@ -158,7 +158,7 @@ class LoadThreadWin: public NCDialog
 	bool _ignoreENOENT;
 public:
 	OperLoadFileData threadData;
-	cptr<MemFile> file;
+	clPtr<MemFile> file;
 
 	LoadThreadWin( NCDialogParent* parent, bool ignoreENOENT )
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "Load file" ).data(), bListCancel ),
@@ -192,7 +192,7 @@ void LoadThreadWin::OperThreadStopped()
 LoadThreadWin::~LoadThreadWin() {}
 
 
-cptr<MemFile> LoadFile( FSPtr f, FSPath& p, NCDialogParent* parent, bool ignoreENOENT )
+clPtr<MemFile> LoadFile( FSPtr f, FSPath& p, NCDialogParent* parent, bool ignoreENOENT )
 {
 	LoadThreadWin dlg( parent, ignoreENOENT );
 	dlg.threadData.SetNewParams( f, p );
@@ -213,11 +213,11 @@ public:
 	FSPtr fs;
 	FSPath path;
 	FSString errorString;
-	cptr<MemFile> file;
+	clPtr<MemFile> file;
 
 	OperSaveFileData( NCDialogParent* p ): OperData( p ), executed( false ) {}
 
-	void SetNewParams( FSPtr f, FSPath& p, cptr<MemFile> __file )
+	void SetNewParams( FSPtr f, FSPath& p, clPtr<MemFile> __file )
 	{
 		executed = false;
 		fs = f;
@@ -250,7 +250,7 @@ void OperSaveFileThread::Run()
 	OperLoadFileData* data = ( ( OperLoadFileData* )Node().Data() );
 	FSPtr fs = data->fs;
 	FSPath path = data->path;
-	cptr<MemFile> file = data->file;
+	clPtr<MemFile> file = data->file;
 	lock.Unlock();
 
 	file->BeginRead();
@@ -364,7 +364,7 @@ class SaveThreadWin: public NCDialog
 {
 public:
 	OperSaveFileData threadData;
-	cptr<MemFile> file;
+	clPtr<MemFile> file;
 
 	SaveThreadWin( NCDialogParent* parent )
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "Load file" ).data(), bListCancel ), threadData( parent ) {}
@@ -387,7 +387,7 @@ void SaveThreadWin::OperThreadStopped()
 
 SaveThreadWin::~SaveThreadWin() {}
 
-bool SaveFile( FSPtr f, FSPath& p, cptr<MemFile> file, NCDialogParent* parent )
+bool SaveFile( FSPtr f, FSPath& p, clPtr<MemFile> file, NCDialogParent* parent )
 {
 	SaveThreadWin dlg( parent );
 	dlg.threadData.SetNewParams( f, p, file );

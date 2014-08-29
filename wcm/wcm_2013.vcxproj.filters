@@ -114,6 +114,9 @@
     <ClCompile Include="vfs-uri.cpp">
       <Filter>vfs</Filter>
     </ClCompile>
+    <ClCompile Include="wal\IntrusivePtr.cpp">
+      <Filter>wal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="w32util.h" />
@@ -302,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>%2a.h</Filter>
+    </ClInclude>
+    <ClInclude Include="wal\IntrusivePtr.h">
+      <Filter>wal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -133,7 +133,7 @@ NCDialog::NCDialog( bool asChild, int nId, NCDialogParent* parent, const unicode
 		for ( ; blist->utf8text && n < 7; blist++, n++ )
 		{
 
-			cptr<Button> p = new Button( 0, this, utf8_to_unicode( _LT( carray_cat<char>( "DB>", blist->utf8text ).data(), blist->utf8text ) ).data(), blist->cmd );
+			clPtr<Button> p = new Button( 0, this, utf8_to_unicode( _LT( carray_cat<char>( "DB>", blist->utf8text ).data(), blist->utf8text ) ).data(), blist->cmd );
 
 			p->Show();
 			p->Enable();

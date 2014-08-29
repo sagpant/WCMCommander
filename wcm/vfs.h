@@ -129,7 +129,7 @@ public:
 #endif
 
 
-struct FSNode
+struct FSNode: public iIntrusiveCounter
 {
 	enum EXTTYPES {   SERVER = 1, WORKGROUP, FILESHARE };
 
@@ -181,7 +181,7 @@ struct FSNode
 };
 
 
-class FSList
+class FSList: public iIntrusiveCounter
 {
 	FSNode* first, *last;
 	int count;
@@ -191,7 +191,7 @@ public:
 
 	FSNode* First() { return first; }
 
-	void Append( cptr<FSNode> );
+	void Append( clPtr<FSNode> );
 	void Clear();
 
 	std::vector<FSNode*> GetArray();

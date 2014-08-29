@@ -42,7 +42,7 @@ namespace wal
 	{
 		bool pressed;
 		std::vector<unicode_t> text;
-		cptr<cicon> icon;
+		clPtr<cicon> icon;
 		int commandId;
 
 		void SendCommand() { Command( commandId, 0, this, 0 ); }
@@ -381,7 +381,7 @@ namespace wal
 
 	class PopupMenu;
 
-	class MenuData
+	class MenuData: public iIntrusiveCounter
 	{
 	public:
 		enum TYPE { CMD = 1, SPLIT,   SUB   };
@@ -429,7 +429,7 @@ namespace wal
 		};
 		wal::ccollect<Node> list;
 		int selected;
-		wal::cptr<PopupMenu> sub;
+		clPtr<PopupMenu> sub;
 		bool SetSelected( int n );
 		bool OpenSubmenu();
 		Win* cmdOwner;
@@ -468,7 +468,7 @@ namespace wal
 		wal::ccollect<crect> rectList;
 		int select;
 		int lastMouseSelect;
-		wal::cptr<PopupMenu> sub;
+		clPtr<PopupMenu> sub;
 
 		crect ItemRect( int n );
 		void InvalidateRectList() { rectList.clear(); }

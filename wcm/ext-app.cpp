@@ -90,7 +90,7 @@ static std::vector<unicode_t> NormalizeStr( unicode_t* s )
 	return p;
 }
 
-cptr<AppList> GetAppList( const unicode_t* uri )
+clPtr<AppList> GetAppList( const unicode_t* uri )
 {
 	std::vector<wchar_t> ext = GetFileExt( uri );
 
@@ -115,7 +115,7 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 
 	if ( !key2.Ok() ) { return 0; }
 
-	cptr<AppList> ret = new AppList();
+	clPtr<AppList> ret = new AppList();
 
 	std::vector<wchar_t> pref = key2.GetString();
 
@@ -158,7 +158,7 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 
 	if ( key2.Ok() )
 	{
-		cptr<AppList> openWith = new AppList();
+		clPtr<AppList> openWith = new AppList();
 
 		for ( int i = 0; i < 10; i++ )
 		{

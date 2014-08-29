@@ -614,7 +614,7 @@ begin:
 
 /////////////////////// Chars
 
-	static Chars* ParzeNamedChars( const char** pS, cstrhash<cptr<Chars> >* mhash )
+	static Chars* ParzeNamedChars( const char** pS, cstrhash<clPtr<Chars> >* mhash )
 	{
 		const char* s = *pS;
 
@@ -641,7 +641,7 @@ begin:
 
 		s++;
 
-		cptr<Chars>* p = mhash->exist( name.ptr() );
+		clPtr<Chars>* p = mhash->exist( name.ptr() );
 
 		if ( !p ) { return 0; }
 
@@ -689,7 +689,7 @@ begin:
 	}
 
 
-	bool Chars::Parze( const char* s, cstrhash<cptr<Chars> >* mhash )
+	bool Chars::Parze( const char* s, cstrhash<clPtr<Chars> >* mhash )
 	{
 		Clear();
 
@@ -785,7 +785,7 @@ begin:
 
 	State* Shl::AllocState()
 	{
-		cptr<State> p = new State( _states.count() );
+		clPtr<State> p = new State( _states.count() );
 		State* ret = p.ptr();
 		_states.append( p );
 		return ret;
@@ -811,7 +811,7 @@ begin:
 		ShlParzer parzer( stream );
 
 		cstrhash<State*> stateHash;
-		cstrhash<cptr<Chars> > charsHash;
+		cstrhash<clPtr<Chars> > charsHash;
 
 		while ( true )
 		{
@@ -842,7 +842,7 @@ begin:
 			{
 				parzer.Next();
 
-				cptr<Chars> ptr = new Chars;
+				clPtr<Chars> ptr = new Chars;
 
 				if ( parzer.Tok() != TOK_ID )
 				{
@@ -1258,7 +1258,7 @@ begin:
 
 	Shl* ShlConf::Get( const char* name, cstrhash<int>& colors )
 	{
-		cptr<Node>* p = hash.exist( name );
+		clPtr<Node>* p = hash.exist( name );
 
 		if ( !p || !p->ptr() )
 		{
@@ -1273,7 +1273,7 @@ begin:
 
 		try
 		{
-			cptr<Shl> shl = new Shl();
+			clPtr<Shl> shl = new Shl();
 			ShlStreamFile stream( utf8_to_sys( node->shlFileName.data() ).data() );
 			shl->Parze( &stream, colors );
 			node->shl = shl;
@@ -1395,7 +1395,7 @@ begin:
 
 					std::vector<char> id = new_char_str( parzer.Str() );
 
-					cptr<Node> node = new Node;
+					clPtr<Node> node = new Node;
 					parzer.Next();
 					parzer.Skip( '{' );
 
@@ -1466,7 +1466,7 @@ begin:
 				{
 					parzer.Next();
 
-					cptr<Rule> rule = new Rule;
+					clPtr<Rule> rule = new Rule;
 
 					if ( parzer.Tok() != TOK_ID ) { parzer.Syntax(); }
 

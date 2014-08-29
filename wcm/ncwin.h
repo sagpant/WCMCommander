@@ -58,7 +58,7 @@ extern ButtonWinData viewShiftButtons[];
 class ButtonWin: public Win
 {
 	Layout _lo;
-	cptr<Button> _buttons[10];
+	clPtr<Button> _buttons[10];
 	crect _rects[10];
 	cpoint _nSizes[10];
 
@@ -308,7 +308,7 @@ private:
 
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
 
-	cptr<FSList> GetPanelList();
+	clPtr<FSList> GetPanelList();
 
 	int _execId;
 	unicode_t _execSN[64];

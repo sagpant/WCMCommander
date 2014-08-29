@@ -24,11 +24,11 @@ enum FTP_ERRNO
 class FtpStatCache
 {
 	enum CONSTS { CACHE_TIMEOUT = 60 };
-	struct Dir
+	struct Dir: public iIntrusiveCounter
 	{
 		time_t tim;
-		cstrhash< cptr<Dir>, char> dirs;
-		cptr< cstrhash<FSStat, char> >  statHash;
+		cstrhash< clPtr<Dir>, char> dirs;
+		clPtr< cstrhash<FSStat, char> >  statHash;
 		Dir(): tim( 0 ) {}
 	};
 
@@ -38,7 +38,7 @@ class FtpStatCache
 	Dir* GetParent( FSPath& path );
 public:
 	FtpStatCache( int* pCs ): pCharset( pCs ) {}
-	void PutStat( FSPath path, cptr<cstrhash<FSStat, char> > statHash );
+	void PutStat( FSPath path, clPtr<cstrhash<FSStat, char> > statHash );
 	int GetStat( FSPath path, FSStat* st ); //0 - ok, 1 - not cache for it, -1 - not exist in cache
 	void Del( FSPath path );
 private:
@@ -48,7 +48,7 @@ private:
 };
 
 //++volatile надо скорректировать
-class FTPNode
+class FTPNode: public iIntrusiveCounter
 {
 	TCPSyncBufProto ctrl;
 	TCPSyncBufProto data;
@@ -129,11 +129,11 @@ class FSFtp : public FS
 
 	enum { NODES_COUNT = 32 };
 
-	struct Node
+	struct Node: public iIntrusiveCounter
 	{
 		volatile bool busy;
 		volatile time_t lastCall;
-		/*volatile*/ cptr<FTPNode> pFtpNode;
+		/*volatile*/ clPtr<FTPNode> pFtpNode;
 
 		Node(): busy( false ), lastCall( 0 ) {}
 	};

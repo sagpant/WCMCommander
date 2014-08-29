@@ -1096,7 +1096,7 @@ public:
 		std::vector<char> name;
 		cfont* oldFont;
 		std::vector<char>* pUri;
-		cptr<cfont> newFont;
+		clPtr<cfont> newFont;
 		bool fixed;
 		Node(): oldFont( 0 ) {}
 		Node( const char* n, bool fix,  cfont* old, std::vector<char>* uri ): name( new_char_str( n ) ), fixed( fix ), oldFont( old ), pUri( uri ) {}
@@ -1314,7 +1314,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		if ( ChooseFont( &cf ) )
 		{
-			cptr<cfont> p = new cfont( cfont::LogFontToUru( lf ).data() );
+			clPtr<cfont> p = new cfont( cfont::LogFontToUru( lf ).data() );
 
 			if ( p.ptr() )
 			{
@@ -1337,7 +1337,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		std::vector<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
 
-		cptr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->data() ) ? pUri->data() : 0 );
+		clPtr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->data() ) ? pUri->data() : 0 );
 
 		if ( p.ptr() )
 		{
@@ -1355,7 +1355,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		if ( count <= 0 || cur < 0 || cur >= count ) { return true; }
 
-		cptr<cfont> p = SelectX11Font( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed );
+		clPtr<cfont> p = SelectX11Font( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed );
 
 		if ( p.ptr() )
 		{

@@ -12,7 +12,7 @@ struct ShellLoadDirTD
 	bool winClosed;
 	bool threadStopped;
 	FSCSimpleInfo info;
-	cptr<FSList> list;
+	clPtr<FSList> list;
 	std::vector<char> err;
 	ShellLoadDirTD( FSPtr f, FSPath& p ): fs( f ), path( p ), winClosed( false ), threadStopped( false ) {}
 };
@@ -21,7 +21,7 @@ void* ShellLoadDirThreadFunc( void* ptr )
 {
 	ShellLoadDirTD* data = ( ShellLoadDirTD* )ptr;
 
-	cptr<FSList> list;
+	clPtr<FSList> list;
 
 	try
 	{
@@ -142,7 +142,7 @@ void ShellLoadDirDialog::ThreadStopped( int id, void* data )
 
 class ShellFileListWin: public VListWin
 {
-	cptr< ccollect<FSNode*, 0x100> > pList;
+	clPtr< ccollect<FSNode*, 0x100> > pList;
 	int fontW;
 	int fontH;
 public:
@@ -171,7 +171,7 @@ public:
 		SetLSize( ls );
 	}
 
-	void SetList( cptr< ccollect<FSNode*, 0x100> > p ) { pList = p; SetCount( pList.ptr() ? pList->count() : 0 ); }
+	void SetList( clPtr< ccollect<FSNode*, 0x100> > p ) { pList = p; SetCount( pList.ptr() ? pList->count() : 0 ); }
 
 	virtual void DrawItem( wal::GC& gc, int n, crect rect );
 	FSNode* GetCurrentNode() { int n = GetCurrent(); return n >= 0 && pList.ptr() && n < pList->count() ? pList->get( n ) : 0; }
@@ -306,14 +306,14 @@ static bool accmask_nocase_begin0( const unicode_t* name, const unicode_t* mask 
 
 struct ShellFileDlgData
 {
-	cptr<FSList> list;
+	clPtr<FSList> list;
 	std::vector<FSNode*> sorted;
 	std::vector<unicode_t> mask;
-	cptr< ccollect<FSNode*, 0x100> > filtered;
+	clPtr< ccollect<FSNode*, 0x100> > filtered;
 
 	void RefreshList( std::vector<unicode_t> mask );
 
-	ShellFileDlgData( cptr<FSList> l, const unicode_t* s ): list( l )
+	ShellFileDlgData( clPtr<FSList> l, const unicode_t* s ): list( l )
 	{
 		sorted = list->GetArray();
 		FSList::SortByName( sorted.data(), list->Count(), true,
@@ -334,7 +334,7 @@ void ShellFileDlgData::RefreshList( std::vector<unicode_t> m )
 
 	if ( list->Count() )
 	{
-		cptr< ccollect<FSNode*, 0x100> > p = new ccollect<FSNode*, 0x100>;
+		clPtr< ccollect<FSNode*, 0x100> > p = new ccollect<FSNode*, 0x100>;
 		int n = list->Count();
 
 		for ( int i = 0; i < n; i++ )
@@ -439,7 +439,7 @@ ShellFileDlg::~ShellFileDlg() {}
 
 /////////////////////////////////////
 
-static cptr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
+static clPtr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
 {
 	ShellLoadDirDialog dlg( parent, fs, path );
 
@@ -560,7 +560,7 @@ std::vector<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path,
 		fs = f1;
 	}
 
-	cptr<FSList> list = DoShellLoadDirDialog( par, fs, searchPath );
+	clPtr<FSList> list = DoShellLoadDirDialog( par, fs, searchPath );
 
 	if ( list.ptr() )
 	{

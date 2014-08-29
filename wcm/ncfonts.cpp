@@ -1,15 +1,15 @@
 #include "wcm-config.h"
 
-cptr<cfont> panelFont;
-cptr<cfont> viewerFont;
-cptr<cfont> editorFont;
-cptr<cfont> dialogFont;
-cptr<cfont> terminalFont;
-cptr<cfont> helpTextFont;
-cptr<cfont> helpBoldFont;
-cptr<cfont> helpHeadFont;
+clPtr<cfont> panelFont;
+clPtr<cfont> viewerFont;
+clPtr<cfont> editorFont;
+clPtr<cfont> dialogFont;
+clPtr<cfont> terminalFont;
+clPtr<cfont> helpTextFont;
+clPtr<cfont> helpBoldFont;
+clPtr<cfont> helpHeadFont;
 
-inline void IFE( cptr<cfont>* p, const char* fontUri )
+inline void IFE( clPtr<cfont>* p, const char* fontUri )
 {
 	if ( !p->ptr() && fontUri && fontUri[0] )
 	{

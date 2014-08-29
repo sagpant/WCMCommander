@@ -43,7 +43,7 @@ public:
 	FSPtr fs; //??volatile
 	FSPath path; //??volatile
 	FSString errorString; //??volatile
-	cptr<FSList> list; //??volatile
+	clPtr<FSList> list; //??volatile
 
 	OperRDData( NCDialogParent* p ): OperData( p ), executed( false ) {}
 
@@ -92,8 +92,8 @@ public:
 ///////////////////////////////// common file opers
 
 bool MkDir( FSPtr f, FSPath& p, NCDialogParent* parent );
-bool DeleteList( FSPtr f, FSPath& p, cptr<FSList> list, NCDialogParent* parent );
-cptr<cstrhash<bool, unicode_t> > CopyFiles( FSPtr srcFs, FSPath& srcPath, cptr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent );
-bool MoveFiles( FSPtr srcFs, FSPath& srcPath, cptr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent );
+bool DeleteList( FSPtr f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent );
+clPtr<cstrhash<bool, unicode_t> > CopyFiles( FSPtr srcFs, FSPath& srcPath, clPtr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent );
+bool MoveFiles( FSPtr srcFs, FSPath& srcPath, clPtr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent );
 
 #endif

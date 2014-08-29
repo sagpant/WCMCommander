@@ -41,7 +41,7 @@ public:
 	struct Node
 	{
 		std::vector<unicode_t> name;
-		cptr<StrConfig> conf;
+		clPtr<StrConfig> conf;
 		bool operator <= ( const Node& a ) { return CmpNoCase( name.data(), a.name.data() ) <= 0; }
 	};
 
@@ -60,7 +60,7 @@ private:
 		{
 			if ( list[i].data() )
 			{
-				cptr<StrConfig> cfg = new StrConfig();
+				clPtr<StrConfig> cfg = new StrConfig();
 				cfg->Load( list[i].data() );
 				const char* name = cfg->GetStrVal( "name" );
 
@@ -110,7 +110,7 @@ public:
 
 	void Save();
 
-	void Ins( const unicode_t* name, cptr<StrConfig> p )
+	void Ins( const unicode_t* name, clPtr<StrConfig> p )
 	{
 		if ( !name || !*name ) { return; }
 
@@ -421,7 +421,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 	{
 		if ( fs && fs->Ptr() && path )
 		{
-			cptr<StrConfig> cfg = new StrConfig();
+			clPtr<StrConfig> cfg = new StrConfig();
 
 			if ( fs[0]->Type() == FS::SYSTEM )
 			{

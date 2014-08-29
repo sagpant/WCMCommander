@@ -1228,7 +1228,7 @@ static time_t GetFtpMSFTime( const char* p0, const char* p1 )
 
 int FSFtp::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 {
-	cptr <cstrhash<FSStat, char> > pSHash = new cstrhash<FSStat, char>;
+	clPtr<cstrhash<FSStat, char> > pSHash = new cstrhash<FSStat, char>;
 
 	int r = ReadDir_int ( list,  pSHash.ptr(), _path, err, info );
 
@@ -1388,7 +1388,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 
 			if ( list )
 			{
-				cptr<FSNode> fsNode = new FSNode();
+				clPtr<FSNode> fsNode = new FSNode();
 				fsNode->name = FSString( _param.charset, fileName );
 				fsNode->st = st;
 				list->Append( fsNode );
@@ -1433,7 +1433,7 @@ int FSFtp::Stat   ( FSPath& path, FSStat* st, int* err, FSCInfo* info )
 		return r;
 	}
 
-	cptr <cstrhash<FSStat, char> > pSHash = new cstrhash<FSStat, char>;
+	clPtr<cstrhash<FSStat, char> > pSHash = new cstrhash<FSStat, char>;
 
 	FSPath p1 = path;
 
@@ -1555,7 +1555,7 @@ FtpStatCache::Dir* FtpStatCache::GetParent( FSPath& path )
 
 	for ( ; n < path.Count() - 1; n++ )
 	{
-		cptr<Dir>* pd = d->dirs.exist( ( char* )path.GetItem( n )->Get( *pCharset ) );
+		clPtr<Dir>* pd = d->dirs.exist( ( char* )path.GetItem( n )->Get( *pCharset ) );
 
 		if ( !pd ) { return 0; }
 
@@ -1607,7 +1607,7 @@ void FtpStatCache::Del( FSPath path )
 	d->dirs.del( name );
 }
 
-void FtpStatCache::PutStat( FSPath path, cptr<cstrhash<FSStat, char> > statHash )
+void FtpStatCache::PutStat( FSPath path, clPtr<cstrhash<FSStat, char> > statHash )
 {
 	MutexLock lock( &mutex );
 
@@ -1617,7 +1617,7 @@ void FtpStatCache::PutStat( FSPath path, cptr<cstrhash<FSStat, char> > statHash 
 	for ( ; n < path.Count(); n++ )
 	{
 		char* name = ( char* )path.GetItem( n )->Get( *pCharset );
-		cptr<Dir>* pd = &( d->dirs[name] );
+		clPtr<Dir>* pd = &( d->dirs[name] );
 
 		if ( !pd->ptr() ) { *pd = new Dir(); }
 

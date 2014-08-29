@@ -25,7 +25,7 @@
 
 #include "intarnal_icons.inc"
 
-cptr<wal::GC> defaultGC;
+clPtr<wal::GC> defaultGC;
 
 const char* appName = "Wal Commander GitHub Edition";
 

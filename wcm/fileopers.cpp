@@ -219,7 +219,7 @@ void OperRDThread::Run()
 		}
 	}
 
-	cptr<FSList> list = new FSList;
+	clPtr<FSList> list = new FSList;
 
 	// if directory is not readable, try .. path
 	// "Stat" call above does not catch this: it checks only folder existence, but not accessibilly
@@ -301,13 +301,13 @@ public:
 
 	FSPtr srcFs;  //??volatile
 	FSPath srcPath; //??volatile
-	cptr<FSList> srcList; //??volatile
+	clPtr<FSList> srcList; //??volatile
 
 	FSPtr destFs; //??volatile
 	FSPath destPath; //??volatile
 
 	FSString errorString; //??volatile
-	cptr<cstrhash<bool, unicode_t> > resList; //??volatile
+	clPtr<cstrhash<bool, unicode_t> > resList; //??volatile
 
 	Mutex infoMutex;
 	volatile bool pathChanged;
@@ -648,7 +648,7 @@ void DeleteThreadFunc( OperThreadNode* node )
 
 		FSPtr fs = data->srcFs;
 		FSPath path = data->srcPath;
-		cptr<FSList> list = data->srcList;
+		clPtr<FSList> list = data->srcList;
 
 		lock.Unlock();//!!!
 
@@ -682,7 +682,7 @@ void DeleteThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool DeleteList( FSPtr f, FSPath& p, cptr<FSList> list, NCDialogParent* parent )
+bool DeleteList( FSPtr f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent )
 {
 	SimpleCFThreadWin dlg( parent, _LT( "Delete" ) );
 	dlg.threadData.Clear();
@@ -1405,13 +1405,13 @@ void CopyThreadFunc( OperThreadNode* node )
 		FSPath srcPath = data->srcPath;
 		FSPtr destFs = data->destFs;
 		FSPath destPath = data->destPath;
-		cptr<FSList> list = data->srcList;
+		clPtr<FSList> list = data->srcList;
 
 		lock.Unlock();//!!!
 
 		try
 		{
-			cptr<cstrhash<bool, unicode_t> > resList = new cstrhash<bool, unicode_t>;
+			clPtr<cstrhash<bool, unicode_t> > resList = new cstrhash<bool, unicode_t>;
 			thread.Copy( srcFs.Ptr(), srcPath, list.ptr(), destFs.Ptr(), destPath, *( resList.ptr() ) );
 			lock.Lock(); //!!!
 
@@ -1444,7 +1444,7 @@ void CopyThreadFunc( OperThreadNode* node )
 	}
 }
 
-cptr<cstrhash<bool, unicode_t> > CopyFiles( FSPtr srcFs, FSPath& srcPath, cptr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent )
+clPtr<cstrhash<bool, unicode_t> > CopyFiles( FSPtr srcFs, FSPath& srcPath, clPtr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent )
 {
 	CopyDialog dlg( parent );
 	dlg.threadData.Clear();
@@ -1740,7 +1740,7 @@ void MoveThreadFunc( OperThreadNode* node )
 		FSPath srcPath = data->srcPath;
 		FSPtr destFs = data->destFs;
 		FSPath destPath = data->destPath;
-		cptr<FSList> list = data->srcList;
+		clPtr<FSList> list = data->srcList;
 
 		lock.Unlock();//!!!
 
@@ -1771,7 +1771,7 @@ void MoveThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool MoveFiles( FSPtr srcFs, FSPath& srcPath, cptr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent )
+bool MoveFiles( FSPtr srcFs, FSPath& srcPath, clPtr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent )
 {
 	CopyDialog dlg( parent );
 	dlg.threadData.Clear();

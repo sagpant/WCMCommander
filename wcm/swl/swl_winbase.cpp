@@ -12,7 +12,7 @@ namespace wal
 	unicode_t ABCString[] = {'A', 'B', 'C', 0};
 	int ABCStringLen = 3;
 
-	static cptr<cfont> pSysFont;
+	static clPtr<cfont> pSysFont;
 
 	static cfont* guiFont = 0;
 
@@ -263,7 +263,7 @@ namespace wal
 
 	TBToolTip::~TBToolTip() {}
 
-	static cptr<TBToolTip> tip;
+	static clPtr<TBToolTip> tip;
 
 
 	void ToolTipShow( Win* w, int x, int y, const unicode_t* s )

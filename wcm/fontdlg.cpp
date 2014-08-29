@@ -6,12 +6,12 @@
 class FontExample: public Win
 {
 	std::vector<unicode_t> text;
-	cptr<cfont> font;
+	clPtr<cfont> font;
 public:
 	FontExample( Win* parent, const unicode_t* txt );
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
-	void SetFont( cptr<cfont> p ) { font = p; Invalidate(); }
-	cptr<cfont> GetFont() { return font; }
+	void SetFont( clPtr<cfont> p ) { font = p; Invalidate(); }
+	clPtr<cfont> GetFont() { return font; }
 	virtual ~FontExample();
 };
 
@@ -252,7 +252,7 @@ bool FontDialogX::Command( int id, int subId, Win* win, void* data )
 	return NCVertDialog::Command( id, subId, win, data );
 }
 
-cptr<cfont> SelectX11Font( NCDialogParent* parent, bool fixed )
+clPtr<cfont> SelectX11Font( NCDialogParent* parent, bool fixed )
 {
 	FontDialogX dlg( parent, fixed );
 
@@ -381,7 +381,7 @@ static void GetFontFileList( ccollect<FileNode>& list )
 #ifdef USEFREETYPE
 struct FileInfoNode
 {
-	cptr<cfont::FTInfo> info;
+	clPtr<cfont::FTInfo> info;
 	time_t mtime;
 };
 
@@ -417,7 +417,7 @@ public:
 	FontDialogFT( NCDialogParent* parent, bool _fixed, ccollect<FileNode>* flist, const char* currentUri );
 	virtual bool Command( int id, int subId, Win* win, void* data );
 	virtual bool EventChildKey( Win* child, cevent_key* pEvent );
-	cptr<cfont> GetFont() { return example.GetFont(); }
+	clPtr<cfont> GetFont() { return example.GetFont(); }
 	void ReloadFiltred( const char* filter );
 	virtual ~FontDialogFT();
 };
@@ -707,7 +707,7 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 ///////////////////////////////////////////////////////////////
 
 
-cptr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* currentUri )
+clPtr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* currentUri )
 {
 	ccollect<FileNode> list;
 	GetFontFileList( list );
@@ -737,7 +737,7 @@ cptr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* curren
 }
 #else
 
-cptr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* currentUri )
+clPtr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* currentUri )
 {
 	return 0;
 }

@@ -1064,7 +1064,7 @@ int FSSftp::ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 					continue;
 				}
 
-				cptr<FSNode> pNode = new FSNode();
+				clPtr<FSNode> pNode = new FSNode();
 				pNode->name.Set( _operParam.charset, buf );
 
 				if ( attr.IsLink() )

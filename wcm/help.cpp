@@ -58,7 +58,7 @@ class HelpGC
 	struct Node
 	{
 		cfont* font;
-		cptr<cstrhash<cpoint, unicode_t> > pHash;
+		clPtr<cstrhash<cpoint, unicode_t> > pHash;
 		Node( cfont* f = 0 ): font( f ) { pHash = new cstrhash<cpoint, unicode_t>; }
 	};
 	ccollect<Node> _list;
@@ -111,7 +111,7 @@ HelpGC::~HelpGC() {};
 
 
 
-struct HelpNode
+struct HelpNode: public iIntrusiveCounter
 {
 	HelpStyle* _style;
 	//минимальная и максимальная ширина
@@ -180,10 +180,10 @@ struct HelpNodeList: public HelpNode
 
 	struct Node
 	{
-		cptr<HelpNode> item;
+		clPtr<HelpNode> item;
 		bool paint; //расчитывается ProbeWidth
 		Node() {}
-		Node( cptr<HelpNode> w ): item( w ) {}
+		Node( clPtr<HelpNode> w ): item( w ) {}
 	};
 
 	ccollect<Node> _list;
@@ -191,7 +191,7 @@ struct HelpNodeList: public HelpNode
 
 	HelpNodeList( HelpStyle* style );
 	int Count() const { return _list.count(); }
-	void Append( cptr<HelpNode> item );
+	void Append( clPtr<HelpNode> item );
 	virtual void Init( HelpGC& gc );
 	virtual void Prepare( int width );
 	virtual void Paint( HelpGC& gc, int x, int y, bool selected, crect visibleRect );
@@ -225,13 +225,13 @@ struct HelpNodeTable: public HelpNode
 		Pair( int _min, int _max ): minV( _min ), maxV( _max ) {}
 	};
 
-	ccollect<cptr<ccollect<cptr<HelpNode> > > > _tab;
+	ccollect<clPtr<ccollect<clPtr<HelpNode> > > > _tab;
 
 	int _cols; //заполняется Init
 	std::vector<Pair> _colPair; //создается Init
 
-	void Append( cptr<HelpNode> item ) { _tab[_tab.count() - 1]->append( item ); }
-	void NL() { _tab.append( new ccollect< cptr<HelpNode> > ); }
+	void Append( clPtr<HelpNode> item ) { _tab[_tab.count() - 1]->append( item ); }
+	void NL() { _tab.append( new ccollect< clPtr<HelpNode> > ); }
 
 	HelpNodeTable( HelpStyle* s ): HelpNode( s )
 	{
@@ -626,7 +626,7 @@ HelpNodeList::HelpNodeList( HelpStyle* style )
 	: HelpNode( style, 0, 0 )
 {}
 
-void HelpNodeList::Append( cptr<HelpNode> word )
+void HelpNodeList::Append( clPtr<HelpNode> word )
 {
 	_list.append( Node( word ) );
 }
@@ -912,8 +912,8 @@ public:
 		NextToken();
 	}
 
-	cptr<HelpNode> Parze();
-	cptr<HelpNode> ParzeTable();
+	clPtr<HelpNode> Parze();
+	clPtr<HelpNode> ParzeTable();
 
 	~HelpParzer();
 };
@@ -1142,10 +1142,10 @@ begin:
 	return tok;
 }
 
-cptr<HelpNode> HelpParzer::ParzeTable()
+clPtr<HelpNode> HelpParzer::ParzeTable()
 {
 	HelpNodeTable* pTable;
-	cptr<HelpNode> ret = pTable = new HelpNodeTable( currentBData.style );
+	clPtr<HelpNode> ret = pTable = new HelpNodeTable( currentBData.style );
 
 	while ( true )
 	{
@@ -1179,13 +1179,13 @@ cptr<HelpNode> HelpParzer::ParzeTable()
 }
 
 
-cptr<HelpNode> HelpParzer::Parze()
+clPtr<HelpNode> HelpParzer::Parze()
 {
 	HelpNodeList* pList;
-	cptr<HelpNode> ret = pList = new HelpNodeList( currentBData.style );
+	clPtr<HelpNode> ret = pList = new HelpNodeList( currentBData.style );
 
 	HelpNodeParagraph* pPar;
-	cptr<HelpNode> paragraph = pPar = new HelpNodeParagraph( currentBData.style );
+	clPtr<HelpNode> paragraph = pPar = new HelpNodeParagraph( currentBData.style );
 
 	while ( true )
 	{
@@ -1430,7 +1430,7 @@ extern const char* helpData_view;
 
 static HelpFile helpFile;
 
-static cptr<HelpNode> GetHelpNode( const char* theme, cstrhash<HelpStyle>* pStyles )
+static clPtr<HelpNode> GetHelpNode( const char* theme, cstrhash<HelpStyle>* pStyles )
 {
 	const char* ptext = helpFile.GetTheme( theme );
 
@@ -1452,7 +1452,7 @@ int UiClassHelpWin  = GetUiID( "HelpWin" );
 
 class HelpWin: public Win
 {
-	cptr<HelpNode> data;
+	clPtr<HelpNode> data;
 	int dataWidth;
 	int dataHeight;
 

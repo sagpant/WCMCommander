@@ -57,7 +57,7 @@ class NCDialog: public OperThreadWin
 	crect _frameRect;
 
 
-	ccollect<cptr<Button> > _bList;
+	ccollect<clPtr<Button> > _bList;
 	int enterCmd;
 
 protected:

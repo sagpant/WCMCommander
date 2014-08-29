@@ -3,7 +3,7 @@
 
 //для загрузки и выгрузки данныз редактора
 
-class MemFile
+class MemFile: public iIntrusiveCounter
 {
 	enum BS { BLOCK_SIZE = 64 * 1024 };
 	struct Node

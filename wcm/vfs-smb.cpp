@@ -532,7 +532,7 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 			) { continue; }
 
 
-			cptr<FSNode> pNode = new FSNode();
+			clPtr<FSNode> pNode = new FSNode();
 			path.SetItem( n, CS_UTF8, pEnt->name );
 
 			switch ( pEnt->smbc_type )

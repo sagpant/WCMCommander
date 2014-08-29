@@ -767,7 +767,7 @@ void EditWin::InsChar( unicode_t ch ) //!Undo
 		return;
 	}
 
-	cptr<UndoBlock> undoBlock = new UndoBlock( true, _changed );
+	clPtr<UndoBlock> undoBlock = new UndoBlock( true, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
 
 	try
@@ -803,7 +803,7 @@ bool EditWin::DelMarked() //!Undo
 {
 	if ( cursor == marker ) { return false; }
 
-	cptr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
+	clPtr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
 
 	EditPoint begin, end;
@@ -962,7 +962,7 @@ void EditWin::FromClipboard() //!Undo
 
 	if ( count <= 0 ) { return; }
 
-	cptr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
+	clPtr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
 
 	try
@@ -1060,7 +1060,7 @@ void EditWin::Del( bool DeleteWord ) //!Undo
 		return;
 	}
 
-	cptr<UndoBlock> undoBlock = new UndoBlock( true, _changed );
+	clPtr<UndoBlock> undoBlock = new UndoBlock( true, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
 
 	try
@@ -1162,7 +1162,7 @@ void EditWin::Backspace( bool DeleteWord ) //!Undo
 		return;
 	}
 
-	cptr<UndoBlock> undoBlock = new UndoBlock( true, _changed );
+	clPtr<UndoBlock> undoBlock = new UndoBlock( true, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
 
 	try
@@ -1308,7 +1308,7 @@ void EditWin::DeleteLine() //!Undo
 	ASSERT( cursor.pos >= 0 && cursor.pos <= text.Get( cursor.line ).Len() );
 	recomendedCursorCol = -1;
 
-	cptr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
+	clPtr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
 
 	EditString& str = text.Get( cursor.line );
@@ -1358,7 +1358,7 @@ void EditWin::Enter() //!Undo
 
 	recomendedCursorCol = -1;
 
-	cptr<UndoBlock> undoBlock = new UndoBlock( true, _changed );
+	clPtr<UndoBlock> undoBlock = new UndoBlock( true, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
 
 	try
@@ -2487,7 +2487,7 @@ bool EditWin::Replace( const unicode_t* from, const unicode_t* to, bool sens )
 	bool all = false;
 	int foundCount = 0;
 
-	cptr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
+	clPtr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
 
 	try

@@ -143,7 +143,7 @@ struct AppNode
 class AppDB
 {
 	std::vector<char> appDefsPrefix;
-	cinthash<int, cptr<AppNode> > apps;
+	cinthash<int, clPtr<AppNode> > apps;
 	cinthash<int, ccollect<int> > mimeMapHash;
 
 	bool ReadAppDesctopFile( const char* fName );
@@ -216,7 +216,7 @@ err:
 	}
 }
 
-static cptr<cstrhash<bool> > pathExeList;
+static clPtr<cstrhash<bool> > pathExeList;
 
 //определяет наличие исполняемого файла в каталогах в PATH
 //списки кэшируются
@@ -900,7 +900,7 @@ err:
 
 AppNode* AppDB::GetApp( int id )
 {
-	cptr<AppNode>* p = apps.exist( id );
+	clPtr<AppNode>* p = apps.exist( id );
 
 	if ( !p )
 	{
@@ -937,7 +937,7 @@ bool AppDB::ReadAppDesctopFile( const char* name )
 
 	if ( apps.exist( id ) ) { return true; }
 
-	cptr<AppNode> app = new AppNode();
+	clPtr<AppNode> app = new AppNode();
 
 	try
 	{
@@ -1083,9 +1083,9 @@ bool AppDB::ReadAppDesctopFile( const char* name )
 
 ///////////////////////////////////////
 
-static cptr<MimeDB> mimeDb;
-static cptr<AppDB> appDb;
-static cptr<AppDefListFile> userDefApp;
+static clPtr<MimeDB> mimeDb;
+static clPtr<AppDB> appDb;
+static clPtr<AppDefListFile> userDefApp;
 
 static bool FileIsExist( const char* s )
 {
@@ -1262,14 +1262,14 @@ std::vector<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal,
 }
 
 
-cptr<AppList> GetAppList( const unicode_t* uri )
+clPtr<AppList> GetAppList( const unicode_t* uri )
 {
 	ccollect<AppNode*> list;
 	_GetAppList( uri, list );
 
 	if ( !list.count() ) { return 0; }
 
-	cptr<AppList> ret = new AppList();
+	clPtr<AppList> ret = new AppList();
 
 	{
 		//open item
@@ -1287,7 +1287,7 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 	}
 
 
-	cptr<AppList> openWith = new AppList();
+	clPtr<AppList> openWith = new AppList();
 
 	for ( int i = 1; i < list.count(); i++ )
 	{

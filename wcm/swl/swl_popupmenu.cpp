@@ -11,14 +11,14 @@ namespace wal
 	MenuData::MenuData() {}
 
 // временная штука
-	wal::cinthash<int, wal::cptr<cicon> > iconList;
+	wal::cinthash<int, clPtr<cicon> > iconList;
 	cicon* GetCmdIcon( int cmd )
 	{
-		wal::cptr<cicon>* p = iconList.exist( cmd );
+		clPtr<cicon>* p = iconList.exist( cmd );
 
 		if ( p ) { return p->ptr(); }
 
-		wal::cptr<cicon> pic = new cicon( cmd, 16, 16 );
+		clPtr<cicon> pic = new cicon( cmd, 16, 16 );
 		cicon* t = pic.ptr();
 		iconList[cmd] = pic;
 		return t;

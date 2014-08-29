@@ -37,7 +37,7 @@ private:
 	SORT_MODE sortMode;
 	bool ascSort;
 
-	cptr<FSList> data;
+	clPtr<FSList> data;
 	std::vector<FSNode*> list;
 	int listCount;
 
@@ -80,7 +80,7 @@ public:
 	void Sort( SORT_MODE mode, bool asc ) { sortMode = mode; ascSort = asc; Sort(); }
 	void DisableSort() { sortMode = SORT_NONE; MakeList(); }
 
-	void SetData( cptr<FSList> d )
+	void SetData( clPtr<FSList> d )
 	{
 		try
 		{
@@ -121,9 +121,9 @@ public:
 		return -1;
 	}
 
-	cptr<cstrhash<bool, unicode_t> > GetSelectedHash()
+	clPtr<cstrhash<bool, unicode_t> > GetSelectedHash()
 	{
-		cptr<cstrhash<bool, unicode_t> > hash = new cstrhash<bool, unicode_t>( false );
+		clPtr<cstrhash<bool, unicode_t> > hash = new cstrhash<bool, unicode_t>( false );
 		int n = listCount;
 
 		for ( int i = 0; i < n; i++ )
@@ -177,9 +177,9 @@ public:
 		}
 	}
 
-	cptr<FSList> GetSelectedList()
+	clPtr<FSList> GetSelectedList()
 	{
-		cptr<FSList> plist = new FSList;
+		clPtr<FSList> plist = new FSList;
 
 		if ( selectedCn.count <= 0 ) { return plist; }
 
@@ -191,7 +191,7 @@ public:
 
 			if ( p && p->IsSelected() )
 			{
-				cptr<FSNode> t = new FSNode( *p );
+				clPtr<FSNode> t = new FSNode( *p );
 				t->originNode = p;
 				plist->Append( t );
 			}

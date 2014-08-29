@@ -180,8 +180,8 @@ class FSPromptDialog: public NCVertDialog
 public:
 	struct Node
 	{
-		cptr<StaticLine> prompt;
-		cptr<EditLine> ansver;
+		clPtr<StaticLine> prompt;
+		clPtr<EditLine> ansver;
 	};
 	StaticLine message;
 	ccollect<Node > list;

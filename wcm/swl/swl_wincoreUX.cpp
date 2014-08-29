@@ -3095,9 +3095,9 @@ stopped:
 	};
 	*/
 
-	static cptr<IconData::Node> CreateIconDataNode( Image32& _image, unsigned bgColor, bool enabled )
+	static clPtr<IconData::Node> CreateIconDataNode( Image32& _image, unsigned bgColor, bool enabled )
 	{
-		cptr<IconData::Node> node = new IconData::Node;
+		clPtr<IconData::Node> node = new IconData::Node;
 		node->bgColor = bgColor;
 
 		int w = _image.width();
@@ -3240,7 +3240,7 @@ stopped:
 		if ( !data ) { return; }
 
 		unsigned bgColor = gc.FillRgb();
-		cptr<IconData::Node>* pNode = enabled ? &data->normal : &data->disabled;
+		clPtr<IconData::Node>* pNode = enabled ? &data->normal : &data->disabled;
 
 		if ( !pNode->ptr() )
 		{
@@ -3255,7 +3255,7 @@ stopped:
 		if ( !data ) { return; }
 
 		unsigned bgColor = gc.FillRgb();
-		cptr<IconData::Node>* pNode = enabled ? &data->normal : &data->disabled;
+		clPtr<IconData::Node>* pNode = enabled ? &data->normal : &data->disabled;
 
 		if ( !pNode->ptr() || pNode[0]->bgColor != bgColor )
 		{

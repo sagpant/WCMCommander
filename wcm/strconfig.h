@@ -3,7 +3,7 @@
 
 #include <wal.h>
 
-class StrConfig
+class StrConfig: public iIntrusiveCounter
 {
 	wal::cstrhash<std::vector<char> > varHash;
 public:

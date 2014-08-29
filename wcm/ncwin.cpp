@@ -568,7 +568,7 @@ struct AppMenuData
 		Node(): cmd( 0 ), terminal( 0 ) {}
 		Node( unicode_t* c, bool t ): cmd( c ), terminal( t ) {}
 	};
-	ccollect<cptr<MenuData> > mData;
+	ccollect<clPtr<MenuData> > mData;
 	ccollect<Node> nodeList;
 	MenuData* AppendAppList( AppList* list );
 };
@@ -577,7 +577,7 @@ MenuData* AppMenuData::AppendAppList( AppList* list )
 {
 	if ( !list ) { return 0; }
 
-	cptr<MenuData> p = new MenuData();
+	clPtr<MenuData> p = new MenuData();
 
 	for ( int i = 0; i < list->Count(); i++ )
 	{
@@ -608,7 +608,7 @@ void NCWin::RightButtonPressed( cpoint point )
 
 	if ( p->IsDir() ) { return; }
 
-	cptr<AppList> appList = GetAppList( _panel->UriOfCurrent().GetUnicode() );
+	clPtr<AppList> appList = GetAppList( _panel->UriOfCurrent().GetUnicode() );
 
 	//if (!appList.data()) return;
 
@@ -1147,7 +1147,7 @@ void NCWin::View()
 		FSPath path = _panel->GetPath();
 		FSPtr fs = _panel->GetFSPtr();
 
-		cptr<FSList> list = _panel->GetSelectedList();
+		clPtr<FSList> list = _panel->GetSelectedList();
 
 		int cur = _panel->Current();
 
@@ -1241,7 +1241,7 @@ void NCWin::Edit( bool enterFileName )
 			path.Push( p->name.PrimaryCS(), p->name.Get( p->name.PrimaryCS() ) );
 		}
 
-		cptr<MemFile> file = LoadFile( fs, path, this, enterFileName == true );
+		clPtr<MemFile> file = LoadFile( fs, path, this, enterFileName == true );
 
 		if ( !file.ptr() ) { return; }
 
@@ -1388,7 +1388,7 @@ void NCWin::Delete()
 
 	int cur = _panel->Current();
 
-	cptr<FSList> list = _panel->GetSelectedList();
+	clPtr<FSList> list = _panel->GetSelectedList();
 
 	if ( !list.ptr() || list->Count() <= 0 ) { return; }
 
@@ -1448,7 +1448,7 @@ void NCWin::Copy( bool shift )
 
 	int cur = _panel->Current();
 
-	cptr<FSList> list = _panel->GetSelectedList();
+	clPtr<FSList> list = _panel->GetSelectedList();
 
 	if ( !list.ptr() || list->Count() <= 0 ) { return; }
 
@@ -1477,7 +1477,7 @@ void NCWin::Copy( bool shift )
 		destFs = ParzeURI( str.data(), destPath, checkFS, 2 );
 	}
 
-	cptr<cstrhash<bool, unicode_t> > resList = CopyFiles( srcFs, srcPath, list, destFs, destPath, this );
+	clPtr<cstrhash<bool, unicode_t> > resList = CopyFiles( srcFs, srcPath, list, destFs, destPath, this );
 
 	if ( resList.ptr() )
 	{
@@ -1504,7 +1504,7 @@ void NCWin::Move( bool shift )
 
 	int cur = _panel->Current();
 
-	cptr<FSList> list = _panel->GetSelectedList();
+	clPtr<FSList> list = _panel->GetSelectedList();
 
 	if ( !list.ptr() || list->Count() <= 0 ) { return; }
 
@@ -1646,7 +1646,7 @@ bool NCWin::EditSave( bool saveAs )
 			fs = _editor.GetFS();
 		}
 
-		cptr<MemFile> file = new MemFile;
+		clPtr<MemFile> file = new MemFile;
 		_editor.Save( *file.ptr() );
 
 		if ( SaveFile( fs, path, file, this ) )
@@ -1999,7 +1999,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			if ( c && c >= 0x20 )
 			{
-				cptr<cevent_key> key = _panel->QuickSearch( pEvent );
+				clPtr<cevent_key> key = _panel->QuickSearch( pEvent );
 				_edit.SetFocus();
 
 				if ( key.ptr() ) { OnKeyDown( this, key.ptr(), key->Type() == EV_KEYDOWN ); }
@@ -2235,7 +2235,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case FC( VK_S, KM_CTRL ):
 			{
-				cptr<cevent_key> key = _panel->QuickSearch( 0 );
+				clPtr<cevent_key> key = _panel->QuickSearch( 0 );
 				_edit.SetFocus();
 
 				if ( key.ptr() ) { OnKeyDown( this, key.ptr(), key->Type() == EV_KEYDOWN ); }

@@ -251,7 +251,7 @@ struct EditPoint
 
 ///////////////////////// Undo
 
-struct UndoRec
+struct UndoRec: public iIntrusiveCounter
 {
 	enum TYPE { INSTEXT = 1, DELTEXT = 2, ADDLINE = 3, DELLINE = 4, ATTR = 5 };
 	char type;
@@ -281,7 +281,7 @@ struct UndoRec
 	}
 };
 
-struct UndoBlock
+struct UndoBlock: public iIntrusiveCounter
 {
 	bool editorChanged;
 	bool canAggregate;
@@ -319,7 +319,7 @@ struct UndoBlock
 
 	void InsText( int line, int pos, const char* s, int size )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::INSTEXT, line, pos );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::INSTEXT, line, pos );
 		p->SetData( s, size );
 		Append( p.ptr() );
 		p.drop();
@@ -327,7 +327,7 @@ struct UndoBlock
 
 	void DelText( int line, int pos, const char* s, int size )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::DELTEXT, line, pos );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::DELTEXT, line, pos );
 		p->SetData( s, size );
 		Append( p.ptr() );
 		p.drop();
@@ -335,7 +335,7 @@ struct UndoBlock
 
 	void AddLine( int line, char attr, const char* s, int size )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::ADDLINE, line );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::ADDLINE, line );
 		p->SetData( s, size );
 		p->attr = attr;
 		Append( p.ptr() );
@@ -344,7 +344,7 @@ struct UndoBlock
 
 	void DelLine( int line, char attr, const char* s, int size )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::DELLINE, line );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::DELLINE, line );
 		p->SetData( s, size );
 		p->attr = attr;
 		Append( p.ptr() );
@@ -353,7 +353,7 @@ struct UndoBlock
 
 	void Attr( int line, char prevAttr, char attr )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::ATTR, line );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::ATTR, line );
 		p->prevAttr = prevAttr;
 		p->attr = attr;
 		p->attr = attr;
@@ -374,23 +374,27 @@ private:
 struct UndoList
 {
 	enum { MAXSIZE = 32 };
-	cptr<UndoBlock> table[MAXSIZE];
+	std::vector< clPtr<UndoBlock> > m_Table;
 	int count;
 	int pos;
 
-	void Append( cptr<UndoBlock> p )
+	UndoList()
+	:m_Table( MAXSIZE ), count( 0 ), pos( 0 )
+	{};
+
+	void Append( clPtr<UndoBlock> p )
 	{
-		while ( count > pos ) { table[--count] = 0; }
+		while ( count > pos ) { m_Table[--count] = clPtr<UndoBlock>(); }
 
 		if ( count == MAXSIZE )
 		{
-			for ( int i = 1; i < count; i++ ) { table[i - 1] = table[i]; }
+			for ( int i = 1; i < count; i++ ) { m_Table[i - 1] = m_Table[i]; }
 
 			count--;
 			pos = count;
 		}
 
-		UndoBlock* x = count > 0 ? table[count - 1].ptr() : 0;
+		UndoBlock* x = count > 0 ? m_Table[count - 1].ptr( ) : 0;
 
 		if ( x &&
 		     x->canAggregate && p->canAggregate &&
@@ -409,26 +413,24 @@ struct UndoList
 			return;
 		}
 
-
-		table[count++] = p;
+		m_Table[count++] = p;
 		pos = count;
 	}
 
 	int UndoCount() { return pos; }
 	int RedoCount() { return count - pos; }
 
-	UndoBlock* GetUndo() { return pos > 0 ? table[--pos].ptr() : 0; }
+	UndoBlock* GetUndo( ) { return pos > 0 ? m_Table[--pos].ptr( ) : 0; }
 	UndoBlock* GetRedo( bool* nextChg )
 	{
 		if ( pos >= count ) { return 0; }
 
-		if ( nextChg ) { *nextChg = ( pos + 1 >= count || table[pos + 1]->editorChanged ); }
+		if ( nextChg ) { *nextChg = ( pos + 1 >= count || m_Table[pos + 1]->editorChanged ); }
 
-		return pos < count ? table[pos++].ptr() : 0;
+		return pos < count ? m_Table[pos++].ptr( ) : 0;
 	}
-
-	UndoList(): count( 0 ), pos( 0 ) {}
-	void Clear() { while ( count > 0 ) { table[--count] = 0; } pos = 0; }
+		
+	void Clear() { while ( count > 0 ) { m_Table[--count] = clPtr<UndoBlock>(); } pos = 0; }
 };
 
 
@@ -525,7 +527,7 @@ class EditWin : public Win
 	int colOffset;
 	int rows, cols;
 
-	cptr<SHL::ShlConf> _shlConf;
+	clPtr<SHL::ShlConf> _shlConf;
 	SHL::Shl* _shl;
 	int _shlLine;
 

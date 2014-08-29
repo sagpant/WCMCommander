@@ -30,7 +30,7 @@ class PanelSearchWin: public Win
 	Layout _lo;
 	std::vector<unicode_t> oldMask;
 public:
-	cptr<cevent_key> ret_key;
+	clPtr<cevent_key> ret_key;
 	PanelSearchWin( PanelWin* parent, cevent_key* key );
 	virtual void Repaint();
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
@@ -159,7 +159,7 @@ private:
 
 	ScrollBar _scroll;
 	PanelList _list;
-	cptr<PanelSearchWin> _search;
+	clPtr<PanelSearchWin> _search;
 
 	cpoint _letterSize[2];
 	int _itemHeight;
@@ -208,7 +208,7 @@ private:
 	bool _inOperState;
 	LOAD_TYPE _operType;
 	OperRDData _operData;
-	cptr<cstrhash<bool, unicode_t> > _operSelected;
+	clPtr<cstrhash<bool, unicode_t> > _operSelected;
 	FSString _operCurrent;
 
 public:
@@ -229,7 +229,7 @@ public:
 	void SortByMTime();
 	void DisableSort();
 
-	cptr<cevent_key> QuickSearch( cevent_key* key );
+	clPtr<cevent_key> QuickSearch( cevent_key* key );
 	bool Search( unicode_t* s, bool SearchForNext );
 
 	void SetCurrent( int n );
@@ -239,7 +239,7 @@ public:
 	int ViewMode() { return *_viewMode; }
 	void SetViewMode( int m ) { *_viewMode = m; Check(); SetScroll(); Invalidate(); }
 
-	void LoadPath( FSPtr fs, FSPath& path, FSString* current, cptr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
+	void LoadPath( FSPtr fs, FSPath& path, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
 	void LoadPathStringSafe( const char* path );
 
 	void Reread( bool resetCurrent = false );
@@ -284,11 +284,11 @@ public:
 	virtual void OperThreadSignal( int info );
 	virtual void OperThreadStopped();
 
-	cptr<FSList> GetSelectedList()
+	clPtr<FSList> GetSelectedList()
 	{
 		if ( _list.SelectedCounter().count > 0 ) { return _list.GetSelectedList(); }
 
-		cptr<FSList> p = new FSList;
+		clPtr<FSList> p = new FSList;
 		FSNode* node = GetCurrent();
 
 		if ( node ) { p->CopyOne( node ); }

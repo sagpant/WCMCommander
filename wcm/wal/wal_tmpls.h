@@ -25,31 +25,12 @@
 #endif
 
 #include <vector>
+#include "IntrusivePtr.h"
 
 namespace wal
 {
-	/*
-	smart pointer объект
-	*/
-	template <class T> class cptr
-	{
-	public:
-		cptr();
-		cptr( T* p );
-		cptr( const cptr& a );
-		void clear();
-		void drop();
-		cptr& operator = ( T* p );
-		cptr& operator = ( const cptr& a );
-		T* operator->();
-		T* ptr();
-		const T* const_ptr() const;
-		~cptr();
-	private:
-		T* m_data;
-	};
 
-	template <class T, size_t Step = 16> class ccollect
+	template <class T, size_t Step = 32> class ccollect: public iIntrusiveCounter
 	{
 	public:
 		ccollect();
@@ -77,93 +58,12 @@ namespace wal
 		std::vector<T> m_data;
 	};
 
-/// cptr /////////////////////////////////////////////////////////////////////
-	template <class T> inline cptr<T>::cptr()
-	{
-		m_data = NULL;
-	}
-
-	template <class T> inline cptr<T>::cptr( T* p )
-	{
-		m_data = p;
-	}
-
-	template <class T> inline cptr<T>::cptr( const cptr& a )
-	{
-		m_data = a.m_data;
-		const_cast<cptr&>(a).m_data = NULL;
-	}
-
-	template <class T> inline void cptr<T>::clear()
-	{
-		if ( m_data )
-		{
-			delete m_data;
-			m_data = NULL;
-		}
-	}
-
-	template <class T> inline void cptr<T>::drop()
-	{
-		m_data = NULL;
-	}
-
-	template <class T> inline cptr<T>& cptr<T>::operator = ( T* p )
-	{
-		if ( m_data )
-		{
-			delete m_data;
-		}
-
-		m_data = p;
-		return *this;
-	}
-
-	template <class T> inline cptr<T>& cptr<T>::operator = ( const cptr& a )
-	{
-		ASSERT( this != &a );
-
-		if ( m_data )
-		{
-			delete m_data;
-		}
-
-		m_data = a.m_data;
-		const_cast<cptr&>( a ).m_data = NULL;
-
-		return *this;
-
-	}
-	template <class T> inline T* cptr<T>::operator->()
-	{
-		ASSERT( m_data );
-		return m_data;
-	}
-
-	template <class T> inline T* cptr<T>::ptr()
-	{
-		return m_data;
-	}
-
-	template <class T> inline const T* cptr<T>::const_ptr() const
-	{
-		return m_data;
-	}
-
-
-	template <class T> inline cptr<T>::~cptr()
-	{
-		if ( m_data )
-		{
-			delete m_data;
-		}
-	}
-
 /// ccollect //////////////////////////////////////////////////////////
 
 	template <class T, size_t Step> ccollect<T, Step>::ccollect()
-	 : m_data( Step )
+	 : m_data()
 	{
+		m_data.reserve( Step );
 	}
 
 	template <class T, size_t Step> ccollect<T, Step>::ccollect( size_t n )
@@ -1051,7 +951,7 @@ namespace wal
 	};
 
 
-	template <class T, class CT = char, class P = FloatTableParam<> > class cstrhash
+	template <class T, class CT = char, class P = FloatTableParam<> > class cstrhash: public iIntrusiveCounter
 	{
 		struct Node
 		{

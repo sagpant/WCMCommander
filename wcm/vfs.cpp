@@ -498,7 +498,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 			//skip . and ..
 			if ( !( ent.cFileName[0] == '.' && ( !ent.cFileName[1] || ( ent.cFileName[1] == '.' && !ent.cFileName[2] ) ) ) )
 			{
-				cptr<FSNode> pNode = new FSNode();
+				clPtr<FSNode> pNode = new FSNode();
 				pNode->name.Set( CS_UNICODE, Utf16ToUnicode( ent.cFileName ).data() );
 
 				pNode->st.dwFileAttributes = ent.dwFileAttributes;
@@ -920,7 +920,7 @@ int FSWin32Net::ReadDir ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 				if ( last && last[1] ) { pName = last + 1; }
 			}
 
-			cptr<FSNode> pNode = new FSNode();
+			clPtr<FSNode> pNode = new FSNode();
 
 			pNode->name.Set( CS_UNICODE, Utf16ToUnicode( pName ).data() );
 			pNode->st.mode = S_IFDIR;
@@ -1183,7 +1183,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 				continue;
 			}
 
-			cptr<FSNode> pNode = new FSNode();
+			clPtr<FSNode> pNode = new FSNode();
 			path.SetItem( n, sys_charset_id, ent.d_name );
 			Stat( path, &pNode->st, 0, info );
 			pNode->name.Set( sys_charset_id, ent.d_name );
@@ -1407,7 +1407,7 @@ FSSys::~FSSys() {}
 
 //////////////////////////////////////// FSList /////////////////////////////////////
 
-void FSList::Append( cptr<FSNode> p )
+void FSList::Append( clPtr<FSNode> p )
 {
 	p->next = 0;
 

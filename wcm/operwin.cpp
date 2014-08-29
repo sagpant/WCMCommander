@@ -77,7 +77,7 @@ void OperThreadWin::StopThread()
 	threadId = -1;
 }
 
-struct OperThreadParam
+struct OperThreadParam: public iIntrusiveCounter
 {
 	OperThreadFunc func;
 	OperThreadNode* node;
@@ -145,7 +145,7 @@ void OperThreadWin::RunNewThread( const char* info, OperThreadFunc f, void* data
 {
 	StopThread();
 
-	cptr<OperThreadParam> param = new OperThreadParam;
+	clPtr<OperThreadParam> param = new OperThreadParam;
 	tNode = new OperThreadNode( this, info, data );
 
 	param->func = f;

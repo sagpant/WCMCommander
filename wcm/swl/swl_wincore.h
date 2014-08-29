@@ -297,7 +297,7 @@ namespace wal
 	   KM_ALT  = 0x0004
 	};
 
-	class cevent
+	class cevent: public iIntrusiveCounter
 	{
 		int type;
 	public:
@@ -407,7 +407,7 @@ namespace wal
 #endif
 
 
-	class cfont
+	class cfont: public iIntrusiveCounter
 	{
 		cfont() {}
 		cfont( const cfont& ) {}
@@ -454,29 +454,29 @@ namespace wal
 
 		~cfont() { drop(); }
 
-		static cptr<cfont> New( GC& gc, const char* name, int pointSize, cfont::Weight weight = Normal, unsigned flags = 0 )
+		static clPtr<cfont> New( GC& gc, const char* name, int pointSize, cfont::Weight weight = Normal, unsigned flags = 0 )
 		{
-			cptr<cfont> p = new cfont( gc, name, pointSize, weight, flags );
+			clPtr<cfont> p = new cfont( gc, name, pointSize, weight, flags );
 
-			if ( !p->Ok() ) { p.clear(); }
+			if ( !p->Ok() ) return clPtr<cfont>();
 
 			return p;
 		}
 
-		static cptr<cfont> New( const char* fileName, int pointSize )
+		static clPtr<cfont> New( const char* fileName, int pointSize )
 		{
-			cptr<cfont> p = new cfont( fileName, pointSize );
+			clPtr<cfont> p = new cfont( fileName, pointSize );
 
-			if ( !p->Ok() ) { p.clear(); }
+			if ( !p->Ok( ) ) return clPtr<cfont>( );
 
 			return p;
 		}
 
-		static cptr<cfont> New( const char* x11string )
+		static clPtr<cfont> New( const char* x11string )
 		{
-			cptr<cfont> p = new cfont( x11string );
+			clPtr<cfont> p = new cfont( x11string );
 
-			if ( !p->Ok() ) { p.clear(); }
+			if ( !p->Ok( ) ) return clPtr<cfont>( );
 
 			return p;
 		}
@@ -489,7 +489,7 @@ namespace wal
 			std::vector<char> name;
 			std::vector<char> styleName;
 		};
-		static cptr<FTInfo> GetFTFileInfo( const char* path );
+		static clPtr<FTInfo> GetFTFileInfo( const char* path );
 #endif
 
 	};
@@ -560,7 +560,7 @@ namespace wal
 
 #ifdef _WIN32
 
-	class Win32CompatibleBitmap
+	class Win32CompatibleBitmap: public iIntrusiveCounter
 	{
 		HBITMAP handle;
 		int _w, _h;
@@ -635,8 +635,8 @@ namespace wal
 		Image32 image;
 
 #ifdef _WIN32
-		cptr<Win32CompatibleBitmap> normal;
-		cptr<Win32CompatibleBitmap> disabled;
+		clPtr<Win32CompatibleBitmap> normal;
+		clPtr<Win32CompatibleBitmap> disabled;
 
 #else
 		//x11 cache
@@ -647,14 +647,14 @@ namespace wal
 			unsigned bgColor;
 		};
 
-		cptr<Node> normal;
-		cptr<Node> disabled;
+		clPtr<Node> normal;
+		clPtr<Node> disabled;
 #endif
 	};
 
 
 //создавать и копировать можно в любом потоке, а рисовать только в основном
-	class cicon
+	class cicon: public iIntrusiveCounter
 	{
 		IconData* data;
 	public:
@@ -692,7 +692,7 @@ namespace wal
 
 
 
-	class GC
+	class GC: public iIntrusiveCounter
 	{
 	public:
 		enum LineStyle
@@ -813,7 +813,7 @@ namespace wal
 
 	extern int GetUiID( const char* name );
 
-	struct UiValueNode
+	struct UiValueNode: public iIntrusiveCounter
 	{
 		enum {INT = 1, STR = 2};
 		int flags;
@@ -832,11 +832,11 @@ namespace wal
 	class UiValue
 	{
 		friend class UiRules;
-		ccollect<cptr<UiValueNode> > list;
+		ccollect<clPtr<UiValueNode> > list;
 		UiValue* next;
 		UiValue( UiValue* nx ): next( nx ) {};
-		void Append( int64 n ) { cptr<UiValueNode> v = new UiValueNode( n ); list.append( v ); }
-		void Append( const char* s ) { cptr<UiValueNode> v = new UiValueNode( s ); list.append( v ); }
+		void Append( int64 n ) { clPtr<UiValueNode> v = new UiValueNode( n ); list.append( v ); }
+		void Append( const char* s ) { clPtr<UiValueNode> v = new UiValueNode( s ); list.append( v ); }
 		bool ParzeNode( UiParzer& parzer );
 		void Parze( UiParzer& parzer );
 	public:
@@ -910,7 +910,7 @@ namespace wal
 	extern int uiOdd;
 
 
-	class Win
+	class Win: public iIntrusiveCounter
 	{
 
 #ifdef _WIN32

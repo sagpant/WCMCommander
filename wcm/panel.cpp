@@ -218,7 +218,7 @@ bool PanelSearchWin::EventShow( bool show )
 PanelSearchWin::~PanelSearchWin() {}
 
 
-cptr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
+clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 {
 	_search = new PanelSearchWin( this, key );
 	crect r = _footRect;
@@ -229,7 +229,7 @@ cptr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 
 	_search->DoModal();
 
-	cptr<cevent_key> ret = _search->ret_key;
+	clPtr<cevent_key> ret = _search->ret_key;
 	_search = 0;
 
 	return ret;
@@ -1649,7 +1649,7 @@ void PanelWin::LoadPathStringSafe( const char* path )
 	this->LoadPath( fs, fspath, 0, 0, PanelWin::SET );
 }
 
-void PanelWin::LoadPath( FSPtr fs, FSPath& paramPath, FSString* current, cptr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType )
+void PanelWin::LoadPath( FSPtr fs, FSPath& paramPath, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType )
 {
 //printf("LoadPath '%s'\n", paramPath.GetUtf8());
 
@@ -1705,8 +1705,8 @@ void PanelWin::OperThreadStopped()
 			return;
 		}
 
-		cptr<FSList> list = _operData.list;
-		cptr<cstrhash<bool, unicode_t> > selected = _operSelected;
+		clPtr<FSList> list = _operData.list;
+		clPtr<cstrhash<bool, unicode_t> > selected = _operSelected;
 
 //??? почему-то иногда list.ptr() == 0 ???
 //!!! найдено и исправлено 20120202 в NewThreadID стоял & вместо % !!!
@@ -1756,7 +1756,7 @@ void PanelWin::OperThreadStopped()
 
 void PanelWin::Reread( bool resetCurrent )
 {
-	cptr<cstrhash<bool, unicode_t> > sHash = _list.GetSelectedHash();
+	clPtr<cstrhash<bool, unicode_t> > sHash = _list.GetSelectedHash();
 	FSNode* node = resetCurrent ? 0 : GetCurrent();
 	FSString s;
 
