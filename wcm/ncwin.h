@@ -297,9 +297,12 @@ private:
 	const unicode_t* GetCurrentFileName() const;
 	PanelWin* GetOtherPanel()
 	{
-		if ( _panel == &_leftPanel ) { return &_rightPanel; }
+		return _panel == &_leftPanel ? &_rightPanel : &_leftPanel;
+	}
 
-		return &_leftPanel;
+	PanelWin* GetOtherPanel(PanelWin* panel)
+	{
+		return panel == &_leftPanel ? &_rightPanel : &_leftPanel;
 	}
 
 #ifndef _WIN32

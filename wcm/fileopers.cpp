@@ -179,21 +179,28 @@ void OperRDThread::Run()
 	int n = 8;
 	int ret_err;
 
-	while ( true )
+	int havePostponedStatError = 0;
+	FSString postponedStrError;
+	while (true)
 	{
-		if ( !( fs->Flags() & FS::HAVE_SYMLINK ) )
+		if (!(fs->Flags() & FS::HAVE_SYMLINK))
 		{
 			break;
 		}
 
 		FSStat st;
 
-		// if path is inaccessible, try .. path
-		while ( fs->Stat( path, &st, &ret_err, Info() ) )
-			if ( !path.IsAbsolute() || !path.Pop() )
+		// if path is inaccessible, try .. path. Throw the exception later
+		// This makes panel at least having some valid folder
+		while (fs->Stat(path, &st, &ret_err, Info()))
+		{
+			havePostponedStatError = 1;
+			postponedStrError = fs->StrError(ret_err);
+			if (!path.IsAbsolute() || !path.Pop())
 			{
-				throw_msg( "%s", fs->StrError( ret_err ).GetUtf8() );
+				throw_msg("%s", postponedStrError.GetUtf8());
 			}
+		}
 
 		// yell immediately if the path is inaccessible (orig behavior)
 		//if (fs->Stat(path, &st, &ret_err, Info()))
@@ -221,13 +228,18 @@ void OperRDThread::Run()
 
 	clPtr<FSList> list = new FSList;
 
-	// if directory is not readable, try .. path
+	int havePostponedReadError = 0;
+	// if directory is not readable, try .. path. Throw the exception later
 	// "Stat" call above does not catch this: it checks only folder existence, but not accessibilly
-	while ( fs->ReadDir( list.ptr(), path, &ret_err, Info() ) )
-		if ( !path.IsAbsolute() || !path.Pop() )
+	while (fs->ReadDir(list.ptr(), path, &ret_err, Info()))
+	{
+		havePostponedReadError = 1;
+		postponedStrError = fs->StrError(ret_err);
+		if (!path.IsAbsolute() || !path.Pop())
 		{
-			throw_msg( "%s", fs->StrError( ret_err ).GetUtf8() );
+			throw_msg("%s", postponedStrError.GetUtf8());
 		}
+	}
 
 	// yell immediately if the dir is unreadable (orig behavior)
 	//int ret = fs->ReadDir(list.ptr(), path, &ret_err, Info());
@@ -242,6 +254,10 @@ void OperRDThread::Run()
 	data->list = list;
 	data->path = path;
 	data->executed = true;
+	if (havePostponedReadError || havePostponedStatError)
+	{
+		data->nonFatalErrorString = postponedStrError;
+	}
 }
 
 OperRDThread::~OperRDThread() {}
