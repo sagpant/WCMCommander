@@ -292,7 +292,7 @@ $(OBJDIR)/swl_vlist.o: $(HW) $(HS) swl/swl_vlist.cpp
 $(OBJDIR)/swl_winbase.o: $(HW) $(HS) swl/swl_winbase.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_winbase.cpp -o $(OBJDIR)/swl_winbase.o
 
-$(OBJDIR)/swl_wincore.o: $(HW) $(HS) swl/swl_wincore.cpp swl/swl_wincore_ui_inc.h
+$(OBJDIR)/swl_wincore.o: $(HW) $(HS) swl/swl_wincore.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincore.cpp -o $(OBJDIR)/swl_wincore.o
 
 $(OBJDIR)/swl_wincoreUX.o: $(HW) $(HS) swl/swl_wincoreUX.cpp swl/swl_wincore_freetype_inc.h

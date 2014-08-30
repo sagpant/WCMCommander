@@ -482,7 +482,7 @@ namespace wal
 		}
 
 #ifdef USEFREETYPE
-		struct FTInfo
+		struct FTInfo: public iIntrusiveCounter
 		{
 			enum {FIXED_WIDTH = 1};
 			unsigned flags;
@@ -640,7 +640,7 @@ namespace wal
 
 #else
 		//x11 cache
-		struct Node
+		struct Node: public iIntrusiveCounter
 		{
 			SCImage image;
 			std::vector<char> mask;
