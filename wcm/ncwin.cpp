@@ -103,6 +103,7 @@ NCWin::NCWin()
 
 	   _edit( uiCommandLine, this, 0, 0, 10, false ),
 	   _editPref( this ),
+		_activityNotification( this ),
 	   _panel( &_leftPanel ),
 	   _menu( 0, this ),
 	   _toolBar( this, 0, 16 ),
@@ -119,10 +120,15 @@ NCWin::NCWin()
 
 	_execSN[0] = 0;
 
+	_activityNotification.Set( utf8_to_unicode( "[0+1]" ).data( ) );
+	_activityNotification.Hide();
+	_activityNotification.Enable();
+	_activityNotification.OnTop();
+
 	_editPref.Show();
 	_editPref.Enable();
-	_leftPanel.OnTop();
-	_rightPanel.OnTop();
+	//_leftPanel.OnTop();
+	//_rightPanel.OnTop();
 
 	if ( wcmConfig.showButtonBar )
 	{
@@ -170,8 +176,10 @@ NCWin::NCWin()
 	_lo.AddWin( &_viewer, 2, 0, 3, 0 );
 	_lo.AddWin( &_editor, 2, 0, 3, 0 );
 	_lo.SetLineGrowth( 2 );
+
 	_lpanel.AddWin( &_leftPanel, 0, 0 );
 	_lpanel.AddWin( &_rightPanel, 0, 1 );
+	_lpanel.AddWin( &_activityNotification, 0, 0 );
 	_lo.AddLayout( &_lpanel, 2, 0 );
 
 	_buttonWin.Set( panelNormalButtons );
@@ -418,6 +426,9 @@ void NCWin::SetMode( MODE m )
 	}
 
 	_mode = m;
+
+	UpdateActivityNotification();
+
 	RecalcLayouts();
 }
 
@@ -1245,7 +1256,7 @@ void NCWin::View()
 			return;
 		};
 
-		m_BackgroundActivity = eBackgroundActivity_Viewer;
+		SetBackgroundActivity( eBackgroundActivity_Viewer );
 
 		SetMode( VIEW );
 
@@ -1261,7 +1272,7 @@ void NCWin::View()
 
 void NCWin::ViewExit()
 {
-	m_BackgroundActivity = eBackgroundActivity_None;
+	SetBackgroundActivity( eBackgroundActivity_None );
 
 	if ( _mode != VIEW ) { return; }
 
@@ -1328,7 +1339,7 @@ void NCWin::Edit( bool enterFileName )
 			_editor.SetCursorPos( EditPoint( 0, 0 ) );
 		}
 
-		m_BackgroundActivity = eBackgroundActivity_Editor;
+		SetBackgroundActivity( eBackgroundActivity_Editor );
 
 		SetMode( EDIT );
 
@@ -1800,7 +1811,7 @@ void NCWin::ViewSearch( bool next )
 
 void NCWin::EditExit()
 {
-	m_BackgroundActivity = eBackgroundActivity_None;
+	SetBackgroundActivity( eBackgroundActivity_None );
 
 	if ( _mode != EDIT ) { return; }
 
@@ -2010,6 +2021,27 @@ void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
 	}
 }
 
+void NCWin::UpdateActivityNotification()
+{
+	if ( m_BackgroundActivity == eBackgroundActivity_None )
+	{
+		_activityNotification.Hide();
+	}
+	else
+	{
+		_activityNotification.Show();
+	}
+
+	if ( _mode != PANEL ) _activityNotification.Hide();
+}
+
+void NCWin::SetBackgroundActivity( eBackgroundActivity BackgroundActivity )
+{
+	m_BackgroundActivity = BackgroundActivity;
+
+	UpdateActivityNotification();
+}
+
 void NCWin::SwitchToBackgroundActivity()
 {
 	switch ( m_BackgroundActivity )
@@ -2066,14 +2098,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		if ( pEvent->Key() == VK_TAB && ( pEvent->Mod() & KM_CTRL ) )
 		{
-			if ( m_BackgroundActivity == eBackgroundActivity_Editor )
-			{
-				SetMode( EDIT );
-			}
-			if ( m_BackgroundActivity == eBackgroundActivity_Viewer )
-			{
-				SetMode( VIEW );
-			}
+			SwitchToBackgroundActivity();
 		}
 
 		if ( pEvent->Key() == VK_O && ( pEvent->Mod() & KM_CTRL ) )
@@ -2704,6 +2729,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			switch ( fullKey )
 			{
+				case FC( VK_TAB, KM_CTRL ):
+					SetMode( PANEL );
+					break;
 				case FC( VK_O, KM_CTRL ):
 					SetMode( TERMINAL );
 					break;
@@ -3541,7 +3569,7 @@ void StringWin::OnChangeStyles()
 	defaultGC->Set( GetFont() );
 	textSize = defaultGC->GetTextExtents( text.data() );
 	LSize ls( textSize );
-	ls.y.maximal = 1000;
+	ls.y.maximal = textSize.y;
 	ls.x.maximal = textSize.x;
 	SetLSize( ls );
 }

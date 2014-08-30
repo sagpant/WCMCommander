@@ -213,7 +213,11 @@ private:
 
 	eBackgroundActivity m_BackgroundActivity;
 
+	void UpdateActivityNotification();
+	void SetBackgroundActivity( eBackgroundActivity m_BackgroundActivity );
 	void SwitchToBackgroundActivity();
+
+	StringWin _activityNotification;
 
 	StringWin _editPref;
 	PanelWin* _panel;
