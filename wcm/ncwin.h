@@ -246,11 +246,13 @@ private:
 
 	void PanelEnter();
 
+	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
 	void ReturnToDefaultSysDir(); // !!!
 
 	void Home( PanelWin* p );
 
+	void ApplyCommand();
 	void CreateDirectory();
 	void View();
 	void ViewExit();

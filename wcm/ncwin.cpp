@@ -1085,6 +1085,71 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	};
 }
 
+#include <algorithm>
+
+std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
+{
+	if ( begin >= end ) return end;
+
+	return std::search( begin, end, SubStr.begin(), SubStr.end() );
+}
+
+std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const unicode_t* FileName )
+{
+	std::vector<unicode_t> Result( cmd );
+	std::vector<unicode_t> Name = new_unicode_str( FileName );
+
+	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
+
+	std::vector<unicode_t> Mask;
+	Mask.push_back( '!' );
+	Mask.push_back( '.' );
+	Mask.push_back( '!' );	
+
+	auto pos = FindSubstr( Result.begin(), Result.end(), Mask );
+
+	while ( pos != Result.end() )
+	{
+		pos = Result.erase( pos, pos + Mask.size() );
+		pos = Result.insert( pos, Name.begin(), Name.end() );
+		pos = FindSubstr( pos + Name.size(), Result.end(), Mask );
+	}
+
+	return Result;
+}
+
+void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
+{
+	if ( !cmd.data() ) { return; }
+	if ( !list.ptr() || list->Count() <= 0 ) { return; }
+
+	std::vector<FSNode*> nodes = list->GetArray();
+
+	SetMode( TERMINAL );
+
+	for ( auto i = nodes.begin(); i != nodes.end(); i++ )
+	{
+		FSNode* Node = *i;
+
+		const unicode_t* Name = Node->GetUnicodeName();
+
+		std::vector<unicode_t> Command = MakeCommand( cmd, Name );
+
+		StartExecute( Command.data( ), Panel->GetFS( ), Panel->GetPath( ) );
+	}
+
+	SetMode( PANEL );
+}
+
+void NCWin::ApplyCommand()
+{
+	if ( _mode != PANEL ) { return; }
+
+	std::vector<unicode_t> command = InputStringDialog( this, utf8_to_unicode( _LT( "Apply command to the selected files" ) ).data() );
+
+	ApplyCommandToList( command, _panel->GetSelectedList(), _panel );
+}
+
 void NCWin::CreateDirectory()
 {
 	if ( _mode != PANEL ) { return; }
@@ -2487,6 +2552,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case VK_F7:
 				CreateDirectory();
+				break;
+
+			case FC( VK_G, KM_CTRL ):
+				ApplyCommand();
 				break;
 
 			case FC( VK_F8, KM_ALT ):
