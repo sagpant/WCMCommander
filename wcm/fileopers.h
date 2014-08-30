@@ -43,6 +43,7 @@ public:
 	FSPtr fs; //??volatile
 	FSPath path; //??volatile
 	FSString errorString; //??volatile
+	FSString nonFatalErrorString;
 	cptr<FSList> list; //??volatile
 
 	OperRDData( NCDialogParent* p ): OperData( p ), executed( false ) {}
@@ -54,6 +55,7 @@ public:
 		path = p;
 		list.clear();
 		errorString = "";
+		nonFatalErrorString = "";
 	}
 
 	virtual ~OperRDData();

@@ -1690,7 +1690,7 @@ void PanelWin::OperThreadStopped()
 	if ( !_inOperState )
 	{
 		fprintf( stderr, "BUG: PanelWin::OperThreadStopped\n" );
-		Invalidate();
+		Invalidate();	
 		return;
 	}
 
@@ -1700,9 +1700,17 @@ void PanelWin::OperThreadStopped()
 	{
 		if ( !_operData.errorString.IsEmpty() )
 		{
-			Invalidate();
+			// Do not invalidate panel. Show "select drive" dialog instead.
+			//Invalidate();
 			NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), _operData.errorString.GetUtf8(), true );
+			NCWin* ncWin = (NCWin*)Parent();
+			ncWin->SelectDrive(this, ncWin->GetOtherPanel(this));
 			return;
+		}
+
+		if (!_operData.nonFatalErrorString.IsEmpty())
+		{
+			NCMessageBox((NCDialogParent*)Parent(), _LT("Read dialog list"), _operData.nonFatalErrorString.GetUtf8(), true);
 		}
 
 		cptr<FSList> list = _operData.list;
