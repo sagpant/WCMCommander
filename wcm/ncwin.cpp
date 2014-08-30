@@ -115,6 +115,8 @@ NCWin::NCWin()
 	   _execId( -1 ),
 	   _shiftSelectType( -1 )
 {
+	m_BackgroundActivity = eBackgroundActivity_None;
+
 	_execSN[0] = 0;
 
 	_editPref.Show();
@@ -1243,6 +1245,8 @@ void NCWin::View()
 			return;
 		};
 
+		m_BackgroundActivity = eBackgroundActivity_Viewer;
+
 		SetMode( VIEW );
 
 		_viewer.SetFile( fs, path, p->Size() );
@@ -1257,6 +1261,8 @@ void NCWin::View()
 
 void NCWin::ViewExit()
 {
+	m_BackgroundActivity = eBackgroundActivity_None;
+
 	if ( _mode != VIEW ) { return; }
 
 	//...
@@ -1321,6 +1327,8 @@ void NCWin::Edit( bool enterFileName )
 		{
 			_editor.SetCursorPos( EditPoint( 0, 0 ) );
 		}
+
+		m_BackgroundActivity = eBackgroundActivity_Editor;
 
 		SetMode( EDIT );
 
@@ -1792,6 +1800,8 @@ void NCWin::ViewSearch( bool next )
 
 void NCWin::EditExit()
 {
+	m_BackgroundActivity = eBackgroundActivity_None;
+
 	if ( _mode != EDIT ) { return; }
 
 	clPtr<FS> fs = _editor.GetFS();
@@ -2000,6 +2010,20 @@ void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
 	}
 }
 
+void NCWin::SwitchToBackgroundActivity()
+{
+	switch ( m_BackgroundActivity )
+	{
+	case eBackgroundActivity_None:
+		break;
+	case eBackgroundActivity_Editor:
+		SetMode( EDIT );
+		break;
+	case eBackgroundActivity_Viewer:
+		SetMode( VIEW );
+		break;
+	}
+}
 
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 {
@@ -2040,6 +2064,17 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 	{
 		if ( !pressed ) { return false; }
 
+		if ( pEvent->Key() == VK_TAB && ( pEvent->Mod() & KM_CTRL ) )
+		{
+			if ( m_BackgroundActivity == eBackgroundActivity_Editor )
+			{
+				SetMode( EDIT );
+			}
+			if ( m_BackgroundActivity == eBackgroundActivity_Viewer )
+			{
+				SetMode( VIEW );
+			}
+		}
 
 		if ( pEvent->Key() == VK_O && ( pEvent->Mod() & KM_CTRL ) )
 		{
@@ -2614,6 +2649,13 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		switch ( fullKey )
 		{
+			case FC( VK_O, KM_CTRL ):
+			case VK_ESCAPE:
+			{
+				if ( pressed ) SwitchToBackgroundActivity();					
+				return true;
+			}
+
 			case FC( VK_INSERT, KM_SHIFT ):
 				if ( pressed ) { _terminal.Paste(); }
 
@@ -2662,7 +2704,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			switch ( fullKey )
 			{
-
+				case FC( VK_O, KM_CTRL ):
+					SetMode( TERMINAL );
+					break;
 				case VK_F4:
 				case VK_F10:
 				case VK_ESCAPE:
@@ -2730,7 +2774,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				switch ( fullKey )
 				{
-
+					case FC( VK_O, KM_CTRL ):
+						SetMode( TERMINAL );
+						break;
 					case VK_F3:
 					case VK_F10:
 					case VK_ESCAPE:

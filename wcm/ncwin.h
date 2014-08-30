@@ -184,6 +184,13 @@ public:
 	int UiGetClassId();
 };
 
+enum eBackgroundActivity
+{
+	eBackgroundActivity_None,
+	eBackgroundActivity_Viewer,
+	eBackgroundActivity_Editor,
+};
+
 class NCWin: public NCDialogParent
 {
 	friend class PanelWin;
@@ -203,6 +210,10 @@ private:
 	TerminalWin
 #endif
 	_terminal;
+
+	eBackgroundActivity m_BackgroundActivity;
+
+	void SwitchToBackgroundActivity();
 
 	StringWin _editPref;
 	PanelWin* _panel;
