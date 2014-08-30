@@ -104,7 +104,7 @@ public:
 	~MimeAliases();
 };
 
-class MimeDB
+class MimeDB: public iIntrusiveCounter
 {
 	MimeGlobs globs;
 	MimeSubclasses subclasses;
@@ -118,7 +118,7 @@ public:
 	~MimeDB();
 };
 
-class AppDefListFile
+class AppDefListFile: public iIntrusiveCounter
 {
 	std::vector<char> fileName;
 	time_t mtime;
@@ -131,7 +131,7 @@ public:
 };
 
 
-struct AppNode
+struct AppNode: public iIntrusiveCounter
 {
 	std::vector<unicode_t> name;
 	std::vector<unicode_t> exec;
@@ -140,7 +140,7 @@ struct AppNode
 };
 
 
-class AppDB
+class AppDB: public iIntrusiveCounter
 {
 	std::vector<char> appDefsPrefix;
 	cinthash<int, clPtr<AppNode> > apps;
