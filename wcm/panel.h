@@ -51,7 +51,7 @@ class clPanelPlace
 {
 	struct Node
 	{
-		FSPtr fsPtr;
+		clPtr<FS> fsPtr;
 		FSPath path;
 	};
 	std::vector<Node> m_Stack;
@@ -84,7 +84,7 @@ public:
 		return true;
 	}
 
-	bool Set( FSPtr fsPtr, FSPath& path, bool push )
+	bool Set( clPtr<FS> fsPtr, FSPath& path, bool push )
 	{
 		if ( fsPtr.IsNull() ) { return false; }
 
@@ -107,7 +107,7 @@ public:
 		return m_Stack.size();
 	}
 
-	void Reset( FSPtr fsPtr, FSPath& path )
+	void Reset( clPtr<FS> fsPtr, FSPath& path )
 	{
 		if ( fsPtr.IsNull() ) { return; }
 
@@ -124,8 +124,8 @@ public:
 
 	bool IsEmpty() const { return m_Stack.empty(); }
 
-	FS* GetFS() { return !m_Stack.empty() ? m_Stack.back().fsPtr.Ptr() : 0; }
-	FSPtr GetFSPtr() const { return !m_Stack.empty() ? m_Stack.back().fsPtr : FSPtr(); }
+	FS* GetFS() { return !m_Stack.empty() ? m_Stack.back().fsPtr.GetInternalPtr() : 0; }
+	clPtr<FS> GetFSPtr() const { return !m_Stack.empty() ? m_Stack.back().fsPtr : clPtr<FS>(); }
 	FSPath* GetPathPtr() { return !m_Stack.empty() ? &m_Stack.back().path : 0; }
 	FSPath& GetPath() { return !m_Stack.empty() ? m_Stack.back().path : m_EmptyPath; }
 };
@@ -218,7 +218,7 @@ public:
 
 	FSPath& GetPath() { return _place.GetPath(); }
 	FS* GetFS() { return _place.GetFS(); }
-	FSPtr GetFSPtr() { return _place.GetFSPtr(); }
+	clPtr<FS> GetFSPtr() { return _place.GetFSPtr(); }
 
 	FSString UriOfDir();
 	FSString UriOfCurrent();
@@ -239,7 +239,7 @@ public:
 	int ViewMode() { return *_viewMode; }
 	void SetViewMode( int m ) { *_viewMode = m; Check(); SetScroll(); Invalidate(); }
 
-	void LoadPath( FSPtr fs, FSPath& path, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
+	void LoadPath( clPtr<FS> fs, FSPath& path, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
 	void LoadPathStringSafe( const char* path );
 
 	void Reread( bool resetCurrent = false );

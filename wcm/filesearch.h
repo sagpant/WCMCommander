@@ -5,6 +5,6 @@
 #include "ncdialogs.h"
 #include "operwin.h"
 
-bool SearchFile( FSPtr f, FSPath p, NCDialogParent* parent, FSPath* retPath );
+bool SearchFile( clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath );
 
 #endif

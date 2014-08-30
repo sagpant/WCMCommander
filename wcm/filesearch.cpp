@@ -43,7 +43,7 @@ class OperSearchData: public OperData
 public:
 	//после создания эти параметры может трогать толькл поток поиска
 	SearchAndReplaceParams searchParams;
-	FSPtr searchFs;
+	clPtr<FS> searchFs;
 	FSPath searchPath;
 	clPtr<MegaSearcher> megaSearcher;
 
@@ -58,7 +58,7 @@ public:
 	//поисковый поток может менять, основной поток может использовать только после завершения поискового потока
 	FSString errorString;
 
-	OperSearchData( NCDialogParent* p, SearchAndReplaceParams& sParams, FSPtr& fs, FSPath& path, clPtr<MegaSearcher> searcher ):
+	OperSearchData( NCDialogParent* p, SearchAndReplaceParams& sParams, clPtr<FS>& fs, FSPath& path, clPtr<MegaSearcher> searcher ):
 		OperData( p ), searchParams( sParams ), searchFs( fs ), searchPath( path ), megaSearcher( searcher ),
 		found ( 0 ), badDirs( 0 ), badFiles( 0 )
 	{}
@@ -358,7 +358,7 @@ void OperSearchThread::Search()
 	if ( !Node().Data() ) { return; }
 
 	FSPath path = ( ( OperSearchData* )Node().Data() )->searchPath;
-	FSPtr fs = ( ( OperSearchData* )Node().Data() )->searchFs;
+	clPtr<FS> fs = ( ( OperSearchData* )Node().Data() )->searchFs;
 	clPtr<MegaSearcher> pSearcher = ( ( OperSearchData* )Node().Data() )->megaSearcher;
 	lock.Unlock(); //!!!
 
@@ -749,7 +749,7 @@ void SearchFileThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool SearchFile( FSPtr f, FSPath p, NCDialogParent* parent, FSPath* retPath )
+bool SearchFile( clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath )
 {
 	if ( !DoFileSearchDialog( parent, &searchParams ) )
 	{

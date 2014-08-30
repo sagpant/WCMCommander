@@ -5,7 +5,7 @@
 
 struct ShellLoadDirTD
 {
-	FSPtr fs;
+	clPtr<FS> fs;
 	FSPath path;
 
 	Mutex mutex;
@@ -14,7 +14,7 @@ struct ShellLoadDirTD
 	FSCSimpleInfo info;
 	clPtr<FSList> list;
 	std::vector<char> err;
-	ShellLoadDirTD( FSPtr f, FSPath& p ): fs( f ), path( p ), winClosed( false ), threadStopped( false ) {}
+	ShellLoadDirTD( clPtr<FS> f, FSPath& p ): fs( f ), path( p ), winClosed( false ), threadStopped( false ) {}
 };
 
 void* ShellLoadDirThreadFunc( void* ptr )
@@ -78,10 +78,10 @@ class ShellLoadDirDialog: public NCVertDialog
 public:
 	ShellLoadDirTD* data;
 	StaticLine _text;
-	FSPtr _fs;
+	clPtr<FS> _fs;
 	FSPath& _path;
 
-	ShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path );
+	ShellLoadDirDialog( NCDialogParent* parent, clPtr<FS> fs, FSPath& path );
 	virtual void ThreadStopped( int id, void* data );
 	virtual ~ShellLoadDirDialog();
 };
@@ -107,7 +107,7 @@ ShellLoadDirDialog::~ShellLoadDirDialog()
 	}
 }
 
-ShellLoadDirDialog::ShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
+ShellLoadDirDialog::ShellLoadDirDialog( NCDialogParent* parent, clPtr<FS> fs, FSPath& path )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "TAB" ).data(), bListCancel ),
 	   data( 0 ),
 	   _text( 0, this, utf8_to_unicode( "Read ..." ).data() ),
@@ -439,7 +439,7 @@ ShellFileDlg::~ShellFileDlg() {}
 
 /////////////////////////////////////
 
-static clPtr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
+static clPtr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, clPtr<FS> fs, FSPath& path )
 {
 	ShellLoadDirDialog dlg( parent, fs, path );
 
@@ -452,7 +452,7 @@ static clPtr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSP
 }
 
 
-std::vector<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, const unicode_t* str, int* cursor )
+std::vector<unicode_t> ShellTabKey( NCDialogParent* par, clPtr<FS> fs, FSPath& path, const unicode_t* str, int* cursor )
 {
 	if ( fs->Type() != FS::SYSTEM ) { return std::vector<unicode_t>(); }
 
@@ -553,7 +553,7 @@ std::vector<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path,
 
 		buf[i] = 0;
 
-		FSPtr f1 = ParzeURI( buf.data(), searchPath, &fs, 1 );
+		clPtr<FS> f1 = ParzeURI( buf.data(), searchPath, &fs, 1 );
 
 		if ( !f1.Ptr() ) { return std::vector<unicode_t>(); }
 

@@ -7,7 +7,7 @@ class OperLoadFileData: public OperData
 {
 public:
 	volatile bool executed;
-	FSPtr fs;
+	clPtr<FS> fs;
 	FSPath path;
 	FSString errorString;
 	clPtr<MemFile> file;
@@ -15,7 +15,7 @@ public:
 
 	OperLoadFileData( NCDialogParent* p ): OperData( p ), executed( false ), notExist( false ) {}
 
-	void SetNewParams( FSPtr f, FSPath& p )
+	void SetNewParams( clPtr<FS> f, FSPath& p )
 	{
 		executed = false;
 		fs = f;
@@ -45,7 +45,7 @@ void OperLoadFileThread::Run()
 	if ( Node().NBStopped() ) { return; }
 
 	OperLoadFileData* data = ( ( OperLoadFileData* )Node().Data() );
-	FSPtr fs = data->fs;
+	clPtr<FS> fs = data->fs;
 	FSPath path = data->path;
 	lock.Unlock();
 
@@ -192,7 +192,7 @@ void LoadThreadWin::OperThreadStopped()
 LoadThreadWin::~LoadThreadWin() {}
 
 
-clPtr<MemFile> LoadFile( FSPtr f, FSPath& p, NCDialogParent* parent, bool ignoreENOENT )
+clPtr<MemFile> LoadFile( clPtr<FS> f, FSPath& p, NCDialogParent* parent, bool ignoreENOENT )
 {
 	LoadThreadWin dlg( parent, ignoreENOENT );
 	dlg.threadData.SetNewParams( f, p );
@@ -210,14 +210,14 @@ class OperSaveFileData: public OperData
 {
 public:
 	volatile bool executed;
-	FSPtr fs;
+	clPtr<FS> fs;
 	FSPath path;
 	FSString errorString;
 	clPtr<MemFile> file;
 
 	OperSaveFileData( NCDialogParent* p ): OperData( p ), executed( false ) {}
 
-	void SetNewParams( FSPtr f, FSPath& p, clPtr<MemFile> __file )
+	void SetNewParams( clPtr<FS> f, FSPath& p, clPtr<MemFile> __file )
 	{
 		executed = false;
 		fs = f;
@@ -248,7 +248,7 @@ void OperSaveFileThread::Run()
 	if ( Node().NBStopped() ) { return; }
 
 	OperLoadFileData* data = ( ( OperLoadFileData* )Node().Data() );
-	FSPtr fs = data->fs;
+	clPtr<FS> fs = data->fs;
 	FSPath path = data->path;
 	clPtr<MemFile> file = data->file;
 	lock.Unlock();
@@ -387,7 +387,7 @@ void SaveThreadWin::OperThreadStopped()
 
 SaveThreadWin::~SaveThreadWin() {}
 
-bool SaveFile( FSPtr f, FSPath& p, clPtr<MemFile> file, NCDialogParent* parent )
+bool SaveFile( clPtr<FS> f, FSPath& p, clPtr<MemFile> file, NCDialogParent* parent )
 {
 	SaveThreadWin dlg( parent );
 	dlg.threadData.SetNewParams( f, p, file );

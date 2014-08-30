@@ -9,7 +9,7 @@ class OperDirCalcData: public OperData
 {
 public:
 	//после создания эти параметры может трогать толькл поток поиска
-	FSPtr dirFs;
+	clPtr<FS> dirFs;
 	FSPath _path;
 	clPtr<FSList> dirList;
 
@@ -25,7 +25,7 @@ public:
 	//поисковый поток может менять, основной поток может использовать только после завершения поискового потока
 	FSString errorString;
 
-	OperDirCalcData( NCDialogParent* p, FSPtr& fs, FSPath& path, clPtr<FSList> list ):
+	OperDirCalcData( NCDialogParent* p, clPtr<FS>& fs, FSPath& path, clPtr<FSList> list ):
 		OperData( p ), dirFs( fs ), _path( path ), dirList( list ), badDirs( 0 ),
 		fileCount( 0 ), folderCount( 0 ), sumSize( 0 )
 	{}
@@ -153,7 +153,7 @@ void OperDirCalcThread::Calc()
 
 	OperDirCalcData* CalcData = ( OperDirCalcData* )Node().Data();
 
-	FSPtr fs = CalcData->dirFs;
+	clPtr<FS> fs = CalcData->dirFs;
 	FSPath path =  CalcData->_path;
 	clPtr<FSList> list = CalcData->dirList;
 
@@ -527,7 +527,7 @@ void DirCalcThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool DirCalc( FSPtr f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent )
+bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent )
 {
 	OperDirCalcData data( parent, f, path, list );
 	DirCalcThreadWin dlg( parent,  _LT( "Selected folders size" ) , &data, f->Uri( path ).GetUnicode() );

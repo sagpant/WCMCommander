@@ -587,7 +587,7 @@ class EditWin : public Win
 	void Enter();
 	bool DelMarked();
 
-	FSPtr _fs;
+	clPtr<FS> _fs;
 	FSPath _path;
 
 	EditScreen screen;
@@ -640,17 +640,17 @@ public:
 	bool Changed() { return _changed; }
 	void ClearChangedStata() { _changed = false; }
 
-	void Load( FSPtr fs, FSPath& path, MemFile& f );
+	void Load( clPtr<FS> fs, FSPath& path, MemFile& f );
 
 	void Save( MemFile& f );
 	void NextCharset();
 	void SetCharset( int n );
 	void Clear();
 
-	FSPtr GetFS() { return _fs; }
+	clPtr<FS> GetFS() { return _fs; }
 	void GetPath( FSPath& p ) { p = _path; }
 
-	void SetPath( FSPtr fs, FSPath& p );
+	void SetPath( clPtr<FS> fs, FSPath& p );
 
 	EditPoint GetCursorPos() const { return cursor; }
 	void SetCursorPos( EditPoint p );

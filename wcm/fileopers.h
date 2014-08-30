@@ -40,7 +40,7 @@ class OperRDData: public OperData
 {
 public:
 	bool volatile executed;
-	FSPtr fs; //??volatile
+	clPtr<FS> fs; //??volatile
 	FSPath path; //??volatile
 	FSString errorString; //??volatile
 	FSString nonFatalErrorString;
@@ -48,7 +48,7 @@ public:
 
 	OperRDData( NCDialogParent* p ): OperData( p ), executed( false ) {}
 
-	void SetNewParams( FSPtr f, FSPath& p )
+	void SetNewParams( clPtr<FS> f, FSPath& p )
 	{
 		executed = false;
 		fs = f;
@@ -93,9 +93,9 @@ public:
 
 ///////////////////////////////// common file opers
 
-bool MkDir( FSPtr f, FSPath& p, NCDialogParent* parent );
-bool DeleteList( FSPtr f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent );
-clPtr<cstrhash<bool, unicode_t> > CopyFiles( FSPtr srcFs, FSPath& srcPath, clPtr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent );
-bool MoveFiles( FSPtr srcFs, FSPath& srcPath, clPtr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent );
+bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent );
+bool DeleteList( clPtr<FS> f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent );
+clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
+bool MoveFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
 
 #endif

@@ -423,10 +423,8 @@ public:
 */
 
 
-class FS
+class FS:public iIntrusiveCounter
 {
-	friend class FSPtr;
-	volatile int _copyCounter;
 public:
 	enum TYPES { SYSTEM = 0, SFTP = 1, SAMBA = 2, FTP = 3, WIN32NET = 4 };
 	enum FLAGS { HAVE_READ = 1, HAVE_WRITE = 2, HAVE_SYMLINK = 4, HAVE_SEEK = 8 };
@@ -434,7 +432,7 @@ public:
 private:
 	int _type;
 public:
-	FS( int t ): _copyCounter( 0 ), _type( t ) { }
+	FS( int t ): _type( t ) { }
 	int Type() const { return _type; }
 
 	static void SetError( int* p, int err ) { if ( p ) { *p = err; } }
@@ -472,23 +470,6 @@ public:
 	virtual ~FS();
 	CLASS_COPY_PROTECTION( FS );
 };
-
-class FSPtr
-{
-	FS* volatile data;
-	void Copy( FS* p );
-public:
-	FSPtr(): data( 0 ) {}
-	FSPtr( FS* fs ): data( 0 ) { Copy( fs ); }
-	FSPtr( const FSPtr& p ): data( 0 ) { Copy( p.data ); }
-	FS* operator -> () { return data; }
-	FS* Ptr() { return data; }
-	FSPtr& operator = ( FS* fs ) { Copy( fs ); return *this; }
-	FSPtr& operator = ( const FSPtr& p ) { Copy( p.data ); return *this; }
-	bool IsNull() const { return data == 0; }
-	~FSPtr() { Copy( 0 ); }
-};
-
 
 #ifdef _WIN32
 class FSSysHandles
@@ -624,7 +605,7 @@ public:
 //path - должен быть абсолютным (если нет - то вернет false)
 extern bool ParzeLink( FSPath& path, FSString& link );
 
-//inline FSPtr GetSysFS(){ return FSPtr(new FSSys()); }
+//inline clPtr<FS> GetSysFS(){ return clPtr<FS>(new FSSys()); }
 
 
 #endif

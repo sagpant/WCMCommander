@@ -557,7 +557,7 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	try
 	{
 		FSPath path;
-		FSPtr fs =  ParzeCurrentSystemURL( path );
+		clPtr<FS> fs =  ParzeCurrentSystemURL( path );
 		LoadPath( fs, path, 0, 0, SET );
 	}
 	catch ( ... )
@@ -1644,12 +1644,12 @@ void PanelWin::LoadPathStringSafe( const char* path )
 
 	FSPath fspath;
 
-	FSPtr fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, 0, 0 );
+	clPtr<FS> fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, 0, 0 );
 
 	this->LoadPath( fs, fspath, 0, 0, PanelWin::SET );
 }
 
-void PanelWin::LoadPath( FSPtr fs, FSPath& paramPath, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType )
+void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType )
 {
 //printf("LoadPath '%s'\n", paramPath.GetUtf8());
 
@@ -1860,7 +1860,7 @@ bool PanelWin::DirUp()
 
 #ifdef _WIN32
 	{
-		FSPtr fs = GetFSPtr();
+		clPtr<FS> fs = GetFSPtr();
 
 		if ( fs->Type() == FS::SYSTEM )
 		{
@@ -1882,7 +1882,7 @@ bool PanelWin::DirUp()
 					r.lpRemoteName = name.data();
 					r.lpComment = 0;
 					r.lpProvider = 0;
-					FSPtr netFs = new FSWin32Net( &r );
+					clPtr<FS> netFs = new FSWin32Net( &r );
 					FSPath path( CS_UTF8, "\\" );
 
 					LoadPath( netFs, path, 0, 0, RESET );
@@ -1946,7 +1946,7 @@ void PanelWin::DirEnter()
 	p.Push( cs, node->Name().Get( cs ) );
 
 
-	FSPtr fs = GetFSPtr();
+	clPtr<FS> fs = GetFSPtr();
 
 	if ( fs.IsNull() ) { return; }
 
@@ -1961,12 +1961,12 @@ void PanelWin::DirEnter()
 		if ( node->extType == FSNode::FILESHARE )
 		{
 			FSPath path;
-			FSPtr newFs = ParzeURI( Utf16ToUnicode( nr->lpRemoteName ).data(), path, 0, 0 );
+			clPtr<FS> newFs = ParzeURI( Utf16ToUnicode( nr->lpRemoteName ).data(), path, 0, 0 );
 			LoadPath( newFs, path, 0, 0, PUSH );
 		}
 		else
 		{
-			FSPtr netFs = new FSWin32Net( nr );
+			clPtr<FS> netFs = new FSWin32Net( nr );
 			FSPath path( CS_UTF8, "\\" );
 			LoadPath( netFs, path, 0, 0, PUSH );
 		}
@@ -1985,7 +1985,7 @@ void PanelWin::DirEnter()
 		FSSmbParam param;
 		( ( FSSmb* )fs.Ptr() )->GetParam( &param );
 		param.SetServer( node->Name().GetUtf8() );
-		FSPtr smbFs = new FSSmb( &param );
+		clPtr<FS> smbFs = new FSSmb( &param );
 		FSPath path( CS_UTF8, "/" );
 		LoadPath( smbFs, path, 0, 0, PUSH );
 		return;

@@ -2044,38 +2044,6 @@ int FSNode::CmpByExt( FSNode& a, bool case_sensitive )
 
 FSNode::~FSNode() {}
 
-
-
-//////////////////////////////////// FSPtr ///////////////////////////////////////////
-
-
-static Mutex mutexFSPtr;
-
-void FSPtr::Copy( FS* p )
-{
-	if ( data )
-	{
-		MutexLock lock( &mutexFSPtr );
-		data->_copyCounter--;
-
-		if ( data->_copyCounter <= 0 )
-		{
-			lock.Unlock();
-			delete data;
-		}
-
-		data = 0;
-	}
-
-	if ( p )
-	{
-		MutexLock lock( &mutexFSPtr );
-		p->_copyCounter++;
-		data = p;
-
-	}
-}
-
 ////////////////////////////////////  Utils ///////////////////////////////////////////
 
 bool ParzeLink( FSPath& path, FSString& link )

@@ -84,6 +84,10 @@ public:
 	{
 		return FObject != 0;
 	}
+	inline bool IsNull() const
+	{
+		return FObject == 0;
+	}
 	/// assignment of clPtr
 	clPtr& operator = ( const clPtr& Ptr )
 	{
@@ -137,6 +141,10 @@ public:
 	}
 	/// helpers
 	inline T* ptr() const
+	{
+		return FObject;
+	}
+	inline T* Ptr() const
 	{
 		return FObject;
 	}

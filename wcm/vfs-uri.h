@@ -10,18 +10,18 @@
 
 /*
    если uri - относительный, то считается путь относительно  path, и берется первый FS из списка
-      если FS нет, то это ошибка и возвращается пустой FSPtr
+      если FS нет, то это ошибка и возвращается пустой clPtr<FS>
 
    path всегда должен быть абсолютным
 
-   возврат: FSPtr и измененный path
-      в случае ошибки: FSPtr пустой, path - не определен
+   возврат: clPtr<FS> и измененный path
+      в случае ошибки: clPtr<FS> пустой, path - не определен
 */
 
-FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count );
+clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count );
 
-FSPtr ParzeCurrentSystemURL( FSPath& path );
+clPtr<FS> ParzeCurrentSystemURL( FSPath& path );
 
-//extern FSPtr systemFSPtr;
+//extern clPtr<FS> systemclPtr<FS>;
 
 #endif

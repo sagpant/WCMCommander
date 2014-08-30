@@ -131,7 +131,7 @@ class VFile
 	Mutex mutex;
 	int useCount;
 
-	FSPtr fs;
+	clPtr<FS> fs;
 	FSPath path;
 	int fd;
 
@@ -168,7 +168,7 @@ class VFile
 	time_t _lastMTime;
 public:
 	VFile();
-	VFile( FSPtr _fs, FSPath _path, seek_t _size, int tabSize );
+	VFile( clPtr<FS> _fs, FSPath _path, seek_t _size, int tabSize );
 	VDataPtr Get( long bn, FSCInfo* info ) { return _Get( bn, info, true ); }
 	bool CheckStat( FSCInfo* info );
 	seek_t Size() const { return _size; }
@@ -191,7 +191,7 @@ VFile::VFile()
 }
 
 
-VFile::VFile( FSPtr _fs, FSPath _path, seek_t size, int tabSize )
+VFile::VFile( clPtr<FS> _fs, FSPath _path, seek_t size, int tabSize )
 	:  useCount( 0 ),
 	   fs( _fs ),
 	   fd( -1 ),
@@ -2386,7 +2386,7 @@ void ViewWin::CalcScroll()
 }
 
 
-void ViewWin::SetFile( FSPtr fsp, FSPath& path, seek_t size )
+void ViewWin::SetFile( clPtr<FS> fsp, FSPath& path, seek_t size )
 {
 	ClearFile();
 	VFilePtr vf = new VFile( fsp, path, size, wcmConfig.editTabSize );

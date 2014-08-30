@@ -1650,7 +1650,7 @@ void EditWin::EnableShl( bool on )
 	Invalidate();
 }
 
-void EditWin::Load( FSPtr fs, FSPath& path, MemFile& f )
+void EditWin::Load( clPtr<FS> fs, FSPath& path, MemFile& f )
 {
 	Clear();
 	text.Load( f );
@@ -2016,7 +2016,7 @@ crect EditWin::GetCursorRect( int x, int y ) const
 	return crect( x, y + charH - charH / 5, x + charW, y + charH );
 }
 
-void EditWin::SetPath( FSPtr fs, FSPath& p )
+void EditWin::SetPath( clPtr<FS> fs, FSPath& p )
 {
 	_fs = fs;
 	_path = p;

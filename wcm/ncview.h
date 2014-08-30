@@ -142,7 +142,7 @@ class ViewWin : public Win
 public:
 	ViewWin( Win* parent );
 
-	void SetFile( FSPtr fsp, FSPath& path, seek_t size );
+	void SetFile( clPtr<FS> fsp, FSPath& path, seek_t size );
 	void ClearFile();
 
 	virtual void Paint( wal::GC& gc, const crect& paintRect );

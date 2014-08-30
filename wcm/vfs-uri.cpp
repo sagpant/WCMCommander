@@ -15,7 +15,7 @@
 
 static unicode_t rootPathStr[] = {'/', 0};
 
-//FSPtr systemFSPtr = new FSSys();
+//clPtr<FS> systemclPtr<FS> = new FSSys();
 
 inline const unicode_t* FindFirstChar( const unicode_t* s, unicode_t c )
 {
@@ -33,7 +33,7 @@ static void SetString( char* dest, int len, const char* src )
 
 #ifdef LIBSMBCLIENT_EXIST
 
-FSPtr ParzeSmbURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
+clPtr<FS> ParzeSmbURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
 {
 	path.Set( rootPathStr );
 
@@ -58,7 +58,7 @@ FSPtr ParzeSmbURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count
 
 	FSString link = uri;
 
-	if ( !ParzeLink( path, link ) ) { return FSPtr(); }
+	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
 	return new FSSmb( &param );
 }
@@ -66,11 +66,11 @@ FSPtr ParzeSmbURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count
 #endif
 
 
-FSPtr ParzeFtpURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
+clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
 {
 	path.Set( rootPathStr );
 
-	if ( !uri[0] ) { return FSPtr(); }
+	if ( !uri[0] ) { return clPtr<FS>(); }
 
 	FSFtpParam param;
 
@@ -107,7 +107,7 @@ FSPtr ParzeFtpURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count
 
 	FSString link = uri;
 
-	if ( !ParzeLink( path, link ) ) { return FSPtr(); }
+	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
 	for ( int i = 0; i < count; i++ )
 		if ( checkFS[i].Ptr() && checkFS[i]->Type() == FS::FTP )
@@ -129,11 +129,11 @@ FSPtr ParzeFtpURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 
-FSPtr ParzeSftpURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
+clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
 {
 	path.Set( rootPathStr );
 
-	if ( !uri[0] ) { return FSPtr(); }
+	if ( !uri[0] ) { return clPtr<FS>(); }
 
 	FSSftpParam param;
 
@@ -164,7 +164,7 @@ FSPtr ParzeSftpURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int coun
 
 	FSString link = uri;
 
-	if ( !ParzeLink( path, link ) ) { return FSPtr(); }
+	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
 	for ( int i = 0; i < count; i++ )
 		if ( checkFS[i].Ptr() && checkFS[i]->Type() == FS::SFTP )
@@ -188,7 +188,7 @@ FSPtr ParzeSftpURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int coun
 
 #endif
 
-FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
+clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
 {
 
 #ifdef LIBSMBCLIENT_EXIST
@@ -229,11 +229,11 @@ FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
 		{
 			FSString link = uri + 1;
 
-			if ( !ParzeLink( path, link ) ) { return FSPtr(); }
+			if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
 			if ( path.Count() == 1 )
 			{
-				FSPtr netFs = new FSWin32Net( 0 );
+				clPtr<FS> netFs = new FSWin32Net( 0 );
 				path.Set( CS_UTF8, "/" );
 				return netFs;
 			}
@@ -253,7 +253,7 @@ FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
 				r.lpComment = 0;
 				r.lpProvider = 0;
 
-				FSPtr netFs = new FSWin32Net( &r );
+				clPtr<FS> netFs = new FSWin32Net( &r );
 				path.Set( CS_UTF8, "/" );
 				return netFs;
 			}
@@ -263,9 +263,9 @@ FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
 
 		FSString link = uri;
 
-		if ( !ParzeLink( path, link ) ) { return FSPtr(); }
+		if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
-		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : FSPtr();
+		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
 	}
 
 	if ( c >= 'A' && c <= 'Z' ) { c = c - 'A' + 'a'; }
@@ -274,32 +274,32 @@ FSPtr ParzeURI( const unicode_t* uri, FSPath& path, FSPtr* checkFS, int count )
 	{
 		FSString link = uri;
 
-		if ( !ParzeLink( path, link ) ) { return FSPtr(); }
+		if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
-		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : FSPtr();
+		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
 	}
 
 	FSString link = uri + 2;
 
-	if ( !ParzeLink( path, link ) ) { return FSPtr(); }
+	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
 	return new FSSys( c - 'a' );
 #else
 	FSString link = uri;
 
-	if ( !ParzeLink( path, link ) ) { return FSPtr(); }
+	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
 	if ( uri[0] != '/' )
 	{
-		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : FSPtr();
+		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
 	}
 
-	return new FSSys(); //systemFSPtr;
+	return new FSSys(); //systemclPtr<FS>;
 #endif
 }
 
 
-FSPtr ParzeCurrentSystemURL( FSPath& path )
+clPtr<FS> ParzeCurrentSystemURL( FSPath& path )
 {
 #ifdef _WIN32
 
@@ -336,7 +336,7 @@ FSPtr ParzeCurrentSystemURL( FSPath& path )
 	}
 
 	path.Set( sys_charset_id, buf.data() );
-	return new FSSys(); //systemFSPtr;
+	return new FSSys(); //systemclPtr<FS>;
 #endif
 }
 

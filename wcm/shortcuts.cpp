@@ -286,12 +286,12 @@ class ShortcutWin: public NCDialog
 	Button addCurrentButton;
 	Button delButton;
 	Button renameButton;
-	FSPtr* fs;
+	clPtr<FS>* fs;
 	FSPath* path;
 public:
 	SCListWin::Node* retData;
 
-	ShortcutWin( NCDialogParent* parent, FSPtr* fp, FSPath* pPath )
+	ShortcutWin( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath )
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Shortcuts" ) ).data(), bListOkCancel ),
 		   lo( 10, 10 ),
 		   listWin( this ),
@@ -538,7 +538,7 @@ ShortcutWin::~ShortcutWin() {}
 
 
 
-bool ShortcutDlg( NCDialogParent* parent, FSPtr* fp, FSPath* pPath )
+bool ShortcutDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath )
 {
 	ShortcutWin dlg( parent, fp, pPath );
 	dlg.SetEnterCmd( 0 );

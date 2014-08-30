@@ -690,12 +690,12 @@ void NCWin::Home( PanelWin* p )
 
 	if ( homeUri.data() )
 	{
-		FSPtr checkFS[2];
+		clPtr<FS> checkFS[2];
 		checkFS[0] = p->GetFSPtr();
 		checkFS[1] = p == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
 
 		FSPath path;
-		FSPtr fs = ParzeURI( homeUri.data(), path, checkFS, 2 );
+		clPtr<FS> fs = ParzeURI( homeUri.data(), path, checkFS, 2 );
 
 		if ( fs.IsNull() )
 		{
@@ -918,7 +918,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 	if ( res == ID_DEV_OTHER_PANEL )
 	{
-		FSPtr fs = OtherPanel->GetFSPtr();
+		clPtr<FS> fs = OtherPanel->GetFSPtr();
 		p->LoadPath( fs, OtherPanel->GetPath(), 0, 0, PanelWin::SET );
 		return;
 	}
@@ -929,7 +929,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	{
 		int drive = res - ID_DEV_MS0;
 		FSPath path( CS_UTF8, "/" );
-		FSPtr fs = _panel->GetFSPtr();
+		clPtr<FS> fs = _panel->GetFSPtr();
 
 		if ( !fs.IsNull() && fs->Type() == FS::SYSTEM && ( ( FSSys* )fs.Ptr() )->Drive() == drive )
 		{
@@ -969,7 +969,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 		if ( n < 0 || n >= mntList.count() ) { return; }
 
-		FSPtr fs = new FSSys();
+		clPtr<FS> fs = new FSSys();
 		FSPath path( sys_charset_id, mntList[n].path.data() );
 		p->LoadPath( fs, path, 0, 0, PanelWin::SET );
 		return;
@@ -1000,7 +1000,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 		case ID_DEV_SMB:
 		{
 			FSPath path( CS_UTF8, "/" );
-			FSPtr fs = new FSWin32Net( 0 );
+			clPtr<FS> fs = new FSWin32Net( 0 );
 
 			if ( !fs.IsNull() ) { p->LoadPath( fs, path, 0, 0, PanelWin::SET ); }
 		}
@@ -1013,7 +1013,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 		case ID_DEV_SMB:
 		{
 			FSPath path( CS_UTF8, "/" );
-			FSPtr fs = new FSSmb() ;
+			clPtr<FS> fs = new FSSmb() ;
 
 			if ( !fs.IsNull() ) { p->LoadPath( fs, path, 0, 0, PanelWin::SET ); }
 		}
@@ -1027,7 +1027,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			if ( !GetSmbLogon( this, params, true ) ) { return; }
 
 			params.isSet = true;
-			FSPtr fs = new FSSmb( &params ) ;
+			clPtr<FS> fs = new FSSmb( &params ) ;
 			FSPath path( CS_UTF8, "/" );
 
 			if ( !fs.IsNull() )
@@ -1047,7 +1047,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 			if ( !GetFtpLogon( this, params ) ) { return; }
 
-			FSPtr fs = new FSFtp( &params ) ;
+			clPtr<FS> fs = new FSFtp( &params ) ;
 
 			FSPath path( CS_UTF8, "/" );
 
@@ -1069,7 +1069,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			if ( !GetSftpLogon( this, params ) ) { return; }
 
 			params.isSet = true;
-			FSPtr fs = new FSSftp( &params ) ;
+			clPtr<FS> fs = new FSSftp( &params ) ;
 			FSPath path( CS_UTF8, "/" );
 
 			if ( !fs.IsNull() )
@@ -1095,12 +1095,12 @@ void NCWin::CreateDirectory()
 
 		if ( !dir.data() ) { return; }
 
-		FSPtr checkFS[2];
+		clPtr<FS> checkFS[2];
 		checkFS[0] = _panel->GetFSPtr();
 		checkFS[1] = GetOtherPanel()->GetFSPtr();
 
 		FSPath path = _panel->GetPath();
-		FSPtr fs = ParzeURI( dir.data(), path, checkFS, 2 );
+		clPtr<FS> fs = ParzeURI( dir.data(), path, checkFS, 2 );
 
 		if ( fs.IsNull() )
 		{
@@ -1145,7 +1145,7 @@ void NCWin::View()
 	try
 	{
 		FSPath path = _panel->GetPath();
-		FSPtr fs = _panel->GetFSPtr();
+		clPtr<FS> fs = _panel->GetFSPtr();
 
 		clPtr<FSList> list = _panel->GetSelectedList();
 
@@ -1210,7 +1210,7 @@ void NCWin::Edit( bool enterFileName )
 	try
 	{
 		FSPath path = _panel->GetPath();;
-		FSPtr fs = _panel->GetFSPtr();
+		clPtr<FS> fs = _panel->GetFSPtr();
 
 		if ( enterFileName )
 		{
@@ -1221,7 +1221,7 @@ void NCWin::Edit( bool enterFileName )
 
 			savedUri = new_unicode_str( uri.data() );
 
-			FSPtr cFs[2] = {fs, GetOtherPanel()->GetFSPtr() };
+			clPtr<FS> cFs[2] = {fs, GetOtherPanel()->GetFSPtr() };
 
 			fs = ParzeURI( uri.data(), path, cFs, 2 );
 
@@ -1378,7 +1378,7 @@ void NCWin::Delete()
 {
 	if ( _mode != PANEL ) { return; }
 
-	FSPtr fs = _panel->GetFSPtr();
+	clPtr<FS> fs = _panel->GetFSPtr();
 
 	if ( fs.IsNull() ) { return; }
 
@@ -1438,7 +1438,7 @@ void NCWin::Copy( bool shift )
 {
 	if ( _mode != PANEL ) { return; }
 
-	FSPtr srcFs = _panel->GetFSPtr();
+	clPtr<FS> srcFs = _panel->GetFSPtr();
 
 	if ( srcFs.IsNull() ) { return; }
 
@@ -1452,7 +1452,7 @@ void NCWin::Copy( bool shift )
 
 	if ( !list.ptr() || list->Count() <= 0 ) { return; }
 
-	FSPtr destFs = GetOtherPanel()->GetFS();
+	clPtr<FS> destFs = GetOtherPanel()->GetFS();
 	FSPath destPath = GetOtherPanel()->GetPath();
 
 	FSString uri = GetOtherPanel()->UriOfDir();
@@ -1469,7 +1469,7 @@ void NCWin::Copy( bool shift )
 
 	if ( *a != *b )
 	{
-		FSPtr checkFS[2];
+		clPtr<FS> checkFS[2];
 		checkFS[0] = _panel->GetFSPtr();
 		checkFS[1] = GetOtherPanel()->GetFSPtr();
 
@@ -1494,7 +1494,7 @@ void NCWin::Move( bool shift )
 {
 	if ( _mode != PANEL ) { return; }
 
-	FSPtr srcFs = _panel->GetFSPtr();
+	clPtr<FS> srcFs = _panel->GetFSPtr();
 
 	if ( srcFs.IsNull() ) { return; }
 
@@ -1508,7 +1508,7 @@ void NCWin::Move( bool shift )
 
 	if ( !list.ptr() || list->Count() <= 0 ) { return; }
 
-	FSPtr destFs = GetOtherPanel()->GetFS();
+	clPtr<FS> destFs = GetOtherPanel()->GetFS();
 	FSPath destPath = GetOtherPanel()->GetPath();
 
 	FSString uri = GetOtherPanel()->UriOfDir();
@@ -1525,7 +1525,7 @@ void NCWin::Move( bool shift )
 
 	if ( *a != *b )
 	{
-		FSPtr checkFS[2];
+		clPtr<FS> checkFS[2];
 		checkFS[0] = _panel->GetFSPtr();
 		checkFS[1] = GetOtherPanel()->GetFSPtr();
 
@@ -1605,7 +1605,7 @@ void NCWin::Shortcuts()
 {
 	if ( _mode != PANEL ) { return; }
 
-	FSPtr ptr = _panel->GetFSPtr();
+	clPtr<FS> ptr = _panel->GetFSPtr();
 	FSPath path = _panel->GetPath();
 
 	if ( ShortcutDlg( this, &ptr, &path ) )
@@ -1622,7 +1622,7 @@ bool NCWin::EditSave( bool saveAs )
 	try
 	{
 		FSPath path = _panel->GetPath();;
-		FSPtr fs = _panel->GetFSPtr();
+		clPtr<FS> fs = _panel->GetFSPtr();
 
 		if ( saveAs )
 		{
@@ -1633,7 +1633,7 @@ bool NCWin::EditSave( bool saveAs )
 
 			savedUri = new_unicode_str( uri.data() );
 
-			FSPtr cFs[2] = {fs, GetOtherPanel()->GetFSPtr() };
+			clPtr<FS> cFs[2] = {fs, GetOtherPanel()->GetFSPtr() };
 
 			fs = ParzeURI( uri.data(), path, cFs, 2 );
 
@@ -1729,7 +1729,7 @@ void NCWin::EditExit()
 {
 	if ( _mode != EDIT ) { return; }
 
-	FSPtr fs = _editor.GetFS();
+	clPtr<FS> fs = _editor.GetFS();
 
 	if ( !fs.IsNull() && wcmConfig.editSavePos )
 	{
@@ -1986,8 +1986,8 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		{
 			FSPath LeftPath = _leftPanel.GetPath();
 			FSPath RightPath = _rightPanel.GetPath();
-			FSPtr LeftFS = _leftPanel.GetFSPtr();
-			FSPtr RightFS = _rightPanel.GetFSPtr();
+			clPtr<FS> LeftFS = _leftPanel.GetFSPtr();
+			clPtr<FS> RightFS = _rightPanel.GetFSPtr();
 			_leftPanel.LoadPath( RightFS, RightPath, 0, 0, PanelWin::SET );
 			_rightPanel.LoadPath( LeftFS, LeftPath, 0, 0, PanelWin::SET );
 			return true;
@@ -2335,7 +2335,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 							if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
 
-							FSPtr checkFS[2];
+							clPtr<FS> checkFS[2];
 							checkFS[0] = _panel->GetFSPtr();
 							checkFS[1] = GetOtherPanel()->GetFSPtr();
 
@@ -2374,7 +2374,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 							p = pre.ptr();
 
 
-							FSPtr fs = ParzeURI( p, path, checkFS, 2 );
+							clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
 
 							if ( fs.IsNull() )
 							{
@@ -3527,7 +3527,7 @@ EditorHeadWin::EditorHeadWin( Win* parent, EditWin* pEdit )
 bool EditorHeadWin::UpdateName()
 {
 	FSString uri;
-	FSPtr fs = _edit->GetFS();
+	clPtr<FS> fs = _edit->GetFS();
 
 	if ( !fs.IsNull() )
 	{
