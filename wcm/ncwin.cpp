@@ -2,6 +2,8 @@
    Copyright (c) by Valery Goryachev (Wal) 2010
 */
 
+#include <algorithm>
+
 #include <sys/types.h>
 
 #ifdef _WIN32
@@ -90,6 +92,89 @@ int NCCommandLine::UiGetClassId()
 	return uiCommandLine;
 }
 
+bool StartsWithAndNotEqual( const unicode_t* Str, const unicode_t* SubStr )
+{
+	const unicode_t* S = Str;
+	const unicode_t* SS = SubStr;
+
+	while ( *SS != 0 ) if ( *S++ != *SS++ )
+	{
+		return false;
+	}
+
+	if ( *SS == 0 && *S == 0 ) return false;
+
+	return true;
+}
+
+void NCWin::EventSize( cevent_size* pEvent )
+{
+	Win::EventSize( pEvent );
+}
+
+void NCWin::NotifyAutoComplete()
+{
+	std::vector<unicode_t> Text = _edit.GetText();
+
+	this->UpdateAutoComplete( Text );
+}
+
+void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
+{
+	if ( CurrentCommand.empty() || CurrentCommand[0] == 0 || !wcmConfig.systemAutoComplete )
+	{
+		m_AutoCompleteList.Hide( );
+		return;
+	}
+
+	LSRange h( 10, 1000, 10 );
+	LSRange w( 50, 1000, 30 );
+	m_AutoCompleteList.SetHeightRange( h ); //in characters
+	m_AutoCompleteList.SetWidthRange( w ); //in characters
+
+	if ( _history.Count() > 0 && !m_AutoCompleteList.IsVisible() )
+	{
+		m_AutoCompleteList.MoveFirst( 0 );
+		m_AutoCompleteList.MoveCurrent( 0 );
+	}
+
+	const int AutoCompleteListHeight = 220;
+	const int Bottom = this->Rect().top + _leftPanel.ClientRect().bottom;
+	crect r;
+	r.left = _editPref.ClientRect().right;
+	r.top =  Bottom - AutoCompleteListHeight;
+	r.right = ClientRect( ).right;
+	r.bottom = Bottom;
+	m_AutoCompleteList.Move( r );
+
+	bool HasHistory = false;
+
+	m_AutoCompleteList.Clear();
+	m_AutoCompleteList.Append( 0 ); // empty line goes first
+
+	for ( int i = 0; i < _history.Count(); i++ )
+	{
+		const unicode_t* Hist = _history[i];
+
+		if ( StartsWithAndNotEqual( Hist, CurrentCommand.data() ) )
+		{
+			m_AutoCompleteList.Append( Hist, i );
+			HasHistory = true;
+		}
+	}
+
+	if ( HasHistory )
+	{
+		if ( !m_AutoCompleteList.IsVisible( ) ) m_AutoCompleteList.Show( );
+		m_AutoCompleteList.Invalidate();
+	}
+	else
+	{
+		m_AutoCompleteList.Hide();
+	}
+
+}
+
 NCWin::NCWin()
 	:  NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect ),
 	   _lo( 5, 1 ),
@@ -114,7 +199,8 @@ NCWin::NCWin()
 	   _editor( this ),
 	   _ehWin( this, &_editor ),
 	   _execId( -1 ),
-	   _shiftSelectType( -1 )
+	   _shiftSelectType( -1 ),
+		m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
 {
 	m_BackgroundActivity = eBackgroundActivity_None;
 
@@ -124,6 +210,11 @@ NCWin::NCWin()
 	_activityNotification.Hide();
 	_activityNotification.Enable();
 	_activityNotification.OnTop();
+
+	m_AutoCompleteList.Enable();
+	m_AutoCompleteList.Hide();
+	m_AutoCompleteList.OnTop();
+	m_AutoCompleteList.SetFocus();
 
 	_editPref.Show();
 	_editPref.Enable();
@@ -180,6 +271,7 @@ NCWin::NCWin()
 	_lpanel.AddWin( &_leftPanel, 0, 0 );
 	_lpanel.AddWin( &_rightPanel, 0, 1 );
 	_lpanel.AddWin( &_activityNotification, 0, 0 );
+	_lo.AddWin( &m_AutoCompleteList, 0, 1 );
 	_lo.AddLayout( &_lpanel, 2, 0 );
 
 	_buttonWin.Set( panelNormalButtons );
@@ -1098,8 +1190,6 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	};
 }
 
-#include <algorithm>
-
 std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
 {
 	if ( begin >= end ) return end;
@@ -1393,6 +1483,8 @@ void  NCWin::PasteFileNameToCommandLine( const unicode_t* path )
 		if ( spaces ) { _edit.Insert( '"' ); }
 
 		_edit.Insert( ' ' );
+
+		NotifyAutoComplete();
 	}
 }
 
@@ -1437,6 +1529,8 @@ void NCWin::CtrlF()
 		if ( spaces ) { _edit.Insert( '"' ); }
 
 		_edit.Insert( ' ' );
+
+		NotifyAutoComplete();
 	}
 }
 
@@ -1455,6 +1549,8 @@ void NCWin::HistoryDialog()
 	if ( !s ) { return; }
 
 	_edit.SetText( s );
+
+	NotifyAutoComplete( );
 }
 
 
@@ -1926,6 +2022,8 @@ void NCWin::ExecNoTerminalProcess( unicode_t* p )
 
 void NCWin::Tab( bool forceShellTab )
 {
+	m_AutoCompleteList.Hide();
+
 	if ( _mode != PANEL ) { return; }
 
 	if ( _panelVisible && !forceShellTab )
@@ -2044,6 +2142,8 @@ void NCWin::SetBackgroundActivity( eBackgroundActivity BackgroundActivity )
 
 void NCWin::SwitchToBackgroundActivity()
 {
+	m_AutoCompleteList.Hide();
+
 	switch ( m_BackgroundActivity )
 	{
 	case eBackgroundActivity_None:
@@ -2055,6 +2155,24 @@ void NCWin::SwitchToBackgroundActivity()
 		SetMode( VIEW );
 		break;
 	}
+}
+
+NCCommandLine::NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true )
+: EditLine( nId, parent, rect, txt, chars, frame )
+{
+}
+
+bool NCCommandLine::EventKey( cevent_key* pEvent )
+{
+	bool Result = EditLine::EventKey( pEvent );
+
+	NCWin* p = ( NCWin* )Parent();
+
+	bool Pressed = pEvent->Type( ) == EV_KEYDOWN;
+
+	if ( p && Pressed ) p->NotifyAutoComplete();
+	
+	return Result;
 }
 
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
@@ -2138,12 +2256,30 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			switch ( fullKey )
 			{
 				case FC( VK_DOWN, KM_SHIFT ):
+					_panel->KeyDown( shift, &_shiftSelectType );
+					return true;
 				case VK_DOWN:
+					if ( m_AutoCompleteList.IsVisible() )
+					{
+						m_AutoCompleteList.EventKey( pEvent );
+						const unicode_t* p = m_AutoCompleteList.GetCurrentString();
+						if ( p && *p ) _edit.SetText( p, false );
+						return true;
+					}
 					_panel->KeyDown( shift, &_shiftSelectType );
 					return true;
 
 				case FC( VK_UP, KM_SHIFT ):
+					_panel->KeyUp( shift, &_shiftSelectType );
+					return true;
 				case VK_UP:
+					if ( m_AutoCompleteList.IsVisible() )
+					{
+						m_AutoCompleteList.EventKey( pEvent );
+						const unicode_t* p = m_AutoCompleteList.GetCurrentString();
+						if ( p && *p ) _edit.SetText( p, false );
+						return true;
+					}
 					_panel->KeyUp( shift, &_shiftSelectType );
 					return true;
 
@@ -2310,7 +2446,11 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			}
 
 			case VK_ESCAPE:
-				if ( wcmConfig.systemEscPanel )
+				if ( m_AutoCompleteList.IsVisible() )
+				{
+					m_AutoCompleteList.Hide();
+				}
+				else if ( wcmConfig.systemEscPanel )
 				{
 					if ( _edit.IsVisible() && !_edit.IsEmpty() )
 					{
@@ -2323,11 +2463,12 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 						break;
 					}
 				}
+				break;
 
-				//! no break
 			case FC( VK_ESCAPE, KM_SHIFT ):
 			case FC( VK_ESCAPE, KM_CTRL ):
 			case FC( VK_ESCAPE, KM_ALT ):
+				m_AutoCompleteList.Hide();
 
 				if ( !_edit.InFocus() )
 				{
@@ -2416,6 +2557,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case VK_NUMPAD_RETURN:
 			case VK_RETURN:
 			{
+				m_AutoCompleteList.Hide();
 				if ( _edit.IsVisible() )
 				{
 					std::vector<unicode_t> txt = _edit.GetText();
@@ -2677,6 +2819,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case FC( VK_O, KM_CTRL ):
 			case VK_ESCAPE:
 			{
+				m_AutoCompleteList.Hide();
 				if ( pressed ) SwitchToBackgroundActivity();					
 				return true;
 			}

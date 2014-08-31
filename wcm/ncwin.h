@@ -178,10 +178,9 @@ public:
 class NCCommandLine: public EditLine
 {
 public:
-	NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true )
-		: EditLine( nId, parent, rect, txt, chars, frame )
-	{}
+	NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars, bool frame );
 	int UiGetClassId();
+	bool EventKey( cevent_key* pEvent ) override;
 };
 
 enum eBackgroundActivity
@@ -202,6 +201,9 @@ private:
 	ButtonWin _buttonWin;
 	PanelWin _leftPanel,
 	         _rightPanel;
+
+	TextList m_AutoCompleteList;
+	void UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand );
 
 	NCCommandLine _edit;
 #ifdef _WIN32
@@ -338,6 +340,7 @@ public:
 	bool OnKeyDown( Win* w, cevent_key* pEvent, bool pressed );
 	virtual bool EventChildKey( Win* child, cevent_key* pEvent );
 	virtual bool EventKey( cevent_key* pEvent );
+	virtual void EventSize( cevent_size* pEvent );
 	virtual void ThreadStopped( int id, void* data );
 	virtual void ThreadSignal( int id, int data );
 	virtual bool Command( int id, int subId, Win* win, void* data );
@@ -349,6 +352,8 @@ public:
 
 	PanelWin* GetLeftPanel() { return &_leftPanel; }
 	PanelWin* GetRightPanel() { return &_rightPanel; }
+
+	void NotifyAutoComplete();
 };
 
 
