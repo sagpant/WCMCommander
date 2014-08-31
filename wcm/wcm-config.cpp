@@ -388,8 +388,8 @@ void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 
 #else
 //старый клочек, надо перепроверить
-static char* regapp = "Wal commander";
-static char* regcomp = "Wal";
+static const char* regapp = "Wal commander";
+static const char* regcomp = "Wal";
 
 #define COMPANY regcomp
 #define APPNAME regapp
