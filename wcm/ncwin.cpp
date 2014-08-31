@@ -121,7 +121,7 @@ void NCWin::NotifyAutoComplete()
 
 void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 {
-	if ( CurrentCommand.empty() || CurrentCommand[0] == 0 )
+	if ( CurrentCommand.empty() || CurrentCommand[0] == 0 || !wcmConfig.systemAutoComplete )
 	{
 		m_AutoCompleteList.Hide( );
 		return;
