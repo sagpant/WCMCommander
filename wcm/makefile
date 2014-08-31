@@ -1,7 +1,8 @@
 
-
+ifeq ($(OS),Windows_NT)
+include makefile.windows
+else
 all: libconf_ux.h wcm__
-	
 
 wcm__: 
 	make -f makefile.int
@@ -16,4 +17,4 @@ clean:
 
 install:
 	make -f makefile.int install
-
+endif
