@@ -144,12 +144,13 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 		m_AutoCompleteList.MoveCurrent( 0 );
 	}
 
+	const int AutoCompleteMargin = 4;
 	const int AutoCompleteListHeight = 220;
-	const int Bottom = this->Rect().top + _leftPanel.ClientRect().bottom;
+	const int Bottom = _leftPanel.Rect().bottom - AutoCompleteMargin;
 	crect r;
-	r.left = _editPref.ClientRect().right;
+	r.left = _editPref.Rect().right;
 	r.top =  Bottom - AutoCompleteListHeight;
-	r.right = ClientRect( ).right;
+	r.right = Rect( ).right;
 	r.bottom = Bottom;
 	m_AutoCompleteList.Move( r );
 
