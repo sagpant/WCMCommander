@@ -1,9 +1,7 @@
-
 CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
 #CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -O1 -fno-inline -I wal -I swl -pthread $(CFLAGS_FREETYPE)
 
 include makelib.mk
-
 
 LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l stdc++  -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 
@@ -88,14 +86,14 @@ OBJS = \
 	$(OBJDIR)/dircalc.o \
 	$(OBJDIR)/ltext.o
 
-all: libconf_ux.h wcm
-	cat info.txt
+#all: libconf_ux.h wcm
+#	cat info.txt
 
-wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
+all:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
 	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
 	
-libconf.h: libtester/libconf.create
-	cd libtester &&	./libconf.create
+#libconf.h: libtester/libconf.create
+#	cd libtester &&	./libconf.create
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
