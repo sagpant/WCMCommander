@@ -1214,7 +1214,9 @@ std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const uni
 	while ( pos != Result.end() )
 	{
 		pos = Result.erase( pos, pos + Mask.size() );
-		pos = Result.insert( pos, Name.begin(), Name.end() );
+		size_t idx = pos - Result.begin();
+		Result.insert( pos, Name.begin(), Name.end() );
+		pos = Result.begin() + idx;
 		pos = FindSubstr( pos + Name.size(), Result.end(), Mask );
 	}
 
