@@ -119,6 +119,12 @@ void NCWin::NotifyAutoComplete()
 	this->UpdateAutoComplete( Text );
 }
 
+void NCWin::NotifyAutoCompleteChange()
+{
+	const unicode_t* p = m_AutoCompleteList.GetCurrentString();
+	if ( p && *p ) _edit.SetText( p, false );
+}
+
 void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 {
 	if ( CurrentCommand.empty() || CurrentCommand[0] == 0 || !wcmConfig.systemAutoComplete )
@@ -2177,6 +2183,33 @@ bool NCCommandLine::EventKey( cevent_key* pEvent )
 	return Result;
 }
 
+NCAutocompleteList::NCAutocompleteList( WTYPE t, unsigned hints, int nId, Win* _parent, SelectType st, BorderType bt, crect* rect )
+: TextList( t, hints, nId, _parent, st, bt, rect )
+{
+}
+
+bool NCAutocompleteList::EventKey( cevent_key* pEvent )
+{
+	bool Result = TextList::EventKey( pEvent );
+
+	NCWin* Win = ( NCWin* )Parent();
+
+	Win->NotifyAutoCompleteChange();
+
+	return Result;
+}
+
+bool NCAutocompleteList::EventMouse( cevent_mouse* pEvent )
+{
+	bool Result = TextList::EventMouse( pEvent );
+
+	NCWin* Win = ( NCWin* )Parent();
+
+	Win->NotifyAutoCompleteChange();
+
+	return Result;
+}
+
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 {
 	if ( Blocked() ) { return false; }
@@ -2264,8 +2297,6 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					if ( m_AutoCompleteList.IsVisible() )
 					{
 						m_AutoCompleteList.EventKey( pEvent );
-						const unicode_t* p = m_AutoCompleteList.GetCurrentString();
-						if ( p && *p ) _edit.SetText( p, false );
 						return true;
 					}
 					_panel->KeyDown( shift, &_shiftSelectType );
@@ -2278,8 +2309,6 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					if ( m_AutoCompleteList.IsVisible() )
 					{
 						m_AutoCompleteList.EventKey( pEvent );
-						const unicode_t* p = m_AutoCompleteList.GetCurrentString();
-						if ( p && *p ) _edit.SetText( p, false );
 						return true;
 					}
 					_panel->KeyUp( shift, &_shiftSelectType );
