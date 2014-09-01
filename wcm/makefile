@@ -12,11 +12,11 @@ wcm__:
 	make -f makefile.linux
 	cat info.txt
 
-clean:
+clean: libconf_ux.h
 	rm -f libconf_ux.h
 	make -f makefile.linux clean
 
-install:
+install: libconf_ux.h
 	make -f makefile.linux install
 
 endif
