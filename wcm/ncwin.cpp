@@ -206,20 +206,20 @@ NCWin::NCWin()
 
 	_execSN[0] = 0;
 
-	_activityNotification.Set( utf8_to_unicode( "[0+1]" ).data( ) );
-	_activityNotification.Hide();
-	_activityNotification.Enable();
-	_activityNotification.OnTop();
+	_editPref.Show();
+	_editPref.Enable();
+	_leftPanel.OnTop();
+	_rightPanel.OnTop();
 
 	m_AutoCompleteList.Enable();
 	m_AutoCompleteList.Hide();
 	m_AutoCompleteList.OnTop();
 	m_AutoCompleteList.SetFocus();
 
-	_editPref.Show();
-	_editPref.Enable();
-	//_leftPanel.OnTop();
-	//_rightPanel.OnTop();
+	_activityNotification.Set( utf8_to_unicode( "[0+1]" ).data( ) );
+	_activityNotification.Hide();
+	_activityNotification.Enable();
+	_activityNotification.OnTop();
 
 	if ( wcmConfig.showButtonBar )
 	{
