@@ -32,7 +32,7 @@ struct EditString
 	int size, len;
 	short shlId;
 	unsigned char flags;
-	carray<char> data;
+	std::vector<char> data;
 
 	EditString();
 	EditString( const EditString& a );
@@ -68,7 +68,7 @@ class EditList
 	enum { BSIZE = 1024 };
 
 	int count;
-	ccollect<carray<EditString>, 0x100> data;
+	ccollect<std::vector<EditString>, 0x100> data;
 public:
 	class Pos
 	{
@@ -109,7 +109,7 @@ public:
 		if ( cb > data.count() )
 			for ( ; data.count() < cb; )
 			{
-				data.append( carray<EditString>( BSIZE ) );
+				data.append( std::vector<EditString>( BSIZE ) );
 			}
 
 		count = n;
@@ -251,7 +251,7 @@ struct EditPoint
 
 ///////////////////////// Undo
 
-struct UndoRec
+struct UndoRec: public iIntrusiveCounter
 {
 	enum TYPE { INSTEXT = 1, DELTEXT = 2, ADDLINE = 3, DELLINE = 4, ATTR = 5 };
 	char type;
@@ -262,7 +262,7 @@ struct UndoRec
 	int line;   //ALL
 	int pos; //INSTEXT, DELTEXT
 
-	carray<char> data; //INSTEXT, DELTEXT, ADDLINE, DELLINE
+	std::vector<char> data; //INSTEXT, DELTEXT, ADDLINE, DELLINE
 	int dataSize;
 
 	UndoRec* prev, *next;
@@ -275,13 +275,13 @@ struct UndoRec
 
 		if ( size > 0 )
 		{
-			data.alloc( size );
-			memcpy( data.ptr(), s, size );
+			data.resize( size );
+			memcpy( data.data(), s, size );
 		}
 	}
 };
 
-struct UndoBlock
+struct UndoBlock: public iIntrusiveCounter
 {
 	bool editorChanged;
 	bool canAggregate;
@@ -319,7 +319,7 @@ struct UndoBlock
 
 	void InsText( int line, int pos, const char* s, int size )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::INSTEXT, line, pos );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::INSTEXT, line, pos );
 		p->SetData( s, size );
 		Append( p.ptr() );
 		p.drop();
@@ -327,7 +327,7 @@ struct UndoBlock
 
 	void DelText( int line, int pos, const char* s, int size )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::DELTEXT, line, pos );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::DELTEXT, line, pos );
 		p->SetData( s, size );
 		Append( p.ptr() );
 		p.drop();
@@ -335,7 +335,7 @@ struct UndoBlock
 
 	void AddLine( int line, char attr, const char* s, int size )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::ADDLINE, line );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::ADDLINE, line );
 		p->SetData( s, size );
 		p->attr = attr;
 		Append( p.ptr() );
@@ -344,7 +344,7 @@ struct UndoBlock
 
 	void DelLine( int line, char attr, const char* s, int size )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::DELLINE, line );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::DELLINE, line );
 		p->SetData( s, size );
 		p->attr = attr;
 		Append( p.ptr() );
@@ -353,7 +353,7 @@ struct UndoBlock
 
 	void Attr( int line, char prevAttr, char attr )
 	{
-		cptr<UndoRec> p = new UndoRec( UndoRec::ATTR, line );
+		clPtr<UndoRec> p = new UndoRec( UndoRec::ATTR, line );
 		p->prevAttr = prevAttr;
 		p->attr = attr;
 		p->attr = attr;
@@ -374,23 +374,27 @@ private:
 struct UndoList
 {
 	enum { MAXSIZE = 32 };
-	cptr<UndoBlock> table[MAXSIZE];
+	std::vector< clPtr<UndoBlock> > m_Table;
 	int count;
 	int pos;
 
-	void Append( cptr<UndoBlock> p )
+	UndoList()
+	:m_Table( MAXSIZE ), count( 0 ), pos( 0 )
+	{};
+
+	void Append( clPtr<UndoBlock> p )
 	{
-		while ( count > pos ) { table[--count] = 0; }
+		while ( count > pos ) { m_Table[--count] = clPtr<UndoBlock>(); }
 
 		if ( count == MAXSIZE )
 		{
-			for ( int i = 1; i < count; i++ ) { table[i - 1] = table[i]; }
+			for ( int i = 1; i < count; i++ ) { m_Table[i - 1] = m_Table[i]; }
 
 			count--;
 			pos = count;
 		}
 
-		UndoBlock* x = count > 0 ? table[count - 1].ptr() : 0;
+		UndoBlock* x = count > 0 ? m_Table[count - 1].ptr( ) : 0;
 
 		if ( x &&
 		     x->canAggregate && p->canAggregate &&
@@ -409,26 +413,24 @@ struct UndoList
 			return;
 		}
 
-
-		table[count++] = p;
+		m_Table[count++] = p;
 		pos = count;
 	}
 
 	int UndoCount() { return pos; }
 	int RedoCount() { return count - pos; }
 
-	UndoBlock* GetUndo() { return pos > 0 ? table[--pos].ptr() : 0; }
+	UndoBlock* GetUndo( ) { return pos > 0 ? m_Table[--pos].ptr( ) : 0; }
 	UndoBlock* GetRedo( bool* nextChg )
 	{
 		if ( pos >= count ) { return 0; }
 
-		if ( nextChg ) { *nextChg = ( pos + 1 >= count || table[pos + 1]->editorChanged ); }
+		if ( nextChg ) { *nextChg = ( pos + 1 >= count || m_Table[pos + 1]->editorChanged ); }
 
-		return pos < count ? table[pos++].ptr() : 0;
+		return pos < count ? m_Table[pos++].ptr( ) : 0;
 	}
-
-	UndoList(): count( 0 ), pos( 0 ) {}
-	void Clear() { while ( count > 0 ) { table[--count] = 0; } pos = 0; }
+		
+	void Clear() { while ( count > 0 ) { m_Table[--count] = clPtr<UndoBlock>(); } pos = 0; }
 };
 
 
@@ -453,7 +455,7 @@ class EditScreen
 {
 	int rows, cols;
 	int data_rows, data_cols;
-	carray< carray<EditScreenChar> > data;
+	std::vector< std::vector<EditScreenChar> > data;
 public:
 	EditPoint prevCursor, cursor;
 
@@ -462,9 +464,12 @@ public:
 	{
 		if ( r > 0 && c > 0 && ( r > data_rows ||  c > data_cols ) )
 		{
-			carray< carray<EditScreenChar> > p( r );
+			std::vector< std::vector<EditScreenChar> > p( r );
 
-			for ( int i = 0; i < r; i++ ) { p[i] = new EditScreenChar[c]; }
+			for ( int i = 0; i < r; i++ )
+			{
+				p[i].resize( c );// = new EditScreenChar[c];
+			}
 
 			data = p;
 			data_rows = r;
@@ -485,7 +490,7 @@ public:
 
 		if ( c >= ce ) { return; }
 
-		for ( EditScreenChar* p = data[r].ptr() + c; c < ce; c++, p++ ) { p->Set( ch, fc, bc ); }
+		for ( EditScreenChar* p = data[r].data() + c; c < ce; c++, p++ ) { p->Set( ch, fc, bc ); }
 	}
 
 	void SetCursor( int r, int c ) { cursor.line = r; cursor.pos = c; }
@@ -493,7 +498,7 @@ public:
 	int Rows() const { return rows; }
 	int Cols() const { return cols; }
 
-	EditScreenChar* Line( int r ) { return r >= 0 && r < rows ? data[r].ptr() : 0; }
+	EditScreenChar* Line( int r ) { return r >= 0 && r < rows ? data[r].data() : 0; }
 
 	~EditScreen() {}
 };
@@ -522,7 +527,7 @@ class EditWin : public Win
 	int colOffset;
 	int rows, cols;
 
-	cptr<SHL::ShlConf> _shlConf;
+	clPtr<SHL::ShlConf> _shlConf;
 	SHL::Shl* _shl;
 	int _shlLine;
 
@@ -582,7 +587,7 @@ class EditWin : public Win
 	void Enter();
 	bool DelMarked();
 
-	FSPtr _fs;
+	clPtr<FS> _fs;
 	FSPath _path;
 
 	EditScreen screen;
@@ -635,17 +640,17 @@ public:
 	bool Changed() { return _changed; }
 	void ClearChangedStata() { _changed = false; }
 
-	void Load( FSPtr fs, FSPath& path, MemFile& f );
+	void Load( clPtr<FS> fs, FSPath& path, MemFile& f );
 
 	void Save( MemFile& f );
 	void NextCharset();
 	void SetCharset( int n );
 	void Clear();
 
-	FSPtr GetFS() { return _fs; }
+	clPtr<FS> GetFS() { return _fs; }
 	void GetPath( FSPath& p ) { p = _path; }
 
-	void SetPath( FSPtr fs, FSPath& p );
+	void SetPath( clPtr<FS> fs, FSPath& p );
 
 	EditPoint GetCursorPos() const { return cursor; }
 	void SetCursorPos( EditPoint p );
@@ -715,8 +720,6 @@ inline EditString::EditString( const EditString& a )
 	   flags( a.flags ),
 	   data( a.data )
 {
-	set_const_data<int>( &a.size, 0 );
-	set_const_data<int>( &a.len, 0 );
 }
 
 
@@ -729,11 +732,11 @@ inline void EditString::Set( const char* s, int l )
 
 	if ( l > size )
 	{
-		data.alloc( l );
+		data.resize( l );
 		size = l;
 	}
 
-	memcpy( data.ptr(), s, l );
+	memcpy( data.data(), s, l );
 	len = l;
 }
 
@@ -750,11 +753,11 @@ inline void EditString::Insert( char* s, int n, int count )
 			newSize = len + count + 1;
 		}
 
-		carray<char> p( newSize );
+		std::vector<char> p( newSize );
 
 		if ( len > 0 )
 		{
-			memcpy( p.ptr(), data.ptr(), len * sizeof( char ) );
+			memcpy( p.data(), data.data(), len * sizeof( char ) );
 		}
 
 		data = p;
@@ -763,12 +766,12 @@ inline void EditString::Insert( char* s, int n, int count )
 
 	if ( n < len )
 	{
-		memmove( data.ptr() + n + count, data.ptr() + n, ( len - n )*sizeof( char ) );
+		memmove( data.data() + n + count, data.data() + n, ( len - n )*sizeof( char ) );
 	}
 
 	if ( count > 0 )
 	{
-		memcpy( data.ptr() + n, s, count * sizeof( char ) );
+		memcpy( data.data() + n, s, count * sizeof( char ) );
 	}
 
 	len = len + count;
@@ -788,7 +791,7 @@ inline void EditString::Delete( int n, int count )
 
 	if ( n + count < len )
 	{
-		memmove( data.ptr() + n, data.ptr() + n + count, sizeof( char ) * ( len - n - count ) );
+		memmove( data.data() + n, data.data() + n + count, sizeof( char ) * ( len - n - count ) );
 	}
 
 	len -= count;
@@ -818,7 +821,7 @@ inline void EditString::Clear( int fl )
 
 inline int EditString::Len() { return len; }
 
-inline char* EditString::Get() { return data.ptr(); }
+inline char* EditString::Get() { return data.data(); }
 
 
 inline void EditString::operator = ( const EditString& a )
@@ -828,8 +831,6 @@ inline void EditString::operator = ( const EditString& a )
 	shlId = a.shlId;
 	flags = a.flags;
 	data = a.data;
-	set_const_data<int>( &a.size, 0 );
-	set_const_data<int>( &a.len, 0 );
 }
 
 #endif

@@ -67,7 +67,7 @@ namespace wal
 		crect rect;
 	};
 
-	struct LItem
+	struct LItem: public iIntrusiveCounter
 	{
 		//надо включить выравнивание
 		int r1, r2, c1, c2;
@@ -115,7 +115,7 @@ namespace wal
 	{
 		friend class Win;
 		friend struct LItemLayout;
-		wal::ccollect< wal::cptr<LItem> > objList;
+		wal::ccollect< clPtr<LItem> > objList;
 		wal::ccollect< SpaceStruct > lines;
 		wal::ccollect< SpaceStruct > columns;
 		crect currentRect;

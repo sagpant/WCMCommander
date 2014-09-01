@@ -120,12 +120,12 @@ namespace wal
 		}
 
 		gc.Set( GetFont() );
-		cpoint tsize = gc.GetTextExtents( text.ptr() );
+		cpoint tsize = gc.GetTextExtents( text.data() );
 
 		gc.SetFillColor( colorBg );
 		gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 ) );
 
-		gc.TextOutF( 14 + 1 + 1 + 1 , ( cr.Height() - tsize.y ) / 2, text.ptr() );
+		gc.TextOutF( 14 + 1 + 1 + 1 , ( cr.Height() - tsize.y ) / 2, text.data() );
 
 		if ( InFocus() )
 		{

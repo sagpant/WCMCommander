@@ -2,15 +2,6 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   19.08.2012 нужно переработать ccollect::del
-   при удалении объектов они фактически могут не удалиться из за шага (stop)
-   это чреваро (косяк повлиял на ошибку с Layout, пока эта дыра в Layout заткнута предварительным занулением перед удалением)
-*/
-
-
-
 #ifndef WAL_TMPLS_H
 #define WAL_TMPLS_H
 
@@ -33,67 +24,17 @@
 #endif
 #endif
 
+#include <vector>
+#include "IntrusivePtr.h"
+
 namespace wal
 {
 
-	//дМС cptr Й carray
-	template <class T> void set_const_data( const T* ptr, T data )
-	{
-		*( ( T* )ptr ) = data;
-	}
-
-	/*
-	smart pointer НБУУЙЧ
-	*/
-
-	template <class T> class carray
-	{
-	public:
-		carray();
-		carray( int n );
-		carray( T* p );
-		carray( const carray& a );
-		void clear(); //ХОЙЮФПЦБЕФ ПВЯЕЛФ
-		void drop(); //ПФГЕРМСЕФ ПВЯЕЛФ
-		carray& operator = ( T* p );
-		carray& operator = ( const carray& a );
-		void alloc( int n );
-		T* ptr();
-		const T* const_ptr() const;
-		T& operator [] ( int n );
-		const T& const_item( int n ) const;
-		~carray();
-	private:
-		T* data;
-	};
-
-	/*
-	smart pointer ПВЯЕЛФ
-	*/
-	template <class T> class cptr
-	{
-	public:
-		cptr();
-		cptr( T* p );
-		cptr( const cptr& a );
-		void clear();
-		void drop();
-		cptr& operator = ( T* p );
-		cptr& operator = ( const cptr& a );
-		T* operator->();
-		T* ptr();
-		const T* const_ptr() const;
-		~cptr();
-	private:
-		T* data;
-	};
-
-	template <class T, int step = 16> class ccollect
+	template <class T, size_t Step = 32> class ccollect: public iIntrusiveCounter
 	{
 	public:
 		ccollect();
-		ccollect( int n );
-		ccollect( const ccollect& a );
+		explicit ccollect( size_t n );
 		void del( int n );
 		void del( int n, int count );
 		void set( int n, const T& a );
@@ -101,7 +42,7 @@ namespace wal
 		const T& const_item( int n ) const;
 		const T* const_ptr() const;
 		T* ptr();
-		carray<T> grab();
+		const std::vector<T>& grab() const;
 		T& operator [] ( int n );
 		void insert( int n );
 		void insert( int n, const T& a );
@@ -112,362 +53,113 @@ namespace wal
 		void append_n ( const T& p, int number );
 		void append ( const ccollect& a );
 		void clear();
-		ccollect& operator = ( const ccollect& a );
 		int count() const;
-		~ccollect();
 	private:
-		carray<T> data;
-		int cnt;
-		void realloc( int n );
-		void copy_from( const ccollect& a );
+		std::vector<T> m_data;
 	};
-
-
-
-/// carray /////////////////////////////////////////////////////////////////////////////
-	template <class T> inline carray<T>::carray()
-	{
-		data = NULL;
-	}
-
-	template <class T> inline carray<T>::carray( int n )
-	{
-		ASSERT( n >= 0 );
-		data = n > 0 ? new T[n] : ( T* )NULL;
-	}
-
-	template <class T> inline carray<T>::carray( T* p )
-	{
-		data = p;
-	}
-
-	template <class T> inline carray<T>::carray( const carray<T>& a )
-	{
-		data = a.data;
-		set_const_data<T*>( &a.data, NULL );
-	}
-
-	template <class T> inline void carray<T>::clear()
-	{
-		if ( data )
-		{
-			delete [] data;
-			data = NULL;
-		}
-	}
-
-	template <class T> inline void carray<T>::drop()
-	{
-		data = NULL;
-	}
-
-	template <class T> inline carray<T>& carray<T>::operator = ( T* p )
-	{
-		if ( data )
-		{
-			delete [] data;
-		}
-
-		data = p;
-		return *this;
-	}
-
-	template <class T> inline carray<T>& carray<T>::operator = ( const carray& a )
-	{
-		ASSERT( this != &a );
-
-		if ( data )
-		{
-			delete [] data;
-		}
-
-		data = a.data;
-		set_const_data<T*>( &a.data, NULL );
-
-		return *this;
-	}
-
-	template <class T> inline void carray<T>::alloc( int n )
-	{
-		ASSERT( n >= 0 );
-		T* p = n > 0 ? new T[n] : ( T* )NULL;
-
-		if ( data )
-		{
-			delete [] data;
-		}
-
-		data = p;
-	}
-
-	template <class T> inline const T& carray<T>::const_item( int n ) const
-	{
-		ASSERT( data );
-		return data[n];
-	}
-
-
-	template <class T> inline T& carray<T>::operator [] ( int n )
-	{
-		ASSERT( data );
-		return data[n];
-	}
-
-
-	template <class T> inline T* carray<T>::ptr()
-	{
-		return data;
-	}
-
-	template <class T> inline const T* carray<T>::const_ptr() const
-	{
-		return data;
-	}
-
-
-
-	template <class T> inline carray<T>::~carray()
-	{
-		if ( data )
-		{
-			delete [] data;
-		}
-	}
-
-/// cptr /////////////////////////////////////////////////////////////////////
-	template <class T> inline cptr<T>::cptr()
-	{
-		data = NULL;
-	}
-
-	template <class T> inline cptr<T>::cptr( T* p )
-	{
-		data = p;
-	}
-
-	template <class T> inline cptr<T>::cptr( const cptr& a )
-	{
-		data = a.data;
-		set_const_data<T*>( &a.data, NULL );
-	}
-
-	template <class T> inline void cptr<T>::clear()
-	{
-		if ( data )
-		{
-			delete data;
-			data = NULL;
-		}
-	}
-
-	template <class T> inline void cptr<T>::drop()
-	{
-		data = NULL;
-	}
-
-	template <class T> inline cptr<T>& cptr<T>::operator = ( T* p )
-	{
-		if ( data )
-		{
-			delete data;
-		}
-
-		data = p;
-		return *this;
-	}
-
-	template <class T> inline cptr<T>& cptr<T>::operator = ( const cptr& a )
-	{
-		ASSERT( this != &a );
-
-		if ( data )
-		{
-			delete data;
-		}
-
-		data = a.data;
-		set_const_data<T*>( &a.data, NULL );
-
-		return *this;
-
-	}
-	template <class T> inline T* cptr<T>::operator->()
-	{
-		ASSERT( data );
-		return data;
-	}
-
-	template <class T> inline T* cptr<T>::ptr()
-	{
-		return data;
-	}
-
-	template <class T> inline const T* cptr<T>::const_ptr() const
-	{
-		return data;
-	}
-
-
-	template <class T> inline cptr<T>::~cptr()
-	{
-		if ( data )
-		{
-			delete data;
-		}
-	}
 
 /// ccollect //////////////////////////////////////////////////////////
 
-	template <class T, int step> ccollect<T, step>::ccollect()
+	template <class T, size_t Step> ccollect<T, Step>::ccollect()
+	 : m_data()
 	{
-		cnt = 0;
+		m_data.reserve( Step );
 	}
 
-	template <class T, int step> ccollect<T, step>::ccollect( int n )
+	template <class T, size_t Step> ccollect<T, Step>::ccollect( size_t n )
+	 : m_data( n )
 	{
-		ASSERT( n >= 0 );
-		int x = ( n + step - 1 ) / step;
-		data.alloc( x * step );
-		cnt = n;
 	}
 
-	template <class T, int step> inline ccollect<T, step>::ccollect( const ccollect& a )
+	template <class T, size_t Step> void ccollect<T, Step>::del( int n )
 	{
-		copy_from( a );
+		ASSERT( n >= 0 && n < ( int )m_data.size( ) );
+
+		m_data.erase( m_data.begin( ) + n );
 	}
 
-	template <class T, int step> void ccollect<T, step>::realloc( int n )
-	{
-		ASSERT( n >= 0 );
-		int a = ( cnt + step - 1 ) / step, b = ( n + step - 1 ) / step;
-
-		if ( a != b )
-		{
-			carray<T> p( b * step );
-
-			for ( int i = cnt > n ? n - 1 : cnt - 1; i >= 0; i-- )
-			{
-				p[i] = data[i];
-			}
-
-			data = p;
-		}
-
-		cnt = n;
-	}
-
-//!!!проблема при удалении (если удалять последний элемент, то фактически он не всегда удаляется, а только при переходе шага (с объектами дерьмо получается))
-	template <class T, int step> void ccollect<T, step>::del( int n )
-	{
-		ASSERT( n >= 0 && n < cnt );
-		int i;
-
-		for ( i = n; i < cnt - 1; i++ )
-		{
-			data[i] = data[i + 1];
-		}
-
-		realloc( cnt - 1 );
-	}
-
-	template <class T, int step> void ccollect<T, step>::del( int n, int count )
+	template <class T, size_t Step> void ccollect<T, Step>::del( int n, int count )
 	{
 		ASSERT( n >= 0 );
 		ASSERT( count >= 0 );
-		ASSERT( n + count <= cnt );
+		ASSERT( n + count <= ( int )m_data.size( ) );
 
 		if ( count <= 0 )
 		{
 			return;
 		}
 
-		int i, x = cnt - count;
-
-		for ( i = n; i < x; i++ )
-		{
-			data[i] = data[i + count];
-		}
-
-		realloc( cnt - count );
+		m_data.erase( m_data.begin() + n, m_data.begin() + n + count );
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::set( int n, const T& a )
+	template <class T, size_t Step> inline void ccollect<T, Step>::set( int n, const T& a )
 	{
-		ASSERT( n >= 0 && n < cnt );
-		data[n] = a;
+		ASSERT( n >= 0 && n < (int)m_data.size() );
+		m_data[n] = a;
 	}
 
-	template <class T, int step> inline T& ccollect<T, step>::get( int n )
+	template <class T, size_t Step> inline T& ccollect<T, Step>::get( int n )
 	{
-		ASSERT( n >= 0 && n < cnt );
-		return data[n];
+		ASSERT( n >= 0 && n < ( int )m_data.size() );
+		return m_data[n];
 	}
 
-	template <class T, int step> inline T* ccollect<T, step>::ptr()
+	template <class T, size_t Step> inline T* ccollect<T, Step>::ptr()
 	{
-		return data.ptr();
+		return m_data.data();
 	}
 
-	template <class T, int step> carray<T> ccollect<T, step>::grab()
+	template <class T, size_t Step> const std::vector<T>& ccollect<T, Step>::grab() const
 	{
-		cnt = 0;
-		return data;
+		return m_data;
 	}
 
-	template <class T, int step> inline const T& ccollect<T, step>::const_item( int n ) const
+	template <class T, size_t Step> inline const T& ccollect<T, Step>::const_item( int n ) const
 	{
-		ASSERT( n >= 0 && n < cnt );
-		return data.const_item( n );
+		ASSERT( n >= 0 && n < ( int )m_data.size( ) );
+		return m_data[ n ];
 	}
 
-	template <class T, int step> inline const T* ccollect<T, step>::const_ptr() const
+	template <class T, size_t Step> inline const T* ccollect<T, Step>::const_ptr() const
 	{
-		return data.const_ptr();
+		return m_data.data();
 	}
 
-	template <class T, int step> T& ccollect<T, step>::operator [] ( int n )
+	template <class T, size_t Step> T& ccollect<T, Step>::operator [] ( int n )
 	{
-		ASSERT( n >= 0 && n < cnt );
-		return get( n );
+		ASSERT( n >= 0 && n < (int)m_data.size() );
+		return m_data[ n ];
 	}
 
 
-	template <class T, int step> inline void ccollect<T, step>::append()
+	template <class T, size_t Step> inline void ccollect<T, Step>::append()
 	{
-		realloc( cnt + 1 );
+		m_data.push_back( T() );
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::append ( const T& a )
+	template <class T, size_t Step> inline void ccollect<T, Step>::append ( const T& a )
 	{
-		realloc( cnt + 1 );
-		set( cnt - 1, a );
+		m_data.push_back( a );
 	}
 
 
-	template <class T, int step> void ccollect<T, step>::append_list ( const T* p, int number )
+	template <class T, size_t Step> void ccollect<T, Step>::append_list ( const T* p, int number )
 	{
-		int oldcount = cnt;
-		realloc( cnt + number );
+		m_data.reserve( m_data.size( ) + number );
 
 		for ( int i = 0; i < number; i++, p++ )
 		{
-			set( oldcount + i, *p );
+			m_data.push_back( *p );
 		}
 	}
 
-	template <class T, int step> void ccollect<T, step>::append_n( const T& p, int number )
+	template <class T, size_t Step> void ccollect<T, Step>::append_n( const T& p, int number )
 	{
-		int oldcount = cnt;
-		realloc( cnt + number );
-
-		for ( int i = 0; i < number; i++ )
-		{
-			set( oldcount + i, p );
-		}
+		m_data.insert( m_data.end(), number, p );
 	}
 
 
-	template <class T, int step> void ccollect<T, step>::append ( const ccollect& a )
+	template <class T, size_t Step> void ccollect<T, Step>::append ( const ccollect& a )
 	{
 		for ( int i = 0; i < a.count(); i++ )
 		{
@@ -475,67 +167,28 @@ namespace wal
 		}
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::insert( int n )
+	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n )
 	{
-		ASSERT( n >= 0 && n <= cnt );
-		realloc( cnt + 1 );
+		ASSERT( n >= 0 && n <= (int)m_data.size() );
 
-		for ( int i = cnt - 1; i >= n; i-- )
-		{
-			data[i + 1] = data[i];
-		}
+		m_data.insert( m_data.begin()+n, T() );
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::insert( int n, const T& a )
+	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n, const T& a )
 	{
-		ASSERT( n >= 0 && n <= cnt );
-		realloc( cnt + 1 );
+		ASSERT( n >= 0 && n <= ( int )m_data.size() );
 
-		for ( int i = cnt - 2; i >= n; i-- ) //cnt-1 Р·Р°РјРµРЅРµРЅРѕ РЅР° cnt-2 25.08.2011 Р±С‹Р» РєРѕСЃСЏРє
-		{
-			data[i + 1] = data[i];
-		}
-
-		data[n] = a;
+		m_data.insert( m_data.begin()+n, a );
 	}
 
-	template <class T, int step> inline void ccollect<T, step>::clear()
+	template <class T, size_t Step> inline void ccollect<T, Step>::clear()
 	{
-		data.clear();
-		cnt = 0;
+		m_data.clear();
 	}
 
-	template <class T, int step> inline ccollect<T, step>& ccollect<T, step>::operator = ( const ccollect& a )
+	template <class T, size_t Step> inline int ccollect<T, Step>::count() const
 	{
-		copy_from( a );
-		return *this;
-	}
-
-
-
-	template <class T, int step> ccollect<T, step>::~ccollect()
-	{
-	}
-
-	template <class T, int step> inline int ccollect<T, step>::count() const
-	{
-		return cnt;
-	}
-
-	template <class T, int step> void ccollect<T, step>::copy_from( const ccollect& a )
-	{
-		if ( this != &a )
-		{
-			carray<T> x( a.cnt );
-
-			for ( int i = 0; i < a.cnt; i++ )
-			{
-				x[i] = a.data.const_item( i );
-			}
-
-			data = x;
-			cnt = a.cnt;
-		}
+		return m_data.size();
 	}
 
 /// hash tables ////////////////////////////////////////////////////////////////////////////
@@ -589,7 +242,7 @@ namespace wal
 	{
 		const HashIndex tableSize;
 		HashIndex i;
-		carray<LT* >& table;
+		std::vector<LT* >& table;
 		LT* ptr;
 		hash_iterator() {}
 	public:
@@ -606,7 +259,7 @@ namespace wal
 			}
 		}
 
-		hash_iterator( carray<LT* >& tab, HashIndex size )
+		hash_iterator( std::vector<LT* >& tab, HashIndex size )
 			: tableSize( size ), table( tab )
 		{
 			if ( size <= 0 )
@@ -687,7 +340,7 @@ namespace wal
 		void copy( const internal_hash& a );
 		HashIndex tableSize;
 		HashIndex itemCount;
-		carray<LT*> table;
+		std::vector<LT*> table;
 	};
 
 
@@ -775,7 +428,7 @@ namespace wal
 
 		LT** p;
 
-		for ( p = table.ptr() + n; *p; p = &( p[0]->next ) )
+		for ( p = table.data() + n; *p; p = &( p[0]->next ) )
 
 			//РПТСДПЛ ПРЕТБОДПЧ УТБЧОЕОЙК ЧБЦЕО
 			//ЮФПВЩ ПРТЕДЕМСФШ ФПМШЛП ЧУФТПЕООЩК ПРЕТБФПТ == Ч KT
@@ -831,7 +484,7 @@ namespace wal
 	}
 
 
-	template <class LT> void destroy_hash_table( carray<LT*> table, HashIndex size )
+	template <class LT> void destroy_hash_table( std::vector<LT*> table, HashIndex size )
 	{
 		for ( HashIndex i = 0; i < size; i++ )
 		{
@@ -883,7 +536,7 @@ namespace wal
 		}
 		else
 		{
-			carray<LT*> newTable( newSize );
+			std::vector<LT*> newTable( newSize );
 			HashIndex i;
 
 			for ( i = 0; i < newSize; i++ )
@@ -911,7 +564,7 @@ namespace wal
 	template <class LT, class KT, bool IC, class P>
 	void internal_hash<LT, KT, IC, P>::copy( const internal_hash& a )
 	{
-		carray< LT*> tmpTable( a.tableSize );
+		std::vector< LT*> tmpTable( a.tableSize );
 
 		try
 		{
@@ -924,7 +577,7 @@ namespace wal
 
 			for ( i = 0; i < a.tableSize; i++ )
 			{
-				for ( const LT* p = a.table.const_ptr()[i];
+				for ( const LT* p = a.table.data()[i];
 				      p;
 				      p = p->next )
 				{
@@ -940,7 +593,7 @@ namespace wal
 			throw;
 		}
 
-		if ( table.ptr() )
+		if ( table.data() )
 		{
 			destroy_hash_table<LT>( table, tableSize );
 		}
@@ -970,11 +623,11 @@ namespace wal
 		struct  Node
 		{
 			unsigned hashKey;
-			T data;
+			T m_data;
 
-			Node( const T& d, unsigned k ) : hashKey( k ), data( d ) {}
-			Node( const Node& a ): data( a.data ), hashKey( a.hashKey ) {}
-			const KT& key() { return data.key(); }
+			Node( const T& d, unsigned k ) : hashKey( k ), m_data( d ) {}
+			Node( const Node& a ): m_data( a.m_data ), hashKey( a.hashKey ) {}
+			const KT& key() { return m_data.key(); }
 			unsigned intKey() { return hashKey; }
 			Node* next;
 		private:
@@ -990,7 +643,7 @@ namespace wal
 		T* get( const KT& k )
 		{
 			Node* p = hash.find( unsigned( k ), k );
-			return p ? &( p->data ) : NULL;
+			return p ? &( p->m_data ) : NULL;
 		}
 
 		chash& operator = ( const chash& a )
@@ -1010,7 +663,7 @@ namespace wal
 				hash.append( intk, p );
 			}
 
-			return &p->data;
+			return &p->m_data;
 		}
 
 		bool del( const KT& k, bool shrink = true )
@@ -1022,20 +675,20 @@ namespace wal
 		{
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next() )
 			{
-				f( &( i.get()->data ), parm );
+				f( &( i.get()->m_data ), parm );
 			}
 		}
 
-		carray<T*> get_all()
+		std::vector<T*> get_all()
 		{
 			int n = hash.count();
-			carray<T*> ret( n );
+			std::vector<T*> ret( n );
 			int j = 0;
 
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next(), j++ )
 			{
 				ASSERT( j < n );
-				ret[j] =  &( i.get()->data );
+				ret[j] =  &( i.get()->m_data );
 			}
 
 			return ret;
@@ -1061,9 +714,9 @@ namespace wal
 		struct Node
 		{
 			IT k;
-			T data;
-			Node( const T& d, const IT& n ): k( n ), data( d ) {}
-			Node( const Node& a ): data( a.data ), k( a.k ) {}
+			T m_data;
+			Node( const T& d, const IT& n ): k( n ), m_data( d ) {}
+			Node( const Node& a ): m_data( a.m_data ), k( a.k ) {}
 			const IT& key() const { return k; }
 			unsigned intKey() const { return ( unsigned )k; }
 
@@ -1090,7 +743,7 @@ namespace wal
 		T* exist( const IT& k )
 		{
 			Node* p = hash.find( unsigned( k ), k );
-			return p ? &( p->data ) : NULL;
+			return p ? &( p->m_data ) : NULL;
 		}
 
 		T& get( const IT& k )
@@ -1103,7 +756,7 @@ namespace wal
 				hash.append( unsigned( k ), p );
 			}
 
-			return p->data;
+			return p->m_data;
 		}
 
 		T& operator []( const IT& k ) { return get( k ); }
@@ -1128,10 +781,10 @@ namespace wal
 			}
 			else
 			{
-				p->data = data;
+				p->m_data = data;
 			}
 
-			return &( p->data );
+			return &( p->m_data );
 		}
 
 		bool del( const IT& k, bool shrink = true )
@@ -1143,14 +796,14 @@ namespace wal
 		{
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next() )
 			{
-				f( i.get()->k, &( i.get()->data ), parm );
+				f( i.get()->k, &( i.get()->m_data ), parm );
 			}
 		}
 
-		carray<IT> keys()
+		std::vector<IT> keys()
 		{
 			int n = hash.count();
-			carray<IT> ret( n );
+			std::vector<IT> ret( n );
 			int j = 0;
 
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next(), j++ )
@@ -1298,16 +951,16 @@ namespace wal
 	};
 
 
-	template <class T, class CT = char, class P = FloatTableParam<> > class cstrhash
+	template <class T, class CT = char, class P = FloatTableParam<> > class cstrhash: public iIntrusiveCounter
 	{
 		struct Node
 		{
-			T data;
+			T m_data;
 			unsigned hashKey;
 			chstring<CT> string;
 
 			Node( const T& d, const CT* s, unsigned h )
-				: data( d ), string( s ), hashKey( h )
+				: m_data( d ), string( s ), hashKey( h )
 			{
 			}
 
@@ -1340,7 +993,7 @@ namespace wal
 		T* exist( const CT* s )
 		{
 			Node* p = hash.find( chstring<CT>::key( s ), s );
-			return p ? &( p->data ) : NULL;
+			return p ? &( p->m_data ) : NULL;
 		}
 
 		T& get( const CT* s )
@@ -1354,7 +1007,7 @@ namespace wal
 				hash.append( hashKey, p );
 			}
 
-			return p->data;
+			return p->m_data;
 		}
 
 		T& operator []( const CT* s ) { return get( s ); }
@@ -1382,10 +1035,10 @@ namespace wal
 			}
 			else
 			{
-				p->data = data;
+				p->m_data = data;
 			}
 
-			return p->data;
+			return p->m_data;
 		}
 
 		bool del( const CT* s, bool shrink = true )
@@ -1397,14 +1050,14 @@ namespace wal
 		{
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next() )
 			{
-				f( i.get()->string.str(), &( i.get()->data ), parm );
+				f( i.get()->string.str(), &( i.get()->m_data ), parm );
 			}
 		}
 
-		carray<const CT*> keys()
+		std::vector<const CT*> keys()
 		{
 			int n = hash.count();
-			carray<const CT*> ret( n );
+			std::vector<const CT*> ret( n );
 			int j = 0;
 
 			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next(), j++ )

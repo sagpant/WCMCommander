@@ -1469,8 +1469,8 @@ namespace wal
 			return ret;
 		}
 
-		carray<char> GetArray() { carray<char> p; if ( count > 0 ) { p.alloc( count ); Get( p.ptr(), count ); } return p; }
-		carray<char> GetArray( int* pCount ) { int n = count; carray<char> p; if ( count > 0 ) { p.alloc( count ); Get( p.ptr(), count ); } if ( pCount ) { *pCount = n; } return p; }
+		std::vector<char> GetArray() { std::vector<char> p; if ( count > 0 ) { p.resize( count ); Get( p.data(), count ); } return p; }
+		std::vector<char> GetArray( int* pCount ) { int n = count; std::vector<char> p; if ( count > 0 ) { p.resize( count ); Get( p.data(), count ); } if ( pCount ) { *pCount = n; } return p; }
 
 		~CharQueue() { Clear(); }
 	};
@@ -1479,9 +1479,9 @@ namespace wal
 	static   void CharQueueToClipboartAsUtf8( ClipboardText* text, CharQueue* q )
 	{
 		int size;
-		carray<char> p = q->GetArray( &size );
+		std::vector<char> p = q->GetArray( &size );
 
-		char* s = p.ptr();
+		char* s = p.data();
 
 		while ( size > 0 )
 		{
@@ -1869,7 +1869,7 @@ namespace wal
 
 		{
 			int size;
-			carray<char> p = q.GetArray( &size );
+			std::vector<char> p = q.GetArray( &size );
 
 			XChangeProperty( display,
 			                 event->xselectionrequest.requestor,
@@ -1877,7 +1877,7 @@ namespace wal
 			                 event->xselectionrequest.target,
 			                 8,
 			                 PropModeReplace,
-			                 ( unsigned char* )p.ptr(),
+			                 ( unsigned char* )p.data(),
 			                 size );
 
 			XSendEvent( display, event->xselectionrequest.requestor, True, 0, &reply );
@@ -2157,7 +2157,7 @@ Nah:
 
 		SetFg( textColor );
 		CheckValues();
-		carray<XChar2b> sc( charCount );
+		std::vector<XChar2b> sc( charCount );
 
 		for ( int i = 0; i < charCount; i++ )
 		{
@@ -2166,7 +2166,7 @@ Nah:
 			sc[i].byte1 = ( ( c >> 8 ) & 0xFF );
 		}
 
-		XDrawString16( display, winId, gc, x, y + fontAscent, sc.ptr(), charCount );
+		XDrawString16( display, winId, gc, x, y + fontAscent, sc.data(), charCount );
 	}
 
 	void GC::TextOutF( int x, int y, const unicode_t* s, int charCount )
@@ -2190,7 +2190,7 @@ Nah:
 		SetFg( textColor );
 		SetBg( fillColor );
 		CheckValues();
-		carray<XChar2b> sc( charCount );
+		std::vector<XChar2b> sc( charCount );
 
 		for ( int i = 0; i < charCount; i++ )
 		{
@@ -2199,7 +2199,7 @@ Nah:
 			sc[i].byte1 = ( ( c >> 8 ) & 0xFF );
 		}
 
-		XDrawImageString16( display, winId, gc, x, y + fontAscent, sc.ptr(), charCount );
+		XDrawImageString16( display, winId, gc, x, y + fontAscent, sc.data(), charCount );
 	}
 
 
@@ -2259,7 +2259,7 @@ Nah:
 		}
 		else
 		{
-			carray<XChar2b> sc( charCount );
+			std::vector<XChar2b> sc( charCount );
 
 			for ( int i = 0; i < charCount; i++ )
 			{
@@ -2268,7 +2268,7 @@ Nah:
 				sc[i].byte1 = ( ( c >> 8 ) & 0xFF );
 			}
 
-			XQueryTextExtents16( display, XGContextFromGC( gc ), sc.ptr(), charCount, &direction, &ascent, &descent, &ret );
+			XQueryTextExtents16( display, XGContextFromGC( gc ), sc.data(), charCount, &direction, &ascent, &descent, &ret );
 		}
 
 		return cpoint( ret.width, ascent + descent );
@@ -2938,13 +2938,13 @@ stopped:
 
 	const char* cfont::uri()
 	{
-		return _uri.ptr() ? _uri.ptr() : "";
+		return _uri.data() ? _uri.data() : "";
 	}
 
 
 	const char* cfont::printable_name()
 	{
-		if ( _name.ptr() ) { return _name.ptr(); }
+		if ( _name.data() ) { return _name.data(); }
 
 		if ( type == TYPE_X11 )
 		{
@@ -2965,7 +2965,7 @@ stopped:
 			char buf[1024];
 			snprintf( buf, sizeof( buf ) - 1, "%s-%s %i", name, style, ( ( FTU::FFace* )data )->Size() / 64 );
 			_name = new_char_str( buf );
-			return _name.ptr();
+			return _name.data();
 		}
 
 #endif
@@ -3090,14 +3090,14 @@ stopped:
 	/*
 	struct Node {
 	   SCImage image;
-	   carray<char> mash;
+	   std::vector<char> mash;
 	   unigned bgColor;
 	};
 	*/
 
-	static cptr<IconData::Node> CreateIconDataNode( Image32& _image, unsigned bgColor, bool enabled )
+	static clPtr<IconData::Node> CreateIconDataNode( Image32& _image, unsigned bgColor, bool enabled )
 	{
-		cptr<IconData::Node> node = new IconData::Node;
+		clPtr<IconData::Node> node = new IconData::Node;
 		node->bgColor = bgColor;
 
 		int w = _image.width();
@@ -3148,8 +3148,8 @@ stopped:
 			unsigned32* p = _image.line( 0 );
 			int count = im.width() * im.height();
 
-			node->mask.alloc( count );
-			char* m = node->mask.ptr();
+			node->mask.resize( count );
+			char* m = node->mask.data();
 
 			for ( ; count > 0; count--, p++, m++ )
 			{
@@ -3240,14 +3240,14 @@ stopped:
 		if ( !data ) { return; }
 
 		unsigned bgColor = gc.FillRgb();
-		cptr<IconData::Node>* pNode = enabled ? &data->normal : &data->disabled;
+		clPtr<IconData::Node>* pNode = enabled ? &data->normal : &data->disabled;
 
 		if ( !pNode->ptr() )
 		{
 			*pNode = CreateIconDataNode( data->image, bgColor, enabled );
 		}
 
-		PutIconDataNode( gc, &( pNode[0]->image ), pNode[0]->mask.ptr(), x, y );
+		PutIconDataNode( gc, &( pNode[0]->image ), pNode[0]->mask.data(), x, y );
 	}
 
 	void cicon::DrawF( wal::GC& gc, int x, int y, bool enabled )
@@ -3255,7 +3255,7 @@ stopped:
 		if ( !data ) { return; }
 
 		unsigned bgColor = gc.FillRgb();
-		cptr<IconData::Node>* pNode = enabled ? &data->normal : &data->disabled;
+		clPtr<IconData::Node>* pNode = enabled ? &data->normal : &data->disabled;
 
 		if ( !pNode->ptr() || pNode[0]->bgColor != bgColor )
 		{
@@ -3281,8 +3281,8 @@ stopped:
 		if ( visualInfo.c_class == TrueColor )
 		{
 			im.format =  ZPixmap ;
-			data.alloc( w * h * 4 ); //32 bit
-			im.data = data.ptr();
+			data.resize( w * h * 4 ); //32 bit
+			im.data = data.data();
 			im.byte_order = ( ( ( char* )&byte_order_test )[0] == 0x77 ) ? LSBFirst : MSBFirst;
 			im.bitmap_unit = 32;
 			im.bitmap_bit_order = MSBFirst;
@@ -3298,8 +3298,8 @@ stopped:
 		{
 			im.format = XYPixmap;
 			im.bytes_per_line = ( w + 31 ) / 32 * 4;
-			data.alloc( im.bytes_per_line * visualInfo.depth * h ); //32 bit
-			im.data = data.ptr();
+			data.resize( im.bytes_per_line * visualInfo.depth * h ); //32 bit
+			im.data = data.data();
 			im.byte_order = ( ( ( char* )&byte_order_test )[0] == 0x77 ) ? LSBFirst : MSBFirst;
 			im.bitmap_unit = 32;
 			im.bitmap_bit_order = MSBFirst;
@@ -3331,7 +3331,7 @@ stopped:
 			for ( int y = 0; y < h; y++ )
 			{
 				unsigned32* t = image.line( y );
-				char* m = ( masked ) ? mask.ptr() + y * w : 0;
+				char* m = ( masked ) ? mask.data() + y * w : 0;
 
 				for ( i = 0; i < w; i++ )
 				{
@@ -3339,16 +3339,15 @@ stopped:
 					{
 						if ( !masked )
 						{
-							mask.alloc( w * h );
-							memset( mask.ptr(), 1, w * h );
+							mask.resize( w * h );
+							memset( mask.data(), 1, w * h );
 							masked = true;
-							m = mask.ptr() + y * w;
+							m = mask.data() + y * w;
 						}
 
 						m[i] = 0;
 					}
 
-//по простому, надо ускорить
 					XPutPixel( &im, i, y, CreateColor( t[i] & 0xFFFFFF ) );
 				}
 			}
@@ -3358,7 +3357,7 @@ stopped:
 
 
 
-		unsigned32* p = ( unsigned32* )data.ptr();
+		unsigned32* p = ( unsigned32* )data.data();
 		unsigned32* t = image.line( 0 );
 
 		unsigned32 last = 0xFFFFFFFF;
@@ -3388,10 +3387,10 @@ stopped:
 		return;
 
 haveMask:
-		mask.alloc( w * h );
-		memset( mask.ptr(), 1, w * h );
+		mask.resize( w * h );
+		memset( mask.data(), 1, w * h );
 
-		char* m = mask.ptr() + w * h - n;
+		char* m = mask.data() + w * h - n;
 
 		for ( ; n > 0; n--, p++, t++, m++ )
 		{
@@ -3416,7 +3415,7 @@ haveMask:
 
 	void IntXImage::Put( wal::GC& gc, int src_x, int src_y, int dest_x, int dest_y, int w, int h )
 	{
-		if ( !data.ptr() ) { return; }
+		if ( !data.data() ) { return; }
 
 		int right = src_x + w;
 		int bottom = src_y + h;
@@ -3434,11 +3433,11 @@ haveMask:
 
 		if ( w <= 0 || h <= 0 ) { return; }
 
-		if ( mask.ptr() )
+		if ( mask.data() )
 		{
 
 			crect r( 0, -1, 0, -1 );
-			char* m = mask.ptr();
+			char* m = mask.data();
 
 			for ( int y = src_y; y < bottom; y++, m += im.width )
 			{

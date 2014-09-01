@@ -5,6 +5,19 @@
 
 #include "wal_tmpls.h"
 
+namespace LPtr
+{
+	void IncRef( iIntrusiveCounter* Obj )
+	{
+		if ( Obj ) Obj->IncRefCount();
+	}
+
+	void DecRef( iIntrusiveCounter* Obj )
+	{
+		if ( Obj ) Obj->DecRefCount();
+	}
+};
+
 namespace wal
 {
 

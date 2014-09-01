@@ -297,6 +297,7 @@
     <ClInclude Include="vfspath.h" />
     <ClInclude Include="w32cons.h" />
     <ClInclude Include="w32util.h" />
+    <ClCompile Include="wal\IntrusivePtr.h" />
     <ClInclude Include="wal\wal.h" />
     <ClInclude Include="wal\wal_sys_api.h" />
     <ClInclude Include="wal\wal_tmpls.h" />

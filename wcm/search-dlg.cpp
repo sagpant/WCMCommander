@@ -17,12 +17,12 @@ public:
 SearchParamDialog::~SearchParamDialog() {}
 
 SearchParamDialog::SearchParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   textEdit ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).ptr(), 0, params->sens )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).data(), 0, params->sens )
 {
-	if ( params->txt.ptr() ) { textEdit.SetText( params->txt.ptr(), true ); }
+	if ( params->txt.data() ) { textEdit.SetText( params->txt.data(), true ); }
 
 	iL.AddWin( &textEdit, 0, 0 );
 	textEdit.Enable();
@@ -54,7 +54,7 @@ bool DoSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		params->sens = dlg.caseButton.IsSet();
-		params->txt = new_unicode_str( dlg.textEdit.GetText().ptr() );
+		params->txt = new_unicode_str( dlg.textEdit.GetText().data() );
 		return true;
 	}
 
@@ -81,17 +81,17 @@ public:
 SearchFileParamDialog::~SearchFileParamDialog() {}
 
 SearchFileParamDialog::SearchFileParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   maskText( 0, this, utf8_to_unicode( _LT( "File mask:" ) ).ptr() ),
-	   textText( 0, this, utf8_to_unicode( _LT( "Text:" ) ).ptr() ),
+	   maskText( 0, this, utf8_to_unicode( _LT( "File mask:" ) ).data() ),
+	   textText( 0, this, utf8_to_unicode( _LT( "Text:" ) ).data() ),
 	   maskEdit ( 0, this, 0, 0, 50 ),
 	   textEdit ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).ptr(), 0, params->sens )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).data(), 0, params->sens )
 {
-	if ( params->mask.ptr() ) { maskEdit.SetText( params->mask.ptr(), true ); }
+	if ( params->mask.data() ) { maskEdit.SetText( params->mask.data(), true ); }
 
-	if ( params->txt.ptr() ) { textEdit.SetText( params->txt.ptr(), true ); }
+	if ( params->txt.data() ) { textEdit.SetText( params->txt.data(), true ); }
 
 	iL.AddWin( &maskText, 0, 0 );
 	maskText.Enable();
@@ -130,8 +130,8 @@ bool DoFileSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params 
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		params->sens = dlg.caseButton.IsSet();
-		params->mask = new_unicode_str( dlg.maskEdit.GetText().ptr() );
-		params->txt = new_unicode_str( dlg.textEdit.GetText().ptr() );
+		params->mask = new_unicode_str( dlg.maskEdit.GetText().data() );
+		params->txt = new_unicode_str( dlg.textEdit.GetText().data() );
 		return true;
 	}
 
@@ -158,17 +158,17 @@ public:
 ReplaceEditParamDialog::~ReplaceEditParamDialog() {}
 
 ReplaceEditParamDialog::ReplaceEditParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Replace" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Replace" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   fromText( 0, this, utf8_to_unicode( _LT( "Search for:" ) ).ptr() ),
-	   toText( 0, this, utf8_to_unicode( _LT( "Replace with:" ) ).ptr() ),
+	   fromText( 0, this, utf8_to_unicode( _LT( "Search for:" ) ).data() ),
+	   toText( 0, this, utf8_to_unicode( _LT( "Replace with:" ) ).data() ),
 	   fromEdit ( 0, this, 0, 0, 50 ),
 	   toEdit   ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).ptr(), 0, params->sens )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).data(), 0, params->sens )
 {
-	if ( params->txt.ptr() ) { fromEdit.SetText( params->txt.ptr(), true ); }
+	if ( params->txt.data() ) { fromEdit.SetText( params->txt.data(), true ); }
 
-	if ( params->to.ptr() ) { toEdit.SetText( params->to.ptr(), true ); }
+	if ( params->to.data() ) { toEdit.SetText( params->to.data(), true ); }
 
 	iL.AddWin( &fromText, 0, 0 );
 	fromText.Enable();
@@ -207,8 +207,8 @@ bool DoReplaceEditDialog( NCDialogParent* parent, SearchAndReplaceParams* params
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		params->sens = dlg.caseButton.IsSet();
-		params->txt = new_unicode_str( dlg.fromEdit.GetText().ptr() );
-		params->to = new_unicode_str( dlg.toEdit.GetText().ptr() );
+		params->txt = new_unicode_str( dlg.fromEdit.GetText().data() );
+		params->to = new_unicode_str( dlg.toEdit.GetText().data() );
 		return true;
 	}
 

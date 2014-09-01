@@ -99,8 +99,8 @@ void FSPath::MakeCache( int cs, int splitter )
 		if ( cs == CS_UNICODE )
 		{
 			SetCacheSize( 2 * sizeof( unicode_t ) );
-			( ( unicode_t* )cache.ptr() )[0] = splitter;
-			( ( unicode_t* )cache.ptr() )[1] = 0;
+			( ( unicode_t* )cache.data() )[0] = splitter;
+			( ( unicode_t* )cache.data() )[1] = 0;
 		}
 		else
 		{
@@ -129,7 +129,7 @@ void FSPath::MakeCache( int cs, int splitter )
 
 		SetCacheSize( ( l + 1 )*sizeof( unicode_t ) );
 
-		unicode_t* p = ( unicode_t* ) cache.ptr();
+		unicode_t* p = ( unicode_t* ) cache.data();
 
 		for ( i = 0; i < data.count(); i++ )
 		{
@@ -158,7 +158,7 @@ void FSPath::MakeCache( int cs, int splitter )
 
 		SetCacheSize( ( l + 1 )*sizeof( char ) );
 
-		char* p = cache.ptr();
+		char* p = cache.data();
 
 		for ( i = 0; i < data.count(); i++ )
 		{
@@ -409,12 +409,12 @@ void FSString::SetSys( const sys_char_t* p )
 	_temp.clear();
 #ifdef _WIN32
 	int l = wcslen( p );
-	carray<unicode_t> a( l + 1 );
+	std::vector<unicode_t> a( l + 1 );
 
 	for ( int i = 0; i < l; i++ ) { a[i] = p[i]; }
 
 	a[l] = 0;
-	_primary.set( a.ptr() );
+	_primary.set( a.data() );
 #else
 	_primary.set( sys_charset_id, p );
 #endif

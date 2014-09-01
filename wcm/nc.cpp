@@ -25,7 +25,7 @@
 
 #include "intarnal_icons.inc"
 
-cptr<wal::GC> defaultGC;
+clPtr<wal::GC> defaultGC;
 
 const char* appName = "Wal Commander GitHub Edition";
 
@@ -82,29 +82,29 @@ namespace wal
 };
 #endif
 
-inline carray<sys_char_t> LTPath( const sys_char_t* fn, const char* ext )
+inline std::vector<sys_char_t> LTPath( const sys_char_t* fn, const char* ext )
 {
-	return carray_cat<sys_char_t>( fn, utf8_to_sys( ext ).ptr() );
+	return carray_cat<sys_char_t>( fn, utf8_to_sys( ext ).data() );
 }
 
 static  bool InitLocale( const sys_char_t* dir, const char* id )
 {
 	if ( id[0] == '-' ) { return true; }
 
-	carray<sys_char_t> fn =
+	std::vector<sys_char_t> fn =
 #ifdef _WIN32
-	   carray_cat<sys_char_t>( dir, utf8_to_sys( "\\ltext." ).ptr() );
+	   carray_cat<sys_char_t>( dir, utf8_to_sys( "\\ltext." ).data() );
 #else
-	   carray_cat<sys_char_t>( dir, utf8_to_sys( "/ltext." ).ptr() );
+	   carray_cat<sys_char_t>( dir, utf8_to_sys( "/ltext." ).data() );
 #endif
 
 	if ( id[0] != '+' )
 	{
-		return LTextLoad( LTPath( fn.ptr(), id ).ptr() );
+		return LTextLoad( LTPath( fn.data(), id ).data() );
 	}
 
-	return LTextLoad( LTPath( fn.ptr(), sys_locale_lang_ter() ).ptr() ) ||
-	       LTextLoad( LTPath( fn.ptr(), sys_locale_lang() ).ptr() );
+	return LTextLoad( LTPath( fn.data(), sys_locale_lang_ter() ).data() ) ||
+	       LTextLoad( LTPath( fn.data(), sys_locale_lang() ).data() );
 };
 
 #ifdef _WIN32
@@ -154,9 +154,9 @@ int main( int argc, char** argv )
 			InitConfigPath();
 			wcmConfig.Load();
 
-			const char* langId = wcmConfig.systemLang.ptr() ? wcmConfig.systemLang.ptr() : "+";
+			const char* langId = wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+";
 #ifdef _WIN32
-			InitLocale( carray_cat<sys_char_t>( GetAppPath().ptr(), utf8_to_sys( "lang" ).ptr() ).ptr(), langId );
+			InitLocale( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "lang" ).data() ).data(), langId );
 #else
 
 			if ( !InitLocale( "install-files/share/wcm/lang", langId ) )

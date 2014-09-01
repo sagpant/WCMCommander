@@ -542,10 +542,10 @@ void* RunProcessThreadFunc( void* data )
 
 bool W32Cons::Execute( Win* w, int tId, const unicode_t* _cmd, const unicode_t* params, const unicode_t* path ) //const sys_char_t *path)
 {
-	carray<wchar_t> wPath = UnicodeToUtf16( path );
+	std::vector<wchar_t> wPath = UnicodeToUtf16( path );
 
 //MessageBoxW(0, UnicodeToUtf16(cmd).ptr(), L"", MB_OK);
-	if ( !SetCurrentDirectoryW( wPath.ptr() ) )
+	if ( !SetCurrentDirectoryW( wPath.data() ) )
 	{
 		return false;
 	}
@@ -677,9 +677,8 @@ bool W32Cons::Execute( Win* w, int tId, const unicode_t* _cmd, const unicode_t* 
 		wcscpy( buf + n, L"\\system32\\cmd.exe" );
 	}
 
-	carray<wchar_t> arg;
-	//arg = carray_cat<wchar_t>(L"/C \"", cmd.ptr(), L" ", UnicodeToUtf16(params).ptr(),L"\"");
-	arg = carray_cat<wchar_t>( L"/C ", cmd.ptr(), L" ", UnicodeToUtf16( params ).ptr(), L"" );
+	std::vector<wchar_t> arg;
+	arg = carray_cat<wchar_t>( L"/C ", cmd.ptr(), L" ", UnicodeToUtf16( params ).data(), L"" );
 
 	STARTUPINFOW startup;
 	memset( &startup, 0, sizeof( startup ) );
@@ -688,7 +687,7 @@ bool W32Cons::Execute( Win* w, int tId, const unicode_t* _cmd, const unicode_t* 
 
 //MessageBoxW(0, arg.ptr(), L"Hi", MB_OK);
 
-	if ( CreateProcessW( buf, arg.ptr(), 0, 0, TRUE, NORMAL_PRIORITY_CLASS, 0, 0, &startup, &processInfo ) )
+	if ( CreateProcessW( buf, arg.data(), 0, 0, TRUE, NORMAL_PRIORITY_CLASS, 0, 0, &startup, &processInfo ) )
 	{
 		CloseHandle( processInfo.hThread ); //!!!
 

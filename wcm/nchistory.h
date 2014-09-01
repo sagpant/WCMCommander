@@ -12,7 +12,7 @@ using namespace wal;
 
 class NCHistory
 {
-	ccollect<carray<unicode_t> > list;
+	ccollect<std::vector<unicode_t> > list;
 	int current;
 public:
 	NCHistory(): current( 0 ) {}
@@ -26,12 +26,12 @@ public:
 			const unicode_t* s;
 			const unicode_t* t;
 
-			for ( s = str, t = list[i].ptr(); *t && *s; s++, t++ )
+			for ( s = str, t = list[i].data(); *t && *s; s++, t++ )
 				if ( *t != *s ) { break; }
 
 			if ( *t == *s )
 			{
-				carray<unicode_t> p = list[i];
+				std::vector<unicode_t> p = list[i];
 				list.del( i );
 				list.insert( 0, p );
 				return;
@@ -44,11 +44,11 @@ public:
 	}
 
 	int Count() const { return list.count(); }
-	const unicode_t* operator[] ( int n ) { return n >= 0 && n < list.count() ? list[n].ptr() : 0; }
+	const unicode_t* operator[] ( int n ) { return n >= 0 && n < list.count() ? list[n].data() : 0; }
 
 
-	unicode_t* Prev() { return ( current < 0 || current >= list.count() ) ? 0 : list[current++].ptr(); }
-	unicode_t* Next() { return ( current <= 0 || current > list.count() ) ? 0 : list[--current].ptr(); }
+	unicode_t* Prev() { return ( current < 0 || current >= list.count() ) ? 0 : list[current++].data(); }
+	unicode_t* Next() { return ( current <= 0 || current > list.count() ) ? 0 : list[--current].data(); }
 
 	~NCHistory() {}
 };

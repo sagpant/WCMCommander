@@ -20,23 +20,23 @@ namespace wal
 	typedef std::basic_string<unicode_t> unicode_string;
 	typedef std::basic_string<sys_char_t> sys_string;
 
-	carray<unicode_t> new_unicode_str( const unicode_t* );
-	carray<sys_char_t> new_sys_str( const sys_char_t* );
-	carray<char> new_char_str( const char* );
+	std::vector<unicode_t> new_unicode_str( const unicode_t* );
+	std::vector<sys_char_t> new_sys_str( const sys_char_t* );
+	std::vector<char> new_char_str( const char* );
 
-	carray<sys_char_t> utf8_to_sys( const char* s );
-	carray<char> sys_to_utf8( const sys_char_t* s );
+	std::vector<sys_char_t> utf8_to_sys( const char* s );
+	std::vector<char> sys_to_utf8( const sys_char_t* s );
 
-	carray<unicode_t> sys_to_unicode_array( const sys_char_t* s, int size = -1 );
-	carray<sys_char_t> unicode_to_sys_array( const unicode_t* s, int size = -1 );
+	std::vector<unicode_t> sys_to_unicode_array( const sys_char_t* s, int size = -1 );
+	std::vector<sys_char_t> unicode_to_sys_array( const unicode_t* s, int size = -1 );
 
-	carray<sys_char_t> sys_error_str( int err );
-	carray<unicode_t> sys_error_unicode( int err );
+	std::vector<sys_char_t> sys_error_str( int err );
+	std::vector<unicode_t> sys_error_unicode( int err );
 
-	carray<char> sys_error_utf8( int err );
+	std::vector<char> sys_error_utf8( int err );
 
-	carray<unicode_t> utf8_to_unicode( const char* s );
-	carray<char> unicode_to_utf8( const unicode_t* u );
+	std::vector<unicode_t> utf8_to_unicode( const char* s );
+	std::vector<char> unicode_to_utf8( const unicode_t* u );
 
 ///////////////////  Exceptions ///////////////////////////////////////////////
 
@@ -63,7 +63,7 @@ namespace wal
 
 	class cmsg: public cexception
 	{
-		wal::carray<char> _msg;
+		std::vector<char> _msg;
 	public:
 		cmsg( const char* s );
 		virtual const char* message();
@@ -153,7 +153,7 @@ namespace wal
 	class File
 	{
 		file_t _fd;
-		carray<sys_char_t> _fileName;
+		std::vector<sys_char_t> _fileName;
 		void Throw( const sys_char_t* name );
 		void Throw();
 	public:
@@ -388,42 +388,42 @@ namespace wal
 
 
 //////////////////////////////////////////////////////////////////////////////////
-	inline carray<unicode_t> sys_to_unicode_array( const sys_char_t* s, int size )
+	inline std::vector<unicode_t> sys_to_unicode_array( const sys_char_t* s, int size )
 	{
 		int l = sys_symbol_count( s, size );
-		carray<unicode_t> p( l + 1 );
+		std::vector<unicode_t> p( l + 1 );
 
-		if ( l > 0 ) { sys_to_unicode( p.ptr(), s, size ); }
+		if ( l > 0 ) { sys_to_unicode( p.data(), s, size ); }
 
 		p[l] = 0;
 		return p;
 	}
 
-	inline carray<sys_char_t> unicode_to_sys_array( const unicode_t* s, int size )
+	inline std::vector<sys_char_t> unicode_to_sys_array( const unicode_t* s, int size )
 	{
 		int l = sys_string_buffer_len( s, size );
-		carray<sys_char_t> p( l + 1 );
+		std::vector<sys_char_t> p( l + 1 );
 
-		if ( l > 0 ) { unicode_to_sys( p.ptr(), s, size ); }
+		if ( l > 0 ) { unicode_to_sys( p.data(), s, size ); }
 
 		p[l] = 0;
 		return p;
 	}
 
-	inline carray<sys_char_t> sys_error_str( int err )
+	inline std::vector<sys_char_t> sys_error_str( int err )
 	{
 		sys_char_t buf[0x100];
 		return new_sys_str( sys_error_str( err, buf, sizeof( buf ) / sizeof( sys_char_t ) ) );
 	}
 
 
-	inline carray<unicode_t> sys_error_unicode( int err )
+	inline std::vector<unicode_t> sys_error_unicode( int err )
 	{
 		sys_char_t buf[0x100];
 		return sys_to_unicode_array( sys_error_str( err, buf, sizeof( buf ) / sizeof( sys_char_t ) ) );
 	}
 
-	inline carray<char> sys_error_utf8( int err )
+	inline std::vector<char> sys_error_utf8( int err )
 	{
 		sys_char_t buf[0x100];
 		return sys_to_utf8( sys_error_str( err, buf, sizeof( buf ) / sizeof( sys_char_t ) ) );

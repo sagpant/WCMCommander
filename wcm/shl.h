@@ -17,7 +17,7 @@ namespace SHL
 	class Shl;
 	struct RuleNode;
 
-	class Chars
+	class Chars: public iIntrusiveCounter
 	{
 
 		friend class Shl;
@@ -34,7 +34,7 @@ namespace SHL
 		void Add( unsigned c1, unsigned c2 ) { c1 &= 0xFF; c2 &= 0xFF; for ( unsigned i = c1; i <= c2; i++ ) { _data[i] = 1; } }
 		void Del( unsigned c )    { _data[c & 0xFF] = 0; }
 		void Not()        { for ( int i = 0; i < 0x100; i++ ) { _data[i] = _data[i] ? 0 : 1; } }
-		bool Parze( const char* s, cstrhash<cptr<Chars> >* mhash );
+		bool Parze( const char* s, cstrhash<clPtr<Chars> >* mhash );
 	};
 
 	class Words
@@ -105,7 +105,7 @@ namespace SHL
 	};
 
 
-	class State
+	class State: public iIntrusiveCounter
 	{
 		friend class Shl;
 		int      _id;
@@ -132,8 +132,8 @@ namespace SHL
 
 	class ShlStreamFile: public ShlStream
 	{
-		carray<sys_char_t> _name;
-		carray<char> _name_utf8;
+		std::vector<sys_char_t> _name;
+		std::vector<char> _name_utf8;
 		BFile _f;
 	public:
 		ShlStreamFile( sys_char_t* s ): _name( new_sys_str( s ) ), _name_utf8( sys_to_utf8( s ) ) { _f.Open( s ); }
@@ -142,12 +142,12 @@ namespace SHL
 		virtual ~ShlStreamFile();
 	};
 
-	class Shl
+	class Shl: public iIntrusiveCounter
 	{
 		Chars* _charsList;
 		Words* _wordsList;
 		Rule*   _ruleList;
-		ccollect<cptr<State> > _states;
+		ccollect<clPtr<State> > _states;
 		StateId  _startState;
 
 		Chars* AllocChars();
@@ -169,7 +169,7 @@ namespace SHL
 	{
 		struct Node
 		{
-			carray<unicode_t> str;
+			std::vector<unicode_t> str;
 			Node* next;
 		};
 
@@ -182,29 +182,29 @@ namespace SHL
 	};
 
 
-	class ShlConf
+	class ShlConf: public iIntrusiveCounter
 	{
 
-		struct Node
+		struct Node: public iIntrusiveCounter
 		{
-			carray<char> name;
-			carray<char> shlFileName;
-//		cptr< StrList > first;
-//		cptr< StrList > mimes;
-//		cptr< StrList > masks;
-			cptr< Shl > shl;
+			std::vector<char> name;
+			std::vector<char> shlFileName;
+//		clPtr< StrList > first;
+//		clPtr< StrList > mimes;
+//		clPtr< StrList > masks;
+			clPtr< Shl > shl;
 		};
 
-		struct Rule
+		struct Rule: public iIntrusiveCounter
 		{
 			enum Type { FIRST = 1, MASK = 2 };
 			Type type;
 			StrList list;
-			carray<char> id;
+			std::vector<char> id;
 		};
 
-		cstrhash<cptr<Node> > hash;
-		ccollect<cptr<Rule> > ruleList;
+		cstrhash<clPtr<Node> > hash;
+		ccollect<clPtr<Rule> > ruleList;
 
 		Shl* Get( const char* name, cstrhash<int>& colors );
 	public:

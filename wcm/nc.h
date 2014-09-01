@@ -15,7 +15,7 @@
 
 using namespace wal;
 
-extern cptr<wal::GC> defaultGC;
+extern clPtr<wal::GC> defaultGC;
 
 extern const char* appName;
 

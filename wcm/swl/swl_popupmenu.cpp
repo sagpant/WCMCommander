@@ -11,14 +11,14 @@ namespace wal
 	MenuData::MenuData() {}
 
 // временная штука
-	wal::cinthash<int, wal::cptr<cicon> > iconList;
+	wal::cinthash<int, clPtr<cicon> > iconList;
 	cicon* GetCmdIcon( int cmd )
 	{
-		wal::cptr<cicon>* p = iconList.exist( cmd );
+		clPtr<cicon>* p = iconList.exist( cmd );
 
 		if ( p ) { return p->ptr(); }
 
-		wal::cptr<cicon> pic = new cicon( cmd, 16, 16 );
+		clPtr<cicon> pic = new cicon( cmd, 16, 16 );
 		cicon* t = pic.ptr();
 		iconList[cmd] = pic;
 		return t;
@@ -80,8 +80,8 @@ namespace wal
 		{
 			gc.SetTextColor( color_text );
 			gc.Set( GetFont() );
-			unicode_t* lText = list[n].data->leftText.ptr();
-			unicode_t* rText = list[n].data->rightText.ptr();
+			unicode_t* lText = list[n].data->leftText.data();
+			unicode_t* rText = list[n].data->rightText.data();
 
 			if ( lText ) { gc.TextOutF( MENU_LEFT_BLOCK + MENU_TEXT_OFFSET, r.top + ( height - fontHeight ) / 2, lText ); }
 
@@ -142,16 +142,16 @@ namespace wal
 			{
 				cpoint p;
 
-				if ( node.data->leftText.ptr() )
+				if ( node.data->leftText.data() )
 				{
-					p = gc.GetTextExtents( node.data->leftText.ptr() );
+					p = gc.GetTextExtents( node.data->leftText.data() );
 
 					if ( leftWidth < p.x ) { leftWidth = p.x; }
 				}
 
-				if ( node.data->rightText.ptr() )
+				if ( node.data->rightText.data() )
 				{
-					p = gc.GetTextExtents( node.data->rightText.ptr() );
+					p = gc.GetTextExtents( node.data->rightText.data() );
 
 					if ( rightWidth < p.x ) { rightWidth = p.x; }
 				}

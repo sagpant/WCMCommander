@@ -28,9 +28,9 @@ class PanelSearchWin: public Win
 	EditLine _edit;
 	StaticLine _static;
 	Layout _lo;
-	carray<unicode_t> oldMask;
+	std::vector<unicode_t> oldMask;
 public:
-	cptr<cevent_key> ret_key;
+	clPtr<cevent_key> ret_key;
 	PanelSearchWin( PanelWin* parent, cevent_key* key );
 	virtual void Repaint();
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
@@ -47,69 +47,74 @@ public:
 	virtual ~PanelSearchWin();
 };
 
-class PanelPlace
+class clPanelPlace
 {
 	struct Node
 	{
-		FSPtr fsPtr;
+		clPtr<FS> fsPtr;
 		FSPath path;
-		Node* next;
 	};
-	Node* stack;
+	std::vector<Node> m_Stack;
+	FSPath m_EmptyPath;
+
 	void Clear( bool toSys = false )
 	{
-		while ( stack )
+		while ( !m_Stack.empty() )
 		{
-			if ( toSys && !stack->fsPtr.IsNull() && stack->fsPtr->Type() == FS::SYSTEM && !stack->next )
-			{
-				break;
-			}
+			bool HasFS       = !m_Stack.back( ).fsPtr.IsNull();
+			bool IsSystem    = m_Stack.back( ).fsPtr->Type( ) == FS::SYSTEM;
+			bool NoMoreNodes = m_Stack.size() == 1;
 
-			Node* p = stack;
-			stack = stack->next;
-			delete p;
+			if ( toSys && HasFS && IsSystem && NoMoreNodes ) break;
+
+			m_Stack.pop_back();
 		}
 	}
-	FSPath emptyPath;
+	
 public:
-	PanelPlace(): stack( 0 ) {}
+	clPanelPlace( ) : m_Stack( ), m_EmptyPath() {}
 
 	bool Pop()
 	{
-		if ( stack && stack->next ) { Node* p = stack; stack = stack->next; delete p; return true; }
+		// should be at least 1 item after popping
+		if ( m_Stack.size() < 2 ) return false;
 
-		return false;
+		m_Stack.pop_back();
+
+		return true;
 	}
 
-	bool Set( FSPtr fsPtr, FSPath& path, bool push )
+	bool Set( clPtr<FS> fsPtr, FSPath& path, bool push )
 	{
 		if ( fsPtr.IsNull() ) { return false; }
 
-		cptr<Node> node = new Node;
-		node->fsPtr = fsPtr;
-		node->path = path;
+		Node node;
+		node.fsPtr = fsPtr;
+		node.path = path;
 
 		if ( !push )
 		{
 			Clear( fsPtr->Type() != FS::SYSTEM );
 		}
 
-		node->next = stack;
-		stack = node.ptr();
-		node.drop();
+		m_Stack.push_back( node );
+
 		return true;
 	}
 
-	int Count() { Node* p = stack; int n = 0; while ( p ) { p = p->next; n++; } return n; }
+	int Count() const
+	{
+		return m_Stack.size();
+	}
 
-	void Reset( FSPtr fsPtr, FSPath& path )
+	void Reset( clPtr<FS> fsPtr, FSPath& path )
 	{
 		if ( fsPtr.IsNull() ) { return; }
 
-		if ( stack )
+		if ( !m_Stack.empty() )
 		{
-			stack->path = path;
-			stack->fsPtr = fsPtr;
+			m_Stack.back().path = path;
+			m_Stack.back( ).fsPtr = fsPtr;
 		}
 		else
 		{
@@ -117,13 +122,12 @@ public:
 		}
 	}
 
-	bool IsEmpty() const { return stack == 0; }
+	bool IsEmpty() const { return m_Stack.empty(); }
 
-	FS* GetFS() { return stack ? stack->fsPtr.Ptr() : 0; }
-	FSPtr GetFSPtr() { return stack ? stack->fsPtr : FSPtr(); }
-	FSPath* GetPathPtr() { return stack ? &stack->path : 0; }
-	FSPath& GetPath() { return stack ? stack->path : emptyPath; }
-	~PanelPlace() { Clear(); }
+	FS* GetFS() { return !m_Stack.empty() ? m_Stack.back().fsPtr.GetInternalPtr() : 0; }
+	clPtr<FS> GetFSPtr() const { return !m_Stack.empty() ? m_Stack.back().fsPtr : clPtr<FS>(); }
+	FSPath* GetPathPtr() { return !m_Stack.empty() ? &m_Stack.back().path : 0; }
+	FSPath& GetPath() { return !m_Stack.empty() ? m_Stack.back().path : m_EmptyPath; }
 };
 
 class PanelWin: public NCDialogParent
@@ -155,7 +159,7 @@ private:
 
 	ScrollBar _scroll;
 	PanelList _list;
-	cptr<PanelSearchWin> _search;
+	clPtr<PanelSearchWin> _search;
 
 	cpoint _letterSize[2];
 	int _itemHeight;
@@ -193,7 +197,7 @@ private:
 	void DrawFooter( wal::GC& gc );
 	void RedrawList( wal::GC& gc );
 
-	PanelPlace _place;
+	clPanelPlace _place;
 
 	unicode_t userNameBuf[64];
 	unicode_t groupNameBuf[64];
@@ -204,7 +208,7 @@ private:
 	bool _inOperState;
 	LOAD_TYPE _operType;
 	OperRDData _operData;
-	cptr<cstrhash<bool, unicode_t> > _operSelected;
+	clPtr<cstrhash<bool, unicode_t> > _operSelected;
 	FSString _operCurrent;
 
 public:
@@ -214,7 +218,7 @@ public:
 
 	FSPath& GetPath() { return _place.GetPath(); }
 	FS* GetFS() { return _place.GetFS(); }
-	FSPtr GetFSPtr() { return _place.GetFSPtr(); }
+	clPtr<FS> GetFSPtr() { return _place.GetFSPtr(); }
 
 	FSString UriOfDir();
 	FSString UriOfCurrent();
@@ -225,7 +229,7 @@ public:
 	void SortByMTime();
 	void DisableSort();
 
-	cptr<cevent_key> QuickSearch( cevent_key* key );
+	clPtr<cevent_key> QuickSearch( cevent_key* key );
 	bool Search( unicode_t* s, bool SearchForNext );
 
 	void SetCurrent( int n );
@@ -235,7 +239,7 @@ public:
 	int ViewMode() { return *_viewMode; }
 	void SetViewMode( int m ) { *_viewMode = m; Check(); SetScroll(); Invalidate(); }
 
-	void LoadPath( FSPtr fs, FSPath& path, FSString* current, cptr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
+	void LoadPath( clPtr<FS> fs, FSPath& path, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
 	void LoadPathStringSafe( const char* path );
 
 	void Reread( bool resetCurrent = false );
@@ -280,11 +284,11 @@ public:
 	virtual void OperThreadSignal( int info );
 	virtual void OperThreadStopped();
 
-	cptr<FSList> GetSelectedList()
+	clPtr<FSList> GetSelectedList()
 	{
 		if ( _list.SelectedCounter().count > 0 ) { return _list.GetSelectedList(); }
 
-		cptr<FSList> p = new FSList;
+		clPtr<FSList> p = new FSList;
 		FSNode* node = GetCurrent();
 
 		if ( node ) { p->CopyOne( node ); }

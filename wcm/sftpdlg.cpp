@@ -37,23 +37,23 @@ public:
 SftpLogonDialog::~SftpLogonDialog() {}
 
 SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "SFTP logon" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "SFTP logon" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   serverText( 0, this, utf8_to_unicode( _LT( "Server:" ) ).ptr() ),
-	   userText( 0, this, utf8_to_unicode( _LT( "Login:" ) ).ptr() ),
+	   serverText( 0, this, utf8_to_unicode( _LT( "Server:" ) ).data() ),
+	   userText( 0, this, utf8_to_unicode( _LT( "Login:" ) ).data() ),
 //	passwordText(this, utf8_to_unicode("Password:").ptr()),
-	   portText( 0, this, utf8_to_unicode( _LT( "Port:" ) ).ptr() ),
-	   charsetText( 0, this, utf8_to_unicode( _LT( "Charset:" ) ).ptr() ),
+	   portText( 0, this, utf8_to_unicode( _LT( "Port:" ) ).data() ),
+	   charsetText( 0, this, utf8_to_unicode( _LT( "Charset:" ) ).data() ),
 
 	   charset( params.charset ),
-	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).ptr() ), //чтоб место забить
+	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), //чтоб место забить
 
 	   serverEdit  ( 0, this, 0, 0, 16 ),
 	   userEdit ( 0, this, 0, 0, 16 ),
 //	passwordEdit   (this, 0, 0, 16),
 	   portEdit ( 0, this, 0, 0, 7 ),
 
-	   charsetButton( 0, this, utf8_to_unicode( ">" ).ptr() , 1000 )
+	   charsetButton( 0, this, utf8_to_unicode( ">" ).data() , 1000 )
 {
 	serverEdit.SetText( params.server.Data(), true );
 	userEdit.SetText( params.user.Data(), true );
@@ -61,7 +61,7 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 
 	char buf[0x100];
 	snprintf( buf, sizeof( buf ), "%i", params.port );
-	portEdit.SetText( utf8_to_unicode( buf ).ptr(), true );
+	portEdit.SetText( utf8_to_unicode( buf ).data(), true );
 
 	bool focus = false;
 
@@ -100,7 +100,7 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 	iL.AddWin( &charsetText, 5, 0, 5, 0 );
 	charsetText.Enable();
 	charsetText.Show();
-	charsetIdText.SetText( utf8_to_unicode( charset_table[params.charset]->name ).ptr() );
+	charsetIdText.SetText( utf8_to_unicode( charset_table[params.charset]->name ).data() );
 	iL.AddWin( &charsetIdText, 5, 1, 5, 1 );
 	charsetIdText.Enable();
 	charsetIdText.Show();
@@ -128,7 +128,7 @@ bool SftpLogonDialog::Command( int id, int subId, Win* win, void* data )
 		if ( SelectCharset( ( NCDialogParent* )Parent(), &ret, charset ) )
 		{
 			charset = ret;
-			charsetIdText.SetText( utf8_to_unicode( charset_table[ret]->name ).ptr() );
+			charsetIdText.SetText( utf8_to_unicode( charset_table[ret]->name ).data() );
 		}
 
 		return true;
@@ -157,10 +157,10 @@ bool GetSftpLogon( NCDialogParent* parent, FSSftpParam& params )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params.server  = dlg.serverEdit.GetText().ptr();
-		params.user = dlg.userEdit.GetText().ptr();
+		params.server  = dlg.serverEdit.GetText().data();
+		params.user = dlg.userEdit.GetText().data();
 //		params.pass   = dlg.passwordEdit.GetText().ptr();
-		params.port = atoi( unicode_to_utf8( dlg.portEdit.GetText().ptr() ).ptr() );
+		params.port = atoi( unicode_to_utf8( dlg.portEdit.GetText().data() ).data() );
 		params.isSet   = true;
 		params.charset = dlg.charset;
 		return true;
@@ -180,8 +180,8 @@ class FSPromptDialog: public NCVertDialog
 public:
 	struct Node
 	{
-		cptr<StaticLine> prompt;
-		cptr<EditLine> ansver;
+		clPtr<StaticLine> prompt;
+		clPtr<EditLine> ansver;
 	};
 	StaticLine message;
 	ccollect<Node > list;
@@ -247,7 +247,7 @@ bool GetPromptAnswer( PromptCBData* data )
 
 	for ( int i = 0; i < data->count; i++ )
 	{
-		data->prompts[i].prompt = dlg.list[i].ansver->GetText().ptr();
+		data->prompts[i].prompt = dlg.list[i].ansver->GetText().data();
 	}
 
 	return true;

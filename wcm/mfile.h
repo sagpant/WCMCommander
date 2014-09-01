@@ -3,7 +3,7 @@
 
 //для загрузки и выгрузки данныз редактора
 
-class MemFile
+class MemFile: public iIntrusiveCounter
 {
 	enum BS { BLOCK_SIZE = 64 * 1024 };
 	struct Node
@@ -110,7 +110,7 @@ public:
 		return res;
 	}
 
-	carray<char> ReadToChar( int ch, int* pCount, bool includeChar )
+	std::vector<char> ReadToChar( int ch, int* pCount, bool includeChar )
 	{
 		int res = 0;
 		Node* p = readNode;
@@ -139,13 +139,13 @@ ttt:
 
 		if ( res > 0 )
 		{
-			carray<char> a( res );
-			int n = Read( a.ptr(), res );
+			std::vector<char> a( res );
+			int n = Read( a.data(), res );
 			ASSERT( n == res );
 			return a;
 		}
 
-		return carray<char>();
+		return std::vector<char>();
 	}
 
 	~MemFile() { Clear(); }

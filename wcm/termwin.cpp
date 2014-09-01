@@ -220,8 +220,8 @@ bool TerminalWin::Command( int id, int subId, Win* win, void* data )
 
 struct ExecData
 {
-	carray<sys_char_t> cmd;
-	carray<sys_char_t> path;
+	std::vector<sys_char_t> cmd;
+	std::vector<sys_char_t> path;
 	Shell* shell;
 };
 
@@ -232,9 +232,9 @@ void* RunProcessThreadFunc( void* data )
 
 	if ( p )
 	{
-		if ( !p->shell->CD( p->path.ptr() ) )
+		if ( !p->shell->CD( p->path.data() ) )
 		{
-			pid_t pid = p->shell->Exec( p->cmd.ptr() );
+			pid_t pid = p->shell->Exec( p->cmd.data() );
 
 			if ( pid > 0 )
 			{

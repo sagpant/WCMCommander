@@ -4,6 +4,6 @@
 #include "ncdialogs.h"
 #include "vfs.h"
 
-bool ShortcutDlg( NCDialogParent* parent, FSPtr* fp, FSPath* pPath );
+bool ShortcutDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath );
 
 #endif

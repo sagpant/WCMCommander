@@ -3,18 +3,18 @@
 
 using namespace wal;
 
-static cstrhash< carray<char> > lText;
+static cstrhash< std::vector<char> > lText;
 
 const char* LText( const char* index )
 {
-	carray<char>* p = lText.exist( index );
-	return ( p && p->ptr() ) ? p->ptr() : index;
+	std::vector<char>* p = lText.exist( index );
+	return ( p && p->data() ) ? p->data() : index;
 }
 
 const char* LText( const char* index, const char* def )
 {
-	carray<char>* p = lText.exist( index );
-	return ( p && p->ptr() ) ? p->ptr() : def;
+	std::vector<char>* p = lText.exist( index );
+	return ( p && p->data() ) ? p->data() : def;
 }
 
 inline char* SS( char* s )

@@ -180,7 +180,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 				if ( n <= 0 ) { continue; }
 
-				carray<FSPromptData> pData( n );
+				std::vector<FSPromptData> pData( n );
 				int i;
 
 				for ( i = 0; i < n; i++ )
@@ -758,7 +758,7 @@ int FSSftp::ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 					continue;
 				}
 
-				cptr<FSNode> pNode = new FSNode();
+				clPtr<FSNode> pNode = new FSNode();
 				pNode->name.Set( _operParam.charset, attr->name );
 
 				pNode->st.size = attr->size;
@@ -899,7 +899,7 @@ FSString FSSftp::Uri( FSPath& path )
 {
 	MutexLock lock( &infoMutex ); //infoMutex!!!
 
-	carray<char> a;
+	std::vector<char> a;
 
 	char port[0x100];
 	snprintf( port, sizeof( port ), ":%i", _infoParam.port );

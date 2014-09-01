@@ -12,12 +12,12 @@ typedef unsigned TermChar;
 class EmulatorCLList
 {
 	int dataSize;
-	carray<bool> data;
+	std::vector<bool> data;
 	int count;
 public:
 	EmulatorCLList(): dataSize( 0x100 ), data( 0x100 ), count( 0 ) {}
 	void SetAll( bool b ) { for ( int i = 0; i < count; i++ ) { data[i] = b; } }
-	void SetSize( int size ) { if ( dataSize < size ) { data.alloc( size ); dataSize = size; } count = size; SetAll( true ); }
+	void SetSize( int size ) { if ( dataSize < size ) { data.resize( size ); dataSize = size; } count = size; SetAll( true ); }
 	void Set( int n, bool b ) { if ( n >= 0 && n < count ) { data[n] = b; } }
 	bool Get( int n ) { return ( n >= 0 && n < count ) ? data[n] : false; }
 };
@@ -54,7 +54,7 @@ class EmulatorScreen
 	int lineCount;
 	int lineSize;
 	EmulatorCLList* clList;
-	carray<carray<TermChar> > list;
+	std::vector<std::vector<TermChar> > list;
 	int CLN( int n ) { return n >= rows ? rows - 1 : ( n < 0 ? 0 : n ); }
 	void SetCL( int n ) { if ( clList ) { clList->Set( n, true ); } }
 public:
@@ -63,7 +63,7 @@ public:
 	int Cols() const { return cols; }
 	void Clear();
 	void SetSize( int r, int c );
-	TermChar* Get( int n ) { return n > 0 && n < rows ? list[n].ptr() : list[0].ptr(); }
+	TermChar* Get( int n ) { return n > 0 && n < rows ? list[n].data() : list[0].data(); }
 	void ScrollUp( int a, int b, int count, unsigned ch ); //a<=b
 	void ScrollDown( int a, int b, int count, unsigned ch ); //a<=b
 	void SetLineChar( int ln, int c, int count, unsigned ch );

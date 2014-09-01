@@ -97,13 +97,13 @@ FILETIME FSTime::GetFileTime()
 
 inline int Utf16Chars( const wchar_t* s ) { int n = 0; for ( ; *s; s++ ) { n++; } return n; }
 
-inline carray<wchar_t> UnicodeToUtf16_cat( const unicode_t* s, wchar_t* cat )
+inline std::vector<wchar_t> UnicodeToUtf16_cat( const unicode_t* s, wchar_t* cat )
 {
 	int lcat = Utf16Chars( cat );
-	carray<wchar_t> p( unicode_strlen( s ) + lcat + 1 );
+	std::vector<wchar_t> p( unicode_strlen( s ) + lcat + 1 );
 	wchar_t* d;
 
-	for ( d = p.ptr(); *s; s++, d++ ) { *d = *s; }
+	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
 
 	for ( ; *cat; cat++, d++ ) { *d = *cat; }
 
@@ -134,9 +134,9 @@ bool FSSys::Equal( FS* fs )
 }
 
 /* не поддерживает пути >265 длиной
-static carray<wchar_t> SysPathStr(int drive, const unicode_t *s)
+static std::vector<wchar_t> SysPathStr(int drive, const unicode_t *s)
 {
-   carray<wchar_t> p(2 + unicode_strlen(s)+1);
+   std::vector<wchar_t> p(2 + unicode_strlen(s)+1);
    wchar_t *d =p.ptr();
 
    if (drive == -1) { //???
@@ -153,10 +153,10 @@ static carray<wchar_t> SysPathStr(int drive, const unicode_t *s)
 }
 */
 
-static carray<wchar_t> SysPathStr( int drive, const unicode_t* s )
+static std::vector<wchar_t> SysPathStr( int drive, const unicode_t* s )
 {
-	carray<wchar_t> p( 10 + unicode_strlen( s ) + 1 ); //+10 прозапас, вообще +8 (макс \\?\UNC\)
-	wchar_t* d = p.ptr();
+	std::vector<wchar_t> p( 10 + unicode_strlen( s ) + 1 ); //+10 прозапас, вообще +8 (макс \\?\UNC\)
+	wchar_t* d = p.data();
 
 	d[0] = '\\';
 	d[1] = '\\';
@@ -194,7 +194,7 @@ int FSSys::OpenRead  ( FSPath& path, int flags, int* err, FSCInfo* info )
 
 	if ( flags & FS::SHARE_WRITE ) { shareFlags |= FILE_SHARE_WRITE; }
 
-	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).ptr(), GENERIC_READ, shareFlags, 0, OPEN_EXISTING, 0, 0 );
+	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), GENERIC_READ, shareFlags, 0, OPEN_EXISTING, 0, 0 );
 
 	//file_open(SysPathStr(_drive, path.GetUnicode('\\')).ptr());
 	if ( h == INVALID_HANDLE_VALUE )
@@ -225,7 +225,7 @@ int FSSys::OpenCreate   ( FSPath& path, bool overwrite, int mode, int flags,  in
 	DWORD creationDisposition = ( overwrite ) ? CREATE_ALWAYS  : CREATE_NEW;
 //???
 
-	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).ptr(), diseredAccess, FILE_SHARE_WRITE, 0, creationDisposition, 0, 0 );
+	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), diseredAccess, FILE_SHARE_WRITE, 0, creationDisposition, 0, 0 );
 
 	if ( h == INVALID_HANDLE_VALUE )
 	{
@@ -325,8 +325,8 @@ int FSSys::Seek( int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet,  int* er
 int FSSys::Rename ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info )
 {
 	if ( MoveFileW(
-	        SysPathStr( _drive, oldpath.GetUnicode( '\\' ) ).ptr(),
-	        SysPathStr( _drive, newpath.GetUnicode( '\\' ) ).ptr()
+	        SysPathStr( _drive, oldpath.GetUnicode( '\\' ) ).data(),
+	        SysPathStr( _drive, newpath.GetUnicode( '\\' ) ).data()
 	     ) ) { return 0; }
 
 	SetError( err, GetLastError() );
@@ -335,7 +335,7 @@ int FSSys::Rename ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info 
 
 int FSSys::MkDir( FSPath& path, int mode, int* err,  FSCInfo* info )
 {
-	if ( CreateDirectoryW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).ptr(), 0 ) ) { return 0; }
+	if ( CreateDirectoryW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), 0 ) ) { return 0; }
 
 	DWORD e = GetLastError();
 
@@ -347,15 +347,15 @@ int FSSys::MkDir( FSPath& path, int mode, int* err,  FSCInfo* info )
 
 int FSSys::Delete( FSPath& path, int* err, FSCInfo* info )
 {
-	carray<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
+	std::vector<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
 
-	if ( DeleteFileW( sp.ptr() ) ) { return 0; }
+	if ( DeleteFileW( sp.data() ) ) { return 0; }
 
 	DWORD lastError  = GetLastError();
 
 	if ( lastError == ERROR_ACCESS_DENIED ) //возможно read only аттрибут, пытаемся сбросить
 	{
-		if ( SetFileAttributesW( sp.ptr(), 0 ) && DeleteFileW( sp.ptr() ) ) { return 0; }
+		if ( SetFileAttributesW( sp.data(), 0 ) && DeleteFileW( sp.data() ) ) { return 0; }
 
 		lastError  = GetLastError();
 	}
@@ -366,15 +366,15 @@ int FSSys::Delete( FSPath& path, int* err, FSCInfo* info )
 
 int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 {
-	carray<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
+	std::vector<wchar_t> sp = SysPathStr( _drive, path.GetUnicode( '\\' ) );
 
-	if ( RemoveDirectoryW( sp.ptr() ) ) { return 0; }
+	if ( RemoveDirectoryW( sp.data() ) ) { return 0; }
 
 	DWORD lastError  = GetLastError();
 
 	if ( lastError == ERROR_ACCESS_DENIED ) //возможно read only аттрибут, пытаемся сбросить
 	{
-		if ( SetFileAttributesW( sp.ptr(), 0 ) && RemoveDirectoryW( sp.ptr() ) ) { return 0; }
+		if ( SetFileAttributesW( sp.data(), 0 ) && RemoveDirectoryW( sp.data() ) ) { return 0; }
 
 		lastError  = GetLastError();
 	}
@@ -385,8 +385,7 @@ int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 
 int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
-	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).ptr(),
-	                        FILE_WRITE_ATTRIBUTES , 0, 0, OPEN_EXISTING, 0, 0 );
+	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), FILE_WRITE_ATTRIBUTES , 0, 0, OPEN_EXISTING, 0, 0 );
 
 	if ( h == INVALID_HANDLE_VALUE )
 	{
@@ -408,11 +407,11 @@ int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FS
 	return 0;
 }
 /* не поддерживает пути >265 длиной
-static carray<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *cat)
+static std::vector<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *cat)
 {
    int lcat = Utf16Chars(cat);
 
-   carray<wchar_t> p(2 + unicode_strlen(s)+lcat+1);
+   std::vector<wchar_t> p(2 + unicode_strlen(s)+lcat+1);
    wchar_t *d =p.ptr();
 
    if (drive == -1) {
@@ -430,12 +429,12 @@ static carray<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *cat)
 }
 */
 
-static carray<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t* cat )
+static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t* cat )
 {
 	int lcat = Utf16Chars( cat );
 
-	carray<wchar_t> p( 10 + unicode_strlen( s ) + lcat + 1 );
-	wchar_t* d = p.ptr();
+	std::vector<wchar_t> p( 10 + unicode_strlen( s ) + lcat + 1 );
+	wchar_t* d = p.data();
 
 	d[0] = '\\';
 	d[1] = '\\';
@@ -474,7 +473,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 	FSPath path( _path );
 	WIN32_FIND_DATAW ent;
 
-	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).ptr(), &ent );
+	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).data(), &ent );
 
 	if ( handle == INVALID_HANDLE_VALUE )
 	{
@@ -499,8 +498,8 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 			//skip . and ..
 			if ( !( ent.cFileName[0] == '.' && ( !ent.cFileName[1] || ( ent.cFileName[1] == '.' && !ent.cFileName[2] ) ) ) )
 			{
-				cptr<FSNode> pNode = new FSNode();
-				pNode->name.Set( CS_UNICODE, Utf16ToUnicode( ent.cFileName ).ptr() );
+				clPtr<FSNode> pNode = new FSNode();
+				pNode->name.Set( CS_UNICODE, Utf16ToUnicode( ent.cFileName ).data() );
 
 				pNode->st.dwFileAttributes = ent.dwFileAttributes;
 				pNode->st.size = ( seek_t( ent.nFileSizeHigh ) << 32 ) + ent.nFileSizeLow;
@@ -558,7 +557,7 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	}
 
 	WIN32_FIND_DATAW ent;
-	HANDLE handle = FindFirstFileW( SysPathStr( _drive, path.GetUnicode() ).ptr(), &ent );
+	HANDLE handle = FindFirstFileW( SysPathStr( _drive, path.GetUnicode() ).data(), &ent );
 
 	if ( handle == INVALID_HANDLE_VALUE )
 	{
@@ -672,27 +671,28 @@ FSString FSSys::Uri( FSPath& path )
 
 	*p = 0;
 
-	return FSString( carray_cat<unicode_t>( pref, path.GetUnicode() ).ptr() );
+	return FSString( carray_cat<unicode_t>( pref, path.GetUnicode() ).data() );
 }
 
-static cinthash<int, carray<unicode_t> > userList;
-static cinthash<int, carray<unicode_t> > groupList;
+static cinthash<int, std::vector<unicode_t> > userList;
+static cinthash<int, std::vector<unicode_t> > groupList;
+
+static unicode_t c0 = 0;
 
 static unicode_t* GetOSUserName( int id )
 {
-	static unicode_t c0 = 0;
 	return &c0;
 }
 
 static unicode_t* GetOSGroupName( int id )
 {
-	static unicode_t c0 = 0;
 	return &c0;
 }
 
 unicode_t* FSSys::GetUserName( int user, unicode_t buf[64] )
 {
-	unicode_t* u = GetOSUserName( user ), *s = buf;
+	unicode_t* u = GetOSUserName( user );
+	unicode_t* s = buf;
 
 	for ( int n = 63; n > 0 && *u; n--, u++, s++ )
 	{
@@ -706,7 +706,8 @@ unicode_t* FSSys::GetUserName( int user, unicode_t buf[64] )
 
 unicode_t* FSSys::GetGroupName( int group, unicode_t buf[64] )
 {
-	unicode_t* g = GetOSGroupName( group ), *s = buf;
+	unicode_t* g = GetOSGroupName( group );
+	unicode_t* s = buf;
 
 	for ( int n = 63; n > 0 && *g; n--, g++, s++ )
 	{
@@ -807,7 +808,7 @@ class WNetEnumerator
 {
 	enum { BUFSIZE = 16 * 1024 };
 	HANDLE handle;
-	carray<char> buf;
+	std::vector<char> buf;
 	int pos, count;
 	bool Fill( DWORD* pErr );
 public:
@@ -825,7 +826,7 @@ public:
 
 		if ( count < 0 ) { return 0; }
 
-		NETRESOURCEW* p = ( ( NETRESOURCEW* )buf.ptr() ) + pos;
+		NETRESOURCEW* p = ( ( NETRESOURCEW* )buf.data() ) + pos;
 		pos++;
 		return p;
 	}
@@ -839,7 +840,7 @@ bool WNetEnumerator::Fill( DWORD* pErr )
 
 	DWORD n = -1;
 	DWORD bSize = BUFSIZE;
-	DWORD res = WNetEnumResourceW( handle, &n, buf.ptr(), &bSize );
+	DWORD res = WNetEnumResourceW( handle, &n, buf.data(), &bSize );
 
 	if ( res == ERROR_NO_MORE_ITEMS )
 	{
@@ -919,9 +920,9 @@ int FSWin32Net::ReadDir ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 				if ( last && last[1] ) { pName = last + 1; }
 			}
 
-			cptr<FSNode> pNode = new FSNode();
+			clPtr<FSNode> pNode = new FSNode();
 
-			pNode->name.Set( CS_UNICODE, Utf16ToUnicode( pName ).ptr() );
+			pNode->name.Set( CS_UNICODE, Utf16ToUnicode( pName ).data() );
 			pNode->st.mode = S_IFDIR;
 			pNode->st.mode |= 0664;
 
@@ -969,7 +970,7 @@ FSString FSWin32Net::Uri( FSPath& path )
 
 	if ( p && p->lpRemoteName )
 	{
-		return FSString( Utf16ToUnicode( p->lpRemoteName ).ptr() );
+		return FSString( Utf16ToUnicode( p->lpRemoteName ).data() );
 	}
 
 	return FSString( "Network" );
@@ -1189,7 +1190,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 				continue;
 			}
 
-			cptr<FSNode> pNode = new FSNode();
+			clPtr<FSNode> pNode = new FSNode();
 			path.SetItem( n, sys_charset_id, ent.d_name );
 			Stat( path, &pNode->st, 0, info );
 			pNode->name.Set( sys_charset_id, ent.d_name );
@@ -1343,14 +1344,14 @@ FSString FSSys::Uri( FSPath& path )
 }
 
 
-static cinthash<int, carray<unicode_t> > userList;
-static cinthash<int, carray<unicode_t> > groupList;
+static cinthash<int, std::vector<unicode_t> > userList;
+static cinthash<int, std::vector<unicode_t> > groupList;
 
-static unicode_t* GetOSUserName( int id )
+static std::vector<unicode_t> GetOSUserName( int id )
 {
-	carray<unicode_t>* u = userList.exist( id );
+	std::vector<unicode_t>* u = userList.exist( id );
 
-	if ( u ) { return u->ptr(); }
+	if ( u ) { return *u; }
 
 	setpwent();
 	struct passwd* p = getpwuid( id );
@@ -1359,18 +1360,17 @@ static unicode_t* GetOSUserName( int id )
 
 	if ( !p ) { sprintf( buf, "%i", id ); }
 
-	carray<unicode_t> str = sys_to_unicode_array( nameStr );
-	unicode_t* s = str.ptr();
+	std::vector<unicode_t> str = sys_to_unicode_array( nameStr );
 	userList[id] = str;
 	endpwent();
-	return s;
+	return str;
 }
 
-static unicode_t* GetOSGroupName( int id )
+static std::vector<unicode_t> GetOSGroupName( int id )
 {
-	carray<unicode_t>* g = groupList.exist( id );
+	std::vector<unicode_t>* g = groupList.exist( id );
 
-	if ( g ) { return g->ptr(); }
+	if ( g ) { return *g; }
 
 	setgrent();
 	struct group* p = getgrgid( id );
@@ -1379,16 +1379,17 @@ static unicode_t* GetOSGroupName( int id )
 
 	if ( !p ) { sprintf( buf, "%i", id ); }
 
-	carray<unicode_t> str = sys_to_unicode_array( nameStr );
-	unicode_t* s = str.ptr();
+	std::vector<unicode_t> str = sys_to_unicode_array( nameStr );
 	groupList[id] = str;
 	endgrent();
-	return s;
+	return str;
 }
 
 unicode_t* FSSys::GetUserName( int user, unicode_t buf[64] )
 {
-	unicode_t* u = GetOSUserName( user ), *s = buf;
+	std::vector<unicode_t> Name = GetOSUserName( user );
+	unicode_t* u = Name.data();
+	unicode_t* s = buf;
 
 	for ( int n = 63; n > 0 && *u; n--, u++, s++ )
 	{
@@ -1402,7 +1403,10 @@ unicode_t* FSSys::GetUserName( int user, unicode_t buf[64] )
 
 unicode_t* FSSys::GetGroupName( int group, unicode_t buf[64] )
 {
-	unicode_t* g = GetOSGroupName( group ), *s = buf;
+	std::vector<unicode_t> Name = GetOSGroupName( group );
+
+	unicode_t* g = Name.data();
+	unicode_t* s = buf;
 
 	for ( int n = 63; n > 0 && *g; n--, g++, s++ )
 	{
@@ -1421,7 +1425,7 @@ FSSys::~FSSys() {}
 
 //////////////////////////////////////// FSList /////////////////////////////////////
 
-void FSList::Append( cptr<FSNode> p )
+void FSList::Append( clPtr<FSNode> p )
 {
 	p->next = 0;
 
@@ -1484,9 +1488,9 @@ void FSList::CopyOne( FSNode* node )
 	count = 1;
 }
 
-carray<FSNode*> FSList::GetArray()
+std::vector<FSNode*> FSList::GetArray()
 {
-	carray<FSNode*> p( Count() );
+	std::vector<FSNode*> p( Count() );
 	FSNode* pNode = first;
 	int n = Count();
 
@@ -1498,11 +1502,11 @@ carray<FSNode*> FSList::GetArray()
 	return p;
 }
 
-wal::carray<FSNode*> FSList::GetFilteredArray( bool showHidden, int* pCount )
+std::vector<FSNode*> FSList::GetFilteredArray( bool showHidden, int* pCount )
 {
 	if ( pCount ) { *pCount = 0; }
 
-	carray<FSNode*> p( Count() );
+	std::vector<FSNode*> p( Count() );
 	FSNode* pNode = first;
 	int n = Count();
 	int i;
@@ -2039,38 +2043,6 @@ int FSNode::CmpByExt( FSNode& a, bool case_sensitive )
 
 
 FSNode::~FSNode() {}
-
-
-
-//////////////////////////////////// FSPtr ///////////////////////////////////////////
-
-
-static Mutex mutexFSPtr;
-
-void FSPtr::Copy( FS* p )
-{
-	if ( data )
-	{
-		MutexLock lock( &mutexFSPtr );
-		data->_copyCounter--;
-
-		if ( data->_copyCounter <= 0 )
-		{
-			lock.Unlock();
-			delete data;
-		}
-
-		data = 0;
-	}
-
-	if ( p )
-	{
-		MutexLock lock( &mutexFSPtr );
-		p->_copyCounter++;
-		data = p;
-
-	}
-}
 
 ////////////////////////////////////  Utils ///////////////////////////////////////////
 

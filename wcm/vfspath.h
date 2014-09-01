@@ -12,7 +12,7 @@ using namespace wal;
 
 template <class T> inline int CmpStr( T* a, T* b )
 {
-	for ( ; *a && *a == *b; a++, b++ ) { 0; }
+	for ( ; *a && *a == *b; a++, b++ );
 
 	return ( *a ? ( *b ? ( *a < *b ? -1 : ( *a == *b ? 0 : 1 ) ) : 1 ) : ( *b ? -1 : 0 ) );
 }
@@ -172,7 +172,7 @@ class FSPath
 	ccollect<FSString, 16> data;
 	int cacheCs;
 
-	carray<char> cache;
+	std::vector<char> cache;
 	int cacheSize;
 	int cacheSplitter;
 
@@ -180,7 +180,7 @@ class FSPath
 	{
 		if ( cacheSize >= n ) { return; }
 
-		cache.alloc( n );
+		cache.resize( n );
 		cacheSize = n;
 	}
 
@@ -215,7 +215,7 @@ public:
 
 	bool IsAbsolute() { return Count() > 0 && data[0].IsEmpty(); }
 
-	const void* GetString( int cs, char delimiter = DIR_SPLITTER ) { if ( cacheCs != cs || cacheSplitter != delimiter ) { MakeCache( cs, delimiter ); } return cache.ptr(); }
+	const void* GetString( int cs, char delimiter = DIR_SPLITTER ) { if ( cacheCs != cs || cacheSplitter != delimiter ) { MakeCache( cs, delimiter ); } return cache.data(); }
 	const unicode_t* GetUnicode( char delimiter = DIR_SPLITTER ) { return ( const unicode_t* ) GetString( CS_UNICODE, delimiter ); }
 	const char* GetUtf8( char delimiter = DIR_SPLITTER ) { return ( const char* ) GetString( CS_UTF8, delimiter ); }
 

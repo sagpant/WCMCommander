@@ -2,14 +2,14 @@
 #define NCFONTS_H
 #include "swl/swl.h"
 
-extern cptr<cfont> panelFont;
-extern cptr<cfont> viewerFont;
-extern cptr<cfont> editorFont;
-extern cptr<cfont> dialogFont;
-extern cptr<cfont> terminalFont;
-extern cptr<cfont> helpTextFont;
-extern cptr<cfont> helpBoldFont;
-extern cptr<cfont> helpHeadFont;
+extern clPtr<cfont> panelFont;
+extern clPtr<cfont> viewerFont;
+extern clPtr<cfont> editorFont;
+extern clPtr<cfont> dialogFont;
+extern clPtr<cfont> terminalFont;
+extern clPtr<cfont> helpTextFont;
+extern clPtr<cfont> helpBoldFont;
+extern clPtr<cfont> helpHeadFont;
 
 void InitFonts();
 #endif

@@ -36,25 +36,25 @@ public:
 FtpLogonDialog::~FtpLogonDialog() {}
 
 FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
-	:  NCVertDialog( ::createDialogAsChild, 0,  parent, utf8_to_unicode( _LT( "FTP logon" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0,  parent, utf8_to_unicode( _LT( "FTP logon" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   serverText( 0, this, utf8_to_unicode( _LT( "Server:" ) ).ptr() ),
-	   anonymousButton( 0, this, utf8_to_unicode( _LT( "Anonymous logon" ) ).ptr(), 0, params.anonymous ),
-	   userText( 0, this, utf8_to_unicode( _LT( "Login:" ) ).ptr() ),
-	   passwordText( 0, this, utf8_to_unicode(  _LT( "Password:" ) ).ptr() ),
-	   portText( 0, this, utf8_to_unicode( _LT( "Port:" ) ).ptr() ),
-	   charsetText( 0, this, utf8_to_unicode( _LT( "Charset:" ) ).ptr() ),
+	   serverText( 0, this, utf8_to_unicode( _LT( "Server:" ) ).data() ),
+	   anonymousButton( 0, this, utf8_to_unicode( _LT( "Anonymous logon" ) ).data(), 0, params.anonymous ),
+	   userText( 0, this, utf8_to_unicode( _LT( "Login:" ) ).data() ),
+	   passwordText( 0, this, utf8_to_unicode(  _LT( "Password:" ) ).data() ),
+	   portText( 0, this, utf8_to_unicode( _LT( "Port:" ) ).data() ),
+	   charsetText( 0, this, utf8_to_unicode( _LT( "Charset:" ) ).data() ),
 
 	   charset( params.charset ),
-	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).ptr() ), //чтоб место забить
+	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), // placeholder
 
 	   serverEdit  ( 0, this, 0, 0, 16 ),
 	   userEdit ( 0, this, 0, 0, 16 ),
 	   passwordEdit   ( 0, this, 0, 0, 16 ),
 	   portEdit ( 0, this, 0, 0, 16 ),
 
-	   charsetButton( 0, this, utf8_to_unicode( ">" ).ptr() , 1000 ),
-	   passiveButton( 0, this, utf8_to_unicode( _LT( "Passive mode" ) ).ptr(), 0, params.passive )
+	   charsetButton( 0, this, utf8_to_unicode( ">" ).data() , 1000 ),
+	   passiveButton( 0, this, utf8_to_unicode( _LT( "Passive mode" ) ).data(), 0, params.passive )
 {
 	serverEdit.SetText( params.server.Data(), true );
 	userEdit.SetText( params.user.Data(), true );
@@ -62,7 +62,7 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 
 	char buf[0x100];
 	snprintf( buf, sizeof( buf ), "%i", params.port );
-	portEdit.SetText( utf8_to_unicode( buf ).ptr(), true );
+	portEdit.SetText( utf8_to_unicode( buf ).data(), true );
 
 	bool focus = false;
 
@@ -113,7 +113,7 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	iL.AddWin( &charsetText, 5, 0, 5, 0 );
 	charsetText.Enable();
 	charsetText.Show();
-	charsetIdText.SetText( utf8_to_unicode( charset_table[params.charset]->name ).ptr() );
+	charsetIdText.SetText( utf8_to_unicode( charset_table[params.charset]->name ).data() );
 	iL.AddWin( &charsetIdText, 5, 1, 5, 1 );
 	charsetIdText.Enable();
 	charsetIdText.Show();
@@ -161,7 +161,7 @@ bool FtpLogonDialog::Command( int id, int subId, Win* win, void* data )
 		if ( SelectCharset( ( NCDialogParent* )Parent(), &ret, charset ) )
 		{
 			charset = ret;
-			charsetIdText.SetText( utf8_to_unicode( charset_table[ret]->name ).ptr() );
+			charsetIdText.SetText( utf8_to_unicode( charset_table[ret]->name ).data() );
 		}
 
 		return true;
@@ -211,10 +211,10 @@ bool GetFtpLogon( NCDialogParent* parent, FSFtpParam& params )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params.server  = dlg.serverEdit.GetText().ptr();
-		params.user = dlg.userEdit.GetText().ptr();
-		params.pass = dlg.passwordEdit.GetText().ptr();
-		params.port = atoi( unicode_to_utf8( dlg.portEdit.GetText().ptr() ).ptr() );
+		params.server  = dlg.serverEdit.GetText().data();
+		params.user = dlg.userEdit.GetText().data();
+		params.pass = dlg.passwordEdit.GetText().data();
+		params.port = atoi( unicode_to_utf8( dlg.portEdit.GetText().data() ).data() );
 		params.anonymous = dlg.anonymousButton.IsSet();
 		params.passive = dlg.passiveButton.IsSet();
 		params.isSet   = true;

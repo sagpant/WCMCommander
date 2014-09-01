@@ -31,24 +31,24 @@ public:
 SmbLogonDialog::~SmbLogonDialog() {}
 
 SmbLogonDialog::SmbLogonDialog( NCDialogParent* parent, FSSmbParam& params, bool enterServer )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "SMB logon" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "SMB logon" ) ).data(), bListOkCancel ),
 	   iL( 16, 2 ),
-	   text( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "Server:" ), const_cast<char*>( params.server ) ).ptr() ).ptr() ),
+	   text( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "Server:" ), const_cast<char*>( params.server ) ).data() ).data() ),
 	   serverInput( enterServer ),
-	   serverText( 0, this, utf8_to_unicode( _LT( "Server:" ) ).ptr() ),
-	   domainText( 0, this, utf8_to_unicode( _LT( "Domain:" ) ).ptr() ),
-	   userText( 0, this, utf8_to_unicode( _LT( "Login:" ) ).ptr() ),
-	   passwordText( 0, this, utf8_to_unicode( _LT( "Password:" ) ).ptr() ),
+	   serverText( 0, this, utf8_to_unicode( _LT( "Server:" ) ).data() ),
+	   domainText( 0, this, utf8_to_unicode( _LT( "Domain:" ) ).data() ),
+	   userText( 0, this, utf8_to_unicode( _LT( "Login:" ) ).data() ),
+	   passwordText( 0, this, utf8_to_unicode( _LT( "Password:" ) ).data() ),
 	   serverEdit  ( 0, this, 0, 0, 16 ),
 	   domainEdit  ( 0, this, 0, 0, 16 ),
 	   userEdit ( 0, this, 0, 0, 16 ),
 	   passwordEdit   ( 0, this, 0, 0, 16 )
 {
 
-	serverEdit.SetText( utf8_to_unicode( const_cast<char*>( params.server ) ).ptr(), true );
-	domainEdit.SetText( utf8_to_unicode( const_cast<char*>( params.domain ) ).ptr(), true );
-	userEdit.SetText( utf8_to_unicode( const_cast<char*>( params.user ) ).ptr(), true );
-	passwordEdit.SetText( utf8_to_unicode( const_cast<char*>( params.pass ) ).ptr(), true );
+	serverEdit.SetText( utf8_to_unicode( const_cast<char*>( params.server ) ).data(), true );
+	domainEdit.SetText( utf8_to_unicode( const_cast<char*>( params.domain ) ).data(), true );
+	userEdit.SetText( utf8_to_unicode( const_cast<char*>( params.user ) ).data(), true );
+	passwordEdit.SetText( utf8_to_unicode( const_cast<char*>( params.pass ) ).data(), true );
 
 	bool focus = false;
 
@@ -126,12 +126,12 @@ bool GetSmbLogon( NCDialogParent* parent, FSSmbParam& params, bool enterServer )
 	{
 		if ( enterServer )
 		{
-			Copy( params.server, unicode_to_utf8( dlg.serverEdit.GetText().ptr() ).ptr() , sizeof( params.server ) );
+			Copy( params.server, unicode_to_utf8( dlg.serverEdit.GetText().data() ).data() , sizeof( params.server ) );
 		}
 
-		Copy( params.domain,  unicode_to_utf8( dlg.domainEdit.GetText().ptr() ).ptr() , sizeof( params.domain ) );
-		Copy( params.user, unicode_to_utf8( dlg.userEdit.GetText().ptr() ).ptr() , sizeof( params.user ) );
-		Copy( params.pass, unicode_to_utf8( dlg.passwordEdit.GetText().ptr() ).ptr() , sizeof( params.pass ) );
+		Copy( params.domain,  unicode_to_utf8( dlg.domainEdit.GetText().data() ).data() , sizeof( params.domain ) );
+		Copy( params.user, unicode_to_utf8( dlg.userEdit.GetText().data() ).data() , sizeof( params.user ) );
+		Copy( params.pass, unicode_to_utf8( dlg.passwordEdit.GetText().data() ).data() , sizeof( params.pass ) );
 		params.isSet = true;
 		return true;
 	}

@@ -58,7 +58,7 @@ class HelpGC
 	struct Node
 	{
 		cfont* font;
-		cptr<cstrhash<cpoint, unicode_t> > pHash;
+		clPtr<cstrhash<cpoint, unicode_t> > pHash;
 		Node( cfont* f = 0 ): font( f ) { pHash = new cstrhash<cpoint, unicode_t>; }
 	};
 	ccollect<Node> _list;
@@ -111,7 +111,7 @@ HelpGC::~HelpGC() {};
 
 
 
-struct HelpNode
+struct HelpNode: public iIntrusiveCounter
 {
 	HelpStyle* _style;
 	//минимальная и максимальная ширина
@@ -165,7 +165,7 @@ struct HelpNodeV: public HelpNode
 //текст фиксированной длины и ширины
 struct HelpNodeWord: public HelpNode
 {
-	carray<unicode_t> _txt;
+	std::vector<unicode_t> _txt;
 
 	HelpNodeWord( HelpStyle* style, const char* utf8, const char* addr = 0 );
 	virtual void Init( HelpGC& gc );
@@ -180,10 +180,10 @@ struct HelpNodeList: public HelpNode
 
 	struct Node
 	{
-		cptr<HelpNode> item;
+		clPtr<HelpNode> item;
 		bool paint; //расчитывается ProbeWidth
 		Node() {}
-		Node( cptr<HelpNode> w ): item( w ) {}
+		Node( clPtr<HelpNode> w ): item( w ) {}
 	};
 
 	ccollect<Node> _list;
@@ -191,7 +191,7 @@ struct HelpNodeList: public HelpNode
 
 	HelpNodeList( HelpStyle* style );
 	int Count() const { return _list.count(); }
-	void Append( cptr<HelpNode> item );
+	void Append( clPtr<HelpNode> item );
 	virtual void Init( HelpGC& gc );
 	virtual void Prepare( int width );
 	virtual void Paint( HelpGC& gc, int x, int y, bool selected, crect visibleRect );
@@ -225,13 +225,13 @@ struct HelpNodeTable: public HelpNode
 		Pair( int _min, int _max ): minV( _min ), maxV( _max ) {}
 	};
 
-	ccollect<cptr<ccollect<cptr<HelpNode> > > > _tab;
+	ccollect<clPtr<ccollect<clPtr<HelpNode> > > > _tab;
 
 	int _cols; //заполняется Init
-	carray<Pair> _colPair; //создается Init
+	std::vector<Pair> _colPair; //создается Init
 
-	void Append( cptr<HelpNode> item ) { _tab[_tab.count() - 1]->append( item ); }
-	void NL() { _tab.append( new ccollect< cptr<HelpNode> > ); }
+	void Append( clPtr<HelpNode> item ) { _tab[_tab.count() - 1]->append( item ); }
+	void NL() { _tab.append( new ccollect< clPtr<HelpNode> > ); }
 
 	HelpNodeTable( HelpStyle* s ): HelpNode( s )
 	{
@@ -429,7 +429,7 @@ void HelpNodeTable::Init( HelpGC& gc )
 		return;
 	}
 
-	_colPair.alloc( _cols );
+	_colPair.resize( _cols );
 
 	for ( i = 0; i < _tab.count(); i++ )
 	{
@@ -466,7 +466,7 @@ void HelpNodeTable::Prepare( int width )
 	int n = _cols;
 	int i;
 
-	carray<int> cw( _cols );
+	std::vector<int> cw( _cols );
 
 	for ( i = 0; i < _cols; i++ ) { cw[i] = _colPair[i].minV; }
 
@@ -603,7 +603,7 @@ HelpNodeWord::HelpNodeWord( HelpStyle* style, const char* utf8, const char* addr
 void HelpNodeWord::Init( HelpGC& gc )
 {
 	gc.Set( _style->Font() );
-	_size = gc.GetTextExtents( _txt.ptr() );
+	_size = gc.GetTextExtents( _txt.data() );
 	_min = _max = _size.x;
 }
 
@@ -614,7 +614,7 @@ void HelpNodeWord::Paint( HelpGC& gc, int x, int y, bool selected, crect visible
 	gc.Set( _style->Font() );
 	gc.SetFillColor( _style->Bg() );
 	gc.SetTextColor( _style->Fg() );
-	gc.TextOutF( x, y, _txt.ptr() );
+	gc.TextOutF( x, y, _txt.data() );
 }
 
 
@@ -626,7 +626,7 @@ HelpNodeList::HelpNodeList( HelpStyle* style )
 	: HelpNode( style, 0, 0 )
 {}
 
-void HelpNodeList::Append( cptr<HelpNode> word )
+void HelpNodeList::Append( clPtr<HelpNode> word )
 {
 	_list.append( Node( word ) );
 }
@@ -912,8 +912,8 @@ public:
 		NextToken();
 	}
 
-	cptr<HelpNode> Parze();
-	cptr<HelpNode> ParzeTable();
+	clPtr<HelpNode> Parze();
+	clPtr<HelpNode> ParzeTable();
 
 	~HelpParzer();
 };
@@ -1142,10 +1142,10 @@ begin:
 	return tok;
 }
 
-cptr<HelpNode> HelpParzer::ParzeTable()
+clPtr<HelpNode> HelpParzer::ParzeTable()
 {
 	HelpNodeTable* pTable;
-	cptr<HelpNode> ret = pTable = new HelpNodeTable( currentBData.style );
+	clPtr<HelpNode> ret = pTable = new HelpNodeTable( currentBData.style );
 
 	while ( true )
 	{
@@ -1179,13 +1179,13 @@ cptr<HelpNode> HelpParzer::ParzeTable()
 }
 
 
-cptr<HelpNode> HelpParzer::Parze()
+clPtr<HelpNode> HelpParzer::Parze()
 {
 	HelpNodeList* pList;
-	cptr<HelpNode> ret = pList = new HelpNodeList( currentBData.style );
+	clPtr<HelpNode> ret = pList = new HelpNodeList( currentBData.style );
 
 	HelpNodeParagraph* pPar;
-	cptr<HelpNode> paragraph = pPar = new HelpNodeParagraph( currentBData.style );
+	clPtr<HelpNode> paragraph = pPar = new HelpNodeParagraph( currentBData.style );
 
 	while ( true )
 	{
@@ -1278,7 +1278,7 @@ HelpParzer::~HelpParzer() {}
 
 class HelpFile
 {
-	cstrhash< carray<char> > hash;
+	cstrhash< std::vector<char> > hash;
 	bool loaded;
 	bool LoadFile( sys_char_t* name );
 	void Load();
@@ -1297,7 +1297,7 @@ bool HelpFile::LoadFile( sys_char_t* name )
 //printf("file-'%s'\n", name);
 		f.Open( name );
 
-		carray<char> thName;
+		std::vector<char> thName;
 
 		char buf[4096];
 
@@ -1322,10 +1322,10 @@ bool HelpFile::LoadFile( sys_char_t* name )
 
 					str.append( 0 );
 
-					if ( thName.ptr() )
+					if ( thName.data() )
 					{
 						collector.append( 0 );
-						hash[thName.ptr()] = collector.grab();
+						hash[thName.data()] = collector.grab();
 					}
 
 					thName = str.grab();
@@ -1333,7 +1333,7 @@ bool HelpFile::LoadFile( sys_char_t* name )
 				}
 			}
 
-			if ( thName.ptr() )
+			if ( thName.data() )
 			{
 				int n = strlen( buf );
 				collector.append_list( buf, n );
@@ -1341,10 +1341,10 @@ bool HelpFile::LoadFile( sys_char_t* name )
 
 		}
 
-		if ( thName.ptr() )
+		if ( thName.data() )
 		{
 			collector.append( 0 );
-			hash[thName.ptr()] = collector.grab();
+			hash[thName.data()] = collector.grab();
 		}
 
 		f.Close();
@@ -1366,20 +1366,20 @@ void HelpFile::Load()
 
 	loaded = true;
 
-	const char* langId = wcmConfig.systemLang.ptr() ? wcmConfig.systemLang.ptr() : "+";
+	const char* langId = wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+";
 
 	if ( langId[0] == '-' ) { return; }
 
 	if ( langId[0] != '+' )
 	{
 #ifdef _WIN32
-		LoadFile( carray_cat<sys_char_t>( GetAppPath().ptr(),
-		                                  utf8_to_sys( carray_cat<char>( "\\lang\\help.", langId ).ptr() ).ptr() ).ptr() );
+		LoadFile( carray_cat<sys_char_t>( GetAppPath().data(),
+		                                  utf8_to_sys( carray_cat<char>( "\\lang\\help.", langId ).data() ).data() ).data() );
 #else
 
-		if ( !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", langId ).ptr() ).ptr() ) )
+		if ( !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", langId ).data() ).data() ) )
 		{
-			LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", langId ).ptr() ).ptr() );
+			LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", langId ).data() ).data() );
 		}
 
 #endif
@@ -1387,21 +1387,21 @@ void HelpFile::Load()
 	};
 
 #ifdef _WIN32
-	if ( !LoadFile( carray_cat<sys_char_t>( GetAppPath().ptr(),
-	                                        utf8_to_sys( carray_cat<char>( "\\lang\\help.", sys_locale_lang_ter() ).ptr() ).ptr() ).ptr() )
+	if ( !LoadFile( carray_cat<sys_char_t>( GetAppPath().data(),
+	                                        utf8_to_sys( carray_cat<char>( "\\lang\\help.", sys_locale_lang_ter() ).data() ).data() ).data() )
 	   )
-		LoadFile( carray_cat<sys_char_t>( GetAppPath().ptr(),
-		                                  utf8_to_sys( carray_cat<char>( "\\lang\\help.", sys_locale_lang() ).ptr() ).ptr() ).ptr() );
+		LoadFile( carray_cat<sys_char_t>( GetAppPath().data(),
+		                                  utf8_to_sys( carray_cat<char>( "\\lang\\help.", sys_locale_lang() ).data() ).data() ).data() );
 
 #else
 
 	if (
-	   !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", sys_locale_lang_ter() ).ptr() ).ptr() ) &&
-	   !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", sys_locale_lang() ).ptr() ).ptr() ) &&
-	   !LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", sys_locale_lang_ter() ).ptr() ).ptr() )
+	   !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", sys_locale_lang_ter() ).data() ).data() ) &&
+	   !LoadFile( utf8_to_sys( carray_cat<char>( "install-files/share/wcm/lang/help.", sys_locale_lang() ).data() ).data() ) &&
+	   !LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", sys_locale_lang_ter() ).data() ).data() )
 	)
 	{
-		LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", sys_locale_lang() ).ptr() ).ptr() );
+		LoadFile( utf8_to_sys( carray_cat<char>( UNIX_CONFIG_DIR_PATH "/lang/help.", sys_locale_lang() ).data() ).data() );
 	}
 
 #endif
@@ -1410,8 +1410,8 @@ void HelpFile::Load()
 const char* HelpFile::GetTheme( const char* theme )
 {
 	Load();
-	carray<char>* p = hash.exist( theme );
-	return p ? p->ptr() : 0;
+	std::vector<char>* p = hash.exist( theme );
+	return p ? p->data() : 0;
 }
 
 
@@ -1430,7 +1430,7 @@ extern const char* helpData_view;
 
 static HelpFile helpFile;
 
-static cptr<HelpNode> GetHelpNode( const char* theme, cstrhash<HelpStyle>* pStyles )
+static clPtr<HelpNode> GetHelpNode( const char* theme, cstrhash<HelpStyle>* pStyles )
 {
 	const char* ptext = helpFile.GetTheme( theme );
 
@@ -1452,7 +1452,7 @@ int UiClassHelpWin  = GetUiID( "HelpWin" );
 
 class HelpWin: public Win
 {
-	cptr<HelpNode> data;
+	clPtr<HelpNode> data;
 	int dataWidth;
 	int dataHeight;
 
@@ -1847,9 +1847,9 @@ class HelpDlg: public NCDialog
 //	cstrhash<HelpStyle> styles;
 public:
 	HelpDlg( NCDialogParent* parent, const char* name, const char* theme )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).ptr(), bListCancel ),
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListCancel ),
 		   lo( 10, 10 ),
-		   ver( 0, this, utf8_to_unicode( verString ).ptr() ),
+		   ver( 0, this, utf8_to_unicode( verString ).data() ),
 		   helpWin( theme, this,  0 )
 	{
 		lo.SetColGrowth( 0 );

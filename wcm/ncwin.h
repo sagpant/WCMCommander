@@ -25,12 +25,12 @@ using namespace wal;
 
 class StringWin: public Win
 {
-	carray<unicode_t> text;
+	std::vector<unicode_t> text;
 	cpoint textSize;
 public:
 	StringWin( Win* parent );
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
-	const unicode_t* Get() { return text.ptr(); }
+	const unicode_t* Get() { return text.data(); }
 	void Set( const unicode_t* txt );
 	virtual void OnChangeStyles();
 	virtual int UiGetClassId();
@@ -58,7 +58,7 @@ extern ButtonWinData viewShiftButtons[];
 class ButtonWin: public Win
 {
 	Layout _lo;
-	cptr<Button> _buttons[10];
+	clPtr<Button> _buttons[10];
 	crect _rects[10];
 	cpoint _nSizes[10];
 
@@ -83,7 +83,7 @@ public:
 	UFStr() { data[0] = 0;}
 	void Set( const unicode_t* s ) { int i; for ( i = 0; i < N - 1 && *s; i++, s++ ) { data[i] = *s; } data[i] = 0; }
 	UFStr( const unicode_t* s ) { Set( s ); }
-	bool Eq( const unicode_t* s ) { int i; for ( i = 0; i < N - 1 && data[i] && data[i] == *s; i++, s++ ) { 0; } return data[i] == 0 && *s == 0 || i >= N; }
+	bool Eq( const unicode_t* s ) { int i = 0; while ( i < N - 1 && data[i] && data[i] == *s ) { i++; s++; }; return data[i] == 0 && *s == 0 || i >= N; }
 	unicode_t* Str() { return data; }
 };
 
@@ -311,7 +311,7 @@ private:
 
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
 
-	cptr<FSList> GetPanelList();
+	clPtr<FSList> GetPanelList();
 
 	int _execId;
 	unicode_t _execSN[64];

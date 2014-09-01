@@ -203,21 +203,21 @@ public:
 struct InBuf
 {
 	int size;
-	carray<char> data;
+	std::vector<char> data;
 	int pos, count;
 	InBuf( int bufSize = 1024 * 16 ): size( bufSize ), data( bufSize ), pos( 1 ), count( 1 ) {}
-	int Pop( char* s, int n ) { if ( n > count - pos ) { n = count - pos; } if ( n < 0 ) { return 0; } memcpy( s, data.ptr() + pos, n ); pos += n; return n; }
+	int Pop( char* s, int n ) { if ( n > count - pos ) { n = count - pos; } if ( n < 0 ) { return 0; } memcpy( s, data.data() + pos, n ); pos += n; return n; }
 	void Clear() { pos = 1; count = 1; }
 };
 
 struct OutBuf
 {
 	int size;
-	carray<char> data;
+	std::vector<char> data;
 	int count;
 	int Space() { return size - count; }
 	OutBuf( int bufSize = 1024 * 16 ): size( bufSize ), data( bufSize ), count( 0 ) {}
-	int Push( const char* s, int n ) { if ( n > Space() ) { n = Space(); } if ( !n ) { return 0; } memcpy( data.ptr() + count, s, n ); count += n; return n; }
+	int Push( const char* s, int n ) { if ( n > Space() ) { n = Space(); } if ( !n ) { return 0; } memcpy( data.data() + count, s, n ); count += n; return n; }
 	void Clear() { count = 0; }
 };
 
@@ -273,7 +273,7 @@ class TCPSyncBufProto
 		while ( pos < outBuf.count )
 		{
 			SelectWrite();
-			pos += sock.Write( outBuf.data.ptr() + pos, outBuf.count - pos );
+			pos += sock.Write( outBuf.data.data() + pos, outBuf.count - pos );
 		}
 
 		outBuf.count = 0;
@@ -285,7 +285,7 @@ class TCPSyncBufProto
 
 		WriteBuf(); //!!!
 		SelectRead();
-		int bytes = sock.Read( inBuf.data.ptr(), inBuf.size );
+		int bytes = sock.Read( inBuf.data.data(), inBuf.size );
 		inBuf.count = bytes;
 		inBuf.pos = 0;
 	}

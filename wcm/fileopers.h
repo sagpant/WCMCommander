@@ -40,15 +40,15 @@ class OperRDData: public OperData
 {
 public:
 	bool volatile executed;
-	FSPtr fs; //??volatile
+	clPtr<FS> fs; //??volatile
 	FSPath path; //??volatile
 	FSString errorString; //??volatile
 	FSString nonFatalErrorString;
-	cptr<FSList> list; //??volatile
+	clPtr<FSList> list; //??volatile
 
 	OperRDData( NCDialogParent* p ): OperData( p ), executed( false ) {}
 
-	void SetNewParams( FSPtr f, FSPath& p )
+	void SetNewParams( clPtr<FS> f, FSPath& p )
 	{
 		executed = false;
 		fs = f;
@@ -66,7 +66,7 @@ void ReadDirThreadFunc( OperThreadNode* node );
 
 class OperFileNameWin: public Win
 {
-	carray<unicode_t> text;
+	std::vector<unicode_t> text;
 	int _ccount;
 public:
 	OperFileNameWin( Win* parent, int ccount = 80 )
@@ -93,9 +93,9 @@ public:
 
 ///////////////////////////////// common file opers
 
-bool MkDir( FSPtr f, FSPath& p, NCDialogParent* parent );
-bool DeleteList( FSPtr f, FSPath& p, cptr<FSList> list, NCDialogParent* parent );
-cptr<cstrhash<bool, unicode_t> > CopyFiles( FSPtr srcFs, FSPath& srcPath, cptr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent );
-bool MoveFiles( FSPtr srcFs, FSPath& srcPath, cptr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent );
+bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent );
+bool DeleteList( clPtr<FS> f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent );
+clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
+bool MoveFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
 
 #endif
