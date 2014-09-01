@@ -2435,11 +2435,21 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case FC( VK_X, KM_CTRL ):
 			case VK_DOWN:
+				if ( m_AutoCompleteList.IsVisible() )
+				{
+					m_AutoCompleteList.EventKey( pEvent );
+					break;
+				}
 				_edit.SetText( _history.Next() );
 				break;
 
 			case FC( VK_E, KM_CTRL ):
 			case VK_UP:
+				if ( m_AutoCompleteList.IsVisible() )
+				{
+					m_AutoCompleteList.EventKey( pEvent );
+					break;
+				}
 				_edit.SetText( _history.Prev() );
 				break;
 
