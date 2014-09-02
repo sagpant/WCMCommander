@@ -113,6 +113,32 @@ namespace wal
 		return s;
 	}
 
+	bool unicode_is_equal( const unicode_t* s, const unicode_t* ss )
+	{
+		while ( *ss != 0 ) if ( *s++ != *ss++ )
+		{
+			return false;
+		}
+
+		if ( *ss == 0 && *s == 0 ) return true;
+
+		return false;
+	}
+
+	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr )
+	{
+		const unicode_t* S = Str;
+		const unicode_t* SS = SubStr;
+
+		while ( *SS != 0 ) if ( *S++ != *SS++ )
+		{
+			return false;
+		}
+
+		if ( *SS == 0 && *S == 0 ) return false;
+
+		return true;
+	}
 
 ////////////  system File implementation
 
