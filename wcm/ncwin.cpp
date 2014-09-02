@@ -283,12 +283,12 @@ NCWin::NCWin()
 
 	_buttonWin.Set( panelNormalButtons );
 
-	_mdLeft.AddCmd( ID_PANEL_BRIEF_L,    _LT( "Brief" ),        "Ctrl-1" );
-	_mdLeft.AddCmd( ID_PANEL_MEDIUM_L,   _LT( "Medium" ),       "Ctrl-2" );
-	_mdLeft.AddCmd( ID_PANEL_TWO_COLUMNS_L, _LT( "Two columns" ),     "Ctrl-3" );
-	_mdLeft.AddCmd( ID_PANEL_FULL_L,     _LT( "Full (name)" ),     "Ctrl-4" );
-	_mdLeft.AddCmd( ID_PANEL_FULL_ST_L,  _LT( "Full (size, time)" ),  "Ctrl-5" );
-	_mdLeft.AddCmd( ID_PANEL_FULL_ACCESS_L, _LT( "Full (access)" ),      "Ctrl-6" );
+	_mdLeft.AddCmd( ID_PANEL_BRIEF_L,    _LT( "&Brief" ),        "Ctrl-1" );
+	_mdLeft.AddCmd( ID_PANEL_MEDIUM_L,   _LT( "&Medium" ),       "Ctrl-2" );
+	_mdLeft.AddCmd( ID_PANEL_TWO_COLUMNS_L, _LT( "&Two columns" ),     "Ctrl-3" );
+	_mdLeft.AddCmd( ID_PANEL_FULL_L,     _LT( "Full (&name)" ),     "Ctrl-4" );
+	_mdLeft.AddCmd( ID_PANEL_FULL_ST_L,  _LT( "Full (&size, time)" ),  "Ctrl-5" );
+	_mdLeft.AddCmd( ID_PANEL_FULL_ACCESS_L, _LT( "Full (&access)" ),      "Ctrl-6" );
 	_mdLeft.AddSplit();
 
 	_mdRight.AddCmd( ID_PANEL_BRIEF_R,   _LT( "Brief" ),        "Ctrl-1" );
@@ -333,11 +333,11 @@ NCWin::NCWin()
 	_mdOptions.AddCmd( ID_CONFIG_SAVE,   _LT( "Save setup" ),   "Shift-F9" );
 
 
-	_menu.Add( &_mdLeft, utf8_to_unicode( _LT( "Left" ) ).data() );
-	_menu.Add( &_mdFiles, utf8_to_unicode( _LT( "Files" ) ).data() );
-	_menu.Add( &_mdCommands, utf8_to_unicode( _LT( "Commands" ) ).data() );
-	_menu.Add( &_mdOptions, utf8_to_unicode( _LT( "Options" ) ).data() );
-	_menu.Add( &_mdRight, utf8_to_unicode( _LT( "Right" ) ).data() );
+	_menu.Add( &_mdLeft, utf8_to_unicode( _LT( "&Left" ) ).data() );
+	_menu.Add( &_mdFiles, utf8_to_unicode( _LT( "&Files" ) ).data() );
+	_menu.Add( &_mdCommands, utf8_to_unicode( _LT( "&Commands" ) ).data() );
+	_menu.Add( &_mdOptions, utf8_to_unicode( _LT( "&Options" ) ).data() );
+	_menu.Add( &_mdRight, utf8_to_unicode( _LT( "&Right" ) ).data() );
 
 	_mdFiles.AddCmd( ID_VIEW, _LT( "View" ),  "F3" );
 	_mdFiles.AddCmd( ID_EDIT, _LT( "Edit" ),  "F4" );

@@ -381,6 +381,23 @@ namespace wal
 
 	class PopupMenu;
 
+	// Menu text that is split to 3 parts by hot key. 
+	// The hot key character is prepended by '&', like in Windows menu
+	class MenuTextInfo
+	{
+		unicode_t* strBeforeHk;
+		unicode_t* strHk;
+		unicode_t* strAfterHk;
+		unicode_t* strFull; // required to calculate text extents quickly
+	public:
+		MenuTextInfo(const unicode_t* inStr);
+		MenuTextInfo::MenuTextInfo(const MenuTextInfo& src);
+		~MenuTextInfo();
+		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey);
+		cpoint GetTextExtents(GC& gc){ return (strFull!=0) ? gc.GetTextExtents(strFull): cpoint(0,0); }
+		int isEmpty(){ return strFull == 0; }
+	};
+
 	class MenuData: public iIntrusiveCounter
 	{
 	public:
@@ -390,14 +407,16 @@ namespace wal
 		{
 			int type;
 			int id;
-			std::vector<unicode_t> leftText;
+			//std::vector<unicode_t> leftText;
+			MenuTextInfo leftText;
+
 			std::vector<unicode_t> rightText;
 			MenuData* sub;
-			Node(): type( 0 ), sub( 0 ) {}
+			//Node(): type( 0 ), sub( 0 ) {}
 			Node( int _type, int _id, const unicode_t* s,  const unicode_t* rt, MenuData* _sub )
-				: type( _type ), id( _id ), sub( _sub )
+				: type(_type), id(_id), sub(_sub), leftText(s)
 			{
-				if ( s ) { leftText = new_unicode_str( s ); }
+				//if ( s ) { leftText = new_unicode_str( s ); }
 
 				if ( rt ) { rightText = new_unicode_str( rt ); }
 			}
@@ -417,7 +436,6 @@ namespace wal
 		void AddSub( const char* s, MenuData* data ) { AddSub( utf8_to_unicode( s ).data(), data ); }
 		~MenuData() {}
 	};
-
 
 	class PopupMenu: public Win
 	{
@@ -460,8 +478,10 @@ namespace wal
 	{
 		struct Node
 		{
-			std::vector<unicode_t> text;
+			//std::vector<unicode_t> text;
+			MenuTextInfo text;
 			MenuData* data;
+			Node(MenuTextInfo _text, MenuData* _data) : text(_text), data(_data){}
 		};
 
 		wal::ccollect<Node> list;

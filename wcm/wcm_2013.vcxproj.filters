@@ -1,47 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="charsetdlg.cpp" />
-    <ClCompile Include="color-style.cpp" />
-    <ClCompile Include="dircalc.cpp" />
-    <ClCompile Include="eloadsave.cpp" />
-    <ClCompile Include="ext-app.cpp" />
-    <ClCompile Include="fileopers.cpp" />
-    <ClCompile Include="filesearch.cpp" />
-    <ClCompile Include="ftplogon.cpp" />
-    <ClCompile Include="help.cpp" />
-    <ClCompile Include="helpres.cpp" />
-    <ClCompile Include="ltext.cpp" />
-    <ClCompile Include="nc.cpp" />
-    <ClCompile Include="ncdialogs.cpp" />
-    <ClCompile Include="ncedit.cpp" />
-    <ClCompile Include="ncfonts.cpp" />
-    <ClCompile Include="nchistory.cpp" />
-    <ClCompile Include="ncview.cpp" />
-    <ClCompile Include="ncwin.cpp" />
-    <ClCompile Include="operthread.cpp" />
-    <ClCompile Include="operwin.cpp" />
-    <ClCompile Include="panel-style.cpp" />
-    <ClCompile Include="panel.cpp" />
-    <ClCompile Include="panel_list.cpp" />
-    <ClCompile Include="search-dlg.cpp" />
-    <ClCompile Include="search-tools.cpp" />
-    <ClCompile Include="sftpdlg.cpp" />
-    <ClCompile Include="shell-tools.cpp" />
-    <ClCompile Include="shl.cpp" />
-    <ClCompile Include="shortcuts.cpp" />
-    <ClCompile Include="smblogon.cpp" />
-    <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="strconfig.cpp" />
-    <ClCompile Include="tcp_sock.cpp" />
-    <ClCompile Include="termwin.cpp" />
-    <ClCompile Include="toolbar.cpp" />
-    <ClCompile Include="unicode_lc.cpp" />
-    <ClCompile Include="w32cons.cpp" />
-    <ClCompile Include="w32util.cpp" />
-    <ClCompile Include="wal\wal.cpp" />
-    <ClCompile Include="wcm-config.cpp" />
-    <ClCompile Include="wcm.cpp" />
     <ClCompile Include="swl\swl_button.cpp">
       <Filter>swl</Filter>
     </ClCompile>
@@ -114,12 +73,137 @@
     <ClCompile Include="vfs-uri.cpp">
       <Filter>vfs</Filter>
     </ClCompile>
-    <ClCompile Include="wal\IntrusivePtr.cpp">
-      <Filter>wal</Filter>
+    <ClCompile Include="charsetdlg.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="color-style.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="dircalc.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="eloadsave.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ext-app.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="fileopers.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="filesearch.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ftplogon.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="help.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="helpres.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="wal\IntrusivePtr.h">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ltext.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="nc.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ncdialogs.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ncedit.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ncfonts.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="nchistory.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ncview.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ncwin.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="operthread.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="operwin.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="panel.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="panel_list.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="panel-style.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="search-dlg.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="search-tools.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sftpdlg.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="shell-tools.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="shl.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="shortcuts.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="smblogon.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="strconfig.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="tcp_sock.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="termwin.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="toolbar.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="unicode_lc.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="w32cons.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="w32util.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="wal\wal.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="wcm.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="wcm-config.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="swl\swl_menutextinfo.cpp">
+      <Filter>swl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="w32util.h" />
     <ClInclude Include="targetver.h">
       <Filter>swl</Filter>
     </ClInclude>
@@ -306,8 +390,8 @@
     <ClInclude Include="Resource.h">
       <Filter>%2a.h</Filter>
     </ClInclude>
-    <ClInclude Include="wal\IntrusivePtr.h">
-      <Filter>wal</Filter>
+    <ClInclude Include="w32util.h">
+      <Filter>%2a.cpp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -342,6 +426,10 @@
     </Filter>
     <Filter Include="resources">
       <UniqueIdentifier>{e712221f-268e-434b-97ec-0a524a3e4c9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%2a.cpp">
+      <UniqueIdentifier>{dca056ba-6afa-40ce-bf9d-f2d237d3a457}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
