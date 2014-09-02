@@ -390,8 +390,8 @@ namespace wal
 		unicode_t* strAfterHk;
 		unicode_t* strFull; // required to calculate text extents quickly
 	public:
-		MenuTextInfo(const unicode_t* inStr);
-		MenuTextInfo::MenuTextInfo(const MenuTextInfo& src);
+		explicit MenuTextInfo(const unicode_t* inStr);
+		MenuTextInfo(const MenuTextInfo& src);
 		~MenuTextInfo();
 		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey);
 		cpoint GetTextExtents(GC& gc){ return (strFull!=0) ? gc.GetTextExtents(strFull): cpoint(0,0); }

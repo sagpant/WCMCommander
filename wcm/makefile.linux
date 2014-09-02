@@ -32,6 +32,7 @@ OBJS = \
 	$(OBJDIR)/swl_editline.o  \
 	$(OBJDIR)/swl_layout.o    \
 	$(OBJDIR)/swl_menubox.o    \
+	$(OBJDIR)/swl_menutextinfo.o \
 	$(OBJDIR)/swl_popupmenu.o   \
 	$(OBJDIR)/swl_sbutton.o     \
 	$(OBJDIR)/swl_scrollbar.o   \
@@ -274,6 +275,9 @@ $(OBJDIR)/swl_layout.o: $(HW) $(HS) swl/swl_layout.cpp
 
 $(OBJDIR)/swl_menubox.o: $(HW) $(HS) swl/swl_menubox.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menubox.cpp -o $(OBJDIR)/swl_menubox.o
+
+$(OBJDIR)/swl_menutextinfo.o: $(HW) $(HS) swl/swl_menutextinfo.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menutextinfo.cpp -o $(OBJDIR)/swl_menutextinfo.o
 
 $(OBJDIR)/swl_popupmenu.o: $(HW) $(HS) swl/swl_popupmenu.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_popupmenu.cpp -o $(OBJDIR)/swl_popupmenu.o
