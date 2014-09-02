@@ -760,8 +760,66 @@ void WcmConfig::MapStr( const char* section, const char* name, std::vector<char>
 	mapList.append( node );
 }
 
+static const char* CommandsHistorySection = "CommandsHistory";
 
-void WcmConfig::Load()
+void SaveCommandsHistory( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+	for ( int i = 0; i < nc->GetHistory()->Count(); i++ )
+	{
+		const unicode_t* Hist = (*nc->GetHistory())[i];
+
+		std::vector<char> utf8 = unicode_to_utf8( Hist );
+
+		char buf[4096];
+		snprintf( buf, sizeof( buf ), "Command%i", i );
+
+#ifdef _WIN32
+		RegWriteString( CommandsHistorySection, buf, utf8.data() );
+#else
+		hash.SetStrValue( CommandsHistorySection, buf, utf8.data() );
+#endif
+	}
+}
+
+void LoadCommandsHistory( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+	nc->GetHistory()->Clear();
+
+	int i = 0;
+
+	while (true)
+	{
+		char buf[4096];
+		snprintf( buf, sizeof( buf ), "Command%i", i );
+
+#ifdef _WIN32
+		const char* s = RegReadString( CommandsHistorySection, buf, "" );
+#else
+		const char* s = hash.GetStrValue( CommandsHistorySection, buf, "" );
+#endif
+		if ( !*s ) break;
+
+		std::vector<unicode_t> cmd = utf8_to_unicode( s );
+
+		nc->GetHistory()->Put( cmd.data() );
+
+		i++;
+	}
+}
+
+void WcmConfig::Load( NCWin* nc )
 {
 #ifdef _WIN32
 
@@ -782,6 +840,9 @@ void WcmConfig::Load()
 			*node.ptr.pStr = RegReadString( node.section, node.name, node.def.defStr );
 		}
 	}
+
+
+	LoadCommandsHistory( nc );
 
 #else
 	IniHash hash;
@@ -812,6 +873,8 @@ void WcmConfig::Load()
 		}
 
 	}
+
+	LoadCommandsHistory( nc, hash );
 
 #endif
 
@@ -851,6 +914,8 @@ void WcmConfig::Save( NCWin* nc )
 		}
 	}
 
+	SaveCommandsHistory( nc );
+
 #else
 	IniHash hash;
 	FSPath path = configDirPath;
@@ -874,6 +939,8 @@ void WcmConfig::Save( NCWin* nc )
 			hash.SetStrValue( node.section, node.name, node.ptr.pStr->data() );
 		}
 	}
+
+	SaveCommandsHistory( nc, hash );
 
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
 #endif

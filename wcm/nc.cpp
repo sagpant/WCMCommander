@@ -152,7 +152,7 @@ int main( int argc, char** argv )
 		try
 		{
 			InitConfigPath();
-			wcmConfig.Load();
+			wcmConfig.Load( NULL );
 
 			const char* langId = wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+";
 #ifdef _WIN32
@@ -199,6 +199,9 @@ int main( int argc, char** argv )
 		SetCmdIcons();
 
 		NCWin ncWin;
+
+		// reload config with a valid NCWin
+		wcmConfig.Load( &ncWin );
 
 		ncWin.Enable();
 		ncWin.Show();

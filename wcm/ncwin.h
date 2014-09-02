@@ -367,6 +367,8 @@ public:
 
 	void NotifyAutoComplete();
 	void NotifyAutoCompleteChange();
+
+	NCHistory* GetHistory() { return &_history; }
 };
 
 
