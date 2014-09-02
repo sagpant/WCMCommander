@@ -334,7 +334,7 @@ private:
 	}
 
 #ifndef _WIN32
-	void ExecNoTerminalProcess( unicode_t* p );
+	void ExecNoTerminalProcess( const unicode_t* p );
 #endif
 
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
@@ -343,6 +343,9 @@ private:
 
 	int _execId;
 	unicode_t _execSN[64];
+
+	std::vector<unicode_t> FetchAndClearCommandLine();
+	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal );
 
 public:
 	NCWin();
