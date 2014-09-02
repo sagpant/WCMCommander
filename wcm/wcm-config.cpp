@@ -807,7 +807,8 @@ void LoadCommandsHistory( NCWin* nc
 		snprintf( buf, sizeof( buf ), "Command%i", i );
 
 #ifdef _WIN32
-		const char* s = RegReadString( CommandsHistorySection, buf, "" );
+		std::vector<char> value = RegReadString( CommandsHistorySection, buf, "" );
+		const char* s = value.data();
 #else
 		const char* s = hash.GetStrValue( CommandsHistorySection, buf, "" );
 #endif
