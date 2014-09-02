@@ -97,21 +97,6 @@ int NCCommandLine::UiGetClassId()
 	return uiCommandLine;
 }
 
-bool StartsWithAndNotEqual( const unicode_t* Str, const unicode_t* SubStr )
-{
-	const unicode_t* S = Str;
-	const unicode_t* SS = SubStr;
-
-	while ( *SS != 0 ) if ( *S++ != *SS++ )
-	{
-		return false;
-	}
-
-	if ( *SS == 0 && *S == 0 ) return false;
-
-	return true;
-}
-
 void NCWin::EventSize( cevent_size* pEvent )
 {
 	Win::EventSize( pEvent );
@@ -168,7 +153,7 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 	{
 		const unicode_t* Hist = _history[i];
 
-		if ( StartsWithAndNotEqual( Hist, CurrentCommand.data() ) )
+		if ( unicode_starts_with_and_not_equal( Hist, CurrentCommand.data() ) )
 		{
 			m_AutoCompleteList.Append( Hist, i );
 			HasHistory = true;
@@ -2193,6 +2178,12 @@ bool NCAutocompleteList::EventKey( cevent_key* pEvent )
 
 	NCWin* Win = ( NCWin* )Parent();
 
+	if ( pEvent->Type( ) == EV_KEYDOWN && pEvent->Key( ) == VK_DELETE )
+	{
+		Win->GetHistory()->DeleteAll( this->GetCurrentString() );
+		Win->NotifyAutoComplete();
+	}
+
 	Win->NotifyAutoCompleteChange();
 
 	return Result;
@@ -2834,6 +2825,12 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case VK_DELETE:
 			{
+				if ( m_AutoCompleteList.IsVisible() )
+				{
+					m_AutoCompleteList.EventKey( pEvent );
+					return true;
+				}
+
 				if ( !_edit.IsVisible() || _edit.IsEmpty() )
 				{
 					Delete();
