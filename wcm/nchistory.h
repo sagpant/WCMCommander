@@ -17,6 +17,11 @@ class NCHistory
 public:
 	NCHistory(): current( 0 ) {}
 
+	void Clear()
+	{
+		list.clear();
+	}
+
 	void Put( const unicode_t* str )
 	{
 		current = 0;
@@ -38,7 +43,9 @@ public:
 			}
 		}
 
-		if ( list.count() > 1000 ) { list.del( list.count() - 1 ); }
+		const size_t HistorySize = 1000;
+
+		if ( list.count() > HistorySize ) { list.del( list.count() - 1 ); }
 
 		list.insert( 0, new_unicode_str( str ) );
 	}
