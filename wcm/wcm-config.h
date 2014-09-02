@@ -81,7 +81,7 @@ struct WcmConfig
 	void ImpCurrentFonts(); //взять используемые шрифты и записать их реквизиты в ...Uri
 
 	WcmConfig();
-	void Load();
+	void Load( NCWin* nc );
 	void Save( NCWin* nc );
 };
 

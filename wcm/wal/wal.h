@@ -38,6 +38,9 @@ namespace wal
 	std::vector<unicode_t> utf8_to_unicode( const char* s );
 	std::vector<char> unicode_to_utf8( const unicode_t* u );
 
+	bool unicode_is_equal( const unicode_t* Str, const unicode_t* SubStr );
+	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr );
+
 ///////////////////  Exceptions ///////////////////////////////////////////////
 
 //all exceptions created by "new" operator (except oom)
