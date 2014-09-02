@@ -5,6 +5,7 @@
 	Added: option 'Select folders'
 	Added: F3 calculates the size of multiple selected folders
 	Added: command line autocomplete
+	Hotket: Shift+Enter to start command without the terminal
 	Hotkey: Ctrl+Tab to switch between editor/viewer and panels
 	Hotkey: Ctrl+O in editor/viewer shows the terminal terminal
 	Hotkey: '5' on numpad calculates the size of the selected files

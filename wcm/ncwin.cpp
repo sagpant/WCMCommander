@@ -41,6 +41,11 @@
 #  include "ux_util.h"
 #endif
 
+template <typename T> void SkipSpaces( T& p )
+{
+	while ( *p == ' ' ) { *p++; }
+}
+
 extern SearchAndReplaceParams searchParams;
 
 static crect acWinRect( 0, 0, 850, 500 );
@@ -624,7 +629,6 @@ void NCWin::PanelEnter()
 			if ( ret == CMD_OPEN_FILE )
 			{
 #ifndef _WIN32
-
 				if ( !terminal )
 				{
 					ExecNoTerminalProcess( cmd.data() );
@@ -632,9 +636,7 @@ void NCWin::PanelEnter()
 				};
 
 #endif
-
 				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
-
 				return;
 			}
 		}
@@ -652,13 +654,11 @@ void NCWin::PanelEnter()
 	if ( cmd.data() )
 	{
 #ifndef _WIN32
-
 		if ( !terminal )
 		{
 			ExecNoTerminalProcess( cmd.data() );
 			return;
 		}
-
 #endif
 
 		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
@@ -752,7 +752,6 @@ void NCWin::RightButtonPressed( cpoint point )
 
 
 #ifndef _WIN32
-
 	if ( !data.nodeList[ret].terminal )
 	{
 		ExecNoTerminalProcess( data.nodeList[ret].cmd );
@@ -1963,7 +1962,7 @@ void NCWin::ViewCharsetTable()
 
 #ifndef _WIN32
 
-void NCWin::ExecNoTerminalProcess( unicode_t* p )
+void NCWin::ExecNoTerminalProcess( const unicode_t* p )
 {
 	_history.Put( p );
 	const unicode_t* pref = _editPref.Get();
@@ -1980,8 +1979,7 @@ void NCWin::ExecNoTerminalProcess( unicode_t* p )
 	_terminal.TerminalPrint( p, fg, bg );
 	_terminal.TerminalPrint( newLine, fg, bg );
 
-
-	while ( *p == ' ' ) { p++; }
+	SkipSpaces( p );
 
 	if ( !*p ) { return; }
 
@@ -2209,6 +2207,147 @@ bool NCAutocompleteList::EventMouse( cevent_mouse* pEvent )
 	Win->NotifyAutoCompleteChange();
 
 	return Result;
+}
+
+
+std::vector<unicode_t> NCWin::FetchAndClearCommandLine()
+{
+	std::vector<unicode_t> txt = _edit.GetText();
+
+	_edit.Clear();
+
+	return txt;
+}
+
+bool IsCommand_CD( const unicode_t* p )
+{
+#ifdef _WIN32
+	return ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' );
+#else
+	return ( p[0] == 'c' && p[1] == 'd' && ( !p[2] || p[2] == ' ' ) );
+#endif
+}
+
+bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal )
+{
+	const unicode_t* p = cmd.data();
+
+	SkipSpaces( p );
+
+	printf( "StartCommand %s, %i\n", (const char*)p, (int)ForceNoTerminal );
+
+	if ( !*p ) return false;
+
+	if ( *p )
+	{
+		if ( IsCommand_CD( p ) )
+		{
+			// make a mutable copy
+			std::vector<unicode_t> copy( cmd );
+
+			unicode_t* p = copy.data();
+
+			//change dir
+			_history.Put( p );
+			p += 2;
+
+			SkipSpaces( p );
+
+			std::vector<unicode_t> uHome;
+
+			if ( !*p )
+			{
+				const sys_char_t* home = ( sys_char_t* ) getenv( "HOME" );
+
+				if ( home )
+				{
+					uHome = sys_to_unicode_array( home );
+					p = uHome.data();
+				}
+			}
+
+			unicode_t* lastNoSpace = 0;
+
+			for ( unicode_t* s = p; *s; s++ )
+			{
+				if ( *s != ' ' ) { lastNoSpace = s; }
+			}
+
+			if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
+
+			clPtr<FS> checkFS[2];
+			checkFS[0] = _panel->GetFSPtr();
+			checkFS[1] = GetOtherPanel()->GetFSPtr();
+
+			FSPath path = _panel->GetPath();
+
+			ccollect<unicode_t, 0x100> pre;
+			int sc = 0;
+
+			while ( *p )
+			{
+				if ( sc )
+				{
+					if ( *p == sc ) { sc = 0;  p++; continue; }
+				}
+				else if ( *p == '\'' || *p == '"' )
+				{
+					sc = *p;
+					p++;
+					continue;
+				}
+#ifndef _WIN32
+				if ( *p == '\\' && !sc ) { p++; }
+#endif
+				if ( !p ) { break; }
+
+				pre.append( *p );
+				p++;
+			}
+
+			pre.append( 0 );
+			p = pre.ptr();
+
+			clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
+
+			if ( fs.IsNull() )
+			{
+				char buf[4096];
+				FSString name = p;
+				snprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
+				NCMessageBox( this, "CD", buf, true );
+			}
+			else
+			{
+				_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
+			}
+		}
+		else
+		{
+#ifndef _WIN32
+			if ( p[0] == '&' || ForceNoTerminal )
+			{
+				_history.Put( p );
+				if ( p[0] == '&' ) p++;
+				ExecNoTerminalProcess( p );
+			}
+			else
+#endif
+			{
+				FS* fs = _panel->GetFS();
+				if ( fs && fs->Type() == FS::SYSTEM )
+				{
+					StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
+				}
+				else
+				{
+					NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
+				}
+			}
+		}
+	}
+
+	return true;
 }
 
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
@@ -2596,146 +2735,28 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				Tab( true );
 				break;
 
+			case FC( VK_NUMPAD_RETURN, KM_SHIFT ):
+			case FC( VK_RETURN, KM_SHIFT ):
+			{
+				m_AutoCompleteList.Hide();
+				if ( _edit.IsVisible() )
+				{
+					if ( StartCommand( FetchAndClearCommandLine(), true ) ) break;
+				}
+				if ( _panelVisible ) PanelEnter();
+				break;
+			}
 			case VK_NUMPAD_RETURN:
 			case VK_RETURN:
 			{
 				m_AutoCompleteList.Hide();
 				if ( _edit.IsVisible() )
 				{
-					std::vector<unicode_t> txt = _edit.GetText();
-					unicode_t* p = txt.data();
-
-					while ( *p == ' ' ) { p++; }
-
-					if ( *p )
-					{
-
-						_edit.Clear();
-#ifdef _WIN32
-
-						if ( ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' ) )
-#else
-						if ( p[0] == 'c' && p[1] == 'd' && ( !p[2] || p[2] == ' ' ) )
-#endif
-						{
-							//change dir
-							_history.Put( p );
-							p += 2;
-
-							while ( *p == ' ' ) { p++; }
-
-							std::vector<unicode_t> uHome;
-
-							if ( !*p )
-							{
-								const sys_char_t* home = ( sys_char_t* ) getenv( "HOME" );
-
-								if ( home )
-								{
-									uHome = sys_to_unicode_array( home );
-									p = uHome.data();
-								}
-							}
-
-							unicode_t* lastNoSpace = 0;
-
-							for ( unicode_t* s = p; *s; s++ )
-								if ( *s != ' ' ) { lastNoSpace = s; }
-
-							if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
-
-							clPtr<FS> checkFS[2];
-							checkFS[0] = _panel->GetFSPtr();
-							checkFS[1] = GetOtherPanel()->GetFSPtr();
-
-							FSPath path = _panel->GetPath();
-
-
-							ccollect<unicode_t, 0x100> pre;
-							int sc = 0;
-
-							while ( *p )
-							{
-								if ( sc )
-								{
-									if ( *p == sc ) { sc = 0;  p++; continue; }
-								}
-								else if ( *p == '\'' || *p == '"' )
-								{
-									sc = *p;
-									p++;
-									continue;
-								}
-
-#ifndef _WIN32
-
-								if ( *p == '\\' && !sc ) { p++; }
-
-#endif
-
-								if ( !p ) { break; }
-
-								pre.append( *p );
-								p++;
-							}
-
-							pre.append( 0 );
-							p = pre.ptr();
-
-
-							clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
-
-							if ( fs.IsNull() )
-							{
-								char buf[4096];
-								FSString name = p;
-								snprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ),
-								          name.GetUtf8() );
-								NCMessageBox( this, "CD", buf, true );
-							}
-							else
-							{
-								_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
-							}
-
-							break;
-						}
-						else
-						{
-#ifndef _WIN32
-
-							if ( p[0] == '&' ) //запуск без терминала
-							{
-								_history.Put( p );
-								p++;
-								ExecNoTerminalProcess( p );
-								break;
-							}
-
-#endif
-							FS* fs = _panel->GetFS();
-
-							if ( fs && fs->Type() == FS::SYSTEM )
-							{
-								StartExecute( txt.data(), _panel->GetFS(), _panel->GetPath() );
-							}
-							else
-							{
-								NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
-							}
-
-						}
-
-						break;
-					};
+					if ( StartCommand( FetchAndClearCommandLine(), false ) ) break;
 				}
-
-				if ( _panelVisible )
-				{
-					PanelEnter();
-				}
+				if ( _panelVisible ) PanelEnter();
+				break;
 			}
-			break;
 
 			case VK_F1:
 				Help( this, "main" );
