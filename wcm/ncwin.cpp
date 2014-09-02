@@ -2234,7 +2234,7 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 	SkipSpaces( p );
 
-	printf( "StartCommand %s, %i\n", (const char*)p, (int)ForceNoTerminal );
+//	printf( "StartCommand %s, %i\n", (const char*)p, (int)ForceNoTerminal );
 
 	if ( !*p ) return false;
 
