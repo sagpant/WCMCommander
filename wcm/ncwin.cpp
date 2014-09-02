@@ -144,6 +144,8 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 	r.bottom = Bottom;
 	m_AutoCompleteList.Move( r );
 
+	if ( m_PrevAutoCurrentCommand == CurrentCommand ) return;
+
 	bool HasHistory = false;
 
 	m_AutoCompleteList.Clear();
@@ -170,6 +172,7 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 		m_AutoCompleteList.Hide();
 	}
 
+	m_PrevAutoCurrentCommand = CurrentCommand;
 }
 
 NCWin::NCWin()

@@ -211,6 +211,7 @@ private:
 	         _rightPanel;
 
 	NCAutocompleteList m_AutoCompleteList;
+	std::vector<unicode_t> m_PrevAutoCurrentCommand;
 
 	void UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand );
 
