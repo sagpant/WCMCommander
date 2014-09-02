@@ -770,9 +770,11 @@ void SaveCommandsHistory( NCWin* nc
 {
 	if ( !nc ) return;
 
-	for ( int i = 0; i < nc->GetHistory()->Count(); i++ )
+	int Count = nc->GetHistory()->Count();
+
+	for ( int i = 0; i < Count; i++ )
 	{
-		const unicode_t* Hist = (*nc->GetHistory())[i];
+		const unicode_t* Hist = (*nc->GetHistory())[Count-i-1];
 
 		std::vector<char> utf8 = unicode_to_utf8( Hist );
 
