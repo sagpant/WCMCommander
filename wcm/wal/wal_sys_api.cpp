@@ -555,7 +555,11 @@ namespace wal
 
 	// XXX make sure that STL and the above homebrewn locales speak the same language
 	static std::locale loc;
-	unicode_t unicode_toupper(unicode_t c){ return std::toupper(c, loc);}
+	// XXX: does not work with non-Latin chars
+	unicode_t unicode_toupper(unicode_t c)
+	{ 
+	  return toupper((char)c, loc);
+	}
 
 }; //namespace wal
 

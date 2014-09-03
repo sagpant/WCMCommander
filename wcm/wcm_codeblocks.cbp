@@ -238,6 +238,7 @@
 		<Unit filename="swl/swl_editline.cpp" />
 		<Unit filename="swl/swl_layout.cpp" />
 		<Unit filename="swl/swl_menubox.cpp" />
+		<Unit filename="swl/swl_menutextinfo.cpp" />
 		<Unit filename="swl/swl_popupmenu.cpp" />
 		<Unit filename="swl/swl_sbutton.cpp" />
 		<Unit filename="swl/swl_scrollbar.cpp" />
