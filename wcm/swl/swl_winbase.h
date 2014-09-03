@@ -389,13 +389,15 @@ namespace wal
 		unicode_t* strHk;
 		unicode_t* strAfterHk;
 		unicode_t* strFull; // required to calculate text extents quickly
+		unicode_t hotkeyUpperCase;
 	public:
 		explicit MenuTextInfo(const unicode_t* inStr);
 		MenuTextInfo(const MenuTextInfo& src);
 		~MenuTextInfo();
-		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey);
-		cpoint GetTextExtents(GC& gc){ return (strFull!=0) ? gc.GetTextExtents(strFull): cpoint(0,0); }
-		int isEmpty(){ return strFull == 0; }
+		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
+		cpoint GetTextExtents(GC& gc) const { return (strFull!=0) ? gc.GetTextExtents(strFull): cpoint(0,0); }
+		int isEmpty() const { return strFull == 0; }
+		int isHotkeyMatching(unicode_t charUpperCase) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
 	};
 
 	class MenuData: public iIntrusiveCounter

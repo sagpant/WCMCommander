@@ -327,65 +327,15 @@ namespace wal
 
 	sys_char_t* sys_error_str( int err, sys_char_t* buf, int size );
 
-
-
-	inline int unicode_strlen( const unicode_t* s )
-	{
-		const unicode_t* p = s;
-
-		while ( *p ) { p++; }
-
-		return p - s;
-	}
-
-	inline unicode_t* unicode_strchr( const unicode_t* s, unicode_t c )
-	{
-		while ( *s != c && *s ) { s++; }
-
-		return ( unicode_t* )( *s ? s : 0 );
-	}
-	
-	inline unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s)
-	{
-		unicode_t* ret = d;
-		while ((*d++ = *s++) != 0)
-			;
-		return ret;
-	}
-
+	int unicode_strlen(const unicode_t* s);
+	unicode_t* unicode_strchr(const unicode_t* s, unicode_t c);
+	unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s);
 	// copy unlit end of string, or when n chars copid, whichever comes first. 
 	// d is always 0-ended
-	inline unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n)
-	{
-		unicode_t* ret = d;
-		for (;;)
-		{
-			if (n-- == 0)
-			{
-				*d = 0;
-				break;
-			}
-			if ((*d++ = *s++) == 0)
-			{
-				break;
-			}
-		}
-		return ret;
-	}
-
-	inline void unicode_strcat(unicode_t* d, const unicode_t* s)
-	{
-		while (*d)
-			d++;
-		while ((*d++ = *s++) != 0)
-			;
-	}
-
-	inline unicode_t* unicode_strdup(const unicode_t* s)
-	{
-		return unicode_strcpy(new unicode_t[unicode_strlen(s) + 1], s);
-	}
-
+	unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n);
+	void unicode_strcat(unicode_t* d, const unicode_t* s);
+	unicode_t* unicode_strdup(const unicode_t* s);
+	unicode_t unicode_toupper(unicode_t c);
 
 //for internal use
 	class SysStringStruct

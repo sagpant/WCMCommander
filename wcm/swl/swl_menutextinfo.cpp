@@ -4,6 +4,7 @@ namespace wal
 {
 
 	MenuTextInfo::MenuTextInfo(const unicode_t* inStr)
+		:hotkeyUpperCase(0)
 	{
 		if (inStr == 0)
 		{
@@ -34,8 +35,10 @@ namespace wal
 				strBeforeHk = new unicode_t[strlen_beforeHk + 1];
 				unicode_strncpy0(strBeforeHk, inStr, strlen_beforeHk);
 			}
+			unicode_t hotKeyChar = pAmpersand[1];
+			hotkeyUpperCase = unicode_toupper(hotKeyChar);
 			strHk = new unicode_t[2];
-			strHk[0] = pAmpersand[1];
+			strHk[0] = hotKeyChar;
 			strHk[1] = 0;
 			if (pAmpersand[2] == 0)
 			{
@@ -43,7 +46,7 @@ namespace wal
 			}
 			else
 			{
-				 strAfterHk = unicode_strdup(pAmpersand + 2);
+				strAfterHk = unicode_strdup(pAmpersand + 2);
 			}
 		}
 		// build strFull
@@ -63,6 +66,7 @@ namespace wal
 		strHk       = (src.strHk       == 0) ? 0 : unicode_strdup(src.strHk);
 		strAfterHk  = (src.strAfterHk  == 0) ? 0 : unicode_strdup(src.strAfterHk);
 		strFull     = (src.strFull     == 0) ? 0 : unicode_strdup(src.strFull);
+		hotkeyUpperCase = src.hotkeyUpperCase;
 	}
 
 	MenuTextInfo::~MenuTextInfo()
@@ -77,7 +81,7 @@ namespace wal
 			delete[] strFull;
 	}
 
-	void MenuTextInfo::DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey)
+	void MenuTextInfo::DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const
 	{
 		if (strBeforeHk != 0)
 		{
