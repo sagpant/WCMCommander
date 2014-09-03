@@ -113,8 +113,92 @@ namespace wal
 		return s;
 	}
 
+	bool unicode_is_equal( const unicode_t* s, const unicode_t* ss )
+	{
+		while ( *ss != 0 ) if ( *s++ != *ss++ )
+		{
+			return false;
+		}
 
-////////////  system File implementation
+		if ( *ss == 0 && *s == 0 ) return true;
+
+		return false;
+	}
+
+	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr )
+	{
+		const unicode_t* S = Str;
+		const unicode_t* SS = SubStr;
+
+		while ( *SS != 0 ) if ( *S++ != *SS++ )
+		{
+			return false;
+		}
+
+		if ( *SS == 0 && *S == 0 ) return false;
+
+		return true;
+	}
+
+	int unicode_strlen(const unicode_t* s)
+	{
+		const unicode_t* p = s;
+
+		while (*p) { p++; }
+
+		return p - s;
+	}
+
+	unicode_t* unicode_strchr(const unicode_t* s, unicode_t c)
+	{
+		while (*s != c && *s) { s++; }
+
+		return (unicode_t*)(*s ? s : 0);
+	}
+
+	unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s)
+	{
+		unicode_t* ret = d;
+		while ((*d++ = *s++) != 0)
+			;
+		return ret;
+	}
+
+	// copy unlit end of string, or when n chars copid, whichever comes first. 
+	// d is always 0-ended
+	unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n)
+	{
+		unicode_t* ret = d;
+		for (;;)
+		{
+			if (n-- == 0)
+			{
+				*d = 0;
+				break;
+			}
+			if ((*d++ = *s++) == 0)
+			{
+				break;
+			}
+		}
+		return ret;
+	}
+
+	void unicode_strcat(unicode_t* d, const unicode_t* s)
+	{
+		while (*d)
+			d++;
+		while ((*d++ = *s++) != 0)
+			;
+	}
+
+	unicode_t* unicode_strdup(const unicode_t* s)
+	{
+		return unicode_strcpy(new unicode_t[unicode_strlen(s) + 1], s);
+	}
+
+
+	////////////  system File implementation
 
 	void File::Throw( const sys_char_t* name )
 	{

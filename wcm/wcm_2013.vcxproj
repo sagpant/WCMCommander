@@ -85,7 +85,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>wal;swl;../libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -215,6 +214,7 @@
     <ClCompile Include="swl\swl_editline.cpp" />
     <ClCompile Include="swl\swl_layout.cpp" />
     <ClCompile Include="swl\swl_menubox.cpp" />
+    <ClCompile Include="swl\swl_menutextinfo.cpp" />
     <ClCompile Include="swl\swl_popupmenu.cpp" />
     <ClCompile Include="swl\swl_sbutton.cpp" />
     <ClCompile Include="swl\swl_scrollbar.cpp" />

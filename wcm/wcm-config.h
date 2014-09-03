@@ -35,6 +35,7 @@ struct WcmConfig
 	bool systemAskOpenExec;
 	bool systemEscPanel;
 	bool systemBackSpaceUpDir;
+	bool systemAutoComplete;
 	std::vector<char> systemLang; //"+" - auto "-" -internal eng.
 
 	bool showToolBar;
@@ -80,7 +81,7 @@ struct WcmConfig
 	void ImpCurrentFonts(); //взять используемые шрифты и записать их реквизиты в ...Uri
 
 	WcmConfig();
-	void Load();
+	void Load( NCWin* nc );
 	void Save( NCWin* nc );
 };
 

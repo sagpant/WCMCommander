@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #endif
-
+#include <locale>
 namespace wal
 {
 
@@ -553,6 +553,13 @@ namespace wal
 	const char* sys_locale_ter() { return locale_ter;}
 	const char* sys_locale_lang_ter() { return locale_lang_ter; }
 
+	// XXX make sure that STL and the above homebrewn locales speak the same language
+	static std::locale loc;
+	// XXX: does not work with non-Latin chars
+	unicode_t unicode_toupper(unicode_t c)
+	{ 
+	  return toupper((char)c, loc);
+	}
 
 }; //namespace wal
 

@@ -897,6 +897,7 @@ namespace wal
 	extern int uiItem;
 	extern int uiClassWin;
 	extern int uiColor;
+	extern int uiHotkeyColor;
 	extern int uiBackground;
 	extern int uiFrameColor;
 	extern int uiCurrentItem;

@@ -1,9 +1,7 @@
-
 CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
 #CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -O1 -fno-inline -I wal -I swl -pthread $(CFLAGS_FREETYPE)
 
 include makelib.mk
-
 
 LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l stdc++  -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 
@@ -15,7 +13,7 @@ HN = libconf.h nc.h ncwin.h panel.h ncdialogs.h  terminal.h termwin.h ncedit.h n
  wcm-config.h panel_list.h tcp_sock.h vfs-ftp.h ftplogon.h charsetdlg.h vfs-sftp.h sftpdlg.h color-style.h filesearch.h help.h ux_util.h \
  strconfig.h shortcuts.h fontdlg.h ncfonts.h shl.h toolbar.h ncview.h search-dlg.h search-tools.h shell-tools.h t-emulator.h dircalc.h ltext.h
 
-COPTS += -I swl
+COPTS += -I swl -std=c++11
 CC = gcc
 
 # COPTS += -I swl -Wno-parentheses -fsanitize=address -g
@@ -34,6 +32,7 @@ OBJS = \
 	$(OBJDIR)/swl_editline.o  \
 	$(OBJDIR)/swl_layout.o    \
 	$(OBJDIR)/swl_menubox.o    \
+	$(OBJDIR)/swl_menutextinfo.o \
 	$(OBJDIR)/swl_popupmenu.o   \
 	$(OBJDIR)/swl_sbutton.o     \
 	$(OBJDIR)/swl_scrollbar.o   \
@@ -88,11 +87,14 @@ OBJS = \
 	$(OBJDIR)/dircalc.o \
 	$(OBJDIR)/ltext.o
 
-wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
+#all: libconf_ux.h wcm
+#	cat info.txt
+
+all:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
 	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
 	
-libconf.h: libtester/libconf.create
-	cd libtester &&	./libconf.create
+#libconf.h: libtester/libconf.create
+#	cd libtester &&	./libconf.create
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
@@ -274,6 +276,9 @@ $(OBJDIR)/swl_layout.o: $(HW) $(HS) swl/swl_layout.cpp
 $(OBJDIR)/swl_menubox.o: $(HW) $(HS) swl/swl_menubox.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menubox.cpp -o $(OBJDIR)/swl_menubox.o
 
+$(OBJDIR)/swl_menutextinfo.o: $(HW) $(HS) swl/swl_menutextinfo.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menutextinfo.cpp -o $(OBJDIR)/swl_menutextinfo.o
+
 $(OBJDIR)/swl_popupmenu.o: $(HW) $(HS) swl/swl_popupmenu.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_popupmenu.cpp -o $(OBJDIR)/swl_popupmenu.o
 
@@ -306,7 +311,6 @@ $(OBJDIR)/shell.o: $(HW) $(HS) $(HN) shell.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) shell.cpp -o $(OBJDIR)/shell.o
 	
 	
-
 clean:
 	rm -f *.o
 	rm -f wcm
@@ -322,4 +326,6 @@ clean:
 install: wcm
 	cp -f wcm /usr/bin
 	cp -f -R install-files/* /usr
-	
+
+libconf_ux.h: libtester/libconf.create
+	cd libtester &&	./libconf.create

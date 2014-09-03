@@ -2421,6 +2421,7 @@ begin:
 	}
 
 	int uiColor = GetUiID( "color" );
+	int uiHotkeyColor = GetUiID("hotkey-color");
 	int uiBackground = GetUiID( "background" );
 	int uiFocusFrameColor = GetUiID( "focus-frame-color" );
 	int uiFrameColor = GetUiID( "frame-color" );
