@@ -164,11 +164,20 @@ void PanelList::Mark( const unicode_t* mask, bool enable )
 	selectedCn = counter;
 }
 
-void PanelList::ShiftSelection( int n, int* selectType )
+void PanelList::ShiftSelection( int n, int* selectType, bool RootDir )
 {
-	if ( n <= 0 || n > listCount ) { return; }
+	FSNode* p = NULL;
 
-	FSNode* p = list[n - 1];
+	if ( RootDir )
+	{
+		if ( n < 0 || n >= listCount ) { return; }
+		p = list[n];
+	}
+	else
+	{
+		if ( n <= 0 || n > listCount ) { return; }
+		p = list[n - 1];
+	}
 
 	if ( !p ) { return; }
 

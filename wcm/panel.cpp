@@ -295,9 +295,11 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 
 	int ofs = SearchForNext ? 1 : 0;
 
+	bool RootDir = IsRootDir();
+
 	for ( i = cur + ofs; i < cnt; i++ )
 	{
-		const unicode_t* name = _list.GetFileName( i );;
+		const unicode_t* name = _list.GetFileName( i, RootDir );
 
 		if ( name && accmask_nocase_begin( name, mask ) )
 		{
@@ -308,7 +310,7 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 
 	for ( i = 0; i < cnt - 1 + ofs; i++ )
 	{
-		const unicode_t* name = _list.GetFileName( i );
+		const unicode_t* name = _list.GetFileName( i, IsRootDir() );
 
 		if ( name && accmask_nocase_begin( name, mask ) )
 		{
@@ -323,7 +325,7 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 
 void PanelWin::SortByName()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, IsRootDir() );
 
 	if ( _list.SortMode() == PanelList::SORT_NAME )
 	{
@@ -341,7 +343,7 @@ void PanelWin::SortByName()
 
 void PanelWin::SortByExt()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, IsRootDir() );
 
 	if ( _list.SortMode() == PanelList::SORT_EXT )
 	{
@@ -359,7 +361,7 @@ void PanelWin::SortByExt()
 
 void PanelWin::SortBySize()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, IsRootDir() );
 
 	if ( _list.SortMode() == PanelList::SORT_SIZE )
 	{
@@ -377,7 +379,7 @@ void PanelWin::SortBySize()
 
 void PanelWin::SortByMTime()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, IsRootDir() );
 
 	if ( _list.SortMode() == PanelList::SORT_MTIME )
 	{
@@ -396,7 +398,7 @@ void PanelWin::SortByMTime()
 
 void PanelWin::DisableSort()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, IsRootDir() );
 	_list.DisableSort();
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -589,7 +591,7 @@ void PanelWin::SetScroll()
 {
 	ScrollInfo si;
 	si.pageSize = _rectList.count();
-	si.size = _list.Count();
+	si.size = _list.Count( IsRootDir() );
 	si.pos = _first;
 	bool visible = _scroll.IsVisible();
 	_scroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &si );
@@ -635,9 +637,9 @@ bool PanelWin::Command( int id, int subId, Win* win, void* data )
 			break;
 	}
 
-	if ( n + pageSize > _list.Count() )
+	if ( n + pageSize > _list.Count( IsRootDir( ) ) )
 	{
-		n = _list.Count() - pageSize;
+		n = _list.Count( IsRootDir( ) ) - pageSize;
 	}
 
 	if ( n < 0 ) { n = 0; }
@@ -667,7 +669,7 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 //		if (a || b)
 //		{
 
-		SetCurrent( _list.Find( s ) );
+		SetCurrent( _list.Find( s, IsRootDir() ) );
 		Invalidate();
 
 //		}
@@ -912,7 +914,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( pos < 0 || pos >= _rectList.count() ) { return; }
 
-	FSNode* p = ( n < 0 || n >= _list.Count() ) ? 0 : _list.Get( n );
+	FSNode* p = ( n < 0 || n > _list.Count( IsRootDir( ) ) ) ? 0 : _list.Get( n, IsRootDir( ) );
 
 	bool isDir = p && p->IsDir();
 	bool isExe = !isDir && p && p->IsExe();
@@ -943,7 +945,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( _inOperState ) { ucl.Set( uiOperState, true ); }
 
-	if ( n < _list.Count() && ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
+	if ( n < _list.Count( IsRootDir( ) ) && ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
 
 	int color_text = UiGetColor( uiColor, uiItem, &ucl, 0x0 );
 	int color_bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
@@ -963,7 +965,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	DrawVerticalSplitters( gc, frect );
 	gc.SetClipRgn( &rect );
 
-	if ( n < 0 || n >= _list.Count() ) { return; }
+	if ( n < 0 || n >= _list.Count( IsRootDir( ) ) ) { return; }
 
 #if USE_3D_BUTTONS
 
@@ -1031,7 +1033,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	if ( isSelected )
 	{
 		gc.SetTextColor( color_shadow );
-		gc.TextOut( x + 1, y + 1, _list.GetFileName( n ) );
+		gc.TextOut( x + 1, y + 1, _list.GetFileName( n, IsRootDir() ) );
 		gc.SetTextColor( color_text );
 	}
 
@@ -1080,7 +1082,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( *_viewMode == FULL_ACCESS )
 	{
-		FSNode* p = _list.Get( n );
+		FSNode* p = _list.Get( n, IsRootDir() );
 
 		int width = rect.Width();
 
@@ -1135,11 +1137,11 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( active )
 	{
-		gc.TextOut( x, y, _list.GetFileName( n ) );
+		gc.TextOut( x, y, _list.GetFileName( n, IsRootDir() ) );
 	}
 	else
 	{
-		gc.TextOutF( x, y, _list.GetFileName( n ) );
+		gc.TextOutF( x, y, _list.GetFileName( n, IsRootDir() ) );
 	}
 }
 
@@ -1152,7 +1154,7 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 {
 	if ( !this ) { return; }
 
-	if ( n >= _list.Count() ) { n = _list.Count() - 1; }
+	if ( n >= _list.Count( IsRootDir( ) ) ) { n = _list.Count( IsRootDir( ) ) - 1; }
 
 	if ( n < 0 ) { n = 0; }
 
@@ -1167,7 +1169,7 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 	{
 		if ( old == _current )
 		{
-			_list.ShiftSelection( _current, selectType );
+			_list.ShiftSelection( _current, selectType, IsRootDir() );
 		}
 		else
 		{
@@ -1186,7 +1188,7 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 
 			for ( int i = old; count > 0; count--, i += delta )
 			{
-				_list.ShiftSelection( i, selectType );
+				_list.ShiftSelection( i, selectType, IsRootDir() );
 			}
 		}
 
@@ -1207,16 +1209,16 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 		fullRedraw = true;
 	}
 	else
-
-		if ( _list.Count() - _first < _rectList.count() && _first > 0 )
+	{
+		if ( _list.Count( IsRootDir() ) - _first < _rectList.count() && _first > 0 )
 		{
-			_first = _list.Count() - _rectList.count();
+			_first = _list.Count( IsRootDir() ) - _rectList.count();
 
 			if ( _first < 0 ) { _first = 0; }
 
 			fullRedraw = true;
 		}
-
+	}
 	SetScroll();
 
 	if ( fullRedraw )
@@ -1235,7 +1237,7 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 
 bool PanelWin::SetCurrent( FSString& name )
 {
-	int n = _list.Find( name );
+	int n = _list.Find( name, IsRootDir() );
 
 	if ( n < 0 ) { return false; }
 
@@ -1744,7 +1746,7 @@ void PanelWin::OperThreadStopped()
 
 		if ( !_operCurrent.IsEmpty() )
 		{
-			int n = _list.Find( _operCurrent );
+			int n = _list.Find( _operCurrent, IsRootDir() );
 			SetCurrent( n < 0 ? 0 : n );
 		}
 		else
@@ -1766,10 +1768,13 @@ void PanelWin::OperThreadStopped()
 void PanelWin::Reread( bool resetCurrent )
 {
 	clPtr<cstrhash<bool, unicode_t> > sHash = _list.GetSelectedHash();
+	bool Root = IsRootDir();
 	FSNode* node = resetCurrent ? 0 : GetCurrent();
 	FSString s;
 
 	if ( node ) { s.Copy( node->Name() ); }
+
+	const char* Name = s.GetUtf8();
 
 	LoadPath( GetFSPtr(), GetPath(), node ? &s : 0, sHash, RESET );
 }
@@ -1815,7 +1820,7 @@ bool PanelWin::EventMouse( cevent_mouse* pEvent )
 				{
 					if ( ctrl && pEvent->Button() == MB_L )
 					{
-						_list.InvertSelection( _first + i );
+						_list.InvertSelection( _first + i, IsRootDir() );
 						SetCurrent( _first + i );
 					}
 					else
@@ -1853,6 +1858,27 @@ bool PanelWin::EventMouse( cevent_mouse* pEvent )
 	};
 
 	return false;
+}
+
+bool PanelWin::IsRootDir() const
+{
+	if ( _place.IsEmpty() ) { return true; }
+
+#ifdef _WIN32
+	clPtr<FS> fs = GetFSPtr();
+
+	if ( fs->Type() == FS::SYSTEM )
+	{
+		FSSys* f = ( FSSys* )fs.Ptr();
+
+		if ( f->Drive() < 0 && GetPath().Count() == 3 )
+		{
+			return ( _place.Count() > 2 );
+		}
+	}
+#endif
+
+	return ( _place.GetPath().Count() <= 1 );
 }
 
 bool PanelWin::DirUp()
@@ -1931,9 +1957,8 @@ void PanelWin::DirEnter()
 {
 	if ( _place.IsEmpty() ) { return; }
 
-	if ( !Current() )
+	if ( !IsRootDir() && !Current() )
 	{
-
 		DirUp();
 		return;
 	};
