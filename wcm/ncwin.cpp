@@ -1744,6 +1744,13 @@ void NCWin::PanelEqual()
 }
 
 
+void NCWin::SaveSetupDialog()
+{
+	if ( NCMessageBox( this, _LT( "Save setup" ), _LT( "Do you with to save current setup?" ), false, bListOkCancel ) == CMD_OK )
+	{
+		SaveSetup();
+	}	
+}
 
 void NCWin::SaveSetup()
 {
@@ -2781,7 +2788,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case FC( VK_F9, KM_SHIFT ):
-				SaveSetup();
+				SaveSetupDialog();
 				break;
 
 			case VK_NUMPAD_CENTER:
@@ -3342,7 +3349,7 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 				break;
 
 			case ID_CONFIG_SAVE:
-				SaveSetup();
+				SaveSetupDialog();
 				return true;
 
 		};

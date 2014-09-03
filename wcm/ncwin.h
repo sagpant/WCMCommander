@@ -303,6 +303,7 @@ private:
 	void CtrlF();
 	void HistoryDialog();
 	void SelectDrive( PanelWin* p, PanelWin* OtherPanel );
+	void SaveSetupDialog();
 	void SaveSetup();
 	void Search();
 	void Tab( bool forceShellTab );
