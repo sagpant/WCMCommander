@@ -185,7 +185,7 @@ namespace wal
 						// check if hotkey matches, and process
 						 // XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
 
-						unicode_t c = unicode_toupper(pEvent->Key());
+						unicode_t c = unicode_toupper(pEvent->Char());
 						for (int i = 0; i < list.count(); i++)
 						{
 						   MenuBar::Node& node = list[i];
