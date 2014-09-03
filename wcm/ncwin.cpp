@@ -280,50 +280,50 @@ NCWin::NCWin()
 	_mdLeft.AddCmd( ID_PANEL_MEDIUM_L,   _LT( "&Medium" ),       "Ctrl-2" );
 	_mdLeft.AddCmd( ID_PANEL_TWO_COLUMNS_L, _LT( "&Two columns" ),     "Ctrl-3" );
 	_mdLeft.AddCmd( ID_PANEL_FULL_L,     _LT( "Full (&name)" ),     "Ctrl-4" );
-	_mdLeft.AddCmd( ID_PANEL_FULL_ST_L,  _LT( "Full (&size, time)" ),  "Ctrl-5" );
+	_mdLeft.AddCmd( ID_PANEL_FULL_ST_L,  _LT( "Full (si&ze, time)" ),  "Ctrl-5" );
 	_mdLeft.AddCmd( ID_PANEL_FULL_ACCESS_L, _LT( "Full (&access)" ),      "Ctrl-6" );
 	_mdLeft.AddSplit();
 
-	_mdRight.AddCmd( ID_PANEL_BRIEF_R,   _LT( "Brief" ),        "Ctrl-1" );
-	_mdRight.AddCmd( ID_PANEL_MEDIUM_R,  _LT( "Medium" ),       "Ctrl-2" );
-	_mdRight.AddCmd( ID_PANEL_TWO_COLUMNS_R,   _LT( "Two columns" ),     "Ctrl-3" );
-	_mdRight.AddCmd( ID_PANEL_FULL_R, _LT( "Full (name)" ),     "Ctrl-4" );
-	_mdRight.AddCmd( ID_PANEL_FULL_ST_R, _LT( "Full (size, time)" ),  "Ctrl-5" );
-	_mdRight.AddCmd( ID_PANEL_FULL_ACCESS_R,   _LT( "Full (access)" ),      "Ctrl-6" );
+	_mdRight.AddCmd( ID_PANEL_BRIEF_R,   _LT( "&Brief" ),        "Ctrl-1" );
+	_mdRight.AddCmd( ID_PANEL_MEDIUM_R,  _LT( "&Medium" ),       "Ctrl-2" );
+	_mdRight.AddCmd( ID_PANEL_TWO_COLUMNS_R,   _LT( "&Two columns" ),     "Ctrl-3" );
+	_mdRight.AddCmd( ID_PANEL_FULL_R, _LT( "Full (&name)" ),     "Ctrl-4" );
+	_mdRight.AddCmd( ID_PANEL_FULL_ST_R, _LT( "Full (si&ze, time)" ),  "Ctrl-5" );
+	_mdRight.AddCmd( ID_PANEL_FULL_ACCESS_R,   _LT( "Full (&access)" ),      "Ctrl-6" );
 	_mdRight.AddSplit();
 
-	_mdLeftSort.AddCmd( ID_SORT_BY_NAME_L,   _LT( "SM>Name", "Name" ) );
-	_mdLeftSort.AddCmd( ID_SORT_BY_EXT_L,   _LT( "SM>Extension", "Extension" ) );
-	_mdLeftSort.AddCmd( ID_SORT_BY_MODIF_L,  _LT( "SM>Modif. Time", "Modif. Time" ) );
-	_mdLeftSort.AddCmd( ID_SORT_BY_SIZE_L,   _LT( "SM>Size", "Size" ) );
-	_mdLeftSort.AddCmd( ID_UNSORT_L,  _LT( "SM>Unsorted", "Unsorted" ) );
+	_mdLeftSort.AddCmd( ID_SORT_BY_NAME_L,   _LT( "SM>Name", "&Name" ) );
+	_mdLeftSort.AddCmd( ID_SORT_BY_EXT_L,   _LT( "SM>Extension", "&Extension" ) );
+	_mdLeftSort.AddCmd( ID_SORT_BY_MODIF_L,  _LT( "SM>Modif. Time", "Modif. &Time" ) );
+	_mdLeftSort.AddCmd( ID_SORT_BY_SIZE_L,   _LT( "SM>Size", "&Size" ) );
+	_mdLeftSort.AddCmd( ID_UNSORT_L,  _LT( "SM>Unsorted", "&Unsorted" ) );
 
-	_mdLeft.AddSub( _LT( "Sort mode" ) , &_mdLeftSort );
-	_mdLeft.AddCmd( ID_DEV_SELECT_LEFT, _LT( "Change drive" ),  "Shift-F1" );
+	_mdLeft.AddSub( _LT( "&Sort mode" ) , &_mdLeftSort );
+	_mdLeft.AddCmd( ID_DEV_SELECT_LEFT, _LT( "Change &drive" ),  "Shift-F1" );
 
-	_mdRightSort.AddCmd( ID_SORT_BY_NAME_R,  _LT( "SM>Name", "Name" ) );
-	_mdRightSort.AddCmd( ID_SORT_BY_EXT_R,  _LT( "SM>Extension", "Extension" ) );
-	_mdRightSort.AddCmd( ID_SORT_BY_MODIF_R, _LT( "SM>Modif. Time", "Modif. Time" ) );
-	_mdRightSort.AddCmd( ID_SORT_BY_SIZE_R,  _LT( "SM>Size", "Size" ) );
-	_mdRightSort.AddCmd( ID_UNSORT_R, _LT( "SM>Unsorted", "Unsorted" ) );
+	_mdRightSort.AddCmd( ID_SORT_BY_NAME_R,  _LT( "SM>Name", "&Name" ) );
+	_mdRightSort.AddCmd( ID_SORT_BY_EXT_R,  _LT( "SM>&xtension", "&Extension" ) );
+	_mdRightSort.AddCmd( ID_SORT_BY_MODIF_R, _LT( "SM>Modif. Time", "Modif. &Time" ) );
+	_mdRightSort.AddCmd( ID_SORT_BY_SIZE_R,  _LT( "SM>Size", "&Size" ) );
+	_mdRightSort.AddCmd( ID_UNSORT_R, _LT( "SM>Unsorted", "&Unsorted" ) );
 
-	_mdRight.AddSub( _LT( "Sort mode" ), &_mdRightSort );
-	_mdRight.AddCmd( ID_DEV_SELECT_RIGHT, _LT( "Change drive" ), "Shift-F2" );
+	_mdRight.AddSub( _LT( "&Sort mode" ), &_mdRightSort );
+	_mdRight.AddCmd( ID_DEV_SELECT_RIGHT, _LT( "Change &drive" ), "Shift-F2" );
 
 //#ifndef _WIN32 //пока там только 1 параметр для unix
 //теперь 2
-	_mdOptions.AddCmd( ID_CONFIG_SYSTEM, _LT( "System settings" ) );
+	_mdOptions.AddCmd( ID_CONFIG_SYSTEM, _LT( "S&ystem settings" ) );
 //#endif
-	_mdOptions.AddCmd( ID_CONFIG_PANEL,  _LT( "Panel settings" ) );
-	_mdOptions.AddCmd( ID_CONFIG_EDITOR, _LT( "Editor settings" ) );
+	_mdOptions.AddCmd( ID_CONFIG_PANEL,  _LT( "&Panel settings" ) );
+	_mdOptions.AddCmd( ID_CONFIG_EDITOR, _LT( "&Editor settings" ) );
 
 #ifndef _WIN32
-	_mdOptions.AddCmd( ID_CONFIG_TERMINAL,  _LT( "Terminal settings" ) );
+	_mdOptions.AddCmd( ID_CONFIG_TERMINAL,  _LT( "&Terminal settings" ) );
 #endif
 
-	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "Styles" ) );
+	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "St&yles" ) );
 	_mdOptions.AddSplit();
-	_mdOptions.AddCmd( ID_CONFIG_SAVE,   _LT( "Save setup" ),   "Shift-F9" );
+	_mdOptions.AddCmd( ID_CONFIG_SAVE,   _LT( "&Save setup" ),   "Shift-F9" );
 
 
 	_menu.Add( &_mdLeft, utf8_to_unicode( _LT( "&Left" ) ).data() );
@@ -332,23 +332,23 @@ NCWin::NCWin()
 	_menu.Add( &_mdOptions, utf8_to_unicode( _LT( "&Options" ) ).data() );
 	_menu.Add( &_mdRight, utf8_to_unicode( _LT( "&Right" ) ).data() );
 
-	_mdFiles.AddCmd( ID_VIEW, _LT( "View" ),  "F3" );
-	_mdFiles.AddCmd( ID_EDIT, _LT( "Edit" ),  "F4" );
-	_mdFiles.AddCmd( ID_COPY, _LT( "Copy" ),  "F5" );
-	_mdFiles.AddCmd( ID_MOVE, _LT( "Move" ),  "F6" );
-	_mdFiles.AddCmd( ID_MKDIR, _LT( "Create new directory" ),   "F7" );
-	_mdFiles.AddCmd( ID_DELETE, _LT( "Delete" ), "F8" );
+	_mdFiles.AddCmd( ID_VIEW, _LT( "&View" ),  "F3" );
+	_mdFiles.AddCmd( ID_EDIT, _LT( "&Edit" ),  "F4" );
+	_mdFiles.AddCmd( ID_COPY, _LT( "&Copy" ),  "F5" );
+	_mdFiles.AddCmd( ID_MOVE, _LT( "&Rename or move" ),  "F6" );
+	_mdFiles.AddCmd( ID_MKDIR, _LT( "&Make directory" ),   "F7" );
+	_mdFiles.AddCmd( ID_DELETE, _LT( "&Delete" ), "F8" );
 	_mdFiles.AddSplit();
-	_mdFiles.AddCmd( ID_GROUP_SELECT, _LT( "Select group" ) );
-	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "Unselect group" ) );
-	_mdFiles.AddCmd( ID_GROUP_INVERT, _LT( "Invert group" ) );
+	_mdFiles.AddCmd( ID_GROUP_SELECT, _LT( "Select &group" ) );
+	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "U&nselect group" ) );
+	_mdFiles.AddCmd( ID_GROUP_INVERT, _LT( "&Invert group" ) );
 
-	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "Find file" ),  "Shift F7" );
-	_mdCommands.AddCmd( ID_HISTORY,   _LT( "History" ),   "Shift-F8 (Ctrl-K)" );
-	_mdCommands.AddCmd( ID_CTRL_O, _LT( "Panel on/off" ), "Ctrl-O" );
-	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "Equal panels" ),  "Ctrl =" );
+	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Shift F7" );
+	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Shift-F8 (Ctrl-K)" );
+	_mdCommands.AddCmd( ID_CTRL_O, _LT( "&Panel on/off" ), "Ctrl-O" );
+	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl =" );
 	_mdCommands.AddSplit();
-	_mdCommands.AddCmd( ID_SHORTCUTS, _LT( "Folder shortcuts" ),   "Ctrl D" );
+	_mdCommands.AddCmd( ID_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl D" );
 
 	_edit.SetFocus();
 

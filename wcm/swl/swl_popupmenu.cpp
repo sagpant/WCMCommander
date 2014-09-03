@@ -388,12 +388,42 @@ namespace wal
 					else {/* Botva */}
 
 					return true;
+				
+				default:
+					{
+						   // check if hotkey matches, and process
+						   // XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
+						   unicode_t c = unicode_toupper(pEvent->Key());
+						   for (int i = 0; i < list.count(); i++)
+						   {
+							   MenuData::Node* node = list[i].data;
+							   if (node->leftText.isHotkeyMatching(c))
+							   {
+								   if (node->id != 0) // menu command
+								   {
+									   if (Parent())
+									   {
+										   Parent()->Command(node->id, 0, this, 0);
+									   }
+									   return true;
+								   }
+								   else // sumbenu
+								   {
+									   SetSelected(i);
+									   OpenSubmenu();
+									   return true;
+								   }
+							   }
+						   }
+						   return false;
+					}
+
 			}
 		}
-
 		return false;
 	}
 
+	
 	void PopupMenu::Paint( GC& gc, const crect& paintRect )
 	{
 		crect rect = ClientRect();

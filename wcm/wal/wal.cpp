@@ -140,7 +140,65 @@ namespace wal
 		return true;
 	}
 
-////////////  system File implementation
+	int unicode_strlen(const unicode_t* s)
+	{
+		const unicode_t* p = s;
+
+		while (*p) { p++; }
+
+		return p - s;
+	}
+
+	unicode_t* unicode_strchr(const unicode_t* s, unicode_t c)
+	{
+		while (*s != c && *s) { s++; }
+
+		return (unicode_t*)(*s ? s : 0);
+	}
+
+	unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s)
+	{
+		unicode_t* ret = d;
+		while ((*d++ = *s++) != 0)
+			;
+		return ret;
+	}
+
+	// copy unlit end of string, or when n chars copid, whichever comes first. 
+	// d is always 0-ended
+	unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n)
+	{
+		unicode_t* ret = d;
+		for (;;)
+		{
+			if (n-- == 0)
+			{
+				*d = 0;
+				break;
+			}
+			if ((*d++ = *s++) == 0)
+			{
+				break;
+			}
+		}
+		return ret;
+	}
+
+	void unicode_strcat(unicode_t* d, const unicode_t* s)
+	{
+		while (*d)
+			d++;
+		while ((*d++ = *s++) != 0)
+			;
+	}
+
+	unicode_t* unicode_strdup(const unicode_t* s)
+	{
+		return unicode_strcpy(new unicode_t[unicode_strlen(s) + 1], s);
+	}
+
+
+	////////////  system File implementation
 
 	void File::Throw( const sys_char_t* name )
 	{
