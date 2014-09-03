@@ -4,7 +4,7 @@ echo "" >../makelib.mk
 echo "#define LIBCONF_UX_H" >>../libconf_ux.h
 
 #smb
-if cc -I /usr/local/include -L /usr/local/lib libsmb_test.cpp -lstdc++ -lsmbclient -o libsmbtest >/dev/null 2>/dev/null && ./libsmbtest >/dev/null 2>/dev/null
+if cc -I /usr/local/include -I /usr/include/samba-4.0 -L /usr/local/lib libsmb_test.cpp -lstdc++ -lsmbclient -o libsmbtest >/dev/null 2>/dev/null && ./libsmbtest >/dev/null 2>/dev/null
 then
 	echo "#define LIBSMBCLIENT_EXIST" >>../libconf_ux.h
 	echo "LIBSMB = -l smbclient" >>../makelib.mk

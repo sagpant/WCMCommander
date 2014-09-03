@@ -153,12 +153,6 @@
 		<Unit filename="dircalc.h" />
 		<Unit filename="eloadsave.cpp" />
 		<Unit filename="eloadsave.h" />
-		<Unit filename="ext-app-ux.cpp">
-			<Option target="Debug Linux64" />
-			<Option target="Release Linux64" />
-			<Option target="Debug Linux32" />
-			<Option target="Release Linux32" />
-		</Unit>
 		<Unit filename="ext-app.cpp" />
 		<Unit filename="ext-app.h" />
 		<Unit filename="fileopers.cpp" />
