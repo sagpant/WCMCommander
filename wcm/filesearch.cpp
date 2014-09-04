@@ -3,6 +3,7 @@
 #include "search-dlg.h"
 #include "search-tools.h"
 #include "ltext.h"
+#include "unicode_lc.h"
 
 SearchAndReplaceParams searchParams;
 
@@ -83,8 +84,6 @@ public:
 	void Search();
 	virtual ~OperSearchThread();
 };
-
-extern unsigned  UnicodeLC( unsigned ch ); ///!!!
 
 static bool accmask_nocase( const unicode_t* name, const unicode_t* mask )
 {

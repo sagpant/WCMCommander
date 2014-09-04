@@ -3,7 +3,7 @@ using namespace wal;
 #include "bfile.h"
 #include "string-util.h"
 #include "ext-app.h"
-
+#include "unicode_lc.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/time.h>
@@ -263,8 +263,6 @@ bool ExeFileExist( const char* name )
 	return pathExeList->exist( name ) != 0;
 }
 
-
-extern unsigned  UnicodeLC( unsigned ch );
 
 #define MIMEDEBUG
 

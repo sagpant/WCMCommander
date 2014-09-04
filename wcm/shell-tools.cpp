@@ -1,6 +1,8 @@
 #include "shell-tools.h"
 #include "nc.h"
 #include "vfs-uri.h"
+#include "unicode_lc.h"
+
 //#include "string-util.h"
 
 struct ShellLoadDirTD
@@ -262,8 +264,6 @@ static bool accmask_begin0( const unicode_t* name, const unicode_t* mask )
 		mask++;
 	}
 }
-
-extern unsigned  UnicodeLC( unsigned ch );
 
 static bool accmask_nocase_begin0( const unicode_t* name, const unicode_t* mask )
 {

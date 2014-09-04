@@ -1,4 +1,6 @@
 #include "swl.h"
+// XXX: refactor to move the header to .
+#include "../unicode_lc.h" 
 
 namespace wal
 {
@@ -36,7 +38,7 @@ namespace wal
 				unicode_strncpy0(strBeforeHk, inStr, strlen_beforeHk);
 			}
 			unicode_t hotKeyChar = pAmpersand[1];
-			hotkeyUpperCase = unicode_toupper(hotKeyChar);
+			hotkeyUpperCase = UnicodeUC(hotKeyChar);
 			strHk = new unicode_t[2];
 			strHk[0] = hotKeyChar;
 			strHk[1] = 0;

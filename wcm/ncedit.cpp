@@ -11,6 +11,7 @@
 #include "charsetdlg.h"
 #include "ltext.h"
 #include "globals.h"
+#include "unicode_lc.h"
 
 #include <algorithm>
 
@@ -2377,8 +2378,6 @@ bool EditWin::EventMouse( cevent_mouse* pEvent )
 
 	return false;
 }
-
-
 
 bool EditWin::Search( const unicode_t* arg, bool sens )
 {

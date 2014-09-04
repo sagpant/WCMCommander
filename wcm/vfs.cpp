@@ -6,6 +6,7 @@
 #include "vfs.h"
 #include "string-util.h"
 #include <sys/types.h>
+#include "unicode_lc.h"
 
 ///////////////////////////////////////////////////  FS /////////////////////////////
 int FS::OpenRead  ( FSPath& path, int flags, int* err, FSCInfo* info ) { SetError( err, 0 ); return -1; }
@@ -1972,8 +1973,6 @@ unicode_t* FSStat::GetPrintableSizeStr( unicode_t buf[64] )
 
 
 /////////////////////////////////////  FSNode ////////////////////////////////////////
-
-extern unsigned  UnicodeLC( unsigned ch );
 
 inline const unicode_t* unicode_rchr( const unicode_t* s, int c )
 {
