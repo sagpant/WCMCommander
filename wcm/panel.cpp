@@ -1765,18 +1765,23 @@ void PanelWin::OperThreadStopped()
 }
 
 
-void PanelWin::Reread( bool resetCurrent )
+void PanelWin::Reread( bool resetCurrent, const FSString& Name )
 {
 	clPtr<cstrhash<bool, unicode_t> > sHash = _list.GetSelectedHash();
 	bool Root = IsRootDir();
 	FSNode* node = resetCurrent ? 0 : GetCurrent();
 	FSString s;
 
-	if ( node ) { s.Copy( node->Name() ); }
+	FSString* StrPtr = node ? &s : 0;
 
-	const char* Name = s.GetUtf8();
+	if ( !Name.IsEmpty() )
+	{
+		s = Name;
+		StrPtr = &s;
+	}
+	else if ( node ) { s.Copy( node->Name() ); }
 
-	LoadPath( GetFSPtr(), GetPath(), node ? &s : 0, sHash, RESET );
+	LoadPath( GetFSPtr(), GetPath(), StrPtr, sHash, RESET );
 }
 
 
