@@ -1253,9 +1253,11 @@ void NCWin::CreateDirectory()
 {
 	if ( _mode != PANEL ) { return; }
 
+	std::vector<unicode_t> dir;
+
 	try
 	{
-		std::vector<unicode_t> dir = InputStringDialog( this, utf8_to_unicode( _LT( "Create new directory" ) ).data() );
+		dir = InputStringDialog( this, utf8_to_unicode( _LT( "Create new directory" ) ).data() );
 
 		if ( !dir.data() ) { return; }
 
@@ -1288,9 +1290,8 @@ void NCWin::CreateDirectory()
 		ex->destroy();
 	};
 
-	_leftPanel.Reread();
-
-	_rightPanel.Reread();
+	GetOtherPanel()->Reread();
+	_panel->Reread( false, FSString( dir.data() ) );
 }
 
 void NCWin::QuitQuestion()

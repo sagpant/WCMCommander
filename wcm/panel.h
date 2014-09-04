@@ -242,7 +242,7 @@ public:
 	void LoadPath( clPtr<FS> fs, FSPath& path, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
 	void LoadPathStringSafe( const char* path );
 
-	void Reread( bool resetCurrent = false );
+	void Reread( bool resetCurrent = false, const FSString& Name = FSString() );
 
 	int GetXMargin() const;
 
