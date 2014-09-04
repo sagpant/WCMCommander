@@ -279,6 +279,10 @@ static bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
 	}
 }
 
+NCWin* PanelWin::GetNCWin()
+{
+	return ( NCWin* )Parent();
+}
 
 bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 {
@@ -296,9 +300,11 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 
 	int ofs = SearchForNext ? 1 : 0;
 
+	bool RootDir = HideDotsInDir();
+
 	for ( i = cur + ofs; i < cnt; i++ )
 	{
-		const unicode_t* name = _list.GetFileName( i );;
+		const unicode_t* name = _list.GetFileName( i, RootDir );
 
 		if ( name && accmask_nocase_begin( name, mask ) )
 		{
@@ -309,7 +315,7 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 
 	for ( i = 0; i < cnt - 1 + ofs; i++ )
 	{
-		const unicode_t* name = _list.GetFileName( i );
+		const unicode_t* name = _list.GetFileName( i, HideDotsInDir() );
 
 		if ( name && accmask_nocase_begin( name, mask ) )
 		{
@@ -324,7 +330,7 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 
 void PanelWin::SortByName()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, HideDotsInDir() );
 
 	if ( _list.SortMode() == PanelList::SORT_NAME )
 	{
@@ -342,7 +348,7 @@ void PanelWin::SortByName()
 
 void PanelWin::SortByExt()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, HideDotsInDir() );
 
 	if ( _list.SortMode() == PanelList::SORT_EXT )
 	{
@@ -360,7 +366,7 @@ void PanelWin::SortByExt()
 
 void PanelWin::SortBySize()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, HideDotsInDir() );
 
 	if ( _list.SortMode() == PanelList::SORT_SIZE )
 	{
@@ -378,7 +384,7 @@ void PanelWin::SortBySize()
 
 void PanelWin::SortByMTime()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, HideDotsInDir() );
 
 	if ( _list.SortMode() == PanelList::SORT_MTIME )
 	{
@@ -397,7 +403,7 @@ void PanelWin::SortByMTime()
 
 void PanelWin::DisableSort()
 {
-	FSNode* p = _list.Get( _current );
+	FSNode* p = _list.Get( _current, HideDotsInDir() );
 	_list.DisableSort();
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -569,13 +575,13 @@ PanelWin::PanelWin( Win* parent, int* mode )
 
 bool PanelWin::IsSelectedPanel()
 {
-	NCWin* p = ( NCWin* )Parent();
+	NCWin* p = GetNCWin();
 	return p && p->_panel == this;
 }
 
 void PanelWin::SelectPanel()
 {
-	NCWin* p = ( NCWin* )Parent();
+	NCWin* p = GetNCWin();
 
 	if ( p->_panel == this ) { return; }
 
@@ -590,7 +596,7 @@ void PanelWin::SetScroll()
 {
 	ScrollInfo si;
 	si.pageSize = _rectList.count();
-	si.size = _list.Count();
+	si.size = _list.Count( HideDotsInDir() );
 	si.pos = _first;
 	bool visible = _scroll.IsVisible();
 	_scroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &si );
@@ -636,9 +642,9 @@ bool PanelWin::Command( int id, int subId, Win* win, void* data )
 			break;
 	}
 
-	if ( n + pageSize > _list.Count() )
+	if ( n + pageSize > _list.Count( HideDotsInDir() ) )
 	{
-		n = _list.Count() - pageSize;
+		n = _list.Count( HideDotsInDir() ) - pageSize;
 	}
 
 	if ( n < 0 ) { n = 0; }
@@ -668,7 +674,7 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 //		if (a || b)
 //		{
 
-		SetCurrent( _list.Find( s ) );
+		SetCurrent( _list.Find( s, HideDotsInDir() ) );
 		Invalidate();
 
 //		}
@@ -913,7 +919,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( pos < 0 || pos >= _rectList.count() ) { return; }
 
-	FSNode* p = ( n < 0 || n >= _list.Count() ) ? 0 : _list.Get( n );
+	FSNode* p = ( n < 0 || n > _list.Count( HideDotsInDir() ) ) ? 0 : _list.Get( n, HideDotsInDir() );
 
 	bool isDir = p && p->IsDir();
 	bool isExe = !isDir && p && p->IsExe();
@@ -944,7 +950,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( _inOperState ) { ucl.Set( uiOperState, true ); }
 
-	if ( n < _list.Count() && ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
+	if ( n < _list.Count( HideDotsInDir() ) && ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
 
 	int color_text = UiGetColor( uiColor, uiItem, &ucl, 0x0 );
 	int color_bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
@@ -964,7 +970,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	DrawVerticalSplitters( gc, frect );
 	gc.SetClipRgn( &rect );
 
-	if ( n < 0 || n >= _list.Count() ) { return; }
+	if ( n < 0 || n >= _list.Count( HideDotsInDir() ) ) { return; }
 
 #if USE_3D_BUTTONS
 
@@ -1032,7 +1038,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	if ( isSelected )
 	{
 		gc.SetTextColor( color_shadow );
-		gc.TextOut( x + 1, y + 1, _list.GetFileName( n ) );
+		gc.TextOut( x + 1, y + 1, _list.GetFileName( n, HideDotsInDir() ) );
 		gc.SetTextColor( color_text );
 	}
 
@@ -1081,7 +1087,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( *_viewMode == FULL_ACCESS )
 	{
-		FSNode* p = _list.Get( n );
+		FSNode* p = _list.Get( n, HideDotsInDir() );
 
 		int width = rect.Width();
 
@@ -1136,11 +1142,11 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( active )
 	{
-		gc.TextOut( x, y, _list.GetFileName( n ) );
+		gc.TextOut( x, y, _list.GetFileName( n, HideDotsInDir() ) );
 	}
 	else
 	{
-		gc.TextOutF( x, y, _list.GetFileName( n ) );
+		gc.TextOutF( x, y, _list.GetFileName( n, HideDotsInDir() ) );
 	}
 }
 
@@ -1153,7 +1159,7 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 {
 	if ( !this ) { return; }
 
-	if ( n >= _list.Count() ) { n = _list.Count() - 1; }
+	if ( n >= _list.Count( HideDotsInDir() ) ) { n = _list.Count( HideDotsInDir() ) - 1; }
 
 	if ( n < 0 ) { n = 0; }
 
@@ -1168,7 +1174,7 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 	{
 		if ( old == _current )
 		{
-			_list.ShiftSelection( _current, selectType );
+			_list.ShiftSelection( _current, selectType, HideDotsInDir() );
 		}
 		else
 		{
@@ -1187,7 +1193,7 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 
 			for ( int i = old; count > 0; count--, i += delta )
 			{
-				_list.ShiftSelection( i, selectType );
+				_list.ShiftSelection( i, selectType, HideDotsInDir() );
 			}
 		}
 
@@ -1208,16 +1214,16 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 		fullRedraw = true;
 	}
 	else
-
-		if ( _list.Count() - _first < _rectList.count() && _first > 0 )
+	{
+		if ( _list.Count( HideDotsInDir() ) - _first < _rectList.count() && _first > 0 )
 		{
-			_first = _list.Count() - _rectList.count();
+			_first = _list.Count( HideDotsInDir() ) - _rectList.count();
 
 			if ( _first < 0 ) { _first = 0; }
 
 			fullRedraw = true;
 		}
-
+	}
 	SetScroll();
 
 	if ( fullRedraw )
@@ -1236,7 +1242,7 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 
 bool PanelWin::SetCurrent( FSString& name )
 {
-	int n = _list.Find( name );
+	int n = _list.Find( name, HideDotsInDir() );
 
 	if ( n < 0 ) { return false; }
 
@@ -1705,7 +1711,7 @@ void PanelWin::OperThreadStopped()
 			// Do not invalidate panel. Show "select drive" dialog instead.
 			//Invalidate();
 			NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), _operData.errorString.GetUtf8(), true );
-			NCWin* ncWin = (NCWin*)Parent();
+			NCWin* ncWin = GetNCWin();
 			ncWin->SelectDrive(this, ncWin->GetOtherPanel(this));
 			return;
 		}
@@ -1745,7 +1751,7 @@ void PanelWin::OperThreadStopped()
 
 		if ( !_operCurrent.IsEmpty() )
 		{
-			int n = _list.Find( _operCurrent );
+			int n = _list.Find( _operCurrent, HideDotsInDir() );
 			SetCurrent( n < 0 ? 0 : n );
 		}
 		else
@@ -1767,6 +1773,7 @@ void PanelWin::OperThreadStopped()
 void PanelWin::Reread( bool resetCurrent, const FSString& Name )
 {
 	clPtr<cstrhash<bool, unicode_t> > sHash = _list.GetSelectedHash();
+	bool Root = HideDotsInDir();
 	FSNode* node = resetCurrent ? 0 : GetCurrent();
 	FSString s;
 
@@ -1823,7 +1830,7 @@ bool PanelWin::EventMouse( cevent_mouse* pEvent )
 				{
 					if ( ctrl && pEvent->Button() == MB_L )
 					{
-						_list.InvertSelection( _first + i );
+						_list.InvertSelection( _first + i, HideDotsInDir() );
 						SetCurrent( _first + i );
 					}
 					else
@@ -1840,12 +1847,12 @@ bool PanelWin::EventMouse( cevent_mouse* pEvent )
 								cpoint p = pEvent->Point();
 								p.x += rect.left;
 								p.y += rect.top;
-								( ( NCWin* )Parent() )->RightButtonPressed( p );
+								GetNCWin()->RightButtonPressed( p );
 							}
 						}
 						else if ( pEvent->Type() == EV_MOUSE_DOUBLE )
 						{
-							( ( NCWin* )Parent() )->PanelEnter();
+							GetNCWin()->PanelEnter();
 						}
 					}
 
@@ -1861,6 +1868,29 @@ bool PanelWin::EventMouse( cevent_mouse* pEvent )
 	};
 
 	return false;
+}
+
+bool PanelWin::HideDotsInDir() const
+{
+	bool HideDots = !wcmConfig.panelShowDotsInRoot;
+
+	if ( _place.IsEmpty() ) { return HideDots; }
+
+#ifdef _WIN32
+	clPtr<FS> fs = GetFSPtr();
+
+	if ( fs->Type() == FS::SYSTEM )
+	{
+		FSSys* f = ( FSSys* )fs.Ptr();
+
+		if ( f->Drive() < 0 && GetPath().Count() == 3 )
+		{
+			return ( _place.Count() > 2 ) ? HideDots : false;
+		}
+	}
+#endif
+
+	return ( _place.GetPath().Count() <= 1 ) ? HideDots : false;
 }
 
 bool PanelWin::DirUp()
@@ -1939,10 +1969,12 @@ void PanelWin::DirEnter()
 {
 	if ( _place.IsEmpty() ) { return; }
 
-	if ( !Current() )
+	if ( !HideDotsInDir() && !Current() )
 	{
-
-		DirUp();
+		if ( !DirUp() )
+		{
+			GetNCWin()->SelectDrive( this, this );
+		}
 		return;
 	};
 

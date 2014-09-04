@@ -19,8 +19,8 @@ using namespace wal;
 
 extern int uiClassPanel;
 
+class NCWin;
 class PanelWin;
-
 
 class PanelSearchWin: public Win
 {
@@ -128,6 +128,7 @@ public:
 	clPtr<FS> GetFSPtr() const { return !m_Stack.empty() ? m_Stack.back().fsPtr : clPtr<FS>(); }
 	FSPath* GetPathPtr() { return !m_Stack.empty() ? &m_Stack.back().path : 0; }
 	FSPath& GetPath() { return !m_Stack.empty() ? m_Stack.back().path : m_EmptyPath; }
+	const FSPath& GetPath( ) const { return !m_Stack.empty( ) ? m_Stack.back( ).path : m_EmptyPath; }
 };
 
 class PanelWin: public NCDialogParent
@@ -217,8 +218,9 @@ public:
 	void SelectPanel();
 
 	FSPath& GetPath() { return _place.GetPath(); }
+	const FSPath& GetPath( ) const { return _place.GetPath( ); }
 	FS* GetFS() { return _place.GetFS(); }
-	clPtr<FS> GetFSPtr() { return _place.GetFSPtr(); }
+	clPtr<FS> GetFSPtr() const { return _place.GetFSPtr(); }
 
 	FSString UriOfDir();
 	FSString UriOfCurrent();
@@ -257,29 +259,30 @@ public:
 
 	void KeyUp  ( bool shift, int* selectType ) { SetCurrent( _current - 1,   shift, selectType ); };
 	void KeyDown   ( bool shift, int* selectType ) { SetCurrent( _current + 1,   shift, selectType ); };
-	void KeyEnd ( bool shift, int* selectType ) { SetCurrent( _list.Count() - 1, shift, selectType );}
+	void KeyEnd( bool shift, int* selectType ) { SetCurrent( _list.Count( HideDotsInDir() ) - 1, shift, selectType ); }
 	void KeyHome   ( bool shift, int* selectType ) { SetCurrent( 0,   shift, selectType ); }
 	void KeyPrior  ( bool shift, int* selectType ) { SetCurrent( _current - _rows * _cols + 1,   shift, selectType ); }
 	void KeyNext   ( bool shift, int* selectType ) { SetCurrent( _current + _rows * _cols - 1,   shift, selectType ); }
 	void KeyLeft   ( bool shift, int* selectType ) { SetCurrent( _current - _rows,  shift, selectType );  }
 	void KeyRight  ( bool shift, int* selectType ) { SetCurrent( _current + _rows,  shift, selectType ); }
 
-	void KeyIns() { _list.InvertSelection( _current ); SetCurrent( _current + 1 ); }
+	void KeyIns() { _list.InvertSelection( _current, HideDotsInDir() ); SetCurrent( _current + 1 ); }
 
 	int Current() { return _current; }
-	FSNode* GetCurrent() { return _list.Get( _current ); }
-	const unicode_t* GetCurrentFileName() { return _list.GetFileName( _current ); }
+	FSNode* GetCurrent() { return _list.Get( _current, HideDotsInDir() ); }
+	const unicode_t* GetCurrentFileName() { return _list.GetFileName( _current, HideDotsInDir() ); }
 
 	PanelCounter GetSelectedCounter() { return _list.SelectedCounter(); }
 
-	int Count() { return _list.Count(); }
-	const FSNode* Get( int n ) { return _list.Get( n ); }
+	int Count( ) { return _list.Count( HideDotsInDir() ); }
+	const FSNode* Get( int n ) { return _list.Get( n, HideDotsInDir() ); }
 
 	//dir movies
 	/// returns true if the directory was changed
 	bool DirUp();
 	void DirEnter();
 	void DirRoot();
+	bool HideDotsInDir() const;
 
 	virtual void OperThreadSignal( int info );
 	virtual void OperThreadStopped();
@@ -295,6 +298,8 @@ public:
 
 		return p;
 	}
+
+	NCWin* GetNCWin();
 
 	void Invert() { _list.InvertSelection(); Invalidate(); }
 	void ClearSelection( cstrhash<bool, unicode_t>* resList ) { _list.ClearSelection( resList ); }
