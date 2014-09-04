@@ -8,6 +8,11 @@
 #include <sys/types.h>
 #include "unicode_lc.h"
 
+#if defined( __APPLE__ )
+#	include <sys/param.h>
+#	include <sys/mount.h>
+#endif
+
 ///////////////////////////////////////////////////  FS /////////////////////////////
 int FS::OpenRead  ( FSPath& path, int flags, int* err, FSCInfo* info ) { SetError( err, 0 ); return -1; }
 int FS::OpenCreate   ( FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info ) { SetError( err, 0 ); return -1; }
@@ -1220,7 +1225,7 @@ err:
 
 int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 {
-#ifdef __linux__
+#if defined( __linux__ ) || defined( __APPLE__ ) 
 	struct statfs64 s;
 
 	if ( statfs64( path.GetUtf8(), &s ) == -1 )
