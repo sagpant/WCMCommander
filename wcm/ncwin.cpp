@@ -115,11 +115,17 @@ void NCWin::NotifyAutoCompleteChange()
 	if ( p && *p ) _edit.SetText( p, false );
 }
 
+void NCWin::HideAutoComplete()
+{
+	m_PrevAutoCurrentCommand.clear();
+	m_AutoCompleteList.Hide( );
+}
+
 void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 {
 	if ( CurrentCommand.empty() || CurrentCommand[0] == 0 || !wcmConfig.systemAutoComplete )
 	{
-		m_AutoCompleteList.Hide( );
+		HideAutoComplete();
 		return;
 	}
 
@@ -164,15 +170,14 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 
 	if ( HasHistory )
 	{
+		m_PrevAutoCurrentCommand = CurrentCommand;
 		if ( !m_AutoCompleteList.IsVisible( ) ) m_AutoCompleteList.Show( );
 		m_AutoCompleteList.Invalidate();
 	}
 	else
 	{
-		m_AutoCompleteList.Hide();
+		HideAutoComplete();
 	}
-
-	m_PrevAutoCurrentCommand = CurrentCommand;
 }
 
 NCWin::NCWin()
@@ -2025,7 +2030,7 @@ void NCWin::ExecNoTerminalProcess( const unicode_t* p )
 
 void NCWin::Tab( bool forceShellTab )
 {
-	m_AutoCompleteList.Hide();
+	HideAutoComplete();
 
 	if ( _mode != PANEL ) { return; }
 
@@ -2145,7 +2150,7 @@ void NCWin::SetBackgroundActivity( eBackgroundActivity BackgroundActivity )
 
 void NCWin::SwitchToBackgroundActivity()
 {
-	m_AutoCompleteList.Hide();
+	HideAutoComplete();
 
 	switch ( m_BackgroundActivity )
 	{
@@ -2631,7 +2636,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case VK_ESCAPE:
 				if ( m_AutoCompleteList.IsVisible() )
 				{
-					m_AutoCompleteList.Hide();
+					HideAutoComplete();
 				}
 				else if ( wcmConfig.systemEscPanel )
 				{
@@ -2651,7 +2656,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case FC( VK_ESCAPE, KM_SHIFT ):
 			case FC( VK_ESCAPE, KM_CTRL ):
 			case FC( VK_ESCAPE, KM_ALT ):
-				m_AutoCompleteList.Hide();
+				HideAutoComplete();
 
 				if ( !_edit.InFocus() )
 				{
@@ -2740,7 +2745,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case FC( VK_NUMPAD_RETURN, KM_SHIFT ):
 			case FC( VK_RETURN, KM_SHIFT ):
 			{
-				m_AutoCompleteList.Hide();
+				HideAutoComplete();
 				if ( _edit.IsVisible() )
 				{
 					if ( StartCommand( FetchAndClearCommandLine(), true ) ) break;
@@ -2751,7 +2756,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case VK_NUMPAD_RETURN:
 			case VK_RETURN:
 			{
-				m_AutoCompleteList.Hide();
+				HideAutoComplete();
 				if ( _edit.IsVisible() )
 				{
 					if ( StartCommand( FetchAndClearCommandLine(), false ) ) break;
@@ -2890,7 +2895,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case FC( VK_O, KM_CTRL ):
 			case VK_ESCAPE:
 			{
-				m_AutoCompleteList.Hide();
+				HideAutoComplete();
 				if ( pressed ) SwitchToBackgroundActivity();					
 				return true;
 			}

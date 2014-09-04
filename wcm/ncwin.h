@@ -367,6 +367,7 @@ public:
 	PanelWin* GetLeftPanel() { return &_leftPanel; }
 	PanelWin* GetRightPanel() { return &_rightPanel; }
 
+	void HideAutoComplete();
 	void NotifyAutoComplete();
 	void NotifyAutoCompleteChange();
 
