@@ -12,9 +12,7 @@
 #include "string-util.h"
 #include "wcm-config.h"
 #include "ltext.h"
-
-extern unsigned  UnicodeLC( unsigned ch );
-
+#include "unicode_lc.h"
 
 inline int CmpNoCase( const unicode_t* a, const unicode_t* b )
 {

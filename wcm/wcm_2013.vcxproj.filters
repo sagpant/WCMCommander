@@ -103,9 +103,6 @@
     <ClCompile Include="helpres.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>
-    <ClCompile Include="wal\IntrusivePtr.h">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
     <ClCompile Include="ltext.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>
@@ -201,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="swl\swl_menutextinfo.cpp">
       <Filter>swl</Filter>
+    </ClCompile>
+    <ClCompile Include="wal\IntrusivePtr.h">
+      <Filter>%2a.h</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -391,7 +391,7 @@
       <Filter>%2a.h</Filter>
     </ClInclude>
     <ClInclude Include="w32util.h">
-      <Filter>%2a.cpp</Filter>
+      <Filter>%2a.h</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

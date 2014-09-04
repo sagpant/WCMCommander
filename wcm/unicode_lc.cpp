@@ -1,7 +1,7 @@
 /*
    Copyright (c) by Valery Goryachev (Wal)
 */
-
+#include "unicode_lc.h"
 
 static unsigned short tab1024[1024] =
 {

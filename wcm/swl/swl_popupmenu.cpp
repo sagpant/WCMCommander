@@ -2,8 +2,9 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
 #include "swl.h"
+// XXX: refactor to move the header to .
+#include "../unicode_lc.h" 
 
 namespace wal
 {
@@ -395,7 +396,7 @@ namespace wal
 					{
 						   // check if hotkey matches, and process
 						   // XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
-						   unicode_t c = unicode_toupper(pEvent->Char());
+						   unicode_t c = UnicodeUC(pEvent->Char());
 						   for (int i = 0; i < list.count(); i++)
 						   {
 							   MenuData::Node* node = list[i].data;

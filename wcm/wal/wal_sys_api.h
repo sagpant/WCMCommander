@@ -335,7 +335,6 @@ namespace wal
 	unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n);
 	void unicode_strcat(unicode_t* d, const unicode_t* s);
 	unicode_t* unicode_strdup(const unicode_t* s);
-	unicode_t unicode_toupper(unicode_t c);
 
 //for internal use
 	class SysStringStruct

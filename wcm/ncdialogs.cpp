@@ -9,6 +9,7 @@
 #include "wcm-config.h"
 #include "string-util.h"
 #include "ltext.h"
+#include "unicode_lc.h"
 
 bool createDialogAsChild //= false;
    = true;
@@ -851,8 +852,6 @@ DlgMenu::DlgMenu( Win* parent, DlgMenuData* data )
 
 	SetLSize( LSize( cpoint( _width, height ) ) );
 }
-
-extern unsigned  UnicodeLC( unsigned ch );
 
 inline bool EqFirst( const unicode_t* s, int c )
 {

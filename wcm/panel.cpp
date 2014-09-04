@@ -15,6 +15,7 @@
 #include "ext-app.h"
 #include "color-style.h"
 #include "string-util.h"
+#include "unicode_lc.h"
 
 #include "icons/folder3.xpm"
 #include "icons/folder.xpm"

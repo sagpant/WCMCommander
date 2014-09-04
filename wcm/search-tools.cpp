@@ -1,7 +1,5 @@
 #include "search-tools.h"
-
-extern unsigned  UnicodeLC( unsigned ch );
-extern unsigned  UnicodeUC( unsigned ch );
+#include "unicode_lc.h"
 
 inline   int SBigNode::Eq( const char* str ) const
 {
