@@ -16,4 +16,4 @@ compiler:
     - gcc
 
 script:
-    - make all -B
+    - make all -B && mkdir build && cd build && cmake -DWITH_FREETYPE=YES -DWITH_LIBSSH2=NO -DWITH_SMBCLIENT=NO .. && make # tests both cmake and custom builds
