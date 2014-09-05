@@ -1,15 +1,18 @@
 language: cpp
 
 before_script:
-    - export DEBIAN_FRONTEND=noninteractive
     - gcc -v
+    - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
     - sudo apt-get update
-    - yes | sudo apt-get -q --yes --force-yes upgrade gcc clang
+    - sudo apt-get install gcc-4.8 g++-4.8
+    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
+    - sudo update-alternatives --config gcc
+    - sudo update-alternatives --config g++
     - gcc -v 
     - cd ./wcm
 
 compiler:
-    - clang
     - gcc
 
 script:
