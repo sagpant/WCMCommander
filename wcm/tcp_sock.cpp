@@ -61,7 +61,7 @@ bool GetHostIp( const char* utf8, unsigned* pIp, int* err )
 	int e;
 
 #if defined( __APPLE__ )
-	if ( ret = gethostbyname( utf8 ) )
+	if ( (ret = gethostbyname( utf8 )) )
 	{
 		if ( err ) { *err = e; }
 

@@ -43,7 +43,7 @@
 
 template <typename T> void SkipSpaces( T& p )
 {
-	while ( *p == ' ' ) { *p++; }
+	while ( *p == ' ' ) { p++; }
 }
 
 extern SearchAndReplaceParams searchParams;
@@ -405,6 +405,9 @@ bool NCWin::EventClose()
 
 	switch ( _mode )
 	{
+		case TERMINAL:
+			break;
+
 		case PANEL:
 			if ( !Blocked() ) { AppExit(); }
 

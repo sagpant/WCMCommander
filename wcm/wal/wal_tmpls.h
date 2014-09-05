@@ -862,7 +862,7 @@ namespace wal
 
 		static void cp( T* d, const T* s )
 		{
-			while ( *( d++ ) = *( s++ ) );
+			while ( (*( d++ ) = *( s++ )) );
 		}
 
 		static T* newstr( const T* s, int size )

@@ -1225,7 +1225,7 @@ err:
 
 int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 {
-#if defined( __linux__ ) || defined( __APPLE__ ) 
+#if defined( __linux__ ) && !defined( __APPLE__ ) 
 	struct statfs64 s;
 
 	if ( statfs64( path.GetUtf8(), &s ) == -1 )

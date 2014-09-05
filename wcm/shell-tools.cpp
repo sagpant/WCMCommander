@@ -190,7 +190,6 @@ void ShellFileListWin::DrawItem( wal::GC& gc, int n, crect rect )
 	{
 		FSNode* p = pList->get( n );
 
-
 		UiCondList ucl;
 
 		if ( ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
@@ -209,7 +208,7 @@ void ShellFileListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 		static unicode_t dirChar = DIR_SPLITTER;
 
-		if ( fg = p->IsDir() )
+		if ( p->IsDir() )
 		{
 			gc.TextOutF( rect.left, rect.top, &dirChar, 1 );
 		}
