@@ -82,6 +82,7 @@ SET(wcm_SOURCES
 	swl/swl_editline.cpp
 	swl/swl_layout.cpp
 	swl/swl_menubox.cpp
+	swl/swl_menutextinfo.cpp
 	swl/swl_popupmenu.cpp
 	swl/swl_sbutton.cpp
 	swl/swl_scrollbar.cpp
