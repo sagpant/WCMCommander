@@ -26,7 +26,7 @@ HN = libconf.h nc.h ncwin.h panel.h ncdialogs.h  terminal.h termwin.h ncedit.h n
  strconfig.h shortcuts.h fontdlg.h ncfonts.h shl.h toolbar.h ncview.h search-dlg.h search-tools.h shell-tools.h t-emulator.h dircalc.h ltext.h
 
 COPTS += -I swl -std=c++11
-CC = gcc
+CC ?= gcc
 
 # COPTS += -I swl -Wno-parentheses -fsanitize=address -g
 # -fsanitize=address -fsanitize=integer -fsanitize=thread -fsanitize=undefined
