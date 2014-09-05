@@ -8,6 +8,9 @@ $(info $(UNAME_S))
 ifeq ($(UNAME_S),Darwin)
 # make it buildable with XQuartz
 CFLAGS += -I /opt/X11/include
+CFLAGS += -Wno-logical-op-parentheses -Wno-bitwise-op-parentheses
+CFLAGS_FREETYPE = -I /opt/X11/include/freetype2
+LIBFREETYPE = -l freetype
 endif
 
 include makelib.mk
