@@ -2899,7 +2899,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case VK_ESCAPE:
 			{
 				HideAutoComplete();
-				if ( pressed ) SwitchToBackgroundActivity();					
+				if ( pressed ) SwitchToBackgroundActivity();
+				// Send ESC to terminal. Fix for https://github.com/corporateshark/WalCommander/issues/94
+				if ( fullKey == VK_ESCAPE ) break;
 				return true;
 			}
 
