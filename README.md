@@ -1,5 +1,6 @@
 Wal Commander
 =============
+[![Build Status](https://travis-ci.org/corporateshark/WalCommander.svg?branch=master)](https://travis-ci.org/corporateshark/WalCommander)
 
 Copyright (c) Wal (Горячев Валерий) 2013-2014
 walcommander.info@gmail.com

@@ -1,0 +1,16 @@
+language: cpp
+
+before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - gcc -v
+    - sudo apt-get update
+    - yes | sudo apt-get -q --yes --force-yes upgrade gcc clang
+    - gcc -v 
+    - cd ./wcm
+
+compiler:
+    - clang
+    - gcc
+
+script:
+    - make all -B
