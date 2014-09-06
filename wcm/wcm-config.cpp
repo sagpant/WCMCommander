@@ -23,11 +23,11 @@ WcmConfig wcmConfig;
 class TextInStream
 {
 	int bufSize;
-	carray<char> buffer;
+	std::vector<char> buffer;
 	int pos, count;
-	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.ptr(), bufSize ); pos = 0; return count > 0; }
+	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.data(), bufSize ); pos = 0; return count > 0; }
 public:
-	TextInStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), count( 1 ), pos( 1 ) { buffer.alloc( bufSize ); }
+	TextInStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), count( 1 ), pos( 1 ) { buffer.resize( bufSize ); }
 	int GetC() { FillBuffer(); return pos < count ? buffer[pos++] : EOF; }
 	bool GetLine( char* s, int size );
 	~TextInStream() {}
@@ -50,23 +50,23 @@ bool TextInStream::GetLine( char* s, int size )
 	{
 		if ( pos >= count && !FillBuffer() ) { break; }
 
-		char* b = buffer.ptr() + pos;
-		char* e = buffer.ptr() + count;
+		char* b = buffer.data() + pos;
+		char* e = buffer.data() + count;
 
 		for ( ; b < e; b++ ) if ( *b == '\n' ) { break; }
 
 		if ( size > 0 )
 		{
-			int n = b - ( buffer.ptr() + pos );
+			int n = b - ( buffer.data() + pos );
 
 			if ( n > size ) { n = size; }
 
-			memcpy( s, buffer.ptr() + pos, n );
+			memcpy( s, buffer.data() + pos, n );
 			size -= n;
 			s += n;
 		}
 
-		pos = b - buffer.ptr();
+		pos = b - buffer.data();
 
 		if ( b < e )
 		{
@@ -83,11 +83,11 @@ bool TextInStream::GetLine( char* s, int size )
 class TextOutStream
 {
 	int bufSize;
-	carray<char> buffer;
+	std::vector<char> buffer;
 	int pos;
 public:
-	TextOutStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), pos( 0 ) { buffer.alloc( bufSize ); }
-	void Flush() {  if ( pos > 0 ) { Write( buffer.ptr(), pos ); pos = 0; } }
+	TextOutStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), pos( 0 ) { buffer.resize( bufSize ); }
+	void Flush() {  if ( pos > 0 ) { Write( buffer.data(), pos ); pos = 0; } }
 	void PutC( int c ) { if ( pos >= bufSize ) { Flush(); } buffer[pos++] = c; }
 	void Put( const char* s, int size );
 	void Put( const char* s ) { Put( s, strlen( s ) ); }
@@ -108,7 +108,7 @@ void TextOutStream::Put( const char* s, int size )
 
 		if ( n > size ) { n = size; }
 
-		memcpy( buffer.ptr() + pos, s, n );
+		memcpy( buffer.data() + pos, s, n );
 		pos += n;
 		size -= n;
 		s += n;
@@ -159,9 +159,9 @@ inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
 
 class IniHash
 {
-	cstrhash< cstrhash< carray<char> > > hash;
-	carray<char>* Find( const char* section, const char* var );
-	carray<char>* Create( const char* section, const char* var );
+	cstrhash< cstrhash< std::vector<char> > > hash;
+	std::vector<char>* Find( const char* section, const char* var );
+	std::vector<char>* Create( const char* section, const char* var );
 	void Delete( const char* section, const char* var );
 public:
 	IniHash();
@@ -179,22 +179,22 @@ public:
 
 IniHash::IniHash() {}
 
-carray<char>* IniHash::Find( const char* section, const char* var )
+std::vector<char>* IniHash::Find( const char* section, const char* var )
 {
-	cstrhash< carray<char> >* h = hash.exist( section );
+	cstrhash< std::vector<char> >* h = hash.exist( section );
 
 	if ( !h ) { return 0; }
 
 	return h->exist( var );
 }
 
-carray<char>* IniHash::Create( const char* section, const char* var ) { return &( hash[section][var] ); }
+std::vector<char>* IniHash::Create( const char* section, const char* var ) { return &( hash[section][var] ); }
 void IniHash::Delete( const char* section, const char* var ) { hash[section].del( var, false ); }
-void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; carray<char>* p = Create( section, var ); if ( p ) { *p = new_char_str( value ); } }
+void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; std::vector<char>* p = Create( section, var ); if ( p ) { *p = new_char_str( value ); } }
 void IniHash::SetIntValue( const char* section, const char* var, int value ) { char buf[64]; int_to_char<int>( value, buf ); SetStrValue( section, var, buf ); }
 void IniHash::SetBoolValue( const char* section, const char* var, bool value ) { SetIntValue( section, var, value ? 1 : 0 ); }
-const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { carray<char>* p =  Find( section, var ); return ( p && p->ptr() ) ? p->ptr() : def; }
-int IniHash::GetIntValue( const char* section, const char* var, int def ) { carray<char>* p =  Find( section, var ); return ( p && p->ptr() ) ? atoi( p->ptr() ) : def; }
+const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->data() ) ? p->data() : def; }
+int IniHash::GetIntValue( const char* section, const char* var, int def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->data() ) ? atoi( p->data() ) : def; }
 bool IniHash::GetBoolValue( const char* section, const char* var, bool def ) { int n = GetIntValue( section, var, def ? 1 : 0 ); return n ? true : false; }
 
 void IniHash::Clear() { hash.clear(); }
@@ -220,7 +220,7 @@ void IniHash::Load( const sys_char_t* fileName )
 	}
 
 	char buf[4096];
-	carray<char> section;
+	std::vector<char> section;
 
 	while ( in.GetLine( buf, sizeof( buf ) ) )
 	{
@@ -252,7 +252,7 @@ void IniHash::Load( const sys_char_t* fileName )
 		}
 		else
 		{
-			if ( !section.ptr() ) { continue; }
+			if ( !section.data() ) { continue; }
 
 			char* t = s;
 
@@ -276,7 +276,7 @@ void IniHash::Load( const sys_char_t* fileName )
 
 			*t = 0;
 
-			SetStrValue( section.ptr(), s, v );
+			SetStrValue( section.data(), s, v );
 		}
 	}
 
@@ -290,28 +290,28 @@ void IniHash::Save( const sys_char_t* fileName )
 
 	if ( hash.count() > 0 )
 	{
-		carray<const char*> secList = hash.keys();
-		sort2m<const char*>( secList.ptr(), hash.count(), strless< const char* > );
+		std::vector<const char*> secList = hash.keys();
+		sort2m<const char*>( secList.data(), hash.count(), strless< const char* > );
 
 		for ( int i = 0; i < hash.count(); i++ )
 		{
 			out.Put( "\n[" );
 			out.Put( secList[i] );
 			out.Put( "]\n" );
-			cstrhash< carray<char> >* h = hash.exist( secList[i] );
+			cstrhash< std::vector<char> >* h = hash.exist( secList[i] );
 
 			if ( !h ) { continue; }
 
-			carray<const char*> varList = h->keys();
-			sort2m<const char*>( varList.ptr(), h->count(), strless< const char* > );
+			std::vector<const char*> varList = h->keys();
+			sort2m<const char*>( varList.data(), h->count(), strless< const char* > );
 
 			for ( int j = 0; j < h->count(); j++ )
 			{
 				out.Put( varList[j] );
 				out.PutC( '=' );
-				carray<char>* p = h->exist( varList[j] );
+				std::vector<char>* p = h->exist( varList[j] );
 
-				if ( p && p->ptr() ) { out.Put( p->ptr() ); }
+				if ( p && p->data() ) { out.Put( p->data() ); }
 
 				out.PutC( '\n' );
 			}
@@ -324,14 +324,14 @@ void IniHash::Save( const sys_char_t* fileName )
 
 IniHash::~IniHash() {}
 
-bool LoadStringList( const char* section, ccollect< carray<char> >& list )
+bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 {
 	try
 	{
 		SysTextFileIn in;
 
 		FSPath path = configDirPath;
-		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).ptr() );
+		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).data() );
 		in.Open( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
 		char buf[4096];
@@ -355,21 +355,21 @@ bool LoadStringList( const char* section, ccollect< carray<char> >& list )
 }
 
 
-void SaveStringList( const char* section, ccollect< carray<char> >& list )
+void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 {
 	try
 	{
 		SysTextFileOut out;
 
 		FSPath path = configDirPath;
-		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).ptr() );
+		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).data() );
 		out.Open( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
 		for ( int i = 0; i < list.count(); i++ )
 		{
-			if ( list[i].ptr() && list[i][0] )
+			if ( list[i].data() && list[i][0] )
 			{
-				out.Put( list[i].ptr() );
+				out.Put( list[i].data() );
 				out.PutC( '\n' );
 			}
 		}
@@ -388,8 +388,8 @@ void SaveStringList( const char* section, ccollect< carray<char> >& list )
 
 #else
 //старый клочек, надо перепроверить
-static char* regapp = "Wal commander";
-static char* regcomp = "Wal";
+static const char* regapp = "Wal commander";
+static const char* regcomp = "Wal";
 
 #define COMPANY regcomp
 #define APPNAME regapp
@@ -463,13 +463,13 @@ DWORD RegReadInt( const char* sect, const  char* what, DWORD def )
 	return def;
 }
 
-carray<char> RegReadString( char const* sect, const char* what, const char* def )
+std::vector<char> RegReadString( char const* sect, const char* what, const char* def )
 {
 	HKEY hsect = GetSection( sect );
 
-	if ( !hsect ) { return def ? new_char_str( def ) : carray<char>( 0 ); }
+	if ( !hsect ) { return def ? new_char_str( def ) : std::vector<char>( 0 ); }
 
-	carray<char> strValue;
+	std::vector<char> strValue;
 	DWORD dwType, dwCount;
 	LONG lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,
 	                                NULL, &dwCount );
@@ -477,11 +477,11 @@ carray<char> RegReadString( char const* sect, const char* what, const char* def 
 	if ( lResult == ERROR_SUCCESS )
 	{
 		ASSERT( dwType == REG_SZ );
-		strValue.alloc( dwCount + 1 );
+		strValue.resize( dwCount + 1 );
 		strValue[dwCount] = 0;
 
 		lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,
-		                           ( LPBYTE )strValue.ptr(), &dwCount );
+		                           ( LPBYTE )strValue.data(), &dwCount );
 	}
 
 	RegCloseKey( hsect );
@@ -492,7 +492,7 @@ carray<char> RegReadString( char const* sect, const char* what, const char* def 
 		return strValue;
 	}
 
-	return def ? new_char_str( def ) : carray<char>( 0 );
+	return def ? new_char_str( def ) : std::vector<char>( 0 );
 }
 
 int RegGetBinSize( const char* sect, const char* what )
@@ -577,7 +577,7 @@ bool RegWriteBin( const char* sect, const char* what, const void* data, int size
 	return lResult == ERROR_SUCCESS;
 }
 
-bool LoadStringList( const char* section, ccollect< carray<char> >& list )
+bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 {
 	char name[64];
 	list.clear();
@@ -585,9 +585,9 @@ bool LoadStringList( const char* section, ccollect< carray<char> >& list )
 	for ( int i = 1; ; i++ )
 	{
 		snprintf( name, sizeof( name ), "v%i", i );
-		carray<char> s = RegReadString( section, name, "" );
+		std::vector<char> s = RegReadString( section, name, "" );
 
-		if ( !s.ptr() || !s[0] ) { break; }
+		if ( !s.data() || !s[0] ) { break; }
 
 		list.append( s );
 	}
@@ -595,18 +595,18 @@ bool LoadStringList( const char* section, ccollect< carray<char> >& list )
 	return true;
 }
 
-void SaveStringList( const char* section, ccollect< carray<char> >& list )
+void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 {
 	int n = 1;
 	char name[64];
 
 	for ( int i = 0; i < list.count(); i++ )
 	{
-		if ( list[i].ptr() && list[i][0] )
+		if ( list[i].data() && list[i][0] )
 		{
 			snprintf( name, sizeof( name ), "v%i", n );
 
-			if ( !RegWriteString( section, name, list[i].ptr() ) )
+			if ( !RegWriteString( section, name, list[i].data() ) )
 			{
 				break;
 			}
@@ -633,6 +633,7 @@ WcmConfig::WcmConfig()
 	:  systemAskOpenExec( true ),
 	   systemEscPanel( true ),
 	   systemBackSpaceUpDir( false ),
+		systemAutoComplete( true ),
 	   systemLang( new_char_str( "+" ) ),
 	   showToolBar( true ),
 	   showButtonBar( true ),
@@ -642,6 +643,7 @@ WcmConfig::WcmConfig()
 	   panelShowIcons( true ),
 	   panelCaseSensitive( false ),
 	   panelSelectFolders( false ),
+		panelShowDotsInRoot( false ),
 	   panelColorMode( 0 ),
 
 	   panelModeLeft( 0 ),
@@ -665,6 +667,7 @@ WcmConfig::WcmConfig()
 #endif
 	MapBool( sectionSystem, "esc_panel", &systemEscPanel, systemEscPanel );
 	MapBool( sectionSystem, "back_updir", &systemBackSpaceUpDir, systemBackSpaceUpDir );
+	MapBool( sectionSystem, "auto_complete", &systemAutoComplete, systemAutoComplete );
 	MapStr( sectionSystem,  "lang", &systemLang );
 
 	MapBool( sectionSystem, "show_toolbar", &showToolBar, showToolBar );
@@ -675,6 +678,7 @@ WcmConfig::WcmConfig()
 	MapBool( sectionPanel, "show_icons",    &panelShowIcons, panelShowIcons );
 	MapBool( sectionPanel, "case_sensitive_sort", &panelCaseSensitive, panelCaseSensitive );
 	MapBool( sectionPanel, "select_folders",   &panelSelectFolders, panelSelectFolders );
+	MapBool( sectionPanel, "show_dots",     &panelShowDotsInRoot, panelShowDotsInRoot );
 	MapInt( sectionPanel,  "color_mode",    &panelColorMode, panelColorMode );
 	MapInt( sectionPanel,  "mode_left",     &panelModeLeft, panelModeLeft );
 	MapInt( sectionPanel,  "mode_right",    &panelModeRight, panelModeRight );
@@ -747,7 +751,7 @@ void WcmConfig::MapBool( const char* section, const char* name, bool* pBool, boo
 	mapList.append( node );
 }
 
-void WcmConfig::MapStr( const char* section, const char* name, carray<char>* pStr, const char* def )
+void WcmConfig::MapStr( const char* section, const char* name, std::vector<char>* pStr, const char* def )
 {
 	Node node;
 	node.type = MT_STR;
@@ -758,8 +762,69 @@ void WcmConfig::MapStr( const char* section, const char* name, carray<char>* pSt
 	mapList.append( node );
 }
 
+static const char* CommandsHistorySection = "CommandsHistory";
 
-void WcmConfig::Load()
+void SaveCommandsHistory( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+	int Count = nc->GetHistory()->Count();
+
+	for ( int i = 0; i < Count; i++ )
+	{
+		const unicode_t* Hist = (*nc->GetHistory())[Count-i-1];
+
+		std::vector<char> utf8 = unicode_to_utf8( Hist );
+
+		char buf[4096];
+		snprintf( buf, sizeof( buf ), "Command%i", i );
+
+#ifdef _WIN32
+		RegWriteString( CommandsHistorySection, buf, utf8.data() );
+#else
+		hash.SetStrValue( CommandsHistorySection, buf, utf8.data() );
+#endif
+	}
+}
+
+void LoadCommandsHistory( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+	nc->GetHistory()->Clear();
+
+	int i = 0;
+
+	while (true)
+	{
+		char buf[4096];
+		snprintf( buf, sizeof( buf ), "Command%i", i );
+
+#ifdef _WIN32
+		std::vector<char> value = RegReadString( CommandsHistorySection, buf, "" );
+		const char* s = value.data();
+#else
+		const char* s = hash.GetStrValue( CommandsHistorySection, buf, "" );
+#endif
+		if ( !*s ) break;
+
+		std::vector<unicode_t> cmd = utf8_to_unicode( s );
+
+		nc->GetHistory()->Put( cmd.data() );
+
+		i++;
+	}
+}
+
+void WcmConfig::Load( NCWin* nc )
 {
 #ifdef _WIN32
 
@@ -780,6 +845,9 @@ void WcmConfig::Load()
 			*node.ptr.pStr = RegReadString( node.section, node.name, node.def.defStr );
 		}
 	}
+
+
+	LoadCommandsHistory( nc );
 
 #else
 	IniHash hash;
@@ -806,10 +874,12 @@ void WcmConfig::Load()
 			const char* s = hash.GetStrValue( node.section, node.name, node.def.defStr );
 
 			if ( s ) { *node.ptr.pStr = new_char_str( s ); }
-			else { ( *node.ptr.pStr ) = 0; }
+			else { ( *node.ptr.pStr ).clear(); }
 		}
 
 	}
+
+	LoadCommandsHistory( nc, hash );
 
 #endif
 
@@ -845,9 +915,11 @@ void WcmConfig::Save( NCWin* nc )
 		}
 		else if ( node.type == MT_STR && node.ptr.pStr != 0 )
 		{
-			RegWriteString( node.section, node.name, node.ptr.pStr->ptr() );
+			RegWriteString( node.section, node.name, node.ptr.pStr->data() );
 		}
 	}
+
+	SaveCommandsHistory( nc );
 
 #else
 	IniHash hash;
@@ -869,9 +941,11 @@ void WcmConfig::Save( NCWin* nc )
 		}
 		else if ( node.type == MT_STR && node.ptr.pStr != 0 )
 		{
-			hash.SetStrValue( node.section, node.name, node.ptr.pStr->ptr() );
+			hash.SetStrValue( node.section, node.name, node.ptr.pStr->data() );
 		}
 	}
+
+	SaveCommandsHistory( nc, hash );
 
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
 #endif
@@ -938,6 +1012,7 @@ public:
 	SButton  showIconsButton;
 	SButton  caseSensitive;
 	SButton  selectFolders;
+	SButton  showDotsInRoot;
 
 	PanelOptDialog( NCDialogParent* parent );
 	virtual ~PanelOptDialog();
@@ -946,12 +1021,13 @@ public:
 PanelOptDialog::~PanelOptDialog() {}
 
 PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show hidden files" ) ).ptr(), 0, wcmConfig.panelShowHiddenFiles ),
-	   showIconsButton( 0, this, utf8_to_unicode( _LT( "Show icons" ) ).ptr(), 0, wcmConfig.panelShowIcons ),
-	   caseSensitive( 0, this, utf8_to_unicode( _LT( "Case sensitive sort" ) ).ptr(), 0, wcmConfig.panelCaseSensitive ),
-	   selectFolders( 0, this, utf8_to_unicode( _LT( "Select folders" ) ).ptr(), 0, wcmConfig.panelSelectFolders )
+	   showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles ),
+	   showIconsButton( 0, this, utf8_to_unicode( _LT( "Show icons" ) ).data(), 0, wcmConfig.panelShowIcons ),
+	   caseSensitive( 0, this, utf8_to_unicode( _LT( "Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive ),
+	   selectFolders( 0, this, utf8_to_unicode( _LT( "Select folders" ) ).data(), 0, wcmConfig.panelSelectFolders ),
+	   showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the root folder" ) ).data(), 0, wcmConfig.panelShowDotsInRoot )
 {
 	iL.AddWin( &showHiddenButton,  0, 0 );
 	showHiddenButton.Enable();
@@ -966,6 +1042,10 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	iL.AddWin( &selectFolders,  3, 0 );
 	selectFolders.Enable();
 	selectFolders.Show();
+	iL.AddWin( &showDotsInRoot,  4, 0 );
+	showDotsInRoot.Enable();
+	showDotsInRoot.Show();
+
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
 
@@ -975,6 +1055,7 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	order.append( &showIconsButton );
 	order.append( &caseSensitive );
 	order.append( &selectFolders );
+	order.append( &showDotsInRoot );
 	SetPosition();
 }
 
@@ -988,6 +1069,7 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 		wcmConfig.panelShowIcons = dlg.showIconsButton.IsSet();
 		wcmConfig.panelCaseSensitive = dlg.caseSensitive.IsSet();
 		wcmConfig.panelSelectFolders = dlg.selectFolders.IsSet();
+		wcmConfig.panelShowDotsInRoot = dlg.showDotsInRoot.IsSet();
 		return true;
 	}
 
@@ -1018,18 +1100,18 @@ public:
 EditOptDialog::~EditOptDialog() {}
 
 EditOptDialog::EditOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Editor" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Editor" ) ).data(), bListOkCancel ),
 	   iL( 16, 2 ),
 
-	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file position" ) ).ptr(), 0, wcmConfig.editSavePos ),
-	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto indent" ) ).ptr(), 0, wcmConfig.editAutoIdent ),
-	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax highlighting" ) ).ptr(), 0, wcmConfig.editShl ),
-	   tabText( 0, this, utf8_to_unicode( _LT( "Tab size:" ) ).ptr() ),
+	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file position" ) ).data(), 0, wcmConfig.editSavePos ),
+	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto indent" ) ).data(), 0, wcmConfig.editAutoIdent ),
+	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax highlighting" ) ).data(), 0, wcmConfig.editShl ),
+	   tabText( 0, this, utf8_to_unicode( _LT( "Tab size:" ) ).data() ),
 	   tabEdit( 0, this, 0, 0, 16 )
 {
 	char buf[0x100];
 	snprintf( buf, sizeof( buf ) - 1, "%i", wcmConfig.editTabSize );
-	tabEdit.SetText( utf8_to_unicode( buf ).ptr(), true );
+	tabEdit.SetText( utf8_to_unicode( buf ).data(), true );
 
 	iL.AddWin( &saveFilePosButton, 0, 0, 0, 1 );
 	saveFilePosButton.Enable();
@@ -1069,7 +1151,7 @@ bool DoEditConfigDialog( NCDialogParent* parent )
 		wcmConfig.editAutoIdent = dlg.autoIdentButton.IsSet();
 		wcmConfig.editShl = dlg.shlButton.IsSet();
 
-		int tabSize = atoi( unicode_to_utf8( dlg.tabEdit.GetText().ptr() ).ptr() );
+		int tabSize = atoi( unicode_to_utf8( dlg.tabEdit.GetText().data() ).data() );
 
 		if ( tabSize > 0 && tabSize <= 64 )
 		{
@@ -1093,13 +1175,13 @@ class StyleOptDialog: public NCVertDialog
 public:
 	struct Node
 	{
-		carray<char> name;
+		std::vector<char> name;
 		cfont* oldFont;
-		carray<char>* pUri;
-		cptr<cfont> newFont;
+		std::vector<char>* pUri;
+		clPtr<cfont> newFont;
 		bool fixed;
 		Node(): oldFont( 0 ) {}
-		Node( const char* n, bool fix,  cfont* old, carray<char>* uri ): name( new_char_str( n ) ), fixed( fix ), oldFont( old ), pUri( uri ) {}
+		Node( const char* n, bool fix,  cfont* old, std::vector<char>* uri ): name( new_char_str( n ) ), fixed( fix ), oldFont( old ), pUri( uri ) {}
 	};
 
 	ccollect<Node>* pList;
@@ -1149,30 +1231,30 @@ void StyleOptDialog::RefreshFontInfo()
 		}
 	}
 
-	fontNameStatic.SetText( utf8_to_unicode( s ).ptr() );
+	fontNameStatic.SetText( utf8_to_unicode( s ).data() );
 }
 
 #define CMD_CHFONT 1000
 #define CMD_CHFONTX11 1001
 
 StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Style" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Style" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   pList( p ),
-	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).ptr() ),
-	   styleDefButton( 0, this, utf8_to_unicode( _LT( "Default colors" ) ).ptr(), 1, wcmConfig.panelColorMode != 1 && wcmConfig.panelColorMode != 2 ),
-	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "Black" ) ).ptr(), 1, wcmConfig.panelColorMode == 1 ),
-	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "White" ) ).ptr(), 1, wcmConfig.panelColorMode == 2 ),
+	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
+	   styleDefButton( 0, this, utf8_to_unicode( _LT( "Default colors" ) ).data(), 1, wcmConfig.panelColorMode != 1 && wcmConfig.panelColorMode != 2 ),
+	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "Black" ) ).data(), 1, wcmConfig.panelColorMode == 1 ),
+	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "White" ) ).data(), 1, wcmConfig.panelColorMode == 2 ),
 
-	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).ptr() ),
-	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show toolbar" ) ).ptr(), 0, wcmConfig.showToolBar ),
-	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show buttonbar" ) ).ptr(), 0, wcmConfig.showButtonBar ),
+	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
+	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show toolbar" ) ).data(), 0, wcmConfig.showToolBar ),
+	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show buttonbar" ) ).data(), 0, wcmConfig.showButtonBar ),
 
-	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).ptr() ),
+	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
 	   fontList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
-	   fontNameStatic( 0, this, utf8_to_unicode( "--------------------------------------------------" ).ptr() ),
-	   changeButton( 0, this, utf8_to_unicode( _LT( "Set font..." ) ).ptr(), CMD_CHFONT ),
-	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set X11 font..." ) ).ptr(), CMD_CHFONTX11 )
+	   fontNameStatic( 0, this, utf8_to_unicode( "--------------------------------------------------" ).data() ),
+	   changeButton( 0, this, utf8_to_unicode( _LT( "Set font..." ) ).data(), CMD_CHFONT ),
+	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set X11 font..." ) ).data(), CMD_CHFONTX11 )
 {
 	iL.AddWin( &colorStatic, 0, 0 );
 	colorStatic.Enable();
@@ -1207,7 +1289,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 
 	for ( int i = 0; i < pList->count(); i++ )
 	{
-		fontList.Append( utf8_to_unicode( pList->get( i ).name.ptr() ).ptr(), i );
+		fontList.Append( utf8_to_unicode( pList->get( i ).name.data() ).data(), i );
 	}
 
 	fontList.MoveCurrent( 0 );
@@ -1296,8 +1378,8 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 		if ( count <= 0 || cur < 0 || cur >= count ) { return true; }
 
 		LOGFONT lf;
-		carray<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
-		cfont::UriToLogFont( &lf, pUri && pUri->ptr() ?  pUri->ptr() : 0 );
+		std::vector<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
+		cfont::UriToLogFont( &lf, pUri && pUri->data() ?  pUri->data() : 0 );
 
 		CHOOSEFONT cf;
 		memset( &cf, 0, sizeof( cf ) );
@@ -1314,7 +1396,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		if ( ChooseFont( &cf ) )
 		{
-			cptr<cfont> p = new cfont( cfont::LogFontToUru( lf ).ptr() );
+			clPtr<cfont> p = new cfont( cfont::LogFontToUru( lf ).data() );
 
 			if ( p.ptr() )
 			{
@@ -1335,9 +1417,9 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		if ( count <= 0 || cur < 0 || cur >= count ) { return true; }
 
-		carray<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
+		std::vector<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
 
-		cptr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->ptr() ) ? pUri->ptr() : 0 );
+		clPtr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->data() ) ? pUri->data() : 0 );
 
 		if ( p.ptr() )
 		{
@@ -1355,7 +1437,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		if ( count <= 0 || cur < 0 || cur >= count ) { return true; }
 
-		cptr<cfont> p = SelectX11Font( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed );
+		clPtr<cfont> p = SelectX11Font( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed );
 
 		if ( p.ptr() )
 		{
@@ -1441,8 +1523,8 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 
 struct LangListNode
 {
-	carray<char> id;
-	carray<char> name;
+	std::vector<char> id;
+	std::vector<char> name;
 	LangListNode() {}
 	LangListNode( const char* i, const char* n ): id( new_char_str( i ) ), name( new_char_str( n ) ) {}
 };
@@ -1454,18 +1536,18 @@ class CfgLangDialog: public NCDialog
 	ccollect<LangListNode>* nodeList;
 public:
 	CfgLangDialog( NCDialogParent* parent, char* id, ccollect<LangListNode>* nl )
-		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Language" ) ).ptr(), bListOkCancel ),
+		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Language" ) ).data(), bListOkCancel ),
 		   _selected( 0 ),
 		   _list( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
 		   nodeList( nl )
 
 	{
-		_list.Append( utf8_to_unicode( _LT( "Autodetect" ) ).ptr() ); //0
-		_list.Append( utf8_to_unicode( _LT( "English" ) ).ptr() ); //1
+		_list.Append( utf8_to_unicode( _LT( "Autodetect" ) ).data() ); //0
+		_list.Append( utf8_to_unicode( _LT( "English" ) ).data() ); //1
 
 		for ( int i = 0; i < nl->count(); i++ )
 		{
-			_list.Append( utf8_to_unicode( nl->get( i ).name.ptr() ).ptr() );
+			_list.Append( utf8_to_unicode( nl->get( i ).name.data() ).data() );
 		}
 
 		int cur = 0;
@@ -1475,7 +1557,7 @@ public:
 		else
 		{
 			for ( int i = 0; i < nl->count(); i++ )
-				if ( !strcmp( id, nl->get( i ).id.ptr() ) )
+				if ( !strcmp( id, nl->get( i ).id.data() ) )
 				{
 					cur = i + 2;
 					break;
@@ -1516,7 +1598,7 @@ const char* CfgLangDialog::GetId()
 
 	if ( n >= nodeList->count() ) { return "+"; }
 
-	return nodeList->get( n ).id.ptr();
+	return nodeList->get( n ).id.data();
 }
 
 bool CfgLangDialog::Command( int id, int subId, Win* win, void* data )
@@ -1602,13 +1684,14 @@ class SysOptDialog: public NCVertDialog
 {
 	Layout iL;
 public:
-	carray<char> curLangId;
+	std::vector<char> curLangId;
 	ccollect<LangListNode> list;
 	void SetCurLang( const char* id );
 
 	SButton  askOpenExecButton;
 	SButton  escPanelButton;
 	SButton  backUpDirButton;
+	SButton  autoCompleteButton;
 //	SButton  intLocale;
 
 	StaticLine langStatic;
@@ -1627,40 +1710,41 @@ void SysOptDialog::SetCurLang( const char* id )
 
 	if ( id[0] == '-' )
 	{
-		langVal.SetText( utf8_to_unicode( _LT( "English" ) ).ptr() );
+		langVal.SetText( utf8_to_unicode( _LT( "English" ) ).data() );
 	}
 	else if ( id[0] == '+' )
 	{
-		langVal.SetText( utf8_to_unicode( _LT( "Autodetect" ) ).ptr() );
+		langVal.SetText( utf8_to_unicode( _LT( "Autodetect" ) ).data() );
 	}
 	else
 	{
 		for ( int i = 0; i < list.count(); i++ )
 		{
-			if ( !strcmp( list[i].id.ptr(), id ) )
+			if ( !strcmp( list[i].id.data(), id ) )
 			{
-				langVal.SetText( utf8_to_unicode( list[i].name.ptr() ).ptr() );
+				langVal.SetText( utf8_to_unicode( list[i].name.data() ).data() );
 				return;
 			}
 		}
 
-		langVal.SetText( utf8_to_unicode( id ).ptr() );
+		langVal.SetText( utf8_to_unicode( id ).data() );
 	}
 }
 
 SysOptDialog::~SysOptDialog() {}
 
 SysOptDialog::SysOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "System settings" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "System settings" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 )
 
-	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).ptr(), 0, wcmConfig.systemAskOpenExec )
-	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable ESC key to show/hide panels" ) ).ptr(), 0, wcmConfig.systemEscPanel )
-	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable BACKSPACE key to go up dir" ) ).ptr(), 0, wcmConfig.systemBackSpaceUpDir )
-//	,intLocale(this, utf8_to_unicode( _LT("Interface localisation (save config and restart)") ).ptr(), 0, wcmConfig.systemIntLocale)
-	   , langStatic( 0, this, utf8_to_unicode( _LT( "Language:" ) ).ptr() )
-	   , langVal( 0, this, utf8_to_unicode( "______________________" ).ptr() )
-	   , langButton( 0, this, utf8_to_unicode( ">" ).ptr(), 1000 )
+	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, wcmConfig.systemAskOpenExec )
+	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
+	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
+	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable autocomplete" ) ).data(), 0, wcmConfig.systemAutoComplete )
+//	,intLocale(this, utf8_to_unicode( _LT("Interface localisation (save config and restart)") ).data(), 0, wcmConfig.systemIntLocale)
+	   , langStatic( 0, this, utf8_to_unicode( _LT( "Language:" ) ).data() )
+	   , langVal( 0, this, utf8_to_unicode( "______________________" ).data() )
+	   , langButton( 0, this, utf8_to_unicode( ">" ).data(), 1000 )
 {
 
 #ifndef _WIN32
@@ -1671,18 +1755,25 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	iL.AddWin( &escPanelButton, 1, 0, 1, 2 );
 	escPanelButton.Enable();
 	escPanelButton.Show();
+
 	iL.AddWin( &backUpDirButton, 2, 0, 2, 2 );
 	backUpDirButton.Enable();
 	backUpDirButton.Show();
+
+	iL.AddWin( &autoCompleteButton, 3, 0, 3, 2 );
+	autoCompleteButton.Enable();
+	autoCompleteButton.Show();
 //	iL.AddWin(&intLocale,      2, 0, 2, 2); intLocale.Enable();  intLocale.Show();
 
-	iL.AddWin( &langStatic,     3, 0 );
+	iL.AddWin( &langStatic,     4, 0 );
 	langStatic.Enable();
 	langStatic.Show();
-	iL.AddWin( &langVal,     3, 2 );
+
+	iL.AddWin( &langVal,     4, 2 );
 	langVal.Enable();
 	langVal.Show();
-	iL.AddWin( &langButton,     3, 1 );
+
+	iL.AddWin( &langButton,     4, 1 );
 	langButton.Enable();
 	langButton.Show();
 	iL.SetColGrowth( 2 );
@@ -1695,30 +1786,32 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	order.append( &askOpenExecButton );
 #endif
 	order.append( &escPanelButton );
+	order.append( &backUpDirButton );
+	order.append( &autoCompleteButton );
 //	order.append(&intLocale);
 	order.append( &langButton );
 
 	SetPosition();
 
 #ifdef _WIN32
-	LangListLoad( carray_cat<sys_char_t>( GetAppPath().ptr(), utf8_to_sys( "\\lang\\list" ).ptr() ).ptr(), list );
+	LangListLoad( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "\\lang\\list" ).data() ).data(), list );
 #else
 
-	if ( !LangListLoad( utf8_to_sys( "install-files/share/wcm/lang/list" ).ptr(), list ) )
+	if ( !LangListLoad( utf8_to_sys( "install-files/share/wcm/lang/list" ).data(), list ) )
 	{
-		LangListLoad( utf8_to_sys( UNIX_CONFIG_DIR_PATH "/lang/list" ).ptr(), list );
+		LangListLoad( utf8_to_sys( UNIX_CONFIG_DIR_PATH "/lang/list" ).data(), list );
 	}
 
 #endif
 
-	SetCurLang( wcmConfig.systemLang.ptr() ? wcmConfig.systemLang.ptr() : "+" );
+	SetCurLang( wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+" );
 }
 
 bool SysOptDialog::Command( int id, int subId, Win* win, void* data )
 {
 	if ( id == 1000 )
 	{
-		CfgLangDialog dlg( ( NCDialogParent* )Parent(), curLangId.ptr(), &list );
+		CfgLangDialog dlg( ( NCDialogParent* )Parent(), curLangId.data(), &list );
 
 		if ( dlg.DoModal() == CMD_OK )
 		{
@@ -1755,12 +1848,13 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 		wcmConfig.systemAskOpenExec = dlg.askOpenExecButton.IsSet();
 		wcmConfig.systemEscPanel = dlg.escPanelButton.IsSet();
 		wcmConfig.systemBackSpaceUpDir = dlg.backUpDirButton.IsSet();
-		const char* s = wcmConfig.systemLang.ptr();
+		wcmConfig.systemAutoComplete = dlg.autoCompleteButton.IsSet();
+		const char* s = wcmConfig.systemLang.data();
 
 		if ( !s ) { s = "+"; }
 
-		bool langChanged = strcmp( dlg.curLangId.ptr(), s ) != 0;
-		wcmConfig.systemLang = new_char_str( dlg.curLangId.ptr() );
+		bool langChanged = strcmp( dlg.curLangId.data(), s ) != 0;
+		wcmConfig.systemLang = new_char_str( dlg.curLangId.data() );
 
 		if ( langChanged )
 		{
@@ -1793,11 +1887,11 @@ public:
 
 
 TerminalOptDialog::TerminalOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Terminal options" ) ).ptr(), bListOkCancel ),
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Terminal options" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   backspaceKeyStatic( 0, this, utf8_to_unicode( _LT( "Backspace key:" ) ).ptr() ),
-	   backspaceAsciiButton( 0, this, utf8_to_unicode( "ASCII DEL" ).ptr(), 1, wcmConfig.terminalBackspaceKey == 0 ),
-	   backspaceCtrlHButton( 0, this,  utf8_to_unicode( "Ctrl H" ).ptr(), 1, wcmConfig.terminalBackspaceKey == 1 )
+	   backspaceKeyStatic( 0, this, utf8_to_unicode( _LT( "Backspace key:" ) ).data() ),
+	   backspaceAsciiButton( 0, this, utf8_to_unicode( "ASCII DEL" ).data(), 1, wcmConfig.terminalBackspaceKey == 0 ),
+	   backspaceCtrlHButton( 0, this,  utf8_to_unicode( "Ctrl H" ).data(), 1, wcmConfig.terminalBackspaceKey == 1 )
 {
 	iL.AddWin( &backspaceKeyStatic,   0, 0, 0, 1 );
 	backspaceKeyStatic.Enable();

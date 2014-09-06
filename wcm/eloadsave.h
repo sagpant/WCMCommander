@@ -6,7 +6,7 @@
 #include "operwin.h"
 #include "mfile.h"
 
-cptr<MemFile> LoadFile( FSPtr f, FSPath& p, NCDialogParent* parent, bool ignoreENOENT );
-bool SaveFile( FSPtr f, FSPath& p, cptr<MemFile> file, NCDialogParent* parent );
+clPtr<MemFile> LoadFile( clPtr<FS> f, FSPath& p, NCDialogParent* parent, bool ignoreENOENT );
+bool SaveFile( clPtr<FS> f, FSPath& p, clPtr<MemFile> file, NCDialogParent* parent );
 
 #endif

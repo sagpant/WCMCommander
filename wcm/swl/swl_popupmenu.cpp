@@ -2,8 +2,9 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
 #include "swl.h"
+// XXX: refactor to move the header to .
+#include "../unicode_lc.h" 
 
 namespace wal
 {
@@ -11,14 +12,14 @@ namespace wal
 	MenuData::MenuData() {}
 
 // временная штука
-	wal::cinthash<int, wal::cptr<cicon> > iconList;
+	wal::cinthash<int, clPtr<cicon> > iconList;
 	cicon* GetCmdIcon( int cmd )
 	{
-		wal::cptr<cicon>* p = iconList.exist( cmd );
+		clPtr<cicon>* p = iconList.exist( cmd );
 
 		if ( p ) { return p->ptr(); }
 
-		wal::cptr<cicon> pic = new cicon( cmd, 16, 16 );
+		clPtr<cicon> pic = new cicon( cmd, 16, 16 );
 		cicon* t = pic.ptr();
 		iconList[cmd] = pic;
 		return t;
@@ -51,6 +52,7 @@ namespace wal
 		if ( n == selected ) { ucl.Set( uiCurrentItem, true ); }
 
 		int color_text = UiGetColor( uiColor, uiItem, &ucl, 0x0 );
+		int color_hotkey = UiGetColor(uiHotkeyColor, uiItem, &ucl, 0x0);
 		int color_bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 		int color_left = UiGetColor( uiBackground, 0, 0, 0xFFFFFF );
 
@@ -78,14 +80,22 @@ namespace wal
 		}
 		else
 		{
-			gc.SetTextColor( color_text );
 			gc.Set( GetFont() );
-			unicode_t* lText = list[n].data->leftText.ptr();
-			unicode_t* rText = list[n].data->rightText.ptr();
+			MenuTextInfo& lText = (list[n].data->leftText);
+			//unicode_t* lText = list[n].data->leftText.data();
+			unicode_t* rText = list[n].data->rightText.data();
 
-			if ( lText ) { gc.TextOutF( MENU_LEFT_BLOCK + MENU_TEXT_OFFSET, r.top + ( height - fontHeight ) / 2, lText ); }
+			//if ( lText ) { gc.TextOutF( MENU_LEFT_BLOCK + MENU_TEXT_OFFSET, r.top + ( height - fontHeight ) / 2, lText ); }
+			if (!lText.isEmpty()) 
+			{
+				lText.DrawItem(gc, MENU_LEFT_BLOCK + MENU_TEXT_OFFSET, r.top + (height - fontHeight) / 2, color_text, color_hotkey); 
+			}
 
-			if ( rText ) { gc.TextOutF( MENU_LEFT_BLOCK + MENU_TEXT_OFFSET + leftWidth + fontHeight, r.top + ( height - fontHeight ) / 2, rText ); }
+			if ( rText ) 
+			{ 
+				gc.SetTextColor(color_text);
+				gc.TextOutF(MENU_LEFT_BLOCK + MENU_TEXT_OFFSET + leftWidth + fontHeight, r.top + (height - fontHeight) / 2, rText);
+			}
 
 			if ( IsSub( n ) )
 			{
@@ -141,17 +151,17 @@ namespace wal
 			else
 			{
 				cpoint p;
-
-				if ( node.data->leftText.ptr() )
+				MenuTextInfo& leftText = node.data->leftText;
+				if ( !node.data->leftText.isEmpty() )
 				{
-					p = gc.GetTextExtents( node.data->leftText.ptr() );
+					p = leftText.GetTextExtents(gc);
 
 					if ( leftWidth < p.x ) { leftWidth = p.x; }
 				}
 
-				if ( node.data->rightText.ptr() )
+				if ( node.data->rightText.data() )
 				{
-					p = gc.GetTextExtents( node.data->rightText.ptr() );
+					p = gc.GetTextExtents( node.data->rightText.data() );
 
 					if ( rightWidth < p.x ) { rightWidth = p.x; }
 				}
@@ -349,6 +359,8 @@ namespace wal
 					if ( OpenSubmenu() ) { return true; };
 
 					break;
+				//case VK_LEFT:
+				//	return false; // to prevent grabbing default case
 
 				case VK_NUMPAD_RETURN:
 				case VK_RETURN:
@@ -379,12 +391,42 @@ namespace wal
 					else {/* Botva */}
 
 					return true;
+				
+				default:
+					{
+						   // check if hotkey matches, and process
+						   // XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
+						   unicode_t c = UnicodeUC(pEvent->Char());
+						   for (int i = 0; i < list.count(); i++)
+						   {
+							   MenuData::Node* node = list[i].data;
+							   if (node->leftText.isHotkeyMatching(c))
+							   {
+								   if (node->id != 0) // menu command
+								   {
+									   if (Parent())
+									   {
+										   Parent()->Command(node->id, 0, this, 0);
+									   }
+									   return true;
+								   }
+								   else // sumbenu
+								   {
+									   SetSelected(i);
+									   OpenSubmenu();
+									   return true;
+								   }
+							   }
+						   }
+						   return false;
+					}
+
 			}
 		}
-
 		return false;
 	}
 
+	
 	void PopupMenu::Paint( GC& gc, const crect& paintRect )
 	{
 		crect rect = ClientRect();

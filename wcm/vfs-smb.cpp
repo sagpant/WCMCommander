@@ -36,7 +36,7 @@ static FSSmbParam lastFsParam;
 
 struct PathBuffer
 {
-	carray<char> p;
+	std::vector<char> p;
 	int size;
 	int minPos;
 	int pos;
@@ -53,8 +53,8 @@ struct PathBuffer
 PathBuffer::PathBuffer()
 	:  p( 16 ), size( 16 ), pos( 0 )
 {
-	strcpy( p.ptr(), "smb://" );
-	minPos = pos = strlen( p.ptr() );
+	strcpy( p.data(), "smb://" );
+	minPos = pos = strlen( p.data() );
 }
 
 void PathBuffer::Cut( const char* s )
@@ -65,16 +65,16 @@ void PathBuffer::Cut( const char* s )
 	if ( nsize > size )
 	{
 		nsize = ( ( nsize + 0x100 - 1 ) / 0x100 ) * 0x100;
-		carray<char> t( nsize );
+		std::vector<char> t( nsize );
 
-		if ( pos > 0 ) { memcpy( t.ptr(), p.ptr(), pos ); }
+		if ( pos > 0 ) { memcpy( t.data(), p.data(), pos ); }
 
 		t[pos] = 0;
 		p = t;
 		size = nsize;
 	}
 
-	memcpy( p.ptr() + pos, s, l + 1 );
+	memcpy( p.data() + pos, s, l + 1 );
 	pos += l;
 }
 
@@ -82,7 +82,7 @@ char* PathBuffer::Set( const char* path )
 {
 	Clear();
 
-	if ( !currentFsParam ) { return p.ptr(); }
+	if ( !currentFsParam ) { return p.data(); }
 
 	if ( currentFsParam->server[0] )
 	{
@@ -103,7 +103,7 @@ char* PathBuffer::Set( const char* path )
 		Cut( path );
 	}
 
-	return p.ptr();
+	return p.data();
 }
 
 static PathBuffer pathBuffer1;
@@ -458,7 +458,7 @@ int FSSmb::Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info ) //EPE
 FSString FSSmb::Uri( FSPath& path )
 {
 	MutexLock lock( &mutex );
-	carray<char> a;
+	std::vector<char> a;
 
 	if ( _param.server[0] )
 	{
@@ -476,7 +476,7 @@ FSString FSSmb::Uri( FSPath& path )
 		a = carray_cat<char>( "smb:/", path.GetUtf8() );
 	}
 
-	return FSString( CS_UTF8, a.ptr() );
+	return FSString( CS_UTF8, a.data() );
 }
 
 int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
@@ -532,7 +532,7 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 			) { continue; }
 
 
-			cptr<FSNode> pNode = new FSNode();
+			clPtr<FSNode> pNode = new FSNode();
 			path.SetItem( n, CS_UTF8, pEnt->name );
 
 			switch ( pEnt->smbc_type )

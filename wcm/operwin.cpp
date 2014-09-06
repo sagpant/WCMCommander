@@ -42,7 +42,7 @@ void OperThreadWin::DBGPrintStoppingList()
 	for ( p = operStopList; p; p = p->next )
 	{
 		MutexLock lock2( &p->mutex );
-		printf( "stopped thread %s\n", p->threadInfo.ptr() ? p->threadInfo.ptr() : "<empty info>" );
+		printf( "stopped thread %s\n", p->threadInfo.data() ? p->threadInfo.data() : "<empty info>" );
 	}
 }
 
@@ -77,7 +77,7 @@ void OperThreadWin::StopThread()
 	threadId = -1;
 }
 
-struct OperThreadParam
+struct OperThreadParam: public iIntrusiveCounter
 {
 	OperThreadFunc func;
 	OperThreadNode* node;
@@ -131,7 +131,7 @@ void* __123___OperThread( void* param )
 	lockNode.Unlock(); //!!!
 
 #ifdef _DEBUG
-	printf( "stop: %s\n", tp.node->threadInfo.ptr() );
+	printf( "stop: %s\n", tp.node->threadInfo.data() );
 #endif
 
 	delete tp.node;
@@ -145,7 +145,7 @@ void OperThreadWin::RunNewThread( const char* info, OperThreadFunc f, void* data
 {
 	StopThread();
 
-	cptr<OperThreadParam> param = new OperThreadParam;
+	clPtr<OperThreadParam> param = new OperThreadParam;
 	tNode = new OperThreadNode( this, info, data );
 
 	param->func = f;

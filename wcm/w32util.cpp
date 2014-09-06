@@ -5,7 +5,7 @@ using namespace wal;
 
 #include "string-util.h"
 
-wal::carray<wchar_t> GetAppPath()
+std::vector<wchar_t> GetAppPath()
 {
 	wchar_t buffer[MAX_PATH + 4];
 
@@ -39,9 +39,9 @@ bool RegKey::Create( HKEY root, const wchar_t* name, REGSAM sec )
 	                        sec, 0, &key, 0 ) == ERROR_SUCCESS;
 }
 
-carray<wchar_t> RegKey::GetString( const wchar_t* name, const wchar_t* def )
+std::vector<wchar_t> RegKey::GetString( const wchar_t* name, const wchar_t* def )
 {
-	carray<wchar_t> strValue;
+	std::vector<wchar_t> strValue;
 
 	DWORD dwType, dwSize;
 	LONG lResult = RegQueryValueExW( key, name, NULL, &dwType,
@@ -50,11 +50,10 @@ carray<wchar_t> RegKey::GetString( const wchar_t* name, const wchar_t* def )
 	if ( lResult == ERROR_SUCCESS )
 	{
 		int n = dwSize / sizeof( wchar_t );
-		strValue.alloc( n + 1 );
+		strValue.resize( n + 1 );
 		strValue[n] = 0;
 
-		lResult = RegQueryValueExW( key, name, NULL, &dwType,
-		                            ( LPBYTE )strValue.ptr(), &dwSize );
+		lResult = RegQueryValueExW( key, name, NULL, &dwType, ( LPBYTE )strValue.data(), &dwSize );
 
 		if ( lResult == ERROR_SUCCESS )
 		{
@@ -65,22 +64,22 @@ carray<wchar_t> RegKey::GetString( const wchar_t* name, const wchar_t* def )
 	return new_wchar_str( def );
 }
 
-carray<wchar_t> RegKey::SubKey( int n )
+std::vector<wchar_t> RegKey::SubKey( int n )
 {
 	DWORD size = 0x100;
-	carray<wchar_t> name( size );
-	LONG res = RegEnumKeyExW( key, n, name.ptr(), &size, 0, 0, 0, 0 );
+	std::vector<wchar_t> name( size );
+	LONG res = RegEnumKeyExW( key, n, name.data(), &size, 0, 0, 0, 0 );
 
 	if ( res == ERROR_MORE_DATA )
 	{
 		size++;
-		name.alloc( size );
-		res = RegEnumKeyExW( key, n, name.ptr(), &size, 0, 0, 0, 0 );
+		name.resize( size );
+		res = RegEnumKeyExW( key, n, name.data(), &size, 0, 0, 0, 0 );
 	}
 
 	if ( res == ERROR_SUCCESS ) { return name; }
 
-	return carray<wchar_t>();
+	return std::vector<wchar_t>();
 }
 
 

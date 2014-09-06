@@ -16,11 +16,11 @@ namespace wal
 
 		n = ( ( n + STEP - 1 ) / STEP ) * STEP;
 
-		wal::carray<unicode_t> p( n );
+		std::vector<unicode_t> p( n );
 
 		if ( count > 0 )
 		{
-			memcpy( p.ptr(), data.ptr(), count * sizeof( unicode_t ) );
+			memcpy( p.data(), data.data(), count * sizeof( unicode_t ) );
 		}
 
 		size = n;
@@ -34,7 +34,7 @@ namespace wal
 
 		if ( pos < count )
 		{
-			memmove( data.ptr() + pos + n, data.ptr() + pos, ( count - pos ) * sizeof( unicode_t ) );
+			memmove( data.data() + pos + n, data.data() + pos, ( count - pos ) * sizeof( unicode_t ) );
 		}
 
 		count += n;
@@ -51,7 +51,7 @@ namespace wal
 
 		if ( pos + n < count )
 		{
-			memmove( data.ptr() + pos, data.ptr() + pos + n, ( count - ( pos + n ) ) * sizeof( unicode_t ) );
+			memmove( data.data() + pos, data.data() + pos + n, ( count - ( pos + n ) ) * sizeof( unicode_t ) );
 		}
 
 		count -= n;
@@ -128,7 +128,7 @@ namespace wal
 
 		int n = unicode_strlen( s );
 		SetSize( n );
-		memcpy( data.ptr(), s, n * sizeof( unicode_t ) );
+		memcpy( data.data(), s, n * sizeof( unicode_t ) );
 		cursor = count = n;
 		marker = mark ? 0 : cursor;
 	}
@@ -385,12 +385,12 @@ namespace wal
 		return oldFirst != first;
 	}
 
-	carray<unicode_t> EditLine::GetText()
+	std::vector<unicode_t> EditLine::GetText()
 	{
 		int count = text.Count();
-		carray<unicode_t> p( count + 1 );
+		std::vector<unicode_t> p( count + 1 );
 
-		if ( count > 0 ) { memcpy( p.ptr(), text.Ptr(), sizeof( unicode_t )*count ); }
+		if ( count > 0 ) { memcpy( p.data(), text.Ptr(), sizeof( unicode_t )*count ); }
 
 		p[count] = 0;
 		return p;
@@ -461,16 +461,16 @@ namespace wal
 			int cnt = text.Count() - first;
 			int i = first;
 
-			carray<unicode_t> pwTextArray;
+			std::vector<unicode_t> pwTextArray;
 			unicode_t* pwText = 0;
 
 			if ( passwordMode && cnt > 0 )
 			{
-				pwTextArray.alloc( cnt );
+				pwTextArray.resize( cnt );
 
 				for ( int i = 0; i < cnt; i++ ) { pwTextArray[i] = passwordSymbol; }
 
-				pwText = pwTextArray.ptr();
+				pwText = pwTextArray.data();
 			}
 
 			int color = UiGetColor( uiColor, 0, 0, 0 );

@@ -16,7 +16,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES(wal swl)
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
-SET(CXXFLAGS ${CXXFLAGS} -Wall -Wextra)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
 
 INCLUDE_DIRECTORIES(${X11_X11_INCLUDE_PATH})
 SET(wcm_LIBS ${CMAKE_THREAD_LIBS_INIT} ${X11_X11_LIB})
@@ -82,6 +82,7 @@ SET(wcm_SOURCES
 	swl/swl_editline.cpp
 	swl/swl_layout.cpp
 	swl/swl_menubox.cpp
+	swl/swl_menutextinfo.cpp
 	swl/swl_popupmenu.cpp
 	swl/swl_sbutton.cpp
 	swl/swl_scrollbar.cpp

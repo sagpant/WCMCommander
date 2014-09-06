@@ -4,7 +4,8 @@
 
 
 #include "swl.h"
-
+// XXX: refactor to move the header to .
+#include "../unicode_lc.h" 
 namespace wal
 {
 
@@ -180,6 +181,24 @@ namespace wal
 					}
 
 					return true;
+				default:
+					{
+						// check if hotkey matches, and process
+						 // XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
+
+						unicode_t c = UnicodeUC(pEvent->Char());
+						for (int i = 0; i < list.count(); i++)
+						{
+						   MenuBar::Node& node = list[i];
+						   if (node.text.isHotkeyMatching(c))
+						   {
+							   SetSelect(i);
+							   OpenSub();
+							   return true;
+						   }
+						}
+						return false;
+					}
 			}
 		}
 
@@ -226,9 +245,9 @@ namespace wal
 
 	void MenuBar::Add( MenuData* data, const unicode_t* text )
 	{
-		Node node;
-		node.text = new_unicode_str( text );
-		node.data = data;
+		Node node(MenuTextInfo(text),data);
+		//node.text = new_unicode_str( text );
+		//node.data = data;
 		list.append( node );
 		InvalidateRectList();
 
@@ -245,7 +264,8 @@ namespace wal
 		if ( n == select && InFocus() ) { ucl.Set( uiCurrentItem, true ); }
 
 		int color_text = UiGetColor( uiColor, uiItem, &ucl, 0x0 );
-		int color_bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
+		int color_hotkey = UiGetColor(uiHotkeyColor, uiItem, &ucl, 0x0);
+		int color_bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
 
 		gc.Set( GetFont() );
 		crect itemRect = ItemRect( n );
@@ -261,16 +281,12 @@ namespace wal
 
 		gc.SetTextColor( color_text );
 
-		const unicode_t* text = list[n].text.ptr();
-		cpoint tsize = gc.GetTextExtents( text );
+		MenuTextInfo& mt = list[n].text;
+		cpoint tsize = mt.GetTextExtents(gc);
 		int x = itemRect.left + ( itemRect.Width() - tsize.x ) / 2;
 		int y = itemRect.top + ( itemRect.Height() - tsize.y ) / 2;
 
-#ifdef _WIN32
-		gc.TextOut( x, y, text );
-#else
-		gc.TextOutF( x, y, text );
-#endif
+		mt.DrawItem(gc, x, y, color_text, color_hotkey);
 	}
 
 
@@ -296,7 +312,7 @@ namespace wal
 
 			for ( int i = 0; i < list.count(); i++ )
 			{
-				cpoint textSize = gc.GetTextExtents( list[i].text.ptr() );
+				cpoint textSize = list[i].text.GetTextExtents(gc);
 				int x2 = x + textSize.x + spaceWidth * 2 + 2 ;
 				crect itemRect( x, 1, x2 , wRect.bottom - 1 );
 				x = x2;

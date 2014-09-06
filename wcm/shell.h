@@ -17,7 +17,7 @@ class Shell
 
 	void Stop();
 	void Run();
-	carray<char> slaveName;
+	std::vector<char> slaveName;
 public:
 	Shell( const char* slave );
 

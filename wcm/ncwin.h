@@ -25,12 +25,12 @@ using namespace wal;
 
 class StringWin: public Win
 {
-	carray<unicode_t> text;
+	std::vector<unicode_t> text;
 	cpoint textSize;
 public:
 	StringWin( Win* parent );
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
-	const unicode_t* Get() { return text.ptr(); }
+	const unicode_t* Get() { return text.data(); }
 	void Set( const unicode_t* txt );
 	virtual void OnChangeStyles();
 	virtual int UiGetClassId();
@@ -58,7 +58,7 @@ extern ButtonWinData viewShiftButtons[];
 class ButtonWin: public Win
 {
 	Layout _lo;
-	cptr<Button> _buttons[10];
+	clPtr<Button> _buttons[10];
 	crect _rects[10];
 	cpoint _nSizes[10];
 
@@ -83,7 +83,7 @@ public:
 	UFStr() { data[0] = 0;}
 	void Set( const unicode_t* s ) { int i; for ( i = 0; i < N - 1 && *s; i++, s++ ) { data[i] = *s; } data[i] = 0; }
 	UFStr( const unicode_t* s ) { Set( s ); }
-	bool Eq( const unicode_t* s ) { int i; for ( i = 0; i < N - 1 && data[i] && data[i] == *s; i++, s++ ) { 0; } return data[i] == 0 && *s == 0 || i >= N; }
+	bool Eq( const unicode_t* s ) { int i = 0; while ( i < N - 1 && data[i] && data[i] == *s ) { i++; s++; }; return data[i] == 0 && *s == 0 || i >= N; }
 	unicode_t* Str() { return data; }
 };
 
@@ -178,10 +178,24 @@ public:
 class NCCommandLine: public EditLine
 {
 public:
-	NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true )
-		: EditLine( nId, parent, rect, txt, chars, frame )
-	{}
-	int UiGetClassId();
+	NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars, bool frame );
+	int UiGetClassId() override;
+	bool EventKey( cevent_key* pEvent ) override;
+};
+
+class NCAutocompleteList: public TextList
+{
+public:
+	NCAutocompleteList( WTYPE t, unsigned hints, int nId, Win* _parent, SelectType st, BorderType bt, crect* rect );
+	virtual bool EventKey( cevent_key* pEvent ) override;
+	virtual bool EventMouse( cevent_mouse* pEvent ) override;
+};
+
+enum eBackgroundActivity
+{
+	eBackgroundActivity_None,
+	eBackgroundActivity_Viewer,
+	eBackgroundActivity_Editor,
 };
 
 class NCWin: public NCDialogParent
@@ -196,6 +210,11 @@ private:
 	PanelWin _leftPanel,
 	         _rightPanel;
 
+	NCAutocompleteList m_AutoCompleteList;
+	std::vector<unicode_t> m_PrevAutoCurrentCommand;
+
+	void UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand );
+
 	NCCommandLine _edit;
 #ifdef _WIN32
 	W32Cons
@@ -203,6 +222,14 @@ private:
 	TerminalWin
 #endif
 	_terminal;
+
+	eBackgroundActivity m_BackgroundActivity;
+
+	void UpdateActivityNotification();
+	void SetBackgroundActivity( eBackgroundActivity m_BackgroundActivity );
+	void SwitchToBackgroundActivity();
+
+	StringWin _activityNotification;
 
 	StringWin _editPref;
 	PanelWin* _panel;
@@ -246,11 +273,13 @@ private:
 
 	void PanelEnter();
 
+	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
 	void ReturnToDefaultSysDir(); // !!!
 
 	void Home( PanelWin* p );
 
+	void ApplyCommand();
 	void CreateDirectory();
 	void View();
 	void ViewExit();
@@ -274,6 +303,7 @@ private:
 	void CtrlF();
 	void HistoryDialog();
 	void SelectDrive( PanelWin* p, PanelWin* OtherPanel );
+	void SaveSetupDialog();
 	void SaveSetup();
 	void Search();
 	void Tab( bool forceShellTab );
@@ -306,21 +336,25 @@ private:
 	}
 
 #ifndef _WIN32
-	void ExecNoTerminalProcess( unicode_t* p );
+	void ExecNoTerminalProcess( const unicode_t* p );
 #endif
 
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
 
-	cptr<FSList> GetPanelList();
+	clPtr<FSList> GetPanelList();
 
 	int _execId;
 	unicode_t _execSN[64];
+
+	std::vector<unicode_t> FetchAndClearCommandLine();
+	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal );
 
 public:
 	NCWin();
 	bool OnKeyDown( Win* w, cevent_key* pEvent, bool pressed );
 	virtual bool EventChildKey( Win* child, cevent_key* pEvent );
 	virtual bool EventKey( cevent_key* pEvent );
+	virtual void EventSize( cevent_size* pEvent );
 	virtual void ThreadStopped( int id, void* data );
 	virtual void ThreadSignal( int id, int data );
 	virtual bool Command( int id, int subId, Win* win, void* data );
@@ -332,6 +366,12 @@ public:
 
 	PanelWin* GetLeftPanel() { return &_leftPanel; }
 	PanelWin* GetRightPanel() { return &_rightPanel; }
+
+	void HideAutoComplete();
+	void NotifyAutoComplete();
+	void NotifyAutoCompleteChange();
+
+	NCHistory* GetHistory() { return &_history; }
 };
 
 

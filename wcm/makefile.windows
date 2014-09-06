@@ -1,21 +1,22 @@
 
-CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
-#CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -I wal -I swl -pthread $(CFLAGS_FREETYPE) #--pedantic -Wall
+CFLAGS= -D_FILE_OFFSET_BITS=64 -I ../libssh2 -O2 -I wal -I swl $(CFLAGS_FREETYPE)
 
-include makelib.mk
-
-
-LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l stdc++  -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
+LIBS = -lgdi32 -lcomdlg32 -lstdc++ -lws2_32 -lwsock32 -lmpr $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 
 
 HW = wal/wal_tmpls.h wal/wal.h wal/wal_sys_api.h
 HS = swl/swl.h swl/swl_internal.h swl/swl_layout.h swl/swl_winbase.h swl/swl_wincore.h swl/swl_wincore_internal.h 
-HN = libconf.h nc.h ncwin.h panel.h ncdialogs.h  terminal.h termwin.h ncedit.h nchistory.h shell.h \
+HN = libconf.h nc.h ncwin.h panel.h ncdialogs.h  w32cons.h termwin.h ncedit.h nchistory.h \
  operthread.h operwin.h vfs.h vfspath.h vfs-smb.h vfs-uri.h fileopers.h mfile.h eloadsave.h smblogon.h ext-app.h bfile.h \
  wcm-config.h panel_list.h tcp_sock.h vfs-ftp.h ftplogon.h charsetdlg.h vfs-sftp.h sftpdlg.h color-style.h filesearch.h help.h ux_util.h \
- strconfig.h shortcuts.h fontdlg.h ncfonts.h shl.h toolbar.h ncview.h search-dlg.h search-tools.h shell-tools.h t-emulator.h dircalc.h ltext.h
+ strconfig.h shortcuts.h ncfonts.h shl.h toolbar.h ncview.h search-dlg.h search-tools.h shell-tools.h t-emulator.h dircalc.h ltext.h
 
-COPTS += -I swl
+COPTS += -I swl -fpermissive -std=c++11 
+
+CC = gcc
+
+# COPTS += -I swl -Wno-parentheses -fsanitize=address -g
+# -fsanitize=address -fsanitize=integer -fsanitize=thread -fsanitize=undefined
  
 OBJDIR = obj
 
@@ -30,6 +31,7 @@ OBJS = \
 	$(OBJDIR)/swl_editline.o  \
 	$(OBJDIR)/swl_layout.o    \
 	$(OBJDIR)/swl_menubox.o    \
+	$(OBJDIR)/swl_menutextinfo.o \
 	$(OBJDIR)/swl_popupmenu.o   \
 	$(OBJDIR)/swl_sbutton.o     \
 	$(OBJDIR)/swl_scrollbar.o   \
@@ -37,7 +39,7 @@ OBJS = \
 	$(OBJDIR)/swl_vlist.o       \
 	$(OBJDIR)/swl_winbase.o     \
 	$(OBJDIR)/swl_wincore.o     \
-	$(OBJDIR)/swl_wincoreUX.o \
+	$(OBJDIR)/swl_wincoreMS.o \
 	$(OBJDIR)/operthread.o \
 	$(OBJDIR)/operwin.o \
 	$(OBJDIR)/vfs.o \
@@ -48,10 +50,10 @@ OBJS = \
 	$(OBJDIR)/vfs-uri.o \
 	$(OBJDIR)/termwin.o \
 	$(OBJDIR)/ncdialogs.o \
-	$(OBJDIR)/terminal.o \
+	$(OBJDIR)/w32cons.o \
+	$(OBJDIR)/w32util.o \
 	$(OBJDIR)/unicode_lc.o \
 	$(OBJDIR)/nchistory.o \
-	$(OBJDIR)/shell.o \
 	$(OBJDIR)/panel_list.o \
 	$(OBJDIR)/panel.o \
 	$(OBJDIR)/ncwin.o \
@@ -59,8 +61,8 @@ OBJS = \
 	$(OBJDIR)/ncview.o \
 	$(OBJDIR)/fileopers.o \
 	$(OBJDIR)/eloadsave.o \
+	$(OBJDIR)/ext-app.o \
 	$(OBJDIR)/smblogon.o \
-	$(OBJDIR)/ext-app-ux.o \
 	$(OBJDIR)/wcm-config.o \
 	$(OBJDIR)/ftplogon.o \
 	$(OBJDIR)/charsetdlg.o \
@@ -73,7 +75,6 @@ OBJS = \
 	$(OBJDIR)/ux_util.o\
 	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/shortcuts.o \
-	$(OBJDIR)/fontdlg.o \
 	$(OBJDIR)/shl.o \
 	$(OBJDIR)/ncfonts.o \
 	$(OBJDIR)/toolbar.o \
@@ -84,14 +85,9 @@ OBJS = \
 	$(OBJDIR)/dircalc.o \
 	$(OBJDIR)/ltext.o
 
-GC=  gcc
 
-
-wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
-	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS)
-	
-libconf.h: libtester/libconf.create
-	cd libtester &&	./libconf.create
+all:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
+	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
@@ -114,10 +110,6 @@ $(OBJDIR)/sftpdlg.o: $(HW) $(HS) $(HN) sftpdlg.cpp
 $(OBJDIR)/ext-app.o: $(HW) $(HS) $(HN) ext-app.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) ext-app.cpp -o $(OBJDIR)/ext-app.o
 
-$(OBJDIR)/ext-app-ux.o: $(HW) $(HS) $(HN) ext-app-ux.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ext-app-ux.cpp -o $(OBJDIR)/ext-app-ux.o
-
-				
 $(OBJDIR)/operthread.o: $(HW) $(HS) $(HN) operthread.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) operthread.cpp -o $(OBJDIR)/operthread.o
 	
@@ -132,9 +124,6 @@ $(OBJDIR)/color-style.o: $(HW) $(HS) $(HN) color-style.cpp
 
 $(OBJDIR)/filesearch.o: $(HW) $(HS) $(HN) filesearch.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) filesearch.cpp -o $(OBJDIR)/filesearch.o
-	
-$(OBJDIR)/fontdlg.o: $(HW) $(HS) $(HN) fontdlg.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) fontdlg.cpp -o $(OBJDIR)/fontdlg.o
 	
 $(OBJDIR)/help.o: $(HW) $(HS) $(HN) help.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) help.cpp -o $(OBJDIR)/help.o
@@ -235,8 +224,11 @@ $(OBJDIR)/t-emulator.o: $(HW) $(HS) $(HN) t-emulator.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) t-emulator.cpp -o $(OBJDIR)/t-emulator.o
 
 	
-$(OBJDIR)/terminal.o: $(HW) $(HS) $(HN) terminal.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) terminal.cpp -o $(OBJDIR)/terminal.o
+$(OBJDIR)/w32cons.o: $(HW) $(HS) $(HN) w32cons.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) w32cons.cpp -o $(OBJDIR)/w32cons.o
+
+$(OBJDIR)/w32util.o: $(HW) $(HS) $(HN) w32util.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) w32util.cpp -o $(OBJDIR)/w32util.o
 
 $(OBJDIR)/termwin.o: $(HW) $(HS) $(HN) termwin.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) termwin.cpp -o $(OBJDIR)/termwin.o
@@ -273,6 +265,9 @@ $(OBJDIR)/swl_layout.o: $(HW) $(HS) swl/swl_layout.cpp
 $(OBJDIR)/swl_menubox.o: $(HW) $(HS) swl/swl_menubox.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menubox.cpp -o $(OBJDIR)/swl_menubox.o
 
+$(OBJDIR)/swl_menutextinfo.o: $(HW) $(HS) swl/swl_menutextinfo.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menutextinfo.cpp -o $(OBJDIR)/swl_menutextinfo.o
+
 $(OBJDIR)/swl_popupmenu.o: $(HW) $(HS) swl/swl_popupmenu.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_popupmenu.cpp -o $(OBJDIR)/swl_popupmenu.o
 
@@ -291,20 +286,15 @@ $(OBJDIR)/swl_vlist.o: $(HW) $(HS) swl/swl_vlist.cpp
 $(OBJDIR)/swl_winbase.o: $(HW) $(HS) swl/swl_winbase.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_winbase.cpp -o $(OBJDIR)/swl_winbase.o
 
-$(OBJDIR)/swl_wincore.o: $(HW) $(HS) swl/swl_wincore.cpp swl/swl_wincore_ui_inc.h
+$(OBJDIR)/swl_wincore.o: $(HW) $(HS) swl/swl_wincore.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincore.cpp -o $(OBJDIR)/swl_wincore.o
 
-$(OBJDIR)/swl_wincoreUX.o: $(HW) $(HS) swl/swl_wincoreUX.cpp swl/swl_wincore_freetype_inc.h
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincoreUX.cpp -o $(OBJDIR)/swl_wincoreUX.o
-
+$(OBJDIR)/swl_wincoreMS.o: $(HW) $(HS) swl/swl_wincoreMS.cpp swl/swl_wincore_freetype_inc.h
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincoreMS.cpp -o $(OBJDIR)/swl_wincoreMS.o
 
 $(OBJDIR)/nc.o: $(HW) $(HS) $(HN) nc.cpp intarnal_icons.inc
 	$(CC) $(COPTS) -c $(CFLAGS) nc.cpp -o $(OBJDIR)/nc.o
 
-$(OBJDIR)/shell.o: $(HW) $(HS) $(HN) shell.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) shell.cpp -o $(OBJDIR)/shell.o
-	
-	
 
 clean:
 	rm -f *.o
@@ -316,9 +306,3 @@ clean:
 	rm -f libtester/libfreetype_test
 	rm -f info.txt
 	rm -f makelib.mk
-
-	
-install: wcm
-	cp -f wcm /usr/bin
-	cp -f -R install-files/* /usr
-	

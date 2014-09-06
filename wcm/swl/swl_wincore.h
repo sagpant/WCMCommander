@@ -297,7 +297,7 @@ namespace wal
 	   KM_ALT  = 0x0004
 	};
 
-	class cevent
+	class cevent: public iIntrusiveCounter
 	{
 		int type;
 	public:
@@ -407,7 +407,7 @@ namespace wal
 #endif
 
 
-	class cfont
+	class cfont: public iIntrusiveCounter
 	{
 		cfont() {}
 		cfont( const cfont& ) {}
@@ -428,15 +428,15 @@ namespace wal
 		void drop();
 #endif
 
-		carray<char> _uri;
-		carray<char> _name;
+		std::vector<char> _uri;
+		std::vector<char> _name;
 	public:
 #ifdef _WIN32
 		static void SetWin32Charset( unsigned );
 		cfont( HFONT hf ): handle( hf ), external( true ) {};
 		bool Ok() { return handle != NULL; }
 
-		static carray<char> LogFontToUru( LOGFONT& lf );
+		static std::vector<char> LogFontToUru( LOGFONT& lf );
 		static void UriToLogFont( LOGFONT* plf, const char* uri );
 #else
 		static void SetWin32Charset( unsigned ) {};
@@ -454,42 +454,42 @@ namespace wal
 
 		~cfont() { drop(); }
 
-		static cptr<cfont> New( GC& gc, const char* name, int pointSize, cfont::Weight weight = Normal, unsigned flags = 0 )
+		static clPtr<cfont> New( GC& gc, const char* name, int pointSize, cfont::Weight weight = Normal, unsigned flags = 0 )
 		{
-			cptr<cfont> p = new cfont( gc, name, pointSize, weight, flags );
+			clPtr<cfont> p = new cfont( gc, name, pointSize, weight, flags );
 
-			if ( !p->Ok() ) { p.clear(); }
+			if ( !p->Ok() ) return clPtr<cfont>();
 
 			return p;
 		}
 
-		static cptr<cfont> New( const char* fileName, int pointSize )
+		static clPtr<cfont> New( const char* fileName, int pointSize )
 		{
-			cptr<cfont> p = new cfont( fileName, pointSize );
+			clPtr<cfont> p = new cfont( fileName, pointSize );
 
-			if ( !p->Ok() ) { p.clear(); }
+			if ( !p->Ok( ) ) return clPtr<cfont>( );
 
 			return p;
 		}
 
-		static cptr<cfont> New( const char* x11string )
+		static clPtr<cfont> New( const char* x11string )
 		{
-			cptr<cfont> p = new cfont( x11string );
+			clPtr<cfont> p = new cfont( x11string );
 
-			if ( !p->Ok() ) { p.clear(); }
+			if ( !p->Ok( ) ) return clPtr<cfont>( );
 
 			return p;
 		}
 
 #ifdef USEFREETYPE
-		struct FTInfo
+		struct FTInfo: public iIntrusiveCounter
 		{
 			enum {FIXED_WIDTH = 1};
 			unsigned flags;
-			carray<char> name;
-			carray<char> styleName;
+			std::vector<char> name;
+			std::vector<char> styleName;
 		};
-		static cptr<FTInfo> GetFTFileInfo( const char* path );
+		static clPtr<FTInfo> GetFTFileInfo( const char* path );
 #endif
 
 	};
@@ -497,10 +497,10 @@ namespace wal
 	class XPMImage
 	{
 		int colorCount;
-		carray<unsigned> colors;
+		std::vector<unsigned> colors;
 		int none;
 		int width, height;
-		carray<int> data;
+		std::vector<int> data;
 	public:
 		void Clear();
 		XPMImage(): colorCount( 0 ), none( -1 ), width( 0 ), height( 0 ) {}
@@ -508,8 +508,8 @@ namespace wal
 		int Width() const { return width; }
 		int Height() const { return height; }
 
-		const unsigned* Colors() const { return colors.const_ptr(); }
-		const int* Data() const { return data.const_ptr(); }
+		const unsigned* Colors() const { return colors.data(); }
+		const int* Data() const { return data.data(); }
 
 		bool Load( const char** list, int count );
 		//void Load(InStream &stream);
@@ -520,8 +520,8 @@ namespace wal
 	{
 		int _width;
 		int _height;
-		carray<unsigned32> _data;
-		carray<unsigned32*> _lines;
+		std::vector<unsigned32> _data;
+//		std::vector<unsigned32*> _lines;
 
 		Image32( const Image32& ) {}
 		void operator=( const Image32& ) {}
@@ -541,9 +541,13 @@ namespace wal
 
 		void clear();
 
-		unsigned32 get( int x, int y ) { return ( x >= 0 && x < _width && y >= 0 && y < _height ) ? _lines[y][x] : 0xFF; }
+		unsigned32 get( int x, int y )
+		{
+			//return ( x >= 0 && x < _width && y >= 0 && y < _height ) ? _lines[y][x] : 0xFF;
+			return ( x >= 0 && x < _width && y >= 0 && y < _height ) ? _data[ y * _width + x ] : 0xFF;
+		}
 
-		unsigned32* line( int y ) { return _lines[y]; }
+		unsigned32* line( int y ) { return &_data[ y * _width ]; }
 
 		Image32( int w, int h ) { alloc( w, h ); }
 
@@ -556,11 +560,11 @@ namespace wal
 
 #ifdef _WIN32
 
-	class Win32CompatibleBitmap
+	class Win32CompatibleBitmap: public iIntrusiveCounter
 	{
 		HBITMAP handle;
 		int _w, _h;
-		carray<char> mask;
+		std::vector<char> mask;
 		void clear();
 		void init( int w, int h );
 	public:
@@ -577,8 +581,8 @@ namespace wal
 	class IntXImage
 	{
 		XImage im;
-		carray<char> data;
-		carray<char> mask;
+		std::vector<char> data;
+		std::vector<char> mask;
 
 		void init( int w, int h );
 		void clear() { data.clear(); mask.clear(); }
@@ -588,7 +592,7 @@ namespace wal
 		void Set( Image32& image );
 		void Set( Image32& image, unsigned bgColor );
 		void Put( wal::GC& gc, int src_x, int src_y, int dest_x, int dest_y, int w, int h );
-		XImage* GetXImage() {return data.ptr() ? &im : 0; };
+		XImage* GetXImage() {return data.data() ? &im : 0; };
 		~IntXImage();
 	};
 #endif
@@ -631,26 +635,26 @@ namespace wal
 		Image32 image;
 
 #ifdef _WIN32
-		cptr<Win32CompatibleBitmap> normal;
-		cptr<Win32CompatibleBitmap> disabled;
+		clPtr<Win32CompatibleBitmap> normal;
+		clPtr<Win32CompatibleBitmap> disabled;
 
 #else
 		//x11 cache
-		struct Node
+		struct Node: public iIntrusiveCounter
 		{
 			SCImage image;
-			carray<char> mask;
+			std::vector<char> mask;
 			unsigned bgColor;
 		};
 
-		cptr<Node> normal;
-		cptr<Node> disabled;
+		clPtr<Node> normal;
+		clPtr<Node> disabled;
 #endif
 	};
 
 
 //создавать и копировать можно в любом потоке, а рисовать только в основном
-	class cicon
+	class cicon: public iIntrusiveCounter
 	{
 		IconData* data;
 	public:
@@ -688,7 +692,7 @@ namespace wal
 
 
 
-	class GC
+	class GC: public iIntrusiveCounter
 	{
 	public:
 		enum LineStyle
@@ -809,12 +813,12 @@ namespace wal
 
 	extern int GetUiID( const char* name );
 
-	struct UiValueNode
+	struct UiValueNode: public iIntrusiveCounter
 	{
 		enum {INT = 1, STR = 2};
 		int flags;
 		int64 i;
-		carray<char> s;
+		std::vector<char> s;
 
 		UiValueNode( int64 n ): i( n ), flags( INT ) {};
 		UiValueNode( const char* a ): s( new_char_str( a ) ), flags( STR ) {}
@@ -828,11 +832,11 @@ namespace wal
 	class UiValue
 	{
 		friend class UiRules;
-		ccollect<cptr<UiValueNode> > list;
+		ccollect<clPtr<UiValueNode> > list;
 		UiValue* next;
 		UiValue( UiValue* nx ): next( nx ) {};
-		void Append( int64 n ) { cptr<UiValueNode> v = new UiValueNode( n ); list.append( v ); }
-		void Append( const char* s ) { cptr<UiValueNode> v = new UiValueNode( s ); list.append( v ); }
+		void Append( int64 n ) { clPtr<UiValueNode> v = new UiValueNode( n ); list.append( v ); }
+		void Append( const char* s ) { clPtr<UiValueNode> v = new UiValueNode( s ); list.append( v ); }
 		bool ParzeNode( UiParzer& parzer );
 		void Parze( UiParzer& parzer );
 	public:
@@ -893,6 +897,7 @@ namespace wal
 	extern int uiItem;
 	extern int uiClassWin;
 	extern int uiColor;
+	extern int uiHotkeyColor;
 	extern int uiBackground;
 	extern int uiFrameColor;
 	extern int uiCurrentItem;
@@ -906,7 +911,7 @@ namespace wal
 	extern int uiOdd;
 
 
-	class Win
+	class Win: public iIntrusiveCounter
 	{
 
 #ifdef _WIN32
@@ -1118,7 +1123,7 @@ namespace wal
 	class ClipboardText
 	{
 		enum { BUF_SIZE = 1024 };
-		ccollect< carray<unicode_t>, 0x100 > list;
+		ccollect< std::vector<unicode_t>, 0x100 > list;
 		int count;
 		void CopyFrom( const ClipboardText& a );
 	public:
@@ -1132,7 +1137,7 @@ namespace wal
 		unicode_t Get( int n ) const
 		{
 			ASSERT( n >= 0 && n < count );
-			return n >= 0 && n < count ? list.const_item( n / BUF_SIZE ).const_item( n % BUF_SIZE ) : 0;
+			return n >= 0 && n < count ? list.const_item( n / BUF_SIZE ).at( n % BUF_SIZE ) : 0;
 		}
 		unicode_t operator[]( int n ) const { return Get( n ); }
 	};

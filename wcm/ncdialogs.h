@@ -57,7 +57,7 @@ class NCDialog: public OperThreadWin
 	crect _frameRect;
 
 
-	ccollect<cptr<Button> > _bList;
+	ccollect<clPtr<Button> > _bList;
 	int enterCmd;
 
 protected:
@@ -116,7 +116,7 @@ int NCMessageBox( NCDialogParent* parent, const char* utf8head, const char* utf8
 int GoToLineDialog( NCDialogParent* parent );
 int KillCmdDialog( NCDialogParent* parent, const unicode_t* cmd );
 
-carray<unicode_t> InputStringDialog( NCDialogParent* parent, const unicode_t* message, const unicode_t* str = 0 );
+std::vector<unicode_t> InputStringDialog( NCDialogParent* parent, const unicode_t* message, const unicode_t* str = 0 );
 
 
 class CmdHistoryDialog: public NCDialog
@@ -136,8 +136,8 @@ class DlgMenuData
 	friend class DlgMenu;
 	struct Node
 	{
-		carray<unicode_t> name;
-		carray<unicode_t> comment;
+		std::vector<unicode_t> name;
+		std::vector<unicode_t> comment;
 		int cmd;
 	};
 	ccollect<Node> list;

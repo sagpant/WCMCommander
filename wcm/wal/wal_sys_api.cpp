@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #endif
-
+#include <locale>
 namespace wal
 {
 
@@ -382,7 +382,9 @@ namespace wal
 			buf[0] = 0;
 
 
-#if defined(__FreeBSD__) || defined(_POSIX_C_SOURCE) && defined(_XOPEN_SOURCE) && defined(_GNU_SOURCE) && (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+#if defined(__APPLE__) || \
+	defined(__FreeBSD__) || \
+	defined(_POSIX_C_SOURCE) && defined(_XOPEN_SOURCE) && defined(_GNU_SOURCE) && (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
 			strerror_r( err, buf, size );
 #else
 			return strerror_r( err, buf, size );
@@ -552,7 +554,5 @@ namespace wal
 	const char* sys_locale_lang() { return locale_lang; }
 	const char* sys_locale_ter() { return locale_ter;}
 	const char* sys_locale_lang_ter() { return locale_lang_ter; }
-
-
 }; //namespace wal
 

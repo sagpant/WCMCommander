@@ -163,10 +163,10 @@ OperRDData::~OperRDData() {}
 
 class OperRDThread: public OperFileThread
 {
-	FSPtr fs;
+	clPtr<FS> fs;
 	FSPath path;
 public:
-	OperRDThread( const char* opName, NCDialogParent* par, OperThreadNode* n, FSPtr f, FSPath& p )
+	OperRDThread( const char* opName, NCDialogParent* par, OperThreadNode* n, clPtr<FS> f, FSPath& p )
 		: OperFileThread( opName, par, n ), fs( f ), path( p ) {}
 	virtual void Run();
 	virtual ~OperRDThread();
@@ -226,7 +226,7 @@ void OperRDThread::Run()
 		}
 	}
 
-	cptr<FSList> list = new FSList;
+	clPtr<FSList> list = new FSList;
 
 	int havePostponedReadError = 0;
 	// if directory is not readable, try .. path. Throw the exception later
@@ -315,15 +315,15 @@ class OperCFData: public OperData
 public:
 	volatile bool executed;
 
-	FSPtr srcFs;  //??volatile
+	clPtr<FS> srcFs;  //??volatile
 	FSPath srcPath; //??volatile
-	cptr<FSList> srcList; //??volatile
+	clPtr<FSList> srcList; //??volatile
 
-	FSPtr destFs; //??volatile
+	clPtr<FS> destFs; //??volatile
 	FSPath destPath; //??volatile
 
 	FSString errorString; //??volatile
-	cptr<cstrhash<bool, unicode_t> > resList; //??volatile
+	clPtr<cstrhash<bool, unicode_t> > resList; //??volatile
 
 	Mutex infoMutex;
 	volatile bool pathChanged;
@@ -425,7 +425,7 @@ public:
 	OperCFData threadData;
 
 	SimpleCFThreadWin( NCDialogParent* parent, const char* name )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).ptr(), bListCancel ), threadData( parent ) {}
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListCancel ), threadData( parent ) {}
 	virtual void OperThreadStopped();
 	virtual ~SimpleCFThreadWin();
 };
@@ -458,7 +458,7 @@ void MkDirThreadFunc( OperThreadNode* node )
 		OperCFData* data = ( ( OperCFData* )node->Data() );
 		OperCFThread thread( "create directory", data->Parent(), node );
 
-		FSPtr fs = data->srcFs;
+		clPtr<FS> fs = data->srcFs;
 		FSPath path = data->srcPath;
 
 		lock.Unlock();//!!!
@@ -490,7 +490,7 @@ void MkDirThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool MkDir( FSPtr f, FSPath& p, NCDialogParent* parent )
+bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent )
 {
 	SimpleCFThreadWin dlg( parent, _LT( "Create directory" ) );
 	dlg.threadData.Clear();
@@ -662,9 +662,9 @@ void DeleteThreadFunc( OperThreadNode* node )
 		OperCFData* data = ( ( OperCFData* )node->Data() );
 		OperCFThread thread( "Delete", data->Parent(), node );
 
-		FSPtr fs = data->srcFs;
+		clPtr<FS> fs = data->srcFs;
 		FSPath path = data->srcPath;
-		cptr<FSList> list = data->srcList;
+		clPtr<FSList> list = data->srcList;
 
 		lock.Unlock();//!!!
 
@@ -698,7 +698,7 @@ void DeleteThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool DeleteList( FSPtr f, FSPath& p, cptr<FSList> list, NCDialogParent* parent )
+bool DeleteList( clPtr<FS> f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent )
 {
 	SimpleCFThreadWin dlg( parent, _LT( "Delete" ) );
 	dlg.threadData.Clear();
@@ -764,7 +764,7 @@ void OperFileNameWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 ) );
 	gc.Set( GetFont() );
 
-	unicode_t* p = text.ptr();
+	unicode_t* p = text.data();
 
 	if ( p )
 	{
@@ -962,9 +962,9 @@ public:
 	CopyDialog( NCDialogParent* parent, bool move = false )
 		:  SimpleCFThreadWin( parent, move ? _LT( "Move" ) : _LT( "Copy" ) ),
 		   _layout( 7, 2 ),
-		   _text1( 0, this, utf8_to_unicode( move ? _LT( "Moving the file" ) : _LT( "Copying the file" ) ).ptr() ),
-		   _text2( 0, this, utf8_to_unicode( _LT( "to" ) ).ptr() ),
-		   _text3( 0, this, utf8_to_unicode( _LT( "Files processed" ) ).ptr() ),
+		   _text1( 0, this, utf8_to_unicode( move ? _LT( "Moving the file" ) : _LT( "Copying the file" ) ).data() ),
+		   _text2( 0, this, utf8_to_unicode( _LT( "to" ) ).data() ),
+		   _text3( 0, this, utf8_to_unicode( _LT( "Files processed" ) ).data() ),
 		   _from( this ),
 		   _to( this ),
 		   _countWin( this ),
@@ -1417,17 +1417,17 @@ void CopyThreadFunc( OperThreadNode* node )
 		OperCFData* data = ( ( OperCFData* )node->Data() );
 		OperCFThread thread( "Copy", data->Parent(), node );
 
-		FSPtr srcFs = data->srcFs;
+		clPtr<FS> srcFs = data->srcFs;
 		FSPath srcPath = data->srcPath;
-		FSPtr destFs = data->destFs;
+		clPtr<FS> destFs = data->destFs;
 		FSPath destPath = data->destPath;
-		cptr<FSList> list = data->srcList;
+		clPtr<FSList> list = data->srcList;
 
 		lock.Unlock();//!!!
 
 		try
 		{
-			cptr<cstrhash<bool, unicode_t> > resList = new cstrhash<bool, unicode_t>;
+			clPtr<cstrhash<bool, unicode_t> > resList = new cstrhash<bool, unicode_t>;
 			thread.Copy( srcFs.Ptr(), srcPath, list.ptr(), destFs.Ptr(), destPath, *( resList.ptr() ) );
 			lock.Lock(); //!!!
 
@@ -1460,7 +1460,7 @@ void CopyThreadFunc( OperThreadNode* node )
 	}
 }
 
-cptr<cstrhash<bool, unicode_t> > CopyFiles( FSPtr srcFs, FSPath& srcPath, cptr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent )
+clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent )
 {
 	CopyDialog dlg( parent );
 	dlg.threadData.Clear();
@@ -1752,11 +1752,11 @@ void MoveThreadFunc( OperThreadNode* node )
 		OperCFData* data = ( ( OperCFData* )node->Data() );
 		OperCFThread thread( "Copy", data->Parent(), node );
 
-		FSPtr srcFs = data->srcFs;
+		clPtr<FS> srcFs = data->srcFs;
 		FSPath srcPath = data->srcPath;
-		FSPtr destFs = data->destFs;
+		clPtr<FS> destFs = data->destFs;
 		FSPath destPath = data->destPath;
-		cptr<FSList> list = data->srcList;
+		clPtr<FSList> list = data->srcList;
 
 		lock.Unlock();//!!!
 
@@ -1787,7 +1787,7 @@ void MoveThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool MoveFiles( FSPtr srcFs, FSPath& srcPath, cptr<FSList> list, FSPtr destFs, FSPath& destPath, NCDialogParent* parent )
+bool MoveFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent )
 {
 	CopyDialog dlg( parent );
 	dlg.threadData.Clear();

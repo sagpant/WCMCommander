@@ -27,7 +27,7 @@ struct SBigNode
 	int MinLen();
 };
 
-class VSearcher
+class VSearcher: public iIntrusiveCounter
 {
 	ccollect<SBigNode> sBigList; //1
 	ccollect<SNode> sList; //2
@@ -45,9 +45,9 @@ public:
 	~VSearcher() {}
 };
 
-class MegaSearcher
+class MegaSearcher: public iIntrusiveCounter
 {
-	ccollect< cptr< VSearcher > > list;
+	ccollect< clPtr< VSearcher > > list;
 public:
 	MegaSearcher() {}
 	bool Set( unicode_t* uStr, bool sens, charset_struct* charset = 0 );

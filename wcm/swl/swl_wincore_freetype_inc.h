@@ -25,7 +25,7 @@ namespace FTU
 
 		CharInfo( FT_GlyphSlotRec* p )
 		{
-			pxWidth = ( p->metrics.horiAdvance + 0x3F >> 6 );
+			pxWidth = ( (p->metrics.horiAdvance + 0x3F) >> 6 );
 			isSpace = !p->bitmap.buffer || p->bitmap.width <= 0 || p->bitmap.rows <= 0;
 		};
 		CharInfo() {}
@@ -313,7 +313,7 @@ namespace FTU
 
 
 		int h = pxHeight;
-		int w = ( slot->metrics.horiAdvance + 0x3F >> 6 );
+		int w = ( (slot->metrics.horiAdvance + 0x3F) >> 6 );
 
 
 		if ( w <= 0 || h <= 0 ) { return false; }
@@ -606,13 +606,13 @@ namespace FTU
 
 }; //namespace FTU
 
-cptr<cfont::FTInfo> cfont::GetFTFileInfo( const char* path )
+clPtr<cfont::FTInfo> cfont::GetFTFileInfo( const char* path )
 {
 	FTU::FFace f;
 
 	if ( f.Load( path, 0, 100 ) ) { return 0; }
 
-	cptr<cfont::FTInfo> node = new cfont::FTInfo;
+	clPtr<cfont::FTInfo> node = new cfont::FTInfo;
 	node->name = new_char_str( f.Name() );
 	node->styleName = new_char_str( f.StyleName() );
 

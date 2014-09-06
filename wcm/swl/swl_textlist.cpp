@@ -11,7 +11,7 @@ namespace wal
 
 	bool lessTLNode( TLNode* a, TLNode* b, void* )
 	{
-		unicode_t* sa = a->str.ptr(), *sb = b->str.ptr();
+		unicode_t* sa = a->str.data(), *sb = b->str.data();
 
 		while ( *sa && *sa == *sb ) { sa++; sb++; }
 
@@ -51,7 +51,7 @@ namespace wal
 
 			gc.SetFillColor( bg );
 			gc.FillRect( rect );
-			unicode_t* txt = list[n].str.ptr();
+			unicode_t* txt = list[n].str.data();
 
 			if ( txt )
 			{
@@ -105,7 +105,7 @@ namespace wal
 			{
 				if ( list[i].pixelWidth < 0 )
 				{
-					list[i].pixelWidth = gc.GetTextExtents( list[i].str.ptr() ).x;
+					list[i].pixelWidth = gc.GetTextExtents( list[i].str.data() ).x;
 				}
 
 				if ( list[i].pixelWidth > X )

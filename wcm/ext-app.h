@@ -7,16 +7,16 @@ using namespace wal;
 
 inline void InitExtensionApp() {};
 
-struct AppList
+struct AppList: public iIntrusiveCounter
 {
 	struct Node
 	{
-		carray<unicode_t> name;
+		std::vector<unicode_t> name;
 
 		bool terminal;
-		carray<unicode_t> cmd;
+		std::vector<unicode_t> cmd;
 		//or
-		cptr<AppList> sub;
+		clPtr<AppList> sub;
 
 		Node(): terminal( 0 ) {}
 	};
@@ -26,9 +26,9 @@ struct AppList
 };
 
 
-carray<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName );
+std::vector<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName );
 
-cptr<AppList> GetAppList( const unicode_t* uri );
+clPtr<AppList> GetAppList( const unicode_t* uri );
 
 
 #endif

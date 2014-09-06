@@ -1,0 +1,20 @@
+language: cpp
+
+before_script:
+    - gcc -v
+    - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+    - sudo apt-get update
+    - sudo apt-get install gcc-4.8 g++-4.8
+    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
+    - sudo update-alternatives --config gcc
+    - sudo update-alternatives --config g++
+    - gcc -v 
+    - cd ./wcm
+
+compiler:
+    - gcc
+    - clang
+
+script:
+    - make all -B && mkdir build && cd build && cmake -DWITH_FREETYPE=YES -DWITH_LIBSSH2=NO -DWITH_SMBCLIENT=NO .. && make # tests both cmake and custom builds

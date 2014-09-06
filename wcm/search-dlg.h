@@ -1,24 +1,26 @@
 #ifndef SEARCH_DLG_H
 #define SEARCH_DLG_H
 
+#include <vector>
+
 struct SearchAndReplaceParams
 {
-	carray<unicode_t> mask;
-	carray<unicode_t> txt;
-	carray<unicode_t> to;
+	std::vector<unicode_t> mask;
+	std::vector<unicode_t> txt;
+	std::vector<unicode_t> to;
 	bool sens;
-	SearchAndReplaceParams(): sens( false ) {}
+	SearchAndReplaceParams(): sens( false ) { mask.push_back( '*' ); mask.push_back( 0 ); }
 	SearchAndReplaceParams( const SearchAndReplaceParams& a )
 	{
-		mask = new_unicode_str( a.mask.const_ptr() );
-		txt = new_unicode_str( a.txt.const_ptr() );
-		to = new_unicode_str( a.to.const_ptr() );
+		mask = new_unicode_str( a.mask.data() );
+		txt = new_unicode_str( a.txt.data() );
+		to = new_unicode_str( a.to.data() );
 	}
 	SearchAndReplaceParams& operator = ( const SearchAndReplaceParams& a )
 	{
-		mask = new_unicode_str( a.mask.const_ptr() );
-		txt = new_unicode_str( a.txt.const_ptr() );
-		to = new_unicode_str( a.to.const_ptr() );
+		mask = new_unicode_str( a.mask.data() );
+		txt = new_unicode_str( a.txt.data() );
+		to = new_unicode_str( a.to.data() );
 		return *this;
 	}
 };

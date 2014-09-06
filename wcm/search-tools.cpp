@@ -1,20 +1,21 @@
 #include "search-tools.h"
-
-extern unsigned  UnicodeLC( unsigned ch );
-extern unsigned  UnicodeUC( unsigned ch );
+#include "unicode_lc.h"
 
 inline   int SBigNode::Eq( const char* str ) const
 {
 	const char* s = str;
 	const char* t = a;
 
-	for ( ; *t && *s == *t; t++, s++ ) { 0; }
+	while ( *t && *s == *t ) { t++; s++; }
 
 	if ( !*t ) { return t - a; }
 
 	if ( !b[0] ) { return 0; }
 
-	for ( t = b, s = str; *t && *s == *t; t++, s++ ) { 0; }
+	t = b;
+	s = str;
+
+	while ( *t && *s == *t ) { t++; s++; }
 
 	if ( !*t ) { return t - b; }
 
@@ -25,16 +26,18 @@ inline bool SBigNode::Eq( const SBigNode& x ) const
 {
 	const char* s = a;
 	const char* t = x.a;
-	int i;
+	int i = 0;
 
-	for ( i = 0; *s && *s == *t && i < 16; i++, s++, t++ ) { 0; }
+	while ( *s && *s == *t && i < 16 ) { i++; s++; t++; }
 
 	if ( *s != *t ) { return false; }
 
 	s = b;
 	t = x.b;
 
-	for ( i = 0; *s && *s == *t && i < 16; i++, s++, t++ ) { 0; }
+	i = 0;
+
+	while ( *s && *s == *t && i < 16 ) { i++; s++; t++; }
 
 	if ( *s != *t ) { return false; }
 
@@ -171,7 +174,7 @@ static char* VSearchStr( char* s, char* end, char* cs, int csLen )
 			char* p = cs + 1;
 			int n = csLen - 1;
 
-			for ( ; n > 0 && *t == *p; t++, p++, n-- ) { 0; }
+			while ( n > 0 && *t == *p ) { t++; p++; n--; }
 
 			if ( n <= 0 ) { return s; }
 		}
@@ -199,7 +202,7 @@ void VSearcher::Set( unicode_t* uStr, bool sens, charset_struct* charset ) //thr
 		if ( !node.Set( *uStr, sens, charset ) )
 		{
 			unicode_t x[2] = { *uStr, 0};
-			throw_msg( "symbol '%s' not exist in charset '%s'", unicode_to_utf8( x ).ptr(), charset->name );
+			throw_msg( "symbol '%s' not exist in charset '%s'", unicode_to_utf8( x ).data(), charset->name );
 		}
 
 		int n = node.MaxLen();
@@ -357,7 +360,7 @@ int VSearcher::MaxLen()
 
 /*
 class MegaSearcher {
-   ccollect< cptr< VSearcher > > list;
+   ccollect< clPtr< VSearcher > > list;
 public:
    bool Set(unicode_t *uStr, bool sens, charset_struct *charset = 0);
    char *Search(char *s, char *end, int *fBytes, charset_struct **retcs);
@@ -370,7 +373,7 @@ bool MegaSearcher::Set( unicode_t* uStr, bool sens, charset_struct* charset )
 
 	if ( charset )
 	{
-		cptr<VSearcher> p = new VSearcher();
+		clPtr<VSearcher> p = new VSearcher();
 
 		try
 		{
@@ -391,7 +394,7 @@ bool MegaSearcher::Set( unicode_t* uStr, bool sens, charset_struct* charset )
 
 	for ( int i = 0; i < csCount; i++ )
 	{
-		cptr<VSearcher> p = new VSearcher();
+		clPtr<VSearcher> p = new VSearcher();
 
 		try
 		{

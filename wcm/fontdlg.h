@@ -2,8 +2,8 @@
 #define FONTDLG_H
 #include "ncdialogs.h"
 
-cptr<cfont> SelectX11Font( NCDialogParent* parent, bool fixed );
-cptr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* currentUri );
+clPtr<cfont> SelectX11Font( NCDialogParent* parent, bool fixed );
+clPtr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* currentUri );
 
 #endif
 

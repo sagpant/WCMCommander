@@ -1,27 +1,29 @@
 #include "shell-tools.h"
 #include "nc.h"
 #include "vfs-uri.h"
+#include "unicode_lc.h"
+
 //#include "string-util.h"
 
 struct ShellLoadDirTD
 {
-	FSPtr fs;
+	clPtr<FS> fs;
 	FSPath path;
 
 	Mutex mutex;
 	bool winClosed;
 	bool threadStopped;
 	FSCSimpleInfo info;
-	cptr<FSList> list;
-	carray<char> err;
-	ShellLoadDirTD( FSPtr f, FSPath& p ): fs( f ), path( p ), winClosed( false ), threadStopped( false ) {}
+	clPtr<FSList> list;
+	std::vector<char> err;
+	ShellLoadDirTD( clPtr<FS> f, FSPath& p ): fs( f ), path( p ), winClosed( false ), threadStopped( false ) {}
 };
 
 void* ShellLoadDirThreadFunc( void* ptr )
 {
 	ShellLoadDirTD* data = ( ShellLoadDirTD* )ptr;
 
-	cptr<FSList> list;
+	clPtr<FSList> list;
 
 	try
 	{
@@ -78,10 +80,10 @@ class ShellLoadDirDialog: public NCVertDialog
 public:
 	ShellLoadDirTD* data;
 	StaticLine _text;
-	FSPtr _fs;
+	clPtr<FS> _fs;
 	FSPath& _path;
 
-	ShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path );
+	ShellLoadDirDialog( NCDialogParent* parent, clPtr<FS> fs, FSPath& path );
 	virtual void ThreadStopped( int id, void* data );
 	virtual ~ShellLoadDirDialog();
 };
@@ -107,10 +109,10 @@ ShellLoadDirDialog::~ShellLoadDirDialog()
 	}
 }
 
-ShellLoadDirDialog::ShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "TAB" ).ptr(), bListCancel ),
+ShellLoadDirDialog::ShellLoadDirDialog( NCDialogParent* parent, clPtr<FS> fs, FSPath& path )
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "TAB" ).data(), bListCancel ),
 	   data( 0 ),
-	   _text( 0, this, utf8_to_unicode( "Read ..." ).ptr() ),
+	   _text( 0, this, utf8_to_unicode( "Read ..." ).data() ),
 	   _fs( fs ),
 	   _path( path )
 {
@@ -142,7 +144,7 @@ void ShellLoadDirDialog::ThreadStopped( int id, void* data )
 
 class ShellFileListWin: public VListWin
 {
-	cptr< ccollect<FSNode*, 0x100> > pList;
+	clPtr< ccollect<FSNode*, 0x100> > pList;
 	int fontW;
 	int fontH;
 public:
@@ -171,7 +173,7 @@ public:
 		SetLSize( ls );
 	}
 
-	void SetList( cptr< ccollect<FSNode*, 0x100> > p ) { pList = p; SetCount( pList.ptr() ? pList->count() : 0 ); }
+	void SetList( clPtr< ccollect<FSNode*, 0x100> > p ) { pList = p; SetCount( pList.ptr() ? pList->count() : 0 ); }
 
 	virtual void DrawItem( wal::GC& gc, int n, crect rect );
 	FSNode* GetCurrentNode() { int n = GetCurrent(); return n >= 0 && pList.ptr() && n < pList->count() ? pList->get( n ) : 0; }
@@ -187,7 +189,6 @@ void ShellFileListWin::DrawItem( wal::GC& gc, int n, crect rect )
 	if ( pList.ptr() && n >= 0 && n < pList->count() )
 	{
 		FSNode* p = pList->get( n );
-
 
 		UiCondList ucl;
 
@@ -207,7 +208,7 @@ void ShellFileListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 		static unicode_t dirChar = DIR_SPLITTER;
 
-		if ( fg = p->IsDir() )
+		if ( p->IsDir() )
 		{
 			gc.TextOutF( rect.left, rect.top, &dirChar, 1 );
 		}
@@ -263,8 +264,6 @@ static bool accmask_begin0( const unicode_t* name, const unicode_t* mask )
 	}
 }
 
-extern unsigned  UnicodeLC( unsigned ch );
-
 static bool accmask_nocase_begin0( const unicode_t* name, const unicode_t* mask )
 {
 
@@ -306,17 +305,17 @@ static bool accmask_nocase_begin0( const unicode_t* name, const unicode_t* mask 
 
 struct ShellFileDlgData
 {
-	cptr<FSList> list;
-	carray<FSNode*> sorted;
-	carray<unicode_t> mask;
-	cptr< ccollect<FSNode*, 0x100> > filtered;
+	clPtr<FSList> list;
+	std::vector<FSNode*> sorted;
+	std::vector<unicode_t> mask;
+	clPtr< ccollect<FSNode*, 0x100> > filtered;
 
-	void RefreshList( carray<unicode_t> mask );
+	void RefreshList( std::vector<unicode_t> mask );
 
-	ShellFileDlgData( cptr<FSList> l, const unicode_t* s ): list( l )
+	ShellFileDlgData( clPtr<FSList> l, const unicode_t* s ): list( l )
 	{
 		sorted = list->GetArray();
-		FSList::SortByName( sorted.ptr(), list->Count(), true,
+		FSList::SortByName( sorted.data(), list->Count(), true,
 #ifdef _WIN32
 		                    false
 #else
@@ -327,14 +326,14 @@ struct ShellFileDlgData
 	}
 };
 
-void ShellFileDlgData::RefreshList( carray<unicode_t> m )
+void ShellFileDlgData::RefreshList( std::vector<unicode_t> m )
 {
 	filtered = 0;
 	mask = m;
 
 	if ( list->Count() )
 	{
-		cptr< ccollect<FSNode*, 0x100> > p = new ccollect<FSNode*, 0x100>;
+		clPtr< ccollect<FSNode*, 0x100> > p = new ccollect<FSNode*, 0x100>;
 		int n = list->Count();
 
 		for ( int i = 0; i < n; i++ )
@@ -345,7 +344,7 @@ void ShellFileDlgData::RefreshList( carray<unicode_t> m )
 #else
 			   accmask_begin0
 #endif
-			   ( sorted[i]->GetUnicodeName(), mask.ptr() ) )
+			   ( sorted[i]->GetUnicodeName(), mask.data() ) )
 			{
 				p->append( sorted[i] );
 			}
@@ -367,7 +366,7 @@ class ShellFileDlg: public NCDialog
 	ShellFileDlgData* data;
 public:
 	ShellFileDlg( NCDialogParent* parent, ShellFileDlgData* d )
-		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( " TAB " ).ptr(), bListOkCancel ), //BGCOLOR),
+		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( " TAB " ).data(), bListOkCancel ), //BGCOLOR),
 		   layout( 10, 10 ),
 		   list( this, 15 ),
 		   line( 0, this, 0, 0, 20 ),
@@ -380,7 +379,7 @@ public:
 		line.Enable();
 		line.Show();
 
-		if ( data->mask.ptr() ) { line.SetText( data->mask.ptr() ); }
+		if ( data->mask.data() ) { line.SetText( data->mask.data() ); }
 
 		line.SetFocus();
 		AddLayout( &layout );
@@ -439,7 +438,7 @@ ShellFileDlg::~ShellFileDlg() {}
 
 /////////////////////////////////////
 
-static cptr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPath& path )
+static clPtr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, clPtr<FS> fs, FSPath& path )
 {
 	ShellLoadDirDialog dlg( parent, fs, path );
 
@@ -452,9 +451,9 @@ static cptr<FSList> DoShellLoadDirDialog( NCDialogParent* parent, FSPtr fs, FSPa
 }
 
 
-carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, const unicode_t* str, int* cursor )
+std::vector<unicode_t> ShellTabKey( NCDialogParent* par, clPtr<FS> fs, FSPath& path, const unicode_t* str, int* cursor )
 {
-	if ( fs->Type() != FS::SYSTEM ) { return 0; }
+	if ( fs->Type() != FS::SYSTEM ) { return std::vector<unicode_t>(); }
 
 	int len = unicode_strlen( str );
 	int n = len;
@@ -527,12 +526,12 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 
 	if ( b < 0 ) { b = n; }
 
-	if ( b >= e ) { return 0; }
+	if ( b >= e ) { return std::vector<unicode_t>(); }
 
 	FSPath searchPath = path;
 	int bm = ds >= b ? ds + 1 : b;
 	int maskLen = e - bm;
-	carray<unicode_t> mask( maskLen + 1 );
+	std::vector<unicode_t> mask( maskLen + 1 );
 
 	for ( i = 0; i < maskLen; i++ )
 	{
@@ -544,7 +543,7 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 	if ( ds >= b )
 	{
 		int l = ds - b + 1;
-		carray<unicode_t> buf( l + 1 );
+		std::vector<unicode_t> buf( l + 1 );
 
 		for ( i = 0; i < l; i++ )
 		{
@@ -553,24 +552,24 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 
 		buf[i] = 0;
 
-		FSPtr f1 = ParzeURI( buf.ptr(), searchPath, &fs, 1 );
+		clPtr<FS> f1 = ParzeURI( buf.data(), searchPath, &fs, 1 );
 
-		if ( !f1.Ptr() ) { return 0; }
+		if ( !f1.Ptr() ) { return std::vector<unicode_t>(); }
 
 		fs = f1;
 	}
 
-	cptr<FSList> list = DoShellLoadDirDialog( par, fs, searchPath );
+	clPtr<FSList> list = DoShellLoadDirDialog( par, fs, searchPath );
 
 	if ( list.ptr() )
 	{
 
 		FSNode* p = 0;
-		ShellFileDlgData data( list, mask.ptr() );
+		ShellFileDlgData data( list, mask.data() );
 
 		if ( data.filtered.ptr() )
 		{
-			if ( !data.filtered->count() ) { return 0; }
+			if ( !data.filtered->count() ) { return std::vector<unicode_t>(); }
 
 			if ( data.filtered->count() == 1 )
 			{
@@ -592,7 +591,7 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 
 			const unicode_t* name = p->GetUnicodeName();
 
-			if ( !name ) { return 0; } //???
+			if ( !name ) { return std::vector<unicode_t>(); } //???
 
 			int nLen = unicode_strlen( name );
 
@@ -626,5 +625,5 @@ carray<unicode_t> ShellTabKey( NCDialogParent* par, FSPtr fs, FSPath& path, cons
 		}
 	}
 
-	return carray<unicode_t>( 0 );
+	return std::vector<unicode_t>();
 }

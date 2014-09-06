@@ -6,28 +6,28 @@
 #include "string-util.h"
 #include "w32util.h"
 
-static carray<wchar_t> GetOpenApp( wchar_t* ext )
+static std::vector<wchar_t> GetOpenApp( wchar_t* ext )
 {
-	if ( !ext ) { return carray<wchar_t>(); }
+	if ( !ext ) { return std::vector<wchar_t>(); }
 
 	RegKey key;
 
-	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext ).ptr() ) )
+	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext ).data() ) )
 	{
 		key.Open( HKEY_CLASSES_ROOT, ext );
 	}
 
-	carray<wchar_t> p = key.GetString();
+	std::vector<wchar_t> p = key.GetString();
 
-	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.ptr(), L"\\shell\\open\\command" ).ptr() ) )
+	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.data(), L"\\shell\\open\\command" ).data() ) )
 	{
-		key.Open( HKEY_CLASSES_ROOT, carray_cat<wchar_t>( p.ptr(), L"\\shell\\open\\command" ).ptr() );
+		key.Open( HKEY_CLASSES_ROOT, carray_cat<wchar_t>( p.data(), L"\\shell\\open\\command" ).data() );
 	}
 
 	return key.GetString();
 }
 
-static carray<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const unicode_t* uri )
+static std::vector<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const unicode_t* uri )
 {
 	ccollect<unicode_t, 0x100> res;
 	int insCount = 0;
@@ -65,24 +65,24 @@ static carray<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const unicod
 	return res.grab();
 }
 
-static carray<wchar_t> GetFileExt( const unicode_t* uri )
+static std::vector<wchar_t> GetFileExt( const unicode_t* uri )
 {
-	if ( !uri ) { return carray<wchar_t>(); }
+	if ( !uri ) { return std::vector<wchar_t>(); }
 
 	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
 
-	if ( !ext || !*ext ) { return carray<wchar_t>(); }
+	if ( !ext || !*ext ) { return std::vector<wchar_t>(); }
 
 	return UnicodeToUtf16( ext );
 }
 
-static carray<unicode_t> NormalizeStr( unicode_t* s )
+static std::vector<unicode_t> NormalizeStr( unicode_t* s )
 {
-	if ( !s ) { return 0; }
+	if ( !s ) { return std::vector<unicode_t>(); }
 
 	int n = unicode_strlen( s );
-	carray<unicode_t> p( n + 1 );
-	unicode_t* t = p.ptr();
+	std::vector<unicode_t> p( n + 1 );
+	unicode_t* t = p.data();
 
 	for ( ; *s; s++ ) if ( *s != '&' ) { *( t++ ) = *s; }
 
@@ -90,59 +90,59 @@ static carray<unicode_t> NormalizeStr( unicode_t* s )
 	return p;
 }
 
-cptr<AppList> GetAppList( const unicode_t* uri )
+clPtr<AppList> GetAppList( const unicode_t* uri )
 {
-	carray<wchar_t> ext = GetFileExt( uri );
+	std::vector<wchar_t> ext = GetFileExt( uri );
 
-	if ( !ext.ptr() ) { return 0; }
+	if ( !ext.data() ) { return 0; }
 
 	RegKey key;
 
-	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext.ptr() ).ptr() ) )
+	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext.data() ).data() ) )
 	{
-		key.Open( HKEY_CLASSES_ROOT, ext.ptr() );
+		key.Open( HKEY_CLASSES_ROOT, ext.data() );
 	}
 
-	carray<wchar_t> p = key.GetString();
+	std::vector<wchar_t> p = key.GetString();
 
 	RegKey key2;
 
-	if ( !key2.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.ptr(), L"\\shell" ).ptr() ) )
+	if ( !key2.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", p.data(), L"\\shell" ).data() ) )
 	{
-		key2.Open( HKEY_CLASSES_ROOT, carray_cat<wchar_t>( p.ptr(), L"\\shell" ).ptr() );
+		key2.Open( HKEY_CLASSES_ROOT, carray_cat<wchar_t>( p.data(), L"\\shell" ).data() );
 	}
 
 
 	if ( !key2.Ok() ) { return 0; }
 
-	cptr<AppList> ret = new AppList();
+	clPtr<AppList> ret = new AppList();
 
-	carray<wchar_t> pref = key2.GetString();
+	std::vector<wchar_t> pref = key2.GetString();
 
 	for ( int i = 0; i < 10; i++ )
 	{
-		carray<wchar_t> sub = key2.SubKey( i );
+		std::vector<wchar_t> sub = key2.SubKey( i );
 
-		if ( !sub.ptr() ) { break; }
+		if ( !sub.data() ) { break; }
 
 		RegKey key25;
-		key25.Open( key2.Key(), sub.ptr() );
+		key25.Open( key2.Key(), sub.data() );
 
 		if ( !key25.Ok() ) { continue; }
 
-		carray<wchar_t> name = key25.GetString();
+		std::vector<wchar_t> name = key25.GetString();
 //wprintf(L"%s, %s\n", sub.ptr(), name.ptr());
 		RegKey key3;
 		key3.Open( key25.Key(), L"command" );
-		carray<wchar_t> command = key3.GetString();
+		std::vector<wchar_t> command = key3.GetString();
 
-		if ( command.ptr() )
+		if ( command.data() )
 		{
 			AppList::Node node;
-			node.name = NormalizeStr( Utf16ToUnicode( name.ptr() && name[0] ? name.ptr() : sub.ptr() ).ptr() );
-			node.cmd = CfgStringToCommand( command.ptr(), uri );
+			node.name = NormalizeStr( Utf16ToUnicode( name.data() && name[0] ? name.data() : sub.data() ).data() );
+			node.cmd = CfgStringToCommand( command.data(), uri );
 
-			if ( ( pref.ptr() && !wcsicmp( pref.ptr(), sub.ptr() ) || !pref.ptr() && !wcsicmp( L"Open", sub.ptr() ) ) && ret->list.count() > 0 )
+			if ( ( pref.data() && !wcsicmp( pref.data(), sub.data() ) || !pref.data() && !wcsicmp( L"Open", sub.data() ) ) && ret->list.count() > 0 )
 			{
 				ret->list.insert( 0 );
 				ret->list[0] = node;
@@ -158,24 +158,24 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 
 	if ( key2.Ok() )
 	{
-		cptr<AppList> openWith = new AppList();
+		clPtr<AppList> openWith = new AppList();
 
 		for ( int i = 0; i < 10; i++ )
 		{
-			carray<wchar_t> sub = key2.SubKey( i );
+			std::vector<wchar_t> sub = key2.SubKey( i );
 
-			if ( !sub.ptr() ) { break; }
+			if ( !sub.data() ) { break; }
 
 			RegKey keyApplication;
 			keyApplication.Open( HKEY_CLASSES_ROOT,
-			                     carray_cat<wchar_t>( L"Applications\\", sub.ptr(), L"\\shell\\open\\command" ).ptr() );
-			carray<wchar_t> command = keyApplication.GetString();
+			                     carray_cat<wchar_t>( L"Applications\\", sub.data(), L"\\shell\\open\\command" ).data() );
+			std::vector<wchar_t> command = keyApplication.GetString();
 
-			if ( command.ptr() )
+			if ( command.data() )
 			{
 				AppList::Node node;
-				node.name = NormalizeStr( Utf16ToUnicode( sub.ptr() ).ptr() );
-				node.cmd = CfgStringToCommand( command.ptr(), uri );
+				node.name = NormalizeStr( Utf16ToUnicode( sub.data() ).data() );
+				node.cmd = CfgStringToCommand( command.data(), uri );
 				openWith->list.append( node );
 			}
 		}
@@ -194,13 +194,13 @@ cptr<AppList> GetAppList( const unicode_t* uri )
 }
 
 
-carray<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName )
+std::vector<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName )
 {
-	carray<wchar_t> wCmd = GetOpenApp( GetFileExt( uri ).ptr() );
+	std::vector<wchar_t> wCmd = GetOpenApp( GetFileExt( uri ).data() );
 
-	if ( !wCmd.ptr() ) { return carray<unicode_t>(); }
+	if ( !wCmd.data() ) { return std::vector<unicode_t>(); }
 
-	return CfgStringToCommand( wCmd.ptr(), uri );
+	return CfgStringToCommand( wCmd.data(), uri );
 }
 
 

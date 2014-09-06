@@ -9,7 +9,7 @@ template <class T> class Buf2D
 	int size;
 	int rows;
 	int cols;
-	carray<T> data;
+	std::vector<T> data;
 
 	Buf2D( const Buf2D& ) {}
 public:
@@ -21,7 +21,7 @@ public:
 		if ( r * c < size ) { rows = r; cols = c; return; }
 
 		int n = r * c;
-		carray<T> p( n );
+		std::vector<T> p( n );
 		size = n;
 		rows = r;
 		cols = c;
@@ -29,8 +29,8 @@ public:
 	}
 	int Rows() const { return rows; }
 	int Cols() const { return cols; }
-	T* Ptr() { return data.ptr(); }
-	T* Line( int n ) { ASSERT( n >= 0 && n < rows ); return data.ptr() + cols * n; }
+	T* Ptr() { return data.data(); }
+	T* Line( int n ) { ASSERT( n >= 0 && n < rows ); return data.data() + cols * n; }
 	T* operator []( int n ) { ASSERT( n >= 0 && n < rows ); return Line( n ); }
 	~Buf2D() {}
 };

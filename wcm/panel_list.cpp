@@ -24,7 +24,7 @@ void PanelList::MakeList()
 	if ( data.ptr() && data->Count() > 0 )
 	{
 		int n = data->Count();
-		list.alloc( n );
+		list.resize( n );
 
 		int i = 0;
 
@@ -51,16 +51,19 @@ void PanelList::MakeList()
 
 void PanelList::Sort()
 {
-	if ( !list.ptr() || !listCount )
+	if ( !list.data() || !listCount )
 	{
 		return;
 	}
 
-	FSNode** p = list.ptr();
+	FSNode** p = list.data();
 	int count = listCount;
 
 	switch ( sortMode )
 	{
+		case SORT_NONE:
+			break;
+
 		case SORT_NAME:
 			FSList::SortByName( p, count, ascSort, caseSensitive );
 			break;
@@ -161,11 +164,20 @@ void PanelList::Mark( const unicode_t* mask, bool enable )
 	selectedCn = counter;
 }
 
-void PanelList::ShiftSelection( int n, int* selectType )
+void PanelList::ShiftSelection( int n, int* selectType, bool RootDir )
 {
-	if ( n <= 0 || n > listCount ) { return; }
+	FSNode* p = NULL;
 
-	FSNode* p = list[n - 1];
+	if ( RootDir )
+	{
+		if ( n < 0 || n >= listCount ) { return; }
+		p = list[n];
+	}
+	else
+	{
+		if ( n <= 0 || n > listCount ) { return; }
+		p = list[n - 1];
+	}
 
 	if ( !p ) { return; }
 
@@ -197,7 +209,7 @@ void PanelList::InvertSelection()
 
 	for ( int i = 0; i < n; i++ )
 	{
-		FSNode* p = list.ptr()[i];
+		FSNode* p = list.data()[i];
 
 		if ( p->IsSelected() )
 		{

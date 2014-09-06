@@ -45,10 +45,10 @@ struct VSData
 	ViewerSize size;
 
 	int dataSize;
-	carray<unicode_t> data;
-	carray<char> attr;
+	std::vector<unicode_t> data;
+	std::vector<char> attr;
 
-	void SetDataSize( int n ) { if ( dataSize < n ) { data.alloc( n ); attr.alloc( n ); dataSize = n; } };
+	void SetDataSize( int n ) { if ( dataSize < n ) { data.resize( n ); attr.resize( n ); dataSize = n; } };
 
 	void _CopyData( const VSData& a )
 	{
@@ -57,8 +57,8 @@ struct VSData
 
 		if ( n > 0 )
 		{
-			memcpy( data.ptr(), a.data.const_ptr(), n * sizeof( unicode_t ) );
-			memcpy( attr.ptr(), a.attr.const_ptr(), n * sizeof( char ) );
+			memcpy( data.data(), a.data.data(), n * sizeof( unicode_t ) );
+			memcpy( attr.data(), a.attr.data(), n * sizeof( char ) );
 		}
 	}
 
@@ -133,7 +133,7 @@ class ViewWin : public Win
 	VSData lastResult;
 	VFPos lastPos;
 
-	carray<unicode_t> loadingText;
+	std::vector<unicode_t> loadingText;
 	bool drawLoading;
 
 	void CalcScroll();
@@ -142,7 +142,7 @@ class ViewWin : public Win
 public:
 	ViewWin( Win* parent );
 
-	void SetFile( FSPtr fsp, FSPath& path, seek_t size );
+	void SetFile( clPtr<FS> fsp, FSPath& path, seek_t size );
 	void ClearFile();
 
 	virtual void Paint( wal::GC& gc, const crect& paintRect );

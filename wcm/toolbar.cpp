@@ -70,7 +70,7 @@ void ToolBar::AddCmd( int cmd, const char* tipText )
 {
 	if ( cmd != 0 )
 	{
-		cptr<Node> p = new Node();
+		clPtr<Node> p = new Node();
 		p->cmd = cmd;
 
 		if ( tipText && tipText[0] ) { p->tipText = utf8_to_unicode( tipText ); }
@@ -86,7 +86,7 @@ void ToolBar::AddSplitter()
 {
 	if ( _list.count() > 0 && _list[_list.count() - 1].ptr() )
 	{
-		_list.append( cptr<Node>( 0 ) );
+		_list.append( clPtr<Node>( 0 ) );
 	}
 }
 
@@ -213,9 +213,9 @@ void ToolBar::EventTimer( int tid )
 		{
 			_curTip = _nextTip;
 
-			if ( _nextTip && _nextTip->tipText.ptr() && _nextTip->tipText[0] )
+			if ( _nextTip && _nextTip->tipText.data() && _nextTip->tipText[0] )
 			{
-				ToolTipShow( this, _nextTip->rect.left + 3, _nextTip->rect.bottom + 5, _nextTip->tipText.ptr() );
+				ToolTipShow( this, _nextTip->rect.left + 3, _nextTip->rect.bottom + 5, _nextTip->tipText.data() );
 			}
 		}
 	}

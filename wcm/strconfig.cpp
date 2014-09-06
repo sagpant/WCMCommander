@@ -100,10 +100,10 @@ bool StrConfig::Load( const char* s )
 	return true;
 }
 
-carray<char> StrConfig::GetConfig()
+std::vector<char> StrConfig::GetConfig()
 {
 	ccollect<char, 0x100> res;
-	carray<const char*> k = varHash.keys();
+	std::vector<const char*> k = varHash.keys();
 	int count = varHash.count();
 
 	for ( int i = 0; i < count; i++ )
@@ -113,7 +113,7 @@ carray<char> StrConfig::GetConfig()
 		for ( ; *s; s++ ) { res.append( *s ); }
 
 		res.append( '=' );
-		s = varHash[k[i]].ptr();
+		s = varHash[k[i]].data();
 
 		if ( s )
 		{
@@ -157,9 +157,9 @@ carray<char> StrConfig::GetConfig()
 
 void StrConfig::Set( const char* name, const char* value )
 {
-	carray<char> s = new_char_str( name );
-	UpStr( s.ptr() );
-	varHash[s.ptr()] = new_char_str( value );
+	std::vector<char> s = new_char_str( name );
+	UpStr( s.data() );
+	varHash[s.data()] = new_char_str( value );
 }
 
 void StrConfig::Set( const char* name, unsigned value )
@@ -172,13 +172,13 @@ void StrConfig::Set( const char* name, unsigned value )
 
 const char* StrConfig::GetStrVal( const char* name )
 {
-	carray<char> s = new_char_str( name );
-	UpStr( s.ptr() );
-	carray<char>* p = varHash.exist( s.ptr() );
+	std::vector<char> s = new_char_str( name );
+	UpStr( s.data() );
+	std::vector<char>* p = varHash.exist( s.data() );
 
-	if ( p && p[0].ptr() )
+	if ( p && p[0].data() )
 	{
-		return p[0].ptr();
+		return p[0].data();
 	}
 
 	return 0;
@@ -186,13 +186,13 @@ const char* StrConfig::GetStrVal( const char* name )
 
 int StrConfig::GetIntVal( const char* name )
 {
-	carray<char> s = new_char_str( name );
-	UpStr( s.ptr() );
-	carray<char>* p = varHash.exist( s.ptr() );
+	std::vector<char> s = new_char_str( name );
+	UpStr( s.data() );
+	std::vector<char>* p = varHash.exist( s.data() );
 
-	if ( p && p[0].ptr() )
+	if ( p && p[0].data() )
 	{
-		return atoi( p[0].ptr() );
+		return atoi( p[0].data() );
 	}
 
 	return -1;

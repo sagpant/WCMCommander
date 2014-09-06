@@ -12,7 +12,7 @@ namespace wal
 	unicode_t ABCString[] = {'A', 'B', 'C', 0};
 	int ABCStringLen = 3;
 
-	static cptr<cfont> pSysFont;
+	static clPtr<cfont> pSysFont;
 
 	static cfont* guiFont = 0;
 
@@ -219,7 +219,7 @@ namespace wal
 		gc.FillRect( rect ); //CCC
 		gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 )/*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ ); //CCC
 		gc.Set( GetFont() );
-		DrawStaticText( gc, 0, 0, text.ptr() );
+		DrawStaticText( gc, 0, 0, text.data() );
 	}
 
 
@@ -230,7 +230,7 @@ namespace wal
 
 	class TBToolTip: public Win
 	{
-		carray<unicode_t> text;
+		std::vector<unicode_t> text;
 	public:
 		TBToolTip( Win* parent, int x, int y, const unicode_t* s );
 		virtual void Paint( wal::GC& gc, const crect& paintRect );
@@ -258,12 +258,12 @@ namespace wal
 		gc.FillRect( r );
 		gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 )/*GetColor(IC_TEXT)*/ );
 		//gc.TextOutF(0,0,text.ptr());
-		DrawStaticText( gc, 2, 1, text.ptr(), GetFont(), false );
+		DrawStaticText( gc, 2, 1, text.data(), GetFont(), false );
 	}
 
 	TBToolTip::~TBToolTip() {}
 
-	static cptr<TBToolTip> tip;
+	static clPtr<TBToolTip> tip;
 
 
 	void ToolTipShow( Win* w, int x, int y, const unicode_t* s )
@@ -280,7 +280,7 @@ namespace wal
 
 	void ToolTipShow( Win* w, int x, int y, const char* s )
 	{
-		ToolTipShow( w, x, y, utf8_to_unicode( s ).ptr() );
+		ToolTipShow( w, x, y, utf8_to_unicode( s ).data() );
 	}
 
 	void ToolTipHide()

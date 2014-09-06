@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <wal.h>
 
-wal::carray<wchar_t> GetAppPath();
+std::vector<wchar_t> GetAppPath();
 
 class RegKey
 {
@@ -16,8 +16,8 @@ public:
 	HKEY Key() { return key; }
 	bool Open( HKEY root, const wchar_t* name, REGSAM sec = KEY_READ );
 	bool Create( HKEY root, const wchar_t* name, REGSAM sec = KEY_WRITE | KEY_READ );
-	wal::carray<wchar_t> GetString( const wchar_t* name = 0, const wchar_t* def = 0 );
-	wal::carray<wchar_t> SubKey( int n );
+	std::vector<wchar_t> GetString( const wchar_t* name = 0, const wchar_t* def = 0 );
+	std::vector<wchar_t> SubKey( int n );
 	~RegKey();
 };
 

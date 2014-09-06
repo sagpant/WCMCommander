@@ -7,12 +7,12 @@ using namespace wal;
 
 class ToolBar: public Win
 {
-	struct Node
+	struct Node: public iIntrusiveCounter
 	{
 		crect rect;
 		int cmd;
-		cptr<cicon> icon;
-		carray<unicode_t> tipText;
+		clPtr<cicon> icon;
+		std::vector<unicode_t> tipText;
 		Node(): rect( 0, 0, 0, 0 ), cmd( 0 ) {}
 	};
 	void RecalcItems();
@@ -28,7 +28,7 @@ class ToolBar: public Win
 
 	void DrawNode( wal::GC& gc, Node* pNode, int state );
 	int _iconSize;
-	ccollect<cptr<Node> > _list; //null node is splitter
+	ccollect<clPtr<Node> > _list; //null node is splitter
 	Node* _pressed;
 
 	int _ticks;

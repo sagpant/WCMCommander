@@ -5,7 +5,7 @@
 using namespace wal;
 
 static char uiDefaultWcmRules[] =
-   "* {color: 0; background: 0xD8E9EC; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
+   "* {color: 0; background: 0xD8E9EC; hotkey-color:0x55FFFF ;focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
    "*@item:odd		{color: 0; background: 0xE0FFE0; }"
    "*@item:current-item	{color: 0xFFFFFF; background: 0x800000; }"
    "*@item			{color: 0; background: 0xFFFFFF; }"

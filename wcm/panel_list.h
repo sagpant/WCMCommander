@@ -37,8 +37,8 @@ private:
 	SORT_MODE sortMode;
 	bool ascSort;
 
-	cptr<FSList> data;
-	carray<FSNode*> list;
+	clPtr<FSList> data;
+	std::vector<FSNode*> list;
 	int listCount;
 
 	static unicode_t emptyStr[];
@@ -66,7 +66,7 @@ public:
 	{
 	}
 
-	int   Count() const { return listCount + 1; }
+	int   Count( bool RootDir ) const { return listCount + (RootDir ? 0 : 1); }
 
 	bool AscSort() const { return ascSort; }
 	SORT_MODE SortMode() const { return sortMode; }
@@ -80,7 +80,7 @@ public:
 	void Sort( SORT_MODE mode, bool asc ) { sortMode = mode; ascSort = asc; Sort(); }
 	void DisableSort() { sortMode = SORT_NONE; MakeList(); }
 
-	void SetData( cptr<FSList> d )
+	void SetData( clPtr<FSList> d )
 	{
 		try
 		{
@@ -100,35 +100,45 @@ public:
 	bool SetCase( bool yes ) { if ( caseSensitive == yes ) { return false; } caseSensitive = yes; MakeList(); Sort(); return true; }
 
 
-	FSNode* Get( int n ) //от n отнимается 1
-	{ return ( n > 0 && n <= listCount ) ? list[n - 1] : 0; }
-
-	const unicode_t* GetFileName( int n ) //от n отнимается 1
+	FSNode* Get( int n, bool RootDir ) //от n отнимается 1
 	{
+		if ( RootDir )
+		{
+			return ( n >= 0 && n < listCount ) ? list[n] : 0;
+		}
+		return ( n > 0 && n <= listCount ) ? list[n - 1] : 0;
+	}
+
+	const unicode_t* GetFileName( int n, bool RootDir ) //от n отнимается 1
+	{
+		if ( RootDir )
+		{
+			return n >= 0 && n < listCount ? list[n]->GetUnicodeName() : emptyStr;
+		}
 		return n > 0 && n <= listCount ? list[n - 1]->GetUnicodeName() : ( n == 0 ? upperStr : emptyStr );
 	};
 
-	int Find( FSString& str )
+	int Find( FSString& str, bool RootDir )
 	{
 		int n = listCount;
 
 		for ( int i = 0; i < n; i++ )
 			if ( !str.Cmp( list[i]->Name() ) )
 			{
-				return i + 1;
+				return i + (RootDir ? 0 : 1);
 			}
 
 		return -1;
 	}
 
-	cptr<cstrhash<bool, unicode_t> > GetSelectedHash()
+	clPtr<cstrhash<bool, unicode_t> > GetSelectedHash()
 	{
-		cptr<cstrhash<bool, unicode_t> > hash = new cstrhash<bool, unicode_t>( false );
+		clPtr<cstrhash<bool, unicode_t> > hash = new cstrhash<bool, unicode_t>( false );
 		int n = listCount;
 
 		for ( int i = 0; i < n; i++ )
 		{
-			FSNode* p = list.ptr()[i];
+			FSNode* p = list.data()[i];
 
 			if ( p->IsSelected() )
 			{
@@ -148,7 +158,7 @@ public:
 
 		for ( int i = 0; i < n; i++ )
 		{
-			FSNode* p = list.ptr()[i];
+			FSNode* p = list.data()[i];
 
 			if ( ph->exist( p->GetUnicodeName() ) )
 			{
@@ -166,7 +176,7 @@ public:
 
 		for ( int i = 0; i < n; i++ )
 		{
-			FSNode* p = list.ptr()[i];
+			FSNode* p = list.data()[i];
 
 			if ( resList->exist( p->GetUnicodeName() ) && p->IsSelected() )
 			{
@@ -177,9 +187,9 @@ public:
 		}
 	}
 
-	cptr<FSList> GetSelectedList()
+	clPtr<FSList> GetSelectedList()
 	{
-		cptr<FSList> plist = new FSList;
+		clPtr<FSList> plist = new FSList;
 
 		if ( selectedCn.count <= 0 ) { return plist; }
 
@@ -187,11 +197,11 @@ public:
 
 		for ( int i = 0; i < n; i++ )
 		{
-			FSNode* p = list.ptr()[i];
+			FSNode* p = list.data()[i];
 
 			if ( p && p->IsSelected() )
 			{
-				cptr<FSNode> t = new FSNode( *p );
+				clPtr<FSNode> t = new FSNode( *p );
 				t->originNode = p;
 				plist->Append( t );
 			}
@@ -200,11 +210,20 @@ public:
 		return plist;
 	}
 
-	void InvertSelection( int n ) //от n отнимается 1
+	void InvertSelection( int n, bool RootDir ) //от n отнимается 1
 	{
-		if ( n <= 0 || n > listCount ) { return; }
+		FSNode* p = NULL;
 
-		FSNode* p = list[n - 1];
+		if ( RootDir )
+		{
+			if ( n < 0 || n >= listCount ) { return; }
+			p = list[n];
+		}
+		else
+		{
+			if ( n <= 0 || n > listCount ) { return; }
+			p = list[n - 1];
+		}
 
 		if ( !p ) { return; }
 
@@ -221,7 +240,7 @@ public:
 
 	}
 
-	void ShiftSelection( int n, int* selectType );
+	void ShiftSelection( int n, int* selectType, bool RootDir );
 
 
 	void InvertSelection();

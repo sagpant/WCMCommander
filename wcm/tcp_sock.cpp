@@ -56,16 +56,26 @@ bool GetHostIp( const char* utf8, unsigned* pIp, int* err )
 
 	char buf[4096];
 
-	struct hostent ent, *ret;
+	struct hostent* ret;
 
 	int e;
 
+#if defined( __APPLE__ )
+	if ( (ret = gethostbyname( utf8 )) )
+	{
+		if ( err ) { *err = e; }
+
+		return false;
+	}
+#else
+	struct hostent ent;
 	if ( gethostbyname_r( utf8, &ent, buf, sizeof( buf ), &ret, &e ) )
 	{
 		if ( err ) { *err = e; }
 
 		return false;
 	}
+#endif
 
 	if ( !ret || ret->h_addrtype != AF_INET || !ret->h_addr_list[0] )
 	{

@@ -14,7 +14,7 @@ namespace SHL
 	int ShlStream::Next() { return EOFCHAR; }
 	ShlStream::~ShlStream() {}
 
-	const char* ShlStreamFile::Name() { return _name_utf8.ptr(); }
+	const char* ShlStreamFile::Name() { return _name_utf8.data(); }
 	int ShlStreamFile::Next() { return _f.GetC(); }
 	ShlStreamFile::~ShlStreamFile() {}
 
@@ -29,16 +29,16 @@ namespace SHL
 		}
 		else
 		{
-			carray<char> p( strlen( s ) + 1 );
+			std::vector<char> p( strlen( s ) + 1 );
 			char* t;
 
-			for ( t = p.ptr(); *s; s++, t++ )
+			for ( t = p.data(); *s; s++, t++ )
 			{
 				*t = ToUpper( *s );
 			}
 
 			*t = 0;
-			_hash[p.ptr()] = color;
+			_hash[p.data()] = color;
 		}
 	}
 
@@ -48,13 +48,13 @@ namespace SHL
 
 		int l = end - s;
 		char buf[0x100];
-		carray<char> buf2;
+		std::vector<char> buf2;
 		char* p;
 
 		if ( l >= sizeof( buf ) )
 		{
-			buf2.alloc( l + 1 );
-			p = buf2.ptr();
+			buf2.resize( l + 1 );
+			p = buf2.data();
 		}
 		else
 		{
@@ -344,7 +344,7 @@ namespace SHL
 
 	struct ShlParzerBuf
 	{
-		carray<char> data;
+		std::vector<char> data;
 		int size;
 		int pos;
 		ShlParzerBuf(): size( 0 ), pos( 0 ) {}
@@ -357,11 +357,11 @@ namespace SHL
 		if ( pos >= size )
 		{
 			int n = ( pos + 1 ) * 2;
-			carray<char> p( n );
+			std::vector<char> p( n );
 
 			if ( pos > 0 )
 			{
-				memcpy( p.ptr(), data.ptr(), pos );
+				memcpy( p.data(), data.data(), pos );
 			}
 
 			data = p;
@@ -395,7 +395,7 @@ namespace SHL
 		void Syntax( const char* s = "" );
 		ShlParzer( ShlStream* stream );
 		int Tok() const { return _tok; }
-		const char* Str() { return _buf.data.ptr(); }
+		const char* Str() { return _buf.data.data(); }
 		int Next();
 		void Skip( int tok );
 		void SkipAll( int tok, int mincount = 1 );
@@ -614,7 +614,7 @@ begin:
 
 /////////////////////// Chars
 
-	static Chars* ParzeNamedChars( const char** pS, cstrhash<cptr<Chars> >* mhash )
+	static Chars* ParzeNamedChars( const char** pS, cstrhash<clPtr<Chars> >* mhash )
 	{
 		const char* s = *pS;
 
@@ -641,7 +641,7 @@ begin:
 
 		s++;
 
-		cptr<Chars>* p = mhash->exist( name.ptr() );
+		clPtr<Chars>* p = mhash->exist( name.ptr() );
 
 		if ( !p ) { return 0; }
 
@@ -689,7 +689,7 @@ begin:
 	}
 
 
-	bool Chars::Parze( const char* s, cstrhash<cptr<Chars> >* mhash )
+	bool Chars::Parze( const char* s, cstrhash<clPtr<Chars> >* mhash )
 	{
 		Clear();
 
@@ -785,7 +785,7 @@ begin:
 
 	State* Shl::AllocState()
 	{
-		cptr<State> p = new State( _states.count() );
+		clPtr<State> p = new State( _states.count() );
 		State* ret = p.ptr();
 		_states.append( p );
 		return ret;
@@ -811,7 +811,7 @@ begin:
 		ShlParzer parzer( stream );
 
 		cstrhash<State*> stateHash;
-		cstrhash<cptr<Chars> > charsHash;
+		cstrhash<clPtr<Chars> > charsHash;
 
 		while ( true )
 		{
@@ -842,7 +842,7 @@ begin:
 			{
 				parzer.Next();
 
-				cptr<Chars> ptr = new Chars;
+				clPtr<Chars> ptr = new Chars;
 
 				if ( parzer.Tok() != TOK_ID )
 				{
@@ -1258,7 +1258,7 @@ begin:
 
 	Shl* ShlConf::Get( const char* name, cstrhash<int>& colors )
 	{
-		cptr<Node>* p = hash.exist( name );
+		clPtr<Node>* p = hash.exist( name );
 
 		if ( !p || !p->ptr() )
 		{
@@ -1269,12 +1269,12 @@ begin:
 
 		if ( node->shl.ptr() ) { return node->shl.ptr(); }
 
-		if ( !node->shlFileName.ptr() ) { return 0; }
+		if ( !node->shlFileName.data() ) { return 0; }
 
 		try
 		{
-			cptr<Shl> shl = new Shl();
-			ShlStreamFile stream( utf8_to_sys( node->shlFileName.ptr() ).ptr() );
+			clPtr<Shl> shl = new Shl();
+			ShlStreamFile stream( utf8_to_sys( node->shlFileName.data() ).data() );
 			shl->Parze( &stream, colors );
 			node->shl = shl;
 			return node->shl.ptr();
@@ -1309,9 +1309,9 @@ begin:
 						{
 							for ( StrList::Node* p = r->list.first; p; p = p->next )
 							{
-								if ( p->str.ptr() && accmask( firstLine, p->str.ptr() ) )
+								if ( p->str.data() && accmask( firstLine, p->str.data() ) )
 								{
-									id = r->id.ptr();
+									id = r->id.data();
 									break;
 								}
 							}
@@ -1323,9 +1323,9 @@ begin:
 					{
 						for ( StrList::Node* p = r->list.first; p; p = p->next )
 						{
-							if ( p->str.ptr() && accmask( path, p->str.ptr() ) )
+							if ( p->str.data() && accmask( path, p->str.data() ) )
 							{
-								id = r->id.ptr();
+								id = r->id.data();
 								break;
 							}
 						}
@@ -1345,29 +1345,29 @@ begin:
 
 	void ShlConf::Parze( sys_char_t* filePath )
 	{
-		carray<char> utf8path = sys_to_utf8( filePath );
+		std::vector<char> utf8path = sys_to_utf8( filePath );
 
 		try
 		{
-			carray<char> dirPath = new_char_str( "" );
+			std::vector<char> dirPath = new_char_str( "" );
 
 			{
 
 				const char* p = 0;
 				const char* s;
 
-				for ( s = utf8path.ptr(); *s; s++ )
+				for ( s = utf8path.data(); *s; s++ )
 					if ( *s == DIR_SPLITTER ) { p = s; }
 
 				if ( p )
 				{
 					p++;
-					int l = p - utf8path.ptr();
-					dirPath.alloc( l + 1 );
+					int l = p - utf8path.data();
+					dirPath.resize( l + 1 );
 
-					char* dir = dirPath.ptr();
+					char* dir = dirPath.data();
 
-					for ( s = utf8path.ptr(); s < p; s++, dir++ )
+					for ( s = utf8path.data(); s < p; s++, dir++ )
 					{
 						*dir = *s;
 					}
@@ -1393,9 +1393,9 @@ begin:
 
 					if ( parzer.Tok() != TOK_STR ) { parzer.Syntax(); }
 
-					carray<char> id = new_char_str( parzer.Str() );
+					std::vector<char> id = new_char_str( parzer.Str() );
 
-					cptr<Node> node = new Node;
+					clPtr<Node> node = new Node;
 					parzer.Next();
 					parzer.Skip( '{' );
 
@@ -1421,18 +1421,18 @@ begin:
 #endif
 							)
 							{
-								int l1 = strlen( dirPath.ptr() );
+								int l1 = strlen( dirPath.data() );
 								int l2 = strlen( parzer.Str() );
-								carray<char> fp( l1 + l2 + 1 );
+								std::vector<char> fp( l1 + l2 + 1 );
 
 								if ( l1 )
 								{
-									memcpy( fp.ptr(), dirPath.ptr(), l1 );
+									memcpy( fp.data(), dirPath.data(), l1 );
 								}
 
 								if ( l2 )
 								{
-									memcpy( fp.ptr() + l1, parzer.Str(), l2 );
+									memcpy( fp.data() + l1, parzer.Str(), l2 );
 								}
 
 								fp[l1 + l2] = 0;
@@ -1456,17 +1456,17 @@ begin:
 
 					parzer.Skip( '}' );
 
-					if ( node->shlFileName.ptr() )
+					if ( node->shlFileName.data() )
 					{
 //printf("add %s\n", id.ptr());
-						hash[id.ptr()] = node;
+						hash[id.data()] = node;
 					}
 				}
 				else if ( !strcmp( parzer.Str(), "rule" ) )
 				{
 					parzer.Next();
 
-					cptr<Rule> rule = new Rule;
+					clPtr<Rule> rule = new Rule;
 
 					if ( parzer.Tok() != TOK_ID ) { parzer.Syntax(); }
 

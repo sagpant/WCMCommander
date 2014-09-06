@@ -1,7 +1,7 @@
 /*
    Copyright (c) by Valery Goryachev (Wal)
 */
-
+#include "unicode_lc.h"
 
 static unsigned short tab1024[1024] =
 {
@@ -182,7 +182,7 @@ static UStruct uData[690] =
 };
 
 
-unsigned  UnicodeLC( unsigned ch )
+wal::unicode_t UnicodeLC( wal::unicode_t ch )
 {
 	if ( ch < 1024 ) { return tab1024[ch]; }
 
@@ -376,7 +376,7 @@ static UStruct uDataUC[679] =
 	{ 0xFF55, 0xFF35 }, { 0xFF56, 0xFF36 }, { 0xFF57, 0xFF37 }, { 0xFF58, 0xFF38 }, { 0xFF59, 0xFF39 }, { 0xFF5A, 0xFF3A },
 };
 
-unsigned  UnicodeUC( unsigned ch )
+wal::unicode_t UnicodeUC( wal::unicode_t ch )
 {
 	if ( ch < 1024 ) { return tab1024UC[ch]; }
 

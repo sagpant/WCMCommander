@@ -125,7 +125,7 @@ static int WritePipe( int fd, int cmd, ... )
 	return 0;
 }
 
-static int ReadPipe( int fd, int& cmd, ccollect<carray<char> >& params )
+static int ReadPipe( int fd, int& cmd, ccollect<std::vector<char> >& params )
 {
 	char c;
 	int ret;
@@ -172,7 +172,7 @@ static void Shell( int in, int out )
 
 	while ( true )
 	{
-		ccollect<carray<char> > pList;
+		ccollect<std::vector<char> > pList;
 		int cmd = 0;
 
 		if ( ReadPipe( in, cmd, pList ) ) { exit( 1 ); }
@@ -190,7 +190,7 @@ static void Shell( int in, int out )
 
 					if ( pList.count() )
 					{
-						const char* params[] = {shell, "-c", pList[0].ptr(), NULL};
+						const char* params[] = {shell, "-c", pList[0].data(), NULL};
 						execv( shell, ( char** ) params );
 						printf( "error execute %s\n", shell );
 					}
@@ -207,7 +207,7 @@ static void Shell( int in, int out )
 
 				if ( WritePipe( out, 0, buf, ( const char* ) 0 ) ) { exit( 1 ); }
 
-				printf ( "exec '%s' (%i)\n", pList[0].ptr(), pid );
+				printf ( "exec '%s' (%i)\n", pList[0].data(), pid );
 
 			}
 			break;

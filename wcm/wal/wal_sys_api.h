@@ -327,24 +327,14 @@ namespace wal
 
 	sys_char_t* sys_error_str( int err, sys_char_t* buf, int size );
 
-
-
-	inline int unicode_strlen( const unicode_t* s )
-	{
-		const unicode_t* p = s;
-
-		while ( *p ) { p++; }
-
-		return p - s;
-	}
-
-	inline unicode_t* unicode_strchr( const unicode_t* s, unicode_t c )
-	{
-		while ( *s != c && *s ) { s++; }
-
-		return ( unicode_t* )( *s ? s : 0 );
-	}
-
+	int unicode_strlen(const unicode_t* s);
+	unicode_t* unicode_strchr(const unicode_t* s, unicode_t c);
+	unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s);
+	// copy unlit end of string, or when n chars copid, whichever comes first. 
+	// d is always 0-ended
+	unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n);
+	void unicode_strcat(unicode_t* d, const unicode_t* s);
+	unicode_t* unicode_strdup(const unicode_t* s);
 
 //for internal use
 	class SysStringStruct
