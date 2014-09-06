@@ -2700,11 +2700,8 @@ stopped:
 		if ( type == WT_MAIN )
 		{
 			unicode_t u[100];
-			int i;
+			unicode_strncpy0(u, name, sizeof(u)/sizeof(u[0]));
 
-			for ( i = 0; i < 100 && *name; i++, name++ ) { u[i] = *name; }
-
-			u[i] = 0;
 			char buf[400];
 			unicode_to_utf8( buf, u );
 			XStoreName( display, handle, buf );
@@ -3321,14 +3318,12 @@ stopped:
 	{
 		clear();
 
-
 		int w = image.width();
 		int h = image.height();
 
-		if ( w <= 0 && h <= 0 ) { return; }
+		if ( w <= 0 || h <= 0 ) { return; }
 
 		init( w, h );
-
 
 		if ( visualInfo.c_class != TrueColor )
 		{
@@ -3367,27 +3362,26 @@ stopped:
 		unsigned32* p = ( unsigned32* )data.data();
 		unsigned32* t = image.line( 0 );
 
-		unsigned32 last = 0xFFFFFFFF;
-		unsigned32 b;
+		unsigned32 lastPixVal = 0;
+		unsigned32 lastColor = CreateColor(lastPixVal);
 		int n;
-
 		for ( n = w * h; n > 0; n--, p++, t++ )
 		{
-			unsigned32 a = *t;
+			unsigned32 pixVal = *t;
 
-			if ( a >= 0x80000000 )
+			if ( lastPixVal >= 0x80000000 )
 			{
 				goto haveMask;
 			}
 
-			if ( a == last )
+			if ( pixVal == lastPixVal )
 			{
-				*p = b;
+				*p = lastColor;
 			}
 			else
 			{
-				last = a;
-				*p = b =  CreateColor( a );
+				lastPixVal = pixVal;
+				*p = lastColor =  CreateColor( pixVal );
 			}
 		}
 
@@ -3401,21 +3395,21 @@ haveMask:
 
 		for ( ; n > 0; n--, p++, t++, m++ )
 		{
-			unsigned32 a = *t;
+			unsigned32 pixVal = *t;
 
-			if ( a >= 0x80000000 )
+			if ( pixVal >= 0x80000000 )
 			{
 				*m = 0;
 			}
 
-			if ( a == last )
+			if ( pixVal == lastPixVal )
 			{
-				*p = b;
+				*p = lastColor;
 			}
 			else
 			{
-				last = a;
-				*p = b =  CreateColor( a );
+				lastPixVal = pixVal;
+				*p = lastColor =  CreateColor( pixVal );
 			}
 		}
 	}
