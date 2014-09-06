@@ -17,7 +17,13 @@ static char uiDefaultWcmRules[] =
 
    "command-line:!enabled { background: 0; }"
    "command-line:focus {color: 0xFFFFFF; background: 0; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
-   "command-line {color: 0; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+   "command-line {color: 0xFFFFFF; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+
+   "Autocomplete:!enabled { background: 0xB0B000; }"
+   "Autocomplete:current-item {color: 0xFFFFFF; background: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:current-item:odd {color: 0xFFFFFF; background: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:odd {color: 0xFFFFFF; background: 0xA9A900; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
+   "Autocomplete {color: 0xFFFFFF; background: 0xB0B000; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
 
    "Panel { color: 0xFFFF80; background: 0x800000; }"
    "Panel@item:exe { color: 0x80FF80 }"
@@ -28,7 +34,7 @@ static char uiDefaultWcmRules[] =
    "Panel@item:selected { color: 0x00FFFF }"
    "Panel@item:selected-panel:current-item { background: 0xB0B000 }"
 //"Panel@item:selected-panel:current-item:oper-state { background: 0xFF }"
-   "Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar {  background: 0xA0A000; button-color: 0xFFFF00 }"
+   "Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar {  background: 0xB0B000; button-color: 0x909000 }"
    "Panel { border-color1: 0x000000; border-color2: 0xFFFFFF; border-color3: 0xFFFFFF; border-color4: 0x000000;"
    " vline-color1: 0xFFFFFF; vline-color2:0x707070; vline-color3:0x700000;"
    " line-color:0xFFFFFF; summary-color: 0xFFFFFF; }"
@@ -101,6 +107,12 @@ static char uiBlackWcmRules[] =
    "command-line:!enabled { background: 0; }"
    "command-line:focus {color: 0xFFFFFF; background: 0; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
    "command-line {color: 0; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+
+   "Autocomplete:!enabled { background: 0xB0B000; }"
+   "Autocomplete:current-item {color: 0xFFFFFF; background: 0xB0B000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:current-item:odd {color: 0xFFFFFF; background: 0xB0B000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:odd {color: 0xFFFFFF; background: 0x000000; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
+   "Autocomplete {color: 0xFFFFFF; background: 0x000000; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
 
    "Panel { color: 0xA0A0A0; background: 0x000000; }"
    "Panel@item:exe { color: 0x80FF80 }"
@@ -184,6 +196,12 @@ static char uiWhiteWcmRules[] =
    "command-line:!enabled { background: 0xD8E9EC; }"
    "command-line:focus {color: 0; background: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
    "command-line {color: 0; background: 0xFFFFFF; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+
+   "Autocomplete:!enabled { background: 0xFFFFFF; }"
+   "Autocomplete:current-item {color: 0xFFFFFF; background: 0x800000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0x800000 }"
+   "Autocomplete:current-item:odd {color: 0xFFFFFF; background: 0x800000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0x800000 }"
+   "Autocomplete:odd {color: 0x000000; background: 0xFFFFFF; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
+   "Autocomplete {color: 0x000000; background: 0xFFFFFF; frame-color: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
 
    "Panel { color: 0x000000; background: 0xF8F8F8; }"
    "Panel@item:odd { background: 0xE0E0E0 }"

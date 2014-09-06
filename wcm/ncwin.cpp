@@ -91,6 +91,7 @@ void NCWin::SetToolbarView()
 
 int uiClassNCWin = GetUiID( "NCWin" );
 int uiCommandLine = GetUiID( "command-line" );
+int uiAutocomplete = GetUiID( "Autocomplete" );
 
 int NCCommandLine::UiGetClassId()
 {
@@ -2187,6 +2188,11 @@ bool NCCommandLine::EventKey( cevent_key* pEvent )
 NCAutocompleteList::NCAutocompleteList( WTYPE t, unsigned hints, int nId, Win* _parent, SelectType st, BorderType bt, crect* rect )
 : TextList( t, hints, nId, _parent, st, bt, rect )
 {
+}
+
+int NCAutocompleteList::UiGetClassId()
+{
+	return uiAutocomplete;
 }
 
 bool NCAutocompleteList::EventKey( cevent_key* pEvent )
