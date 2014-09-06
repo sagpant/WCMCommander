@@ -17,6 +17,9 @@
 #include FT_FREETYPE_H
 #endif
 
+#if defined( __APPLE__ )
+const unsigned int MetaMask = 0x0010;
+#endif
 
 namespace wal
 {
@@ -664,7 +667,9 @@ namespace wal
 		unsigned state = event->state;
 
 		unsigned km = 0;
-
+#if defined( __APPLE__ )
+		if ( state & MetaMask ) { km |= KM_CTRL; }
+#endif
 		if ( state & ShiftMask ) { km |= KM_SHIFT; }
 
 		if ( state & ControlMask ) { km |= KM_CTRL; }
@@ -789,7 +794,9 @@ namespace wal
 
 				unsigned km = 0;
 				unsigned state = event->xbutton.state;
-
+#if defined( __APPLE__ )
+				if ( state & MetaMask ) { km |= KM_CTRL; }
+#endif
 				if ( state & ShiftMask ) { km |= KM_SHIFT; }
 
 				if ( state & ControlMask ) { km |= KM_CTRL; }

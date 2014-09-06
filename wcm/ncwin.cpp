@@ -2061,7 +2061,7 @@ void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
 {
 	ButtonWinData* data = 0;
 
-	if ( ks == VK_LCONTROL || ks == VK_RCONTROL ) { ctrl = pressed; }
+	if ( ks == VK_LCONTROL || ks == VK_RCONTROL || ks == VK_RMETA || ks == VK_LMETA ) { ctrl = pressed; }
 
 	if ( ks == VK_LSHIFT || ks == VK_RSHIFT ) { shift = pressed; }
 
