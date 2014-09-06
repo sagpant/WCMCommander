@@ -54,10 +54,10 @@ static char uiDefaultWcmRules[] =
    "PopupMenu@item:current-item { background: 0x404000; } "
    "PopupMenu { background: 0xC0C000; frame-color: 0xFFFFFF; } "
 
-   "#drive-dlg { background: 0xB0B000; }"
-   "#drive-dlg * { background: 0xB0B000; color: 0xFFFFFF; }"
-   "#drive-dlg * @item { color: 0xFFFFFF; background: 0xB0B000; comment-color: 0xFFFF00; first-char-color:0xFFFF }"
-   "#drive-dlg * @item:current-item { color: 0xFFFFFF;  background: 0; comment-color: 0xFFFF00; first-char-color:0xFFFF }"
+   "drive-dlg { background: 0xB0B000; }"
+   "drive-dlg * { background: 0xB0B000; color: 0xFFFFFF; }"
+   "drive-dlg * @item { color: 0xFFFFFF; background: 0xB0B000; comment-color: 0xCCCCCC; first-char-color:0xFFFF }"
+   "drive-dlg * @item:current-item { color: 0xFFFFFF;  background: 0; comment-color: 0xCCCCCC; first-char-color:0xFFFF }"
 
    "#messagebox-red { color: 0xFFFFFF; background: 0xFF; }"
    "#messagebox-red Static { color: 0xFFFFFF; background: 0xFF; }"
