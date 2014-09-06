@@ -93,7 +93,7 @@ static char uiDefaultWcmRules[] =
 
 
 static char uiBlackWcmRules[] =
-   "* {color: 0; background: 0xA0B0B0; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
+   "* {color: 0; background: 0xA0B0B0; hotkey-color:0x0000FF; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
    "*@item:odd		{color: 0xFFFFFF; background: 0x101010; }"
    "*@item:current-item:focus	{color: 0xFFFFFF; background: 0x800000; }"
    "*@item:current-item	{color: 0xFFFFFF; background: 0x505050; }"
@@ -183,7 +183,7 @@ static char uiBlackWcmRules[] =
 //!*************************************************************************************************
 
 static char uiWhiteWcmRules[] =
-   "* {color: 0; background: 0xD8E9EC; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
+   "* {color: 0; background: 0xD8E9EC; hotkey-color:0x0000FF; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
    "*@item:odd		{color: 0; background: 0xE0FFE0; }"
    "*@item:current-item	{color: 0xFFFFFF; background: 0x800000; }"
    "*@item			{color: 0; background: 0xFFFFFF; }"
