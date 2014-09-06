@@ -1493,13 +1493,25 @@ void  NCWin::PasteFileNameToCommandLine( const unicode_t* path )
 	}
 }
 
-void NCWin::PastePanelPath( PanelWin* panel )
+void NCWin::PastePanelCurrentFileURI( PanelWin* p )
 {
-	if ( _mode != PANEL ) { return; }
+	if ( !p || _mode != PANEL ) { return; }
 
-	if ( panel->IsVisible() )
+	if ( p->IsVisible() )
 	{
-		FSString S = panel->UriOfDir();
+		FSString S = p->UriOfCurrent();
+
+		PasteFileNameToCommandLine( S.GetUnicode() );
+	}
+}
+
+void NCWin::PastePanelPath( PanelWin* p )
+{
+	if ( !p || _mode != PANEL ) { return; }
+
+	if ( p->IsVisible() )
+	{
+		FSString S = p->UriOfDir();
 
 		PasteFileNameToCommandLine( S.GetUnicode() );
 	}
@@ -1507,7 +1519,7 @@ void NCWin::PastePanelPath( PanelWin* panel )
 
 void NCWin::CtrlEnter()
 {
-	if ( _mode != PANEL ) { return; }
+	if ( !_panel || _mode != PANEL ) { return; }
 
 	if ( _panel->IsVisible() )
 	{
@@ -1519,23 +1531,9 @@ void NCWin::CtrlEnter()
 
 void NCWin::CtrlF()
 {
-	if ( _mode != PANEL ) { return; }
-
-	if ( _panel->IsVisible() )
+	if ( _panel->IsVisible() && _edit.IsVisible() )
 	{
-		FSString uri = _panel->UriOfCurrent();
-		const unicode_t* str = uri.GetUnicode();
-		bool spaces = StrHaveSpace( str );
-
-		if ( spaces ) { _edit.Insert( '"' ); }
-
-		_edit.Insert( str );
-
-		if ( spaces ) { _edit.Insert( '"' ); }
-
-		_edit.Insert( ' ' );
-
-		NotifyAutoComplete();
+		PastePanelCurrentFileURI( _panel );
 	}
 }
 
