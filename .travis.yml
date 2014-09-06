@@ -5,7 +5,7 @@ env:
     # Variables for Coverity scan
     - STANDARD_BUILD_COMMAND="make all -B"
     - COVERITY_SCAN_PROJECT_NAME="corporateshark%2FWalCommander"
-    - COVERITY_SCAN_NOTIFICATION_EMAIL="konstantin.kuklin@gmail.com"
+    - COVERITY_SCAN_NOTIFICATION_EMAIL="walcommander@linderdaum.com"
     # Regular expression selects on which branches to run analysis
     # Be aware of quotas. Do not run on every branch/commit
     - COVERITY_SCAN_BRANCH_PATTERN="coverity_scan"
