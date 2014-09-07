@@ -69,23 +69,8 @@ class OperFileNameWin: public Win
 	std::vector<unicode_t> text;
 	int _ccount;
 public:
-	OperFileNameWin( Win* parent, int ccount = 80 )
-		:  Win( Win::WT_CHILD, 0, parent, 0 ), _ccount( ccount )
-	{
-		wal::GC gc( this );
-		cpoint size = GetStaticTextExtent( gc, ABCString, GetFont() );
-		size.x = size.x / ABCStringLen * ccount;
-
-		if ( size.x > 500 ) { size.x = 550; }
-
-		SetLSize( LSize( size ) );
-	}
-	void SetText( const unicode_t* s )
-	{
-		text = new_unicode_str( s );
-		Invalidate();
-	}
-
+	OperFileNameWin( Win* parent, int ccount = 80 );
+	void SetText( const unicode_t* s );
 	void Paint( wal::GC& gc, const crect& paintRect );
 	virtual ~OperFileNameWin();
 };

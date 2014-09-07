@@ -650,6 +650,11 @@ public:
 		RefreshCounters();
 
 		SetPosition();
+
+		// set the size of the path text line
+		wal::LSize s = cPathWin.GetLSize();
+		s.x = parent->GetLSize().x;
+		cPathWin.SetLSize( s );
 	}
 
 	virtual bool Command( int id, int subId, Win* win, void* data );
