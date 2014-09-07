@@ -2478,6 +2478,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					_panel->KeyHome( shift, &_shiftSelectType );
 					return true;
 
+#if defined( __APPLE__)
+				case FC( VK_UP, KM_CTRL ):
+#endif
 				case FC( VK_PRIOR, KM_SHIFT ):
 				case VK_PRIOR:
 					_panel->KeyPrior( shift, &_shiftSelectType );
@@ -2495,6 +2498,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					_panel->DirEnter();
 					return true;
 
+#if defined( __APPLE__)
+				case FC( VK_DOWN, KM_CTRL ):
+#endif
 				case FC( VK_NEXT, KM_SHIFT ):
 				case VK_NEXT:
 					_panel->KeyNext( shift, &_shiftSelectType );
@@ -2704,10 +2710,16 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			return true;
 
+#if defined( __APPLE__)
+			case FC( VK_DOWN, KM_CTRL ):
+#endif
 			case VK_NEXT:
 				_terminal.PageDown();
 				break;
 
+#if defined( __APPLE__)
+			case FC( VK_UP, KM_CTRL ):
+#endif
 			case VK_PRIOR:
 				_terminal.PageUp();
 				break;
