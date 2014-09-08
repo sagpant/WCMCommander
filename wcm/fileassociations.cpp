@@ -10,8 +10,6 @@ static const int CMD_PLUS  = 1000;
 static const int CMD_MINUS = 1001;
 static const int CMD_EDIT  = 1002;
 
-static const char fileAssociationsSection[] = "fileassociations";
-
 /// dialog to edit a single file association
 class clEditFileAssociationsWin: public NCVertDialog
 {
@@ -303,12 +301,11 @@ public:
 	}
 
 	virtual bool Command( int id, int subId, Win* win, void* data );
-
-	bool Key( cevent_key* pEvent );
 	virtual int UiGetClassId();
 	virtual bool EventChildKey( Win* child, cevent_key* pEvent );
 	virtual bool EventKey( cevent_key* pEvent );
 
+	bool Key( cevent_key* pEvent );
 	void Selected();
 
 	virtual ~clFileAssociationsWin();
@@ -324,7 +321,7 @@ void clFileAssociationsWin::Selected()
 
 	if ( p )
 	{
-//		retData = node;
+		// we have something selected, tell'em it's ok
 		EndModal( CMD_OK );
 	}
 }
@@ -436,11 +433,18 @@ clFileAssociationsWin::~clFileAssociationsWin()
 
 bool FileAssociationsDlg( NCDialogParent* Parent, std::vector<clNCFileAssociation>* Associations )
 {
-	clFileAssociationsWin Dialog( Parent, Associations );
+	// make an editable copy
+	std::vector<clNCFileAssociation> LocalAssociations( *Associations );
+
+	clFileAssociationsWin Dialog( Parent, &LocalAssociations );
 	Dialog.SetEnterCmd( 0 );
 
 	if ( Dialog.DoModal( ) == CMD_OK )
 	{
+		// apply changes
+		*Associations = LocalAssociations;
+
+		return true;
 	}
 
 	return false;

@@ -379,6 +379,8 @@ public:
 	void NotifyAutoCompleteChange();
 
 	NCHistory* GetHistory() { return &_history; }
+	const std::vector<clNCFileAssociation>& GetFileAssociations() const { return m_FileAssociations; }
+	void SetFileAssociations( const std::vector<clNCFileAssociation>& Assoc ) { m_FileAssociations = Assoc; }
 };
 
 
