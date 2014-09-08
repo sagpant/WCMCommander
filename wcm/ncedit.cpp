@@ -1188,7 +1188,16 @@ void EditWin::Backspace( bool DeleteWord ) //!Undo
 
 				while ( StepLeft( &p, &c ) && GetCharGroup( c ) == group )
 				{
-					cursor = p;
+					if ( cursor.line == p.line )
+					{
+						cursor = p;
+					}
+					else
+					{
+						// just stay at the beginning of this line
+						cursor.pos = 0;
+						break;
+					}
 				}
 
 				int totalDelCount = oldcursor.pos - cursor.pos;

@@ -326,7 +326,7 @@ NCWin::NCWin()
 	_mdOptions.AddCmd( ID_CONFIG_TERMINAL,  _LT( "&Terminal settings" ) );
 #endif
 
-	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "St&yles" ) );
+	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "S&tyles" ) );
 	_mdOptions.AddSplit();
 	_mdOptions.AddCmd( ID_CONFIG_SAVE,   _LT( "&Save setup" ),   "Shift-F9" );
 
@@ -389,15 +389,24 @@ NCWin::NCWin()
 
 	cpoint ScreenSize = GetScreenSize();
 
-	Rect.left   = std::max( Rect.left, 0 );
-	Rect.right  = std::min( Rect.right, ScreenSize.x );
-	Rect.top    = std::max( Rect.top, 0 );
-	Rect.bottom = std::min( Rect.bottom, ScreenSize.y );
+	// enforce main window Rect restrictions:
+	// size is least minW x minH (#3), and screensize at most (#4)
+	// topleft is on the screen (#1), and no closer than minW, minH from the rightbottom of the screen (#2)
 
-	if ( Rect.Width() > 0 && Rect.Height() > 0 )
-	{
-		NCDialogParent::Move( Rect, true );
-	}
+	const int minW = 100;
+	const int minH = 100;
+
+	Rect.left   = std::max( Rect.left, 0 ); // #1
+	Rect.left = std::min(Rect.left, ScreenSize.x - minW); // #2
+	Rect.top = std::max(Rect.top, 0); //#1
+	Rect.top = std::min(Rect.top, ScreenSize.y - minH); //#2
+	
+	Rect.right = std::max(Rect.right, Rect.left + minW); // #3
+	Rect.right = std::min(Rect.right, Rect.left + ScreenSize.x); //#4
+	Rect.bottom = std::max(Rect.bottom, Rect.top + minH); // #3
+	Rect.bottom = std::min(Rect.bottom, Rect.top + ScreenSize.y); //#4
+
+	NCDialogParent::Move( Rect, true );
 
 	// apply saved panel paths
 //	printf( "Left = %s\n", wcmConfig.leftPanelPath.data() );

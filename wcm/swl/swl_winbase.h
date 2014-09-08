@@ -124,7 +124,7 @@ namespace wal
 		void Insert( unicode_t t );
 		void Insert( const unicode_t* txt );
 		void Del();
-		void Backspace();
+		void Backspace( bool DeleteWord );
 		void Set( const unicode_t* s, bool mark = false );
 
 		const unicode_t* Ptr() const { return data.data(); }

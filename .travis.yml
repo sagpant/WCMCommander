@@ -17,4 +17,4 @@ compiler:
     - clang
 
 script:
-    - make all -B && mkdir build && cd build && cmake -DWITH_FREETYPE=YES -DWITH_LIBSSH2=NO -DWITH_SMBCLIENT=NO .. && make # tests both cmake and custom builds
+    - make all -B && cd .. && mkdir build && cd build && cmake -DWITH_FREETYPE=YES -DWITH_LIBSSH2=NO -DWITH_SMBCLIENT=NO .. && make # tests both cmake and custom builds
