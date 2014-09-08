@@ -11,7 +11,7 @@ namespace wal
 {
 	cpoint GetScreenSize()
 	{
-		LSize s;
+		cpoint s;
 
 		s.x = GetSystemMetrics( SM_CXFULLSCREEN );
 		s.y = GetSystemMetrics( SM_CYFULLSCREEN );
