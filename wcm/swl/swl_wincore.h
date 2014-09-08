@@ -81,6 +81,8 @@ namespace wal
 		bool operator != ( const crect& a ) const { return !( *this == a ); }
 		bool IsEmpty() const { return bottom <= top || right <= left; }
 		void Zero() { left = top = right = bottom = 0; }
+		void SetWidth( int w ) { right = left + w; }
+		void SetHeight( int h ) { bottom = top + h; }
 
 		bool Cross( const crect& a ) const
 		{
@@ -1157,7 +1159,7 @@ namespace wal
 
 namespace wal
 {
-
+	cpoint GetScreenSize();
 	cpoint StaticTextSize( GC& gc, const unicode_t* s, cfont* font = 0 );
 	void DrawStaticText( GC& gc, int x, int y, const unicode_t* s, cfont* font = 0, bool transparent = true );
 	unsigned ColorTone( unsigned color, int tone /*0-255*/ );
