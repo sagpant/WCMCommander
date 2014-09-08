@@ -30,6 +30,7 @@
 #include "filesearch.h"
 #include "help.h"
 #include "shortcuts.h"
+#include "fileassociations.h"
 #include "fontdlg.h"
 #include "color-style.h"
 #include "search-dlg.h"
@@ -51,8 +52,6 @@ extern SearchAndReplaceParams searchParams;
 static crect acWinRect( 0, 0, 850, 500 );
 
 static unicode_t panelButtonStr[] = {'*', 0};
-
-//static char verString[] = "Wal Commander v 0.8.2 beta\nCopyright (c) by Valery Goryachev 2011";
 
 void NCWin::SetToolbarPanel()
 {
@@ -355,6 +354,7 @@ NCWin::NCWin()
 	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl =" );
 	_mdCommands.AddSplit();
 	_mdCommands.AddCmd( ID_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl D" );
+	_mdCommands.AddCmd( ID_FILEASSOCIATIONS, _LT( "File &associations" ) );
 
 	_edit.SetFocus();
 
@@ -1809,6 +1809,15 @@ void NCWin::Shortcuts()
 	if ( ShortcutDlg( this, &ptr, &path ) )
 	{
 		_panel->LoadPath( ptr, path, 0, 0, PanelWin::SET );
+	}
+}
+
+void NCWin::FileAssociations()
+{
+	if ( _mode != PANEL ) { return; }
+
+	if ( FileAssociationsDlg( this ) )
+	{
 	}
 }
 
@@ -3271,6 +3280,10 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 
 			case ID_SHORTCUTS:
 				Shortcuts();
+				return true;
+
+			case ID_FILEASSOCIATIONS:
+				FileAssociations();
 				return true;
 
 			case ID_REFRESH:

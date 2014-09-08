@@ -310,6 +310,7 @@ private:
 	void Tab( bool forceShellTab );
 	void PanelEqual();
 	void Shortcuts();
+	void FileAssociations();
 	void OnOffShl();
 
 	void SetToolbarPanel();

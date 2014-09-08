@@ -88,6 +88,7 @@ OBJS = \
 	$(OBJDIR)/ux_util.o\
 	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/shortcuts.o \
+	$(OBJDIR)/fileassociations.o \
 	$(OBJDIR)/fontdlg.o \
 	$(OBJDIR)/shl.o \
 	$(OBJDIR)/ncfonts.o \
@@ -165,6 +166,9 @@ $(OBJDIR)/ncfonts.o: $(HW) $(HS) $(HN) ncfonts.cpp
 	
 $(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) shortcuts.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) shortcuts.cpp -o $(OBJDIR)/shortcuts.o
+
+$(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) fileassociations.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) fileassociations.cpp -o $(OBJDIR)/fileassociations.o
 
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
