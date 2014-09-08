@@ -9,6 +9,15 @@
 
 namespace wal
 {
+	cpoint GetScreenSize()
+	{
+		cpoint s;
+
+		s.x = GetSystemMetrics( SM_CXFULLSCREEN );
+		s.y = GetSystemMetrics( SM_CYFULLSCREEN );
+
+		return s;
+	}
 
 	HINSTANCE appInstance = 0;
 

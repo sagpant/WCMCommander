@@ -23,7 +23,6 @@ const unsigned int MetaMask = 0x0010;
 
 namespace wal
 {
-
 	Win* GetWinByID( WinID hWnd );
 	int DelWinFromHash( WinID w );
 	unsigned RunTimers();
@@ -95,6 +94,19 @@ namespace wal
 	static Atom atom_INCR = 0;
 
 	static Window clipboardWinId = 0;
+
+	cpoint GetScreenSize()
+	{
+		cpoint s;
+
+		XWindowAttributes xwAttr;
+
+		Status ret = XGetWindowAttributes( display, DefaultRootWindow( display ), &xwAttr );
+		s.x = xwAttr.width;
+		s.y = xwAttr.height;
+
+		return s;
+	}
 
 	static void X11_Clipbopard_Init()
 	{

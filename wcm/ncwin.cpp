@@ -387,6 +387,13 @@ NCWin::NCWin()
 
 	wal::crect Rect( wcmConfig.windowX, wcmConfig.windowY, wcmConfig.windowX + wcmConfig.windowWidth, wcmConfig.windowY + wcmConfig.windowHeight );
 
+	cpoint ScreenSize = GetScreenSize();
+
+	Rect.left   = std::max( Rect.left, 0 );
+	Rect.right  = std::min( Rect.right, ScreenSize.x );
+	Rect.top    = std::max( Rect.top, 0 );
+	Rect.bottom = std::min( Rect.bottom, ScreenSize.y );
+
 	if ( Rect.Width() > 0 && Rect.Height() > 0 )
 	{
 		NCDialogParent::Move( Rect, true );
