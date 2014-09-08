@@ -330,37 +330,34 @@ clFileAssociationsListWin::~clFileAssociationsListWin() {};
 
 class clFileAssociationsWin: public NCDialog
 {
-	Layout lo;
+	Layout m_Layout;
 	clFileAssociationsListWin m_ListWin;
-	Button addCurrentButton;
-	Button delButton;
-	Button editButton;
+	Button m_AddCurrentButton;
+	Button m_DelButton;
+	Button m_EditButton;
 
 public:
 	clFileAssociationsListWin::Node* retData;
 
 	clFileAssociationsWin( NCDialogParent* parent )
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel ),
-		   lo( 10, 10 ),
+		   m_Layout( 10, 10 ),
 		   m_ListWin( this ),
-		   addCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).data(), CMD_PLUS ),
-		   delButton( 0, this, utf8_to_unicode( "- (Del)" ).data(), CMD_MINUS ),
-		   editButton( 0, this, utf8_to_unicode( _LT( "Edit" ) ).data(), CMD_EDIT ),
+		   m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).data(), CMD_PLUS ),
+		   m_DelButton( 0, this, utf8_to_unicode( "- (Del)" ).data(), CMD_MINUS ),
+		   m_EditButton( 0, this, utf8_to_unicode( _LT( "Edit" ) ).data(), CMD_EDIT ),
 		   retData( 0 )
 	{
-		m_ListWin.Show();
-		m_ListWin.Enable();
-		addCurrentButton.Show();
-		addCurrentButton.Enable();
+		m_AddCurrentButton.Enable();
+		m_AddCurrentButton.Show();
+		m_DelButton.Enable();
+		m_DelButton.Show();
+		m_EditButton.Enable();
+		m_EditButton.Show();
 
-		delButton.Show();
-		delButton.Enable();
-		editButton.Show();
-		editButton.Enable();
-
-		LSize lsize = addCurrentButton.GetLSize();
-		LSize lsize2 = delButton.GetLSize();
-		LSize lsize3 = editButton.GetLSize();
+		LSize lsize = m_AddCurrentButton.GetLSize();
+		LSize lsize2 = m_DelButton.GetLSize();
+		LSize lsize3 = m_EditButton.GetLSize();
 
 		if ( lsize.x.minimal < lsize2.x.minimal ) { lsize.x.minimal = lsize2.x.minimal; }
 
@@ -368,18 +365,17 @@ public:
 
 		if ( lsize.x.maximal < lsize.x.minimal ) { lsize.x.maximal = lsize.x.minimal; }
 
-		addCurrentButton.SetLSize( lsize );
-		delButton.SetLSize( lsize );
-		editButton.SetLSize( lsize );
+		m_AddCurrentButton.SetLSize( lsize );
+		m_DelButton.SetLSize( lsize );
+		m_EditButton.SetLSize( lsize );
 
-		lo.AddWin( &m_ListWin, 0, 0, 9, 0 );
+		m_Layout.AddWinAndEnable( &m_ListWin, 0, 0, 9, 0 );
+		m_Layout.AddWin( &m_AddCurrentButton, 0, 1 );
+		m_Layout.AddWin( &m_DelButton, 1, 1 );
+		m_Layout.AddWin( &m_EditButton, 2, 1 );
+		m_Layout.SetLineGrowth( 9 );
 
-		lo.AddWin( &addCurrentButton, 0, 1 );
-		lo.AddWin( &delButton, 1, 1 );
-		lo.AddWin( &editButton, 2, 1 );
-		lo.SetLineGrowth( 9 );
-
-		this->AddLayout( &lo );
+		this->AddLayout( &m_Layout );
 		//MaximizeIfChild();
 
 		SetPosition();
