@@ -29,6 +29,98 @@ inline int CmpNoCase( const unicode_t* a, const unicode_t* b )
 
 static const char fileAssociationsSection[] = "fileassociations";
 
+class clEditFileAssociationsWin: public NCVertDialog
+{
+public:
+	clEditFileAssociationsWin( NCDialogParent* parent )
+	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file associations" ) ).data(), bListOkCancel )
+	 , m_Layout( 16, 2 )
+	 , m_FileMaskText( 0, this, utf8_to_unicode( _LT( "A file mask or several file masks" ) ).data() )
+	 , m_FileMaskEdit( 0, this, 0, 0, 16 )
+	 , m_DescriptionText( 0, this, utf8_to_unicode( _LT( "Description of the file association" ) ).data() )
+	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
+	 , m_ExecuteCommandText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Enter)" ) ).data() )
+	 , m_ExecuteCommandEdit( 0, this, 0, 0, 16 )
+	 , m_ExecuteCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Ctrl+PgDn)" ) ).data() )
+	 , m_ExecuteCommandSecondaryEdit( 0, this, 0, 0, 16 )
+	 , m_ViewCommandText( 0, this, utf8_to_unicode( _LT( "View command (used for F3)" ) ).data() )
+	 , m_ViewCommandEdit( 0, this, 0, 0, 16 )
+	 , m_ViewCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "View command (used for Alt+F3)" ) ).data() )
+	 , m_ViewCommandSecondaryEdit( 0, this, 0, 0, 16 )
+	 , m_EditCommandText( 0, this, utf8_to_unicode( _LT( "Edit command (used for F4)" ) ).data() )
+	 , m_EditCommandEdit( 0, this, 0, 0, 16 )
+	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "View command (used for Alf+F4)" ) ).data() )
+	 , m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
+	{
+		m_FileMaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
+
+		m_Layout.AddWinAndEnable( &m_FileMaskText, 0, 0 );
+		m_Layout.AddWinAndEnable( &m_FileMaskEdit, 1, 0 );
+		m_Layout.AddWinAndEnable( &m_DescriptionText, 2, 0 );
+		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 3, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandText, 4, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandEdit, 5, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandText, 6, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandEdit, 7, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryText, 8, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryEdit, 9, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandText, 10, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandEdit, 11, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryText, 12, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryEdit, 13, 0 );
+
+		AddLayout( &m_Layout );
+
+		order.append( &m_FileMaskEdit );
+		order.append( &m_DescriptionEdit );
+		order.append( &m_ExecuteCommandEdit );
+		order.append( &m_ExecuteCommandSecondaryEdit );
+		order.append( &m_ViewCommandEdit );
+		order.append( &m_ViewCommandSecondaryEdit );
+		order.append( &m_EditCommandEdit );
+		order.append( &m_EditCommandSecondaryEdit );
+
+		SetPosition();
+	}
+
+	std::vector<unicode_t> GetFileMask() { return m_FileMaskEdit.GetText(); }
+	std::vector<unicode_t> GetDescription() { return m_DescriptionEdit.GetText(); }
+	std::vector<unicode_t> GetExecuteCommand() { return m_ExecuteCommandEdit.GetText(); }
+	std::vector<unicode_t> GetExecuteCommandSecondary() { return m_ExecuteCommandSecondaryEdit.GetText(); }
+	std::vector<unicode_t> GetViewCommand() { return m_ViewCommandEdit.GetText(); }
+	std::vector<unicode_t> GetViewCommandSecondary() { return m_ViewCommandSecondaryEdit.GetText(); }
+	std::vector<unicode_t> GetEditCommand() { return m_EditCommandEdit.GetText(); }
+	std::vector<unicode_t> GetEditCommandSecondary() { return m_EditCommandSecondaryEdit.GetText(); }
+
+private:
+	Layout m_Layout;
+
+public:
+	StaticLine m_FileMaskText;
+	EditLine   m_FileMaskEdit;
+
+	StaticLine m_DescriptionText;
+	EditLine   m_DescriptionEdit;
+
+	StaticLine m_ExecuteCommandText;
+	EditLine   m_ExecuteCommandEdit;
+
+	StaticLine m_ExecuteCommandSecondaryText;
+	EditLine   m_ExecuteCommandSecondaryEdit;
+
+	StaticLine m_ViewCommandText;
+	EditLine   m_ViewCommandEdit;
+
+	StaticLine m_ViewCommandSecondaryText;
+	EditLine   m_ViewCommandSecondaryEdit;
+
+	StaticLine m_EditCommandText;
+	EditLine   m_EditCommandEdit;
+
+	StaticLine m_EditCommandSecondaryText;
+	EditLine   m_EditCommandSecondaryEdit;
+};
+
 class clFileAssociationsListWin: public VListWin
 {
 public:
@@ -239,7 +331,7 @@ clFileAssociationsListWin::~clFileAssociationsListWin() {};
 class clFileAssociationsWin: public NCDialog
 {
 	Layout lo;
-	clFileAssociationsListWin listWin;
+	clFileAssociationsListWin m_ListWin;
 	Button addCurrentButton;
 	Button delButton;
 	Button editButton;
@@ -250,14 +342,14 @@ public:
 	clFileAssociationsWin( NCDialogParent* parent )
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel ),
 		   lo( 10, 10 ),
-		   listWin( this ),
+		   m_ListWin( this ),
 		   addCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).data(), CMD_PLUS ),
 		   delButton( 0, this, utf8_to_unicode( "- (Del)" ).data(), CMD_MINUS ),
 		   editButton( 0, this, utf8_to_unicode( _LT( "Edit" ) ).data(), CMD_EDIT ),
 		   retData( 0 )
 	{
-		listWin.Show();
-		listWin.Enable();
+		m_ListWin.Show();
+		m_ListWin.Enable();
 		addCurrentButton.Show();
 		addCurrentButton.Enable();
 
@@ -280,7 +372,7 @@ public:
 		delButton.SetLSize( lsize );
 		editButton.SetLSize( lsize );
 
-		lo.AddWin( &listWin, 0, 0, 9, 0 );
+		lo.AddWin( &m_ListWin, 0, 0, 9, 0 );
 
 		lo.AddWin( &addCurrentButton, 0, 1 );
 		lo.AddWin( &delButton, 1, 1 );
@@ -292,7 +384,7 @@ public:
 
 		SetPosition();
 
-		listWin.SetFocus();
+		m_ListWin.SetFocus();
 		this->SetEnterCmd( CMD_OK );
 	}
 
@@ -314,7 +406,7 @@ int clFileAssociationsWin::UiGetClassId() { return uiClassFileAssociations; }
 
 void clFileAssociationsWin::Selected()
 {
-	clFileAssociationsListWin::Node* node = listWin.GetCurrentData();
+	clFileAssociationsListWin::Node* node = m_ListWin.GetCurrentData();
 
 	if ( node && node->conf.ptr() && node->name.data() )
 	{
@@ -325,7 +417,7 @@ void clFileAssociationsWin::Selected()
 
 bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 {
-	if ( id == CMD_ITEM_CLICK && win == &listWin )
+	if ( id == CMD_ITEM_CLICK && win == &m_ListWin )
 	{
 		Selected();
 		return true;
@@ -339,7 +431,7 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_MINUS )
 	{
-		clFileAssociationsListWin::Node* node = listWin.GetCurrentData();
+		clFileAssociationsListWin::Node* node = m_ListWin.GetCurrentData();
 
 		if ( !node || !node->name.data() ) { return true; }
 
@@ -347,6 +439,7 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( node->name.data() ).data() , "' ?" ).data(),
 		                   false, bListOkCancel ) == CMD_OK )
 		{
+			m_ListWin.Del();
 		}
 
 		return true;
@@ -359,6 +452,14 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_PLUS )
 	{
+		clEditFileAssociationsWin dlg( ( NCDialogParent* )Parent() );
+		dlg.SetEnterCmd( 0 );
+
+		if ( dlg.DoModal() == CMD_OK )
+		{
+//			m_ListWin.Ins( name.data(), cfg );
+		}
+
 		return true;
 	}
 
@@ -381,7 +482,13 @@ bool clFileAssociationsWin::Key( cevent_key* pEvent )
 			return true;
 		}
 
-		if ( pEvent->Key() == VK_RETURN && listWin.InFocus() )
+		if ( pEvent->Key() == VK_F4 )
+		{
+			Command( CMD_EDIT, 0, this, 0 );
+			return true;
+		}
+
+		if ( pEvent->Key() == VK_RETURN && m_ListWin.InFocus() )
 		{
 			Selected();
 			return true;
@@ -391,7 +498,7 @@ bool clFileAssociationsWin::Key( cevent_key* pEvent )
 
 		if ( c > 32 )
 		{
-			listWin.Next( c );
+			m_ListWin.Next( c );
 			return true;
 		}
 	}
