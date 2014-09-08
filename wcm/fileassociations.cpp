@@ -10,33 +10,17 @@ static const int CMD_PLUS  = 1000;
 static const int CMD_MINUS = 1001;
 static const int CMD_EDIT  = 1002;
 
-inline int CmpNoCase( const unicode_t* a, const unicode_t* b )
-{
-	unicode_t au = 0;
-	unicode_t bu = 0;
-
-	for ( ; *a; a++, b++ )
-	{
-		au = UnicodeLC( *a );
-		bu = UnicodeLC( *b );
-
-		if ( au != bu ) { break; }
-	};
-
-	return ( *a ? ( *b ? ( au < bu ? -1 : ( au == bu ? 0 : 1 ) ) : 1 ) : ( *b ? -1 : 0 ) );
-}
-
-
 static const char fileAssociationsSection[] = "fileassociations";
 
+/// dialog to edit a single file association
 class clEditFileAssociationsWin: public NCVertDialog
 {
 public:
 	clEditFileAssociationsWin( NCDialogParent* parent )
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file associations" ) ).data(), bListOkCancel )
 	 , m_Layout( 16, 2 )
-	 , m_FileMaskText( 0, this, utf8_to_unicode( _LT( "A file mask or several file masks" ) ).data() )
-	 , m_FileMaskEdit( 0, this, 0, 0, 16 )
+	 , m_MaskText( 0, this, utf8_to_unicode( _LT( "A file mask or several file masks (separated with commas)" ) ).data() )
+	 , m_MaskEdit( 0, this, 0, 0, 16 )
 	 , m_DescriptionText( 0, this, utf8_to_unicode( _LT( "Description of the file association" ) ).data() )
 	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
 	 , m_ExecuteCommandText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Enter)" ) ).data() )
@@ -52,10 +36,10 @@ public:
 	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "View command (used for Alf+F4)" ) ).data() )
 	 , m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
 	{
-		m_FileMaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
+		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
 
-		m_Layout.AddWinAndEnable( &m_FileMaskText, 0, 0 );
-		m_Layout.AddWinAndEnable( &m_FileMaskEdit, 1, 0 );
+		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
+		m_Layout.AddWinAndEnable( &m_MaskEdit, 1, 0 );
 		m_Layout.AddWinAndEnable( &m_DescriptionText, 2, 0 );
 		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 3, 0 );
 		m_Layout.AddWinAndEnable( &m_ExecuteCommandText, 4, 0 );
@@ -71,7 +55,7 @@ public:
 
 		AddLayout( &m_Layout );
 
-		order.append( &m_FileMaskEdit );
+		order.append( &m_MaskEdit );
 		order.append( &m_DescriptionEdit );
 		order.append( &m_ExecuteCommandEdit );
 		order.append( &m_ExecuteCommandSecondaryEdit );
@@ -83,21 +67,35 @@ public:
 		SetPosition();
 	}
 
-	std::vector<unicode_t> GetFileMask() { return m_FileMaskEdit.GetText(); }
-	std::vector<unicode_t> GetDescription() { return m_DescriptionEdit.GetText(); }
-	std::vector<unicode_t> GetExecuteCommand() { return m_ExecuteCommandEdit.GetText(); }
-	std::vector<unicode_t> GetExecuteCommandSecondary() { return m_ExecuteCommandSecondaryEdit.GetText(); }
-	std::vector<unicode_t> GetViewCommand() { return m_ViewCommandEdit.GetText(); }
-	std::vector<unicode_t> GetViewCommandSecondary() { return m_ViewCommandSecondaryEdit.GetText(); }
-	std::vector<unicode_t> GetEditCommand() { return m_EditCommandEdit.GetText(); }
-	std::vector<unicode_t> GetEditCommandSecondary() { return m_EditCommandSecondaryEdit.GetText(); }
+	std::vector<unicode_t> GetMask() const { return m_MaskEdit.GetText(); }
+	std::vector<unicode_t> GetDescription() const { return m_DescriptionEdit.GetText(); }
+	std::vector<unicode_t> GetExecuteCommand() const { return m_ExecuteCommandEdit.GetText(); }
+	std::vector<unicode_t> GetExecuteCommandSecondary() const { return m_ExecuteCommandSecondaryEdit.GetText(); }
+	std::vector<unicode_t> GetViewCommand() const { return m_ViewCommandEdit.GetText(); }
+	std::vector<unicode_t> GetViewCommandSecondary() const { return m_ViewCommandSecondaryEdit.GetText(); }
+	std::vector<unicode_t> GetEditCommand() const { return m_EditCommandEdit.GetText(); }
+	std::vector<unicode_t> GetEditCommandSecondary() const { return m_EditCommandSecondaryEdit.GetText(); }
+
+	const clNCFileAssociation& GetResult() const
+	{
+		m_Result.SetMask( GetMask() );
+		m_Result.SetDescription( GetDescription() );
+		m_Result.SetExecuteCommand( GetExecuteCommand() );
+		m_Result.SetExecuteCommandSecondary( GetExecuteCommandSecondary() );
+		m_Result.SetViewCommand( GetViewCommand() );
+		m_Result.SetViewCommandSecondary( GetViewCommandSecondary() );
+		m_Result.SetEditCommand( GetEditCommand() );
+		m_Result.SetEditCommandSecondary( GetEditCommandSecondary() );
+
+		return m_Result;
+	}
 
 private:
 	Layout m_Layout;
 
 public:
-	StaticLine m_FileMaskText;
-	EditLine   m_FileMaskEdit;
+	StaticLine m_MaskText;
+	EditLine   m_MaskEdit;
 
 	StaticLine m_DescriptionText;
 	EditLine   m_DescriptionEdit;
@@ -119,6 +117,8 @@ public:
 
 	StaticLine m_EditCommandSecondaryText;
 	EditLine   m_EditCommandSecondaryEdit;
+
+	mutable clNCFileAssociation m_Result;
 };
 
 class clFileAssociationsListWin: public VListWin
@@ -208,8 +208,6 @@ public:
 		Invalidate();
 	}
 
-	void Next( int ch );
-
 	void Del()
 	{
 		int n = GetCurrent();
@@ -242,28 +240,6 @@ public:
 inline bool EqFirst( const unicode_t* s, int c )
 {
 	return s && UnicodeLC( *s ) == c;
-}
-
-void clFileAssociationsListWin::Next( int ch )
-{
-	unicode_t c = UnicodeLC( ch );
-	int i;
-	int n = 0;
-	int count = itemList.count();
-	int current = GetCurrent();
-
-	for ( i = current + 1; i < count; i++ )
-		if ( EqFirst( itemList[i].name.data(), c ) ) { goto t; }
-
-	for ( i = 0; i <= current && i < count; i++ )
-		if ( EqFirst( itemList[i].name.data(), c ) ) { goto t; }
-
-	return;
-t:
-	;
-	MoveCurrent( i );
-
-	Invalidate();
 }
 
 void clFileAssociationsListWin::Save()
@@ -453,6 +429,9 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 
 		if ( dlg.DoModal() == CMD_OK )
 		{
+			const clNCFileAssociation& Result = dlg.GetResult();
+
+//			m_ListWin.Ins( Result );
 //			m_ListWin.Ins( name.data(), cfg );
 		}
 
@@ -491,12 +470,6 @@ bool clFileAssociationsWin::Key( cevent_key* pEvent )
 		}
 
 		unicode_t c = UnicodeLC( pEvent->Char() );
-
-		if ( c > 32 )
-		{
-			m_ListWin.Next( c );
-			return true;
-		}
 	}
 
 	return false;
