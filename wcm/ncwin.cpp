@@ -1816,7 +1816,7 @@ void NCWin::FileAssociations()
 {
 	if ( _mode != PANEL ) { return; }
 
-	if ( FileAssociationsDlg( this ) )
+	if ( FileAssociationsDlg( this, &m_FileAssociations ) )
 	{
 	}
 }

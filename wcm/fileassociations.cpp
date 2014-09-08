@@ -124,45 +124,9 @@ public:
 class clFileAssociationsListWin: public VListWin
 {
 public:
-	struct Node
-	{
-		std::vector<unicode_t> name;
-		clPtr<StrConfig> conf;
-	};
-
-private:
-	ccollect<Node> itemList;
-
-	void Load()
-	{
-		itemList.clear();
-
-		ccollect< std::vector<char> > list;
-		LoadStringList( fileAssociationsSection, list );
-
-		for ( int i = 0; i < list.count(); i++ )
-		{
-			if ( list[i].data() )
-			{
-				clPtr<StrConfig> cfg = new StrConfig();
-				cfg->Load( list[i].data() );
-				const char* name = cfg->GetStrVal( "name" );
-
-				if ( name )
-				{
-					Node node;
-					node.conf = cfg;
-					node.name = utf8_to_unicode( name );
-					itemList.append( node );
-				}
-			}
-		}
-
-		//void SaveStringList(const char *section, ccollect< std::vector<char> > &list);
-	}
-public:
-	clFileAssociationsListWin( Win* parent )
-		:  VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
+	clFileAssociationsListWin( Win* parent, std::vector<clNCFileAssociation>* Associations )
+	 : VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
+	 , m_ItemList( Associations )
 	{
 		wal::GC gc( this );
 		gc.Set( GetFont() );
@@ -172,8 +136,7 @@ public:
 
 		this->SetItemSize( ( fontH > 16 ? fontH : 16 ) + 1, 100 );
 
-		Load();
-		SetCount( itemList.count() );
+		SetCount( m_ItemList->size() );
 		SetCurrent( 0 );
 
 		LSize ls;
@@ -187,22 +150,22 @@ public:
 
 		SetLSize( ls );
 	}
+	virtual ~clFileAssociationsListWin();
 
-	Node* GetCurrentData() { int n = GetCurrent(); if ( n < 0 || n >= itemList.count() ) { return 0; } return &( itemList[n] ); }
+	const clNCFileAssociation* GetCurrentData() const
+	{
+		int n = GetCurrent( );
+		if ( n < 0 || n >= (int)m_ItemList->size() ) { return NULL; }
+		return &( m_ItemList->at(n) );
+	}
 
 	void Save();
 
-	void Ins( const unicode_t* name, clPtr<StrConfig> p )
+	void Ins( const clNCFileAssociation& p )
 	{
-		if ( !name || !*name ) { return; }
-
-		Node node;
-		node.name = new_unicode_str( name );
-		node.conf = p;
-
-		itemList.append( node );
-		this->SetCount( itemList.count() );
-		this->SetCurrent( itemList.count() - 1 );
+		m_ItemList->push_back( p );
+		SetCount( m_ItemList->size( ) );
+		SetCurrent( ( int )m_ItemList->size() - 1 );
 		Save();
 		CalcScroll();
 		Invalidate();
@@ -212,29 +175,32 @@ public:
 	{
 		int n = GetCurrent();
 
-		if ( n < 0 || n >= itemList.count() ) { return; }
+		if ( n < 0 || n >= ( int )m_ItemList->size( ) ) { return; }
 
-		itemList.del( n );
-		SetCount( itemList.count() );
+		m_ItemList->erase( m_ItemList->begin( ) + n );
+
+		SetCount( m_ItemList->size( ) );
 		Save();
 		CalcScroll();
 		Invalidate();
 	}
 
-	void Rename( const unicode_t* name )
+	void Rename( const clNCFileAssociation& p )
 	{
 		int n = GetCurrent();
 
-		if ( !name || n < 0 || n >= itemList.count() ) { return; }
+		if ( n < 0 || n >= ( int )m_ItemList->size( ) ) { return; }
 
-		itemList[n].name = new_unicode_str( name );
+		m_ItemList->at(n) = p;
 		Save();
 		CalcScroll();
 		Invalidate();
 	}
 
 	virtual void DrawItem( wal::GC& gc, int n, crect rect );
-	virtual ~clFileAssociationsListWin();
+
+private:
+	std::vector<clNCFileAssociation>* m_ItemList;
 };
 
 inline bool EqFirst( const unicode_t* s, int c )
@@ -244,61 +210,41 @@ inline bool EqFirst( const unicode_t* s, int c )
 
 void clFileAssociationsListWin::Save()
 {
-	ccollect< std::vector<char> > list;
-
-	for ( int i = 0; i < itemList.count(); i++ )
-		if ( itemList[i].conf.ptr() && itemList[i].name.data() )
-		{
-			itemList[i].conf->Set( "name", unicode_to_utf8( itemList[i].name.data() ).data() );
-			list.append( itemList[i].conf->GetConfig() );
-		}
-
-	SaveStringList( fileAssociationsSection, list );
 }
 
 static int uiFcColor = GetUiID( "first-char-color" );
 
 void clFileAssociationsListWin::DrawItem( wal::GC& gc, int n, crect rect )
 {
-	if ( n >= 0 && n < itemList.count() )
-	{
-		UiCondList ucl;
-
-		if ( ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
-
-		if ( n == this->GetCurrent() ) { ucl.Set( uiCurrentItem, true ); }
-
-		unsigned bg = UiGetColor( uiBackground, uiItem, &ucl, 0xB0B000 );
-		unsigned color = UiGetColor( uiColor, uiItem, &ucl, 0 );
-		unsigned fcColor = UiGetColor( uiFcColor, uiItem, &ucl, 0xFFFF );
-
-		/*
-		unsigned bg = ::wcmConfig.whiteStyle ? 0xFFFFFF : 0xB0B000;
-		unsigned fg =  0;
-
-		unsigned sBg = InFocus() ? 0x800000 : 0x808080;
-		unsigned sFg = 0xFFFFFF;
-		*/
-		gc.SetFillColor( bg );
-		gc.FillRect( rect );
-
-		unicode_t* name = itemList[n].name.data();
-
-		if ( name )
-		{
-			gc.Set( GetFont() );
-
-			gc.SetTextColor( color );
-			gc.TextOutF( rect.left + 10, rect.top + 1, name );
-			gc.SetTextColor( fcColor );
-			gc.TextOutF( rect.left + 10, rect.top + 1, name, 1 );
-		}
-
-	}
-	else
+	if ( n < 0 || n >= ( int )m_ItemList->size( ) )
 	{
 		gc.SetFillColor( UiGetColor( uiBackground, 0, 0, 0xB0B000 ) );
 		gc.FillRect( rect ); //CCC
+		return;
+	}
+
+	UiCondList ucl;
+
+	if ( ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
+
+	if ( n == this->GetCurrent() ) { ucl.Set( uiCurrentItem, true ); }
+
+	unsigned bg = UiGetColor( uiBackground, uiItem, &ucl, 0xB0B000 );
+	unsigned color = UiGetColor( uiColor, uiItem, &ucl, 0 );
+	unsigned fcColor = UiGetColor( uiFcColor, uiItem, &ucl, 0xFFFF );
+
+	gc.SetFillColor( bg );
+	gc.FillRect( rect );
+
+	const clNCFileAssociation* p = &m_ItemList->at(n);
+
+	if ( p )
+	{
+		gc.Set( GetFont() );
+		gc.SetTextColor( color );
+		gc.TextOutF( rect.left + 10, rect.top + 1, p->GetMask().data() );
+		gc.SetTextColor( fcColor );
+		gc.TextOutF( rect.left + 10, rect.top + 1, p->GetMask().data(), 1 );
 	}
 }
 
@@ -306,23 +252,20 @@ clFileAssociationsListWin::~clFileAssociationsListWin() {};
 
 class clFileAssociationsWin: public NCDialog
 {
-	Layout m_Layout;
 	clFileAssociationsListWin m_ListWin;
+	Layout m_Layout;
 	Button m_AddCurrentButton;
 	Button m_DelButton;
 	Button m_EditButton;
 
 public:
-	clFileAssociationsListWin::Node* retData;
-
-	clFileAssociationsWin( NCDialogParent* parent )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel ),
-		   m_Layout( 10, 10 ),
-		   m_ListWin( this ),
-		   m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).data(), CMD_PLUS ),
-		   m_DelButton( 0, this, utf8_to_unicode( "- (Del)" ).data(), CMD_MINUS ),
-		   m_EditButton( 0, this, utf8_to_unicode( _LT( "Edit" ) ).data(), CMD_EDIT ),
-		   retData( 0 )
+	clFileAssociationsWin( NCDialogParent* parent, std::vector<clNCFileAssociation>* Associations )
+	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel )
+	 , m_Layout( 10, 10 )
+	 , m_ListWin( this, Associations )
+	 , m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).data(), CMD_PLUS )
+	 , m_DelButton( 0, this, utf8_to_unicode( "- (Del)" ).data(), CMD_MINUS )
+	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "Edit" ) ).data(), CMD_EDIT )
 	{
 		m_AddCurrentButton.Enable();
 		m_AddCurrentButton.Show();
@@ -352,7 +295,6 @@ public:
 		m_Layout.SetLineGrowth( 9 );
 
 		this->AddLayout( &m_Layout );
-		//MaximizeIfChild();
 
 		SetPosition();
 
@@ -378,11 +320,11 @@ int clFileAssociationsWin::UiGetClassId() { return uiClassFileAssociations; }
 
 void clFileAssociationsWin::Selected()
 {
-	clFileAssociationsListWin::Node* node = m_ListWin.GetCurrentData();
+	const clNCFileAssociation* p = m_ListWin.GetCurrentData();
 
-	if ( node && node->conf.ptr() && node->name.data() )
+	if ( p )
 	{
-		retData = node;
+//		retData = node;
 		EndModal( CMD_OK );
 	}
 }
@@ -403,12 +345,12 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_MINUS )
 	{
-		clFileAssociationsListWin::Node* node = m_ListWin.GetCurrentData();
+		const clNCFileAssociation* p = m_ListWin.GetCurrentData();
 
-		if ( !node || !node->name.data() ) { return true; }
+		if ( !p ) { return true; }
 
 		if ( NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Delete item" ),
-		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( node->name.data() ).data() , "' ?" ).data(),
+		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( p->GetMask().data() ).data() , "' ?" ).data(),
 		                   false, bListOkCancel ) == CMD_OK )
 		{
 			m_ListWin.Del();
@@ -424,15 +366,14 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_PLUS )
 	{
-		clEditFileAssociationsWin dlg( ( NCDialogParent* )Parent() );
-		dlg.SetEnterCmd( 0 );
+		clEditFileAssociationsWin Dialog( ( NCDialogParent* )Parent() );
+		Dialog.SetEnterCmd( 0 );
 
-		if ( dlg.DoModal() == CMD_OK )
+		if ( Dialog.DoModal( ) == CMD_OK )
 		{
-			const clNCFileAssociation& Result = dlg.GetResult();
+			const clNCFileAssociation& Result = Dialog.GetResult( );
 
-//			m_ListWin.Ins( Result );
-//			m_ListWin.Ins( name.data(), cfg );
+			m_ListWin.Ins( Result );
 		}
 
 		return true;
@@ -493,12 +434,12 @@ clFileAssociationsWin::~clFileAssociationsWin()
 {
 }
 
-bool FileAssociationsDlg( NCDialogParent* parent )
+bool FileAssociationsDlg( NCDialogParent* Parent, std::vector<clNCFileAssociation>* Associations )
 {
-	clFileAssociationsWin dlg( parent );
-	dlg.SetEnterCmd( 0 );
+	clFileAssociationsWin Dialog( Parent, Associations );
+	Dialog.SetEnterCmd( 0 );
 
-	if ( dlg.DoModal() == CMD_OK && dlg.retData && dlg.retData->conf.ptr() )
+	if ( Dialog.DoModal( ) == CMD_OK )
 	{
 	}
 

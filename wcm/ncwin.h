@@ -20,6 +20,7 @@
 #include "ncdialogs.h"
 #include "ext-app.h"
 #include "toolbar.h"
+#include "fileassociations.h"
 
 using namespace wal;
 
@@ -251,6 +252,9 @@ private:
 	MODE _mode;
 
 	NCHistory _history;
+
+	/// currently active file associations
+	std::vector<clNCFileAssociation> m_FileAssociations;
 
 	int _shiftSelectType;
 

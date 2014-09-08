@@ -36,4 +36,4 @@ private:
 	std::vector<unicode_t> m_EditCommandSecondary;
 };
 
-bool FileAssociationsDlg( NCDialogParent* parent );
+bool FileAssociationsDlg( NCDialogParent* Parent, std::vector<clNCFileAssociation>* Associations );
