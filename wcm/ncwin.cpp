@@ -327,7 +327,7 @@ NCWin::NCWin()
 	_mdOptions.AddCmd( ID_CONFIG_TERMINAL,  _LT( "&Terminal settings" ) );
 #endif
 
-	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "St&yles" ) );
+	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "S&tyles" ) );
 	_mdOptions.AddSplit();
 	_mdOptions.AddCmd( ID_CONFIG_SAVE,   _LT( "&Save setup" ),   "Shift-F9" );
 
