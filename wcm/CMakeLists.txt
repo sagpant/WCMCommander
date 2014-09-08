@@ -52,6 +52,7 @@ SET(wcm_SOURCES
 	dircalc.cpp
 	eloadsave.cpp
 	ext-app-ux.cpp
+	fileassociations.cpp
 	fileopers.cpp
 	filesearch.cpp
 	fontdlg.cpp
