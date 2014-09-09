@@ -653,6 +653,7 @@ void NCWin::PanelEnter()
 	{
 //		printf( "Using file association: %s\n", unicode_to_utf8( Assoc->GetMask().data() ).data() );
 		cmd = MakeCommand( Assoc->GetExecuteCommand(), _panel->GetCurrentFileName() );
+		terminal = Assoc->GetHasTerminal();
 		cmdChecked = true;
 	}
 	else if ( wcmConfig.systemAskOpenExec )
@@ -661,7 +662,7 @@ void NCWin::PanelEnter()
 		cmdChecked = true;
 	}
 
-	if ( p->IsExe() )
+	if ( !Assoc && p->IsExe() )
 	{
 #ifndef _WIN32
 

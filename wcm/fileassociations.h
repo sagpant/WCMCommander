@@ -15,6 +15,7 @@ public:
 	const std::vector<unicode_t>& GetViewCommandSecondary() const { return m_ViewCommandSecondary; }
 	const std::vector<unicode_t>& GetEditCommand() const { return m_EditCommand; }
 	const std::vector<unicode_t>& GetEditCommandSecondary() const { return m_EditCommandSecondary; }
+	const bool GetHasTerminal() const { return m_HasTerminal; }
 
 	void SetMask( const std::vector<unicode_t>& S ) { m_Mask = S; }
 	void SetDescription( const std::vector<unicode_t>& S ) { m_Description = S; }
@@ -24,6 +25,7 @@ public:
 	void SetViewCommandSecondary( const std::vector<unicode_t>& S ) { m_ViewCommandSecondary = S; }
 	void SetEditCommand( const std::vector<unicode_t>& S ) { m_EditCommand = S; }
 	void SetEditCommandSecondary( const std::vector<unicode_t>& S ) { m_EditCommandSecondary = S; }
+	void SetHasTerminal( bool HasTerminal ) { m_HasTerminal = HasTerminal; }
 
 private:
 	std::vector<unicode_t> m_Mask;
@@ -34,6 +36,7 @@ private:
 	std::vector<unicode_t> m_ViewCommandSecondary;
 	std::vector<unicode_t> m_EditCommand;
 	std::vector<unicode_t> m_EditCommandSecondary;
+	bool m_HasTerminal;
 };
 
 bool FileAssociationsDlg( NCDialogParent* Parent, std::vector<clNCFileAssociation>* Associations );

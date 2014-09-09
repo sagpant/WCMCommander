@@ -804,6 +804,17 @@ public:
 		m_Hash.SetStrValue( m_SectionName, Buf, Data );
 #endif
 	}
+	void WriteBool( const char* KeyNamePattern, int i, bool Data )
+	{
+		char Buf[4096];
+		snprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+#ifdef _WIN32
+		RegWriteInt( m_SectionName, Buf, (int)Data );
+#else
+		m_Hash.SetBoolValue( m_SectionName, Buf, Data );
+#endif
+	}
+
 
 private:
 #if !defined(_WIN32)
@@ -828,6 +839,17 @@ public:
 		std::vector<unicode_t> Result = utf8_to_unicode( RegReadString( m_SectionName, Buf, "" ).data( ) );
 #else
 		std::vector<unicode_t> Result = utf8_to_unicode( m_Hash.GetStrValue( m_SectionName, Buf, "" ) );
+#endif
+		return Result;
+	}
+	bool ReadBool( const char* KeyNamePattern, int i, bool DefaultValue )
+	{
+		char Buf[4096];
+		snprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+#ifdef _WIN32
+		bool Result = RegReadInt( m_SectionName, Buf, DefaultValue ) != 0;
+#else
+		bool Result = m_Hash.GetBoolValue( m_SectionName, Buf, DefaultValue );
 #endif
 		return Result;
 	}
@@ -876,6 +898,7 @@ void SaveFileAssociations( NCWin* nc
 		Cfg.Write( "ViewSecondary%i", i, ViewSecondary_utf8.data( ) );
 		Cfg.Write( "Edit%i", i, Edit_utf8.data( ) );
 		Cfg.Write( "EditSecondary%i", i, EditSecondary_utf8.data( ) );
+		Cfg.WriteBool( "HasTerminal%i", i, A.GetHasTerminal() );
 	}
 }
 
@@ -908,6 +931,7 @@ void LoadFilesAssociations( NCWin* nc
 		std::vector<unicode_t> ViewSecondary = Cfg.Read( "ViewSecondary%i", i );
 		std::vector<unicode_t> Edit = Cfg.Read( "Edit%i", i );
 		std::vector<unicode_t> EditSecondary = Cfg.Read( "EditSecondary%i", i );
+		bool HasTerminal = Cfg.ReadBool( "HasTerminal%i", i, true );
 
 		if ( !Mask.data() || !*Mask.data() ) break;
 
@@ -920,6 +944,7 @@ void LoadFilesAssociations( NCWin* nc
 		A.SetViewCommandSecondary( ViewSecondary );
 		A.SetEditCommand( Edit );
 		A.SetEditCommandSecondary( EditSecondary );
+		A.SetHasTerminal( HasTerminal );
 		Assoc.push_back( A );
 
 		i++;

@@ -16,7 +16,7 @@ class clEditFileAssociationsWin: public NCVertDialog
 public:
 	clEditFileAssociationsWin( NCDialogParent* parent, const clNCFileAssociation* Assoc )
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file associations" ) ).data(), bListOkCancel )
-	 , m_Layout( 16, 2 )
+	 , m_Layout( 17, 2 )
 	 , m_MaskText( 0, this, utf8_to_unicode( _LT( "A file mask or several file masks (separated with commas)" ) ).data() )
 	 , m_MaskEdit( 0, this, 0, 0, 16 )
 	 , m_DescriptionText( 0, this, utf8_to_unicode( _LT( "Description of the file association" ) ).data() )
@@ -33,6 +33,7 @@ public:
 	 , m_EditCommandEdit( 0, this, 0, 0, 16 )
 	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Edit command (used for Alf+F4)" ) ).data() )
 	 , m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
+	 , m_HasTerminalButton( 0, this, utf8_to_unicode( _LT( "Start in this terminal" ) ).data(), 0, true )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
 
@@ -46,24 +47,26 @@ public:
 			m_ViewCommandSecondaryEdit.SetText( Assoc->GetViewCommandSecondary().data(), false );
 			m_EditCommandEdit.SetText( Assoc->GetEditCommand().data(), false );
 			m_EditCommandSecondaryEdit.SetText( Assoc->GetEditCommandSecondary().data(), false );
+			m_HasTerminalButton.Change( Assoc->GetHasTerminal() );
 		}
 
 		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
 		m_Layout.AddWinAndEnable( &m_MaskEdit, 1, 0 );
 		m_Layout.AddWinAndEnable( &m_DescriptionText, 2, 0 );
 		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 3, 0 );
-		m_Layout.AddWinAndEnable( &m_ExecuteCommandText, 4, 0 );
-		m_Layout.AddWinAndEnable( &m_ExecuteCommandEdit, 5, 0 );
-		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryText, 6, 0 );
-		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryEdit, 7, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandText, 8, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandEdit, 9, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryText, 10, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryEdit, 11, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandText, 12, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandEdit, 13, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryText, 14, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryEdit, 15, 0 );
+		m_Layout.AddWinAndEnable( &m_HasTerminalButton, 4, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandText, 5, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandEdit, 6, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryText, 7, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryEdit, 8, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandText, 9, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandEdit, 10, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryText, 11, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryEdit, 12, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandText, 13, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandEdit, 14, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryText, 15, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryEdit, 16, 0 );
 
 		AddLayout( &m_Layout );
 
@@ -75,6 +78,7 @@ public:
 		order.append( &m_ViewCommandSecondaryEdit );
 		order.append( &m_EditCommandEdit );
 		order.append( &m_EditCommandSecondaryEdit );
+		order.append( &m_HasTerminalButton );
 
 		SetPosition();
 	}
@@ -98,6 +102,7 @@ public:
 		m_Result.SetViewCommandSecondary( GetViewCommandSecondary() );
 		m_Result.SetEditCommand( GetEditCommand() );
 		m_Result.SetEditCommandSecondary( GetEditCommandSecondary() );
+		m_Result.SetHasTerminal( m_HasTerminalButton.IsSet() );
 
 		return m_Result;
 	}
@@ -129,6 +134,8 @@ public:
 
 	StaticLine m_EditCommandSecondaryText;
 	EditLine   m_EditCommandSecondaryEdit;
+
+	SButton m_HasTerminalButton;
 
 	mutable clNCFileAssociation m_Result;
 };
