@@ -47,6 +47,17 @@ template <typename T> void SkipSpaces( T& p )
 	while ( *p == ' ' ) { p++; }
 }
 
+static bool StrHaveSpace( const unicode_t* s )
+{
+	for ( ; *s; s++ )
+		if ( *s == ' ' )
+		{
+			return true;
+		}
+
+	return false;
+}
+
 std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
 {
 	if ( begin >= end ) return end;
@@ -59,7 +70,15 @@ std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const uni
 	std::vector<unicode_t> Result( cmd );
 	std::vector<unicode_t> Name = new_unicode_str( FileName );
 
+	bool HasSpaces = StrHaveSpace( Name.data() );
+
 	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
+
+	if ( HasSpaces )
+	{
+		Name.insert( Name.begin(), '"' );
+		Name.push_back( '"' );
+	}
 
 	std::vector<unicode_t> Mask;
 	Mask.push_back( '!' );
@@ -688,7 +707,7 @@ void NCWin::PanelEnter()
 
 	if ( cmd.data() )
 	{
-#ifndef _WIN32
+#if !defined( _WIN32 )
 		if ( !terminal )
 		{
 			ExecNoTerminalProcess( cmd.data() );
@@ -1520,17 +1539,6 @@ void NCWin::Edit( bool enterFileName )
 		NCMessageBox( this, _LT( "Edit" ), ex->message(), true );
 		ex->destroy();
 	}
-}
-
-static bool StrHaveSpace( const unicode_t* s )
-{
-	for ( ; *s; s++ )
-		if ( *s == ' ' )
-		{
-			return true;
-		}
-
-	return false;
 }
 
 const unicode_t* NCWin::GetCurrentFileName() const
