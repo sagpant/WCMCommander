@@ -83,7 +83,7 @@ void PanelList::Sort()
 }
 
 
-static bool accmask( const unicode_t* name, const unicode_t* mask )
+bool accmask( const unicode_t* name, const unicode_t* mask )
 {
 	if ( !*mask )
 	{

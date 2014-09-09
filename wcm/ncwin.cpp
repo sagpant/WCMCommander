@@ -820,6 +820,7 @@ void NCWin::RightButtonPressed( cpoint point )
 }
 
 bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask );
+bool accmask( const unicode_t* name, const unicode_t* mask );
 
 class clMultimaskSplitter
 {
@@ -873,7 +874,16 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 
 		while ( Splitter.HasNextMask() )
 		{
-			if ( accmask_nocase_begin( FileName, Splitter.GetNextMask().data() ) ) return &(*i);
+			if (
+#if defined( _WIN32 ) || defined( __APPLE__ )
+				accmask_nocase_begin(
+#else
+				accmask( 
+#endif
+				FileName, Splitter.GetNextMask().data() ) )
+			{
+				return &(*i);
+			}
 		}
 	}
 
