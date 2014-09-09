@@ -239,7 +239,7 @@ clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 	return ret;
 }
 
-static bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
+bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
 {
 	if ( !*mask )
 	{

@@ -90,7 +90,7 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -178,6 +178,7 @@
     <ClCompile Include="dircalc.cpp" />
     <ClCompile Include="eloadsave.cpp" />
     <ClCompile Include="ext-app.cpp" />
+    <ClCompile Include="fileassociations.cpp" />
     <ClCompile Include="fileopers.cpp" />
     <ClCompile Include="filesearch.cpp" />
     <ClCompile Include="ftplogon.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="dircalc.h" />
     <ClInclude Include="eloadsave.h" />
     <ClInclude Include="ext-app.h" />
+    <ClInclude Include="fileassociations.h" />
     <ClInclude Include="fileopers.h" />
     <ClInclude Include="filesearch.h" />
     <ClInclude Include="ftplogon.h" />

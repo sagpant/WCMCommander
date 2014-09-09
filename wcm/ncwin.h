@@ -20,6 +20,7 @@
 #include "ncdialogs.h"
 #include "ext-app.h"
 #include "toolbar.h"
+#include "fileassociations.h"
 
 using namespace wal;
 
@@ -252,6 +253,9 @@ private:
 
 	NCHistory _history;
 
+	/// currently active file associations
+	std::vector<clNCFileAssociation> m_FileAssociations;
+
 	int _shiftSelectType;
 
 	void SetMode( MODE m );
@@ -310,6 +314,7 @@ private:
 	void Tab( bool forceShellTab );
 	void PanelEqual();
 	void Shortcuts();
+	void FileAssociations();
 	void OnOffShl();
 
 	void SetToolbarPanel();
@@ -374,6 +379,10 @@ public:
 	void NotifyAutoCompleteChange();
 
 	NCHistory* GetHistory() { return &_history; }
+	const std::vector<clNCFileAssociation>& GetFileAssociations() const { return m_FileAssociations; }
+	void SetFileAssociations( const std::vector<clNCFileAssociation>& Assoc ) { m_FileAssociations = Assoc; }
+
+	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
 };
 
 

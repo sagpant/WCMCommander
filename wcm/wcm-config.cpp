@@ -765,6 +765,164 @@ void WcmConfig::MapStr( const char* section, const char* name, std::vector<char>
 }
 
 static const char* CommandsHistorySection = "CommandsHistory";
+static const char* FilesAssociationsSection = "FilesAssociations";
+
+class clConfigHelper
+{
+public:
+	clConfigHelper() :m_SectionName( "" ) {}
+
+	void SetSectionName( const char* SectionName )
+	{
+		m_SectionName = SectionName;
+	}
+
+protected:
+	const char* m_SectionName;
+};
+
+class clConfigWriter: public clConfigHelper
+{
+public:
+#if defined(_WIN32)
+	clConfigWriter() {}
+#else
+	explicit clConfigWriter( IniHash& hash ) :m_Hash( hash ) {}
+#endif
+
+	void Write( const char* KeyNamePattern, int i, const char* Data )
+	{
+		char Buf[4096];
+		snprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+#ifdef _WIN32
+		RegWriteString( m_SectionName, Buf, Data );
+#else
+		m_Hash.SetStrValue( m_SectionName, Buf, Data );
+#endif
+	}
+
+private:
+#if !defined(_WIN32)
+	IniHash& m_Hash;
+#endif
+};
+
+class clConfigReader: public clConfigHelper
+{
+public:
+#if defined(_WIN32)
+	clConfigReader() {}
+#else
+	explicit clConfigReader( IniHash& hash ):m_Hash( hash ) {}
+#endif
+
+	std::vector<unicode_t> Read( const char* KeyNamePattern, int i )
+	{
+		char Buf[4096];
+		snprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+#ifdef _WIN32
+		std::vector<unicode_t> Result = utf8_to_unicode( RegReadString( m_SectionName, Buf, "" ).data( ) );
+#else
+		std::vector<unicode_t> Result = utf8_to_unicode( m_Hash.GetStrValue( m_SectionName, Buf, "" ) );
+#endif
+		return Result;
+	}
+
+private:
+#if !defined(_WIN32)
+	IniHash& m_Hash;
+#endif
+};
+
+void SaveFileAssociations( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigWriter Cfg;
+#else
+	clConfigWriter Cfg( hash );
+#endif
+	Cfg.SetSectionName( FilesAssociationsSection );
+
+	const std::vector<clNCFileAssociation>& Assoc = nc->GetFileAssociations();
+
+	for ( size_t i = 0; i < Assoc.size(); i++ )
+	{
+		const clNCFileAssociation& A = Assoc[i];
+
+		std::vector<char> Mask_utf8 = unicode_to_utf8( A.GetMask().data() );
+		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
+		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetExecuteCommand().data() );
+		std::vector<char> ExecuteSecondary_utf8 = unicode_to_utf8( A.GetExecuteCommandSecondary().data() );
+		std::vector<char> View_utf8 = unicode_to_utf8( A.GetViewCommandSecondary().data() );
+		std::vector<char> ViewSecondary_utf8 = unicode_to_utf8( A.GetViewCommandSecondary().data() );
+		std::vector<char> Edit_utf8 = unicode_to_utf8( A.GetEditCommand().data() );
+		std::vector<char> EditSecondary_utf8 = unicode_to_utf8( A.GetEditCommandSecondary().data() );
+
+		Cfg.Write( "Mask%i", i, Mask_utf8.data( ) );
+		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
+		Cfg.Write( "Execute%i", i, Execute_utf8.data( ) );
+		Cfg.Write( "ExecuteSecondary%i", i, ExecuteSecondary_utf8.data( ) );
+		Cfg.Write( "View%i", i, View_utf8.data( ) );
+		Cfg.Write( "ViewSecondary%i", i, ViewSecondary_utf8.data( ) );
+		Cfg.Write( "Edit%i", i, Edit_utf8.data( ) );
+		Cfg.Write( "EditSecondary%i", i, EditSecondary_utf8.data( ) );
+	}
+}
+
+void LoadFilesAssociations( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigReader Cfg;
+#else
+	clConfigReader Cfg( hash );
+#endif
+	Cfg.SetSectionName( FilesAssociationsSection );
+
+	int i = 0;
+
+	std::vector<clNCFileAssociation> Assoc;
+
+	while (true)
+	{
+		std::vector<unicode_t> Mask = Cfg.Read( "Mask%i", i );
+		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
+		std::vector<unicode_t> Execute = Cfg.Read( "Execute%i", i );
+		std::vector<unicode_t> ExecuteSecondary = Cfg.Read( "ExecuteSecondary%i", i );
+		std::vector<unicode_t> View = Cfg.Read( "View%i", i );
+		std::vector<unicode_t> ViewSecondary = Cfg.Read( "ViewSecondary%i", i );
+		std::vector<unicode_t> Edit = Cfg.Read( "Edit%i", i );
+		std::vector<unicode_t> EditSecondary = Cfg.Read( "EditSecondary%i", i );
+
+		if ( !Mask.data() || !*Mask.data() ) break;
+
+		clNCFileAssociation A;
+		A.SetMask( Mask );
+		A.SetDescription( Description );
+		A.SetExecuteCommand( Execute );
+		A.SetExecuteCommandSecondary( ExecuteSecondary );
+		A.SetViewCommand( View );
+		A.SetViewCommandSecondary( ViewSecondary );
+		A.SetEditCommand( Edit );
+		A.SetEditCommandSecondary( EditSecondary );
+		Assoc.push_back( A );
+
+		i++;
+	}
+
+	nc->SetFileAssociations( Assoc );
+}
 
 void SaveCommandsHistory( NCWin* nc
 #ifndef _WIN32
@@ -774,22 +932,20 @@ void SaveCommandsHistory( NCWin* nc
 {
 	if ( !nc ) return;
 
+#if defined(_WIN32)
+	clConfigWriter Cfg;
+#else
+	clConfigWriter Cfg( hash );
+#endif
+	Cfg.SetSectionName( CommandsHistorySection );
+
 	int Count = nc->GetHistory()->Count();
 
 	for ( int i = 0; i < Count; i++ )
 	{
 		const unicode_t* Hist = (*nc->GetHistory())[Count-i-1];
 
-		std::vector<char> utf8 = unicode_to_utf8( Hist );
-
-		char buf[4096];
-		snprintf( buf, sizeof( buf ), "Command%i", i );
-
-#ifdef _WIN32
-		RegWriteString( CommandsHistorySection, buf, utf8.data() );
-#else
-		hash.SetStrValue( CommandsHistorySection, buf, utf8.data() );
-#endif
+		Cfg.Write( "Command%i", i, unicode_to_utf8( Hist ).data( ) );
 	}
 }
 
@@ -801,26 +957,24 @@ void LoadCommandsHistory( NCWin* nc
 {
 	if ( !nc ) return;
 
+#if defined(_WIN32)
+	clConfigReader Cfg;
+#else
+	clConfigReader Cfg( hash );
+#endif
+	Cfg.SetSectionName( CommandsHistorySection );
+
 	nc->GetHistory()->Clear();
 
 	int i = 0;
 
 	while (true)
 	{
-		char buf[4096];
-		snprintf( buf, sizeof( buf ), "Command%i", i );
+		std::vector<unicode_t> Cmd = Cfg.Read( "Command%i", i );
 
-#ifdef _WIN32
-		std::vector<char> value = RegReadString( CommandsHistorySection, buf, "" );
-		const char* s = value.data();
-#else
-		const char* s = hash.GetStrValue( CommandsHistorySection, buf, "" );
-#endif
-		if ( !*s ) break;
+		if ( !Cmd.data() || !*Cmd.data() ) break;
 
-		std::vector<unicode_t> cmd = utf8_to_unicode( s );
-
-		nc->GetHistory()->Put( cmd.data() );
+		nc->GetHistory()->Put( Cmd.data() );
 
 		i++;
 	}
@@ -829,7 +983,6 @@ void LoadCommandsHistory( NCWin* nc
 void WcmConfig::Load( NCWin* nc )
 {
 #ifdef _WIN32
-
 	for ( int i = 0; i < mapList.count(); i++ )
 	{
 		Node& node = mapList[i];
@@ -850,6 +1003,7 @@ void WcmConfig::Load( NCWin* nc )
 
 
 	LoadCommandsHistory( nc );
+	LoadFilesAssociations( nc );
 
 #else
 	IniHash hash;
@@ -882,10 +1036,11 @@ void WcmConfig::Load( NCWin* nc )
 	}
 
 	LoadCommandsHistory( nc, hash );
+	LoadFilesAssociations( nc, hash );
 
 #endif
 
-	if ( editTabSize <= 0 || editTabSize > 64 ) { editTabSize = 8; }
+	if ( editTabSize <= 0 || editTabSize > 64 ) { editTabSize = 3; }
 }
 
 void WcmConfig::Save( NCWin* nc )
@@ -922,6 +1077,7 @@ void WcmConfig::Save( NCWin* nc )
 	}
 
 	SaveCommandsHistory( nc );
+	SaveFileAssociations( nc );
 
 #else
 	IniHash hash;
@@ -948,6 +1104,7 @@ void WcmConfig::Save( NCWin* nc )
 	}
 
 	SaveCommandsHistory( nc, hash );
+	SaveFileAssociations( nc, hash );
 
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
 #endif

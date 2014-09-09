@@ -127,6 +127,7 @@ namespace wal
 		void Backspace( bool DeleteWord );
 		void Set( const unicode_t* s, bool mark = false );
 
+		const unicode_t* Ptr() const { return data.data(); }
 		unicode_t* Ptr() { return data.data(); }
 		unicode_t operator []( int n ) { return data[n]; }
 
@@ -180,7 +181,7 @@ namespace wal
 		bool IsEmpty() const;
 		int GetCursorPos() { return text.Cursor(); }
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
-		std::vector<unicode_t> GetText();
+		std::vector<unicode_t> GetText() const;
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();

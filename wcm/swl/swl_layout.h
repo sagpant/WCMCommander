@@ -130,6 +130,7 @@ namespace wal
 		Layout( int lineCount, int colCount );
 		void DelObj( void* p );
 		void AddWin( Win* w, int r1, int c1, int r2 = -1, int c2 = -1 );
+		void AddWinAndEnable( Win* w, int r1, int c1, int r2 = -1, int c2 = -1 );
 		void AddLayout( Layout* l, int r1, int c1, int r2 = -1, int c2 = -1 );
 		void AddRect( crect* rect, int r1, int c1, int r2 = -1, int c2 = -1 );
 		void GetLSize( LSize* ls );

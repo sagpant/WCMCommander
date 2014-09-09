@@ -5,6 +5,8 @@
 
 #include "swl.h"
 
+#include <algorithm>
+
 namespace wal
 {
 
@@ -422,7 +424,7 @@ namespace wal
 		return oldFirst != first;
 	}
 
-	std::vector<unicode_t> EditLine::GetText()
+	std::vector<unicode_t> EditLine::GetText() const
 	{
 		int count = text.Count();
 		std::vector<unicode_t> p( count + 1 );

@@ -30,6 +30,7 @@
 #include "filesearch.h"
 #include "help.h"
 #include "shortcuts.h"
+#include "fileassociations.h"
 #include "fontdlg.h"
 #include "color-style.h"
 #include "search-dlg.h"
@@ -46,13 +47,44 @@ template <typename T> void SkipSpaces( T& p )
 	while ( *p == ' ' ) { p++; }
 }
 
+std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
+{
+	if ( begin >= end ) return end;
+
+	return std::search( begin, end, SubStr.begin(), SubStr.end() );
+}
+
+std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const unicode_t* FileName )
+{
+	std::vector<unicode_t> Result( cmd );
+	std::vector<unicode_t> Name = new_unicode_str( FileName );
+
+	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
+
+	std::vector<unicode_t> Mask;
+	Mask.push_back( '!' );
+	Mask.push_back( '.' );
+	Mask.push_back( '!' );	
+
+	auto pos = FindSubstr( Result.begin(), Result.end(), Mask );
+
+	while ( pos != Result.end() )
+	{
+		pos = Result.erase( pos, pos + Mask.size() );
+		size_t idx = pos - Result.begin();
+		Result.insert( pos, Name.begin(), Name.end() );
+		pos = Result.begin() + idx;
+		pos = FindSubstr( pos + Name.size(), Result.end(), Mask );
+	}
+
+	return Result;
+}
+
 extern SearchAndReplaceParams searchParams;
 
 static crect acWinRect( 0, 0, 850, 500 );
 
 static unicode_t panelButtonStr[] = {'*', 0};
-
-//static char verString[] = "Wal Commander v 0.8.2 beta\nCopyright (c) by Valery Goryachev 2011";
 
 void NCWin::SetToolbarPanel()
 {
@@ -355,6 +387,7 @@ NCWin::NCWin()
 	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl =" );
 	_mdCommands.AddSplit();
 	_mdCommands.AddCmd( ID_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl D" );
+	_mdCommands.AddCmd( ID_FILEASSOCIATIONS, _LT( "File &associations" ) );
 
 	_edit.SetFocus();
 
@@ -614,7 +647,15 @@ void NCWin::PanelEnter()
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
 
-	if ( wcmConfig.systemAskOpenExec )
+	const clNCFileAssociation* Assoc = this->FindFileAssociation( _panel->GetCurrentFileName() );
+
+	if ( Assoc )
+	{
+//		printf( "Using file association: %s\n", unicode_to_utf8( Assoc->GetMask().data() ).data() );
+		cmd = MakeCommand( Assoc->GetExecuteCommand(), _panel->GetCurrentFileName() );
+		cmdChecked = true;
+	}
+	else if ( wcmConfig.systemAskOpenExec )
 	{
 		cmd = GetOpenCommand( _panel->UriOfCurrent().GetUnicode(), &terminal, &pAppName );
 		cmdChecked = true;
@@ -778,6 +819,76 @@ void NCWin::RightButtonPressed( cpoint point )
 	return;
 }
 
+bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask );
+bool accmask( const unicode_t* name, const unicode_t* mask );
+
+class clMultimaskSplitter
+{
+public:
+	explicit clMultimaskSplitter( const std::vector<unicode_t>& MultiMask )
+	 : m_MultiMask( MultiMask )
+	 , m_CurrentPos( 0 )
+	{}
+
+	bool HasNextMask() const
+	{
+		return m_CurrentPos < m_MultiMask.size();
+	}
+
+	std::vector<unicode_t> GetNextMask()
+	{
+		size_t Next = m_CurrentPos;
+
+		// find the nearest ','
+		while ( Next < m_MultiMask.size() && m_MultiMask[Next] != ',' ) Next++;
+
+		if ( m_CurrentPos == Next ) return std::vector<unicode_t>();
+
+		std::vector<unicode_t> Result( m_MultiMask.begin()+m_CurrentPos, m_MultiMask.begin()+Next );
+
+		if ( Next < m_MultiMask.size() && m_MultiMask[Next] == ',' )
+		{
+			// skip ','
+			Next++;
+			// and trailing spaces
+			while ( Next < m_MultiMask.size() && m_MultiMask[Next] <= ' ' ) Next++;
+		}
+
+		m_CurrentPos = Next;
+
+		return Result;
+	}
+
+private:
+	const std::vector<unicode_t>& m_MultiMask;
+	size_t m_CurrentPos;
+};
+
+const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
+{
+	for ( auto i = m_FileAssociations.begin(); i != m_FileAssociations.end(); i++ )
+	{
+		std::vector<unicode_t> Mask = i->GetMask();
+
+		clMultimaskSplitter Splitter( Mask );
+
+		while ( Splitter.HasNextMask() )
+		{
+			if (
+#if defined( _WIN32 ) || defined( __APPLE__ )
+				accmask_nocase_begin(
+#else
+				accmask( 
+#endif
+				FileName, Splitter.GetNextMask().data() ) )
+			{
+				return &(*i);
+			}
+		}
+	}
+
+	return NULL;
+}
 
 void NCWin::ReturnToDefaultSysDir()
 {
@@ -1207,39 +1318,6 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 
 	};
-}
-
-std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
-{
-	if ( begin >= end ) return end;
-
-	return std::search( begin, end, SubStr.begin(), SubStr.end() );
-}
-
-std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const unicode_t* FileName )
-{
-	std::vector<unicode_t> Result( cmd );
-	std::vector<unicode_t> Name = new_unicode_str( FileName );
-
-	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
-
-	std::vector<unicode_t> Mask;
-	Mask.push_back( '!' );
-	Mask.push_back( '.' );
-	Mask.push_back( '!' );	
-
-	auto pos = FindSubstr( Result.begin(), Result.end(), Mask );
-
-	while ( pos != Result.end() )
-	{
-		pos = Result.erase( pos, pos + Mask.size() );
-		size_t idx = pos - Result.begin();
-		Result.insert( pos, Name.begin(), Name.end() );
-		pos = Result.begin() + idx;
-		pos = FindSubstr( pos + Name.size(), Result.end(), Mask );
-	}
-
-	return Result;
 }
 
 void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
@@ -1818,6 +1896,15 @@ void NCWin::Shortcuts()
 	if ( ShortcutDlg( this, &ptr, &path ) )
 	{
 		_panel->LoadPath( ptr, path, 0, 0, PanelWin::SET );
+	}
+}
+
+void NCWin::FileAssociations()
+{
+	if ( _mode != PANEL ) { return; }
+
+	if ( FileAssociationsDlg( this, &m_FileAssociations ) )
+	{
 	}
 }
 
@@ -3280,6 +3367,10 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 
 			case ID_SHORTCUTS:
 				Shortcuts();
+				return true;
+
+			case ID_FILEASSOCIATIONS:
+				FileAssociations();
 				return true;
 
 			case ID_REFRESH:
