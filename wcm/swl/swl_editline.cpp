@@ -5,6 +5,8 @@
 
 #include "swl.h"
 
+#include <algorithm>
+
 namespace wal
 {
 
