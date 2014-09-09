@@ -75,7 +75,7 @@ namespace wal
 	public:
 		SButton( int nId, Win* parent, unicode_t* txt, int _group, bool _isSet = false, crect* rect = 0 );
 
-		bool IsSet() { return isSet; }
+		bool IsSet() const { return isSet; }
 		void Change( bool _isSet );
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
