@@ -14,7 +14,7 @@ static const int CMD_EDIT  = 1002;
 class clEditFileAssociationsWin: public NCVertDialog
 {
 public:
-	clEditFileAssociationsWin( NCDialogParent* parent )
+	clEditFileAssociationsWin( NCDialogParent* parent, const clNCFileAssociation* Assoc )
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file associations" ) ).data(), bListOkCancel )
 	 , m_Layout( 16, 2 )
 	 , m_MaskText( 0, this, utf8_to_unicode( _LT( "A file mask or several file masks (separated with commas)" ) ).data() )
@@ -31,10 +31,22 @@ public:
 	 , m_ViewCommandSecondaryEdit( 0, this, 0, 0, 16 )
 	 , m_EditCommandText( 0, this, utf8_to_unicode( _LT( "Edit command (used for F4)" ) ).data() )
 	 , m_EditCommandEdit( 0, this, 0, 0, 16 )
-	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "View command (used for Alf+F4)" ) ).data() )
+	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Edit command (used for Alf+F4)" ) ).data() )
 	 , m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
+
+		if ( Assoc )
+		{
+			m_MaskEdit.SetText( Assoc->GetMask().data(), false );
+			m_DescriptionEdit.SetText( Assoc->GetDescription().data(), false );
+			m_ExecuteCommandEdit.SetText( Assoc->GetExecuteCommand().data(), false );
+			m_ExecuteCommandSecondaryEdit.SetText( Assoc->GetExecuteCommandSecondary().data(), false );
+			m_ViewCommandEdit.SetText( Assoc->GetViewCommand().data(), false );
+			m_ViewCommandSecondaryEdit.SetText( Assoc->GetViewCommandSecondary().data(), false );
+			m_EditCommandEdit.SetText( Assoc->GetEditCommand().data(), false );
+			m_EditCommandSecondaryEdit.SetText( Assoc->GetEditCommandSecondary().data(), false );
+		}
 
 		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
 		m_Layout.AddWinAndEnable( &m_MaskEdit, 1, 0 );
@@ -42,14 +54,16 @@ public:
 		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 3, 0 );
 		m_Layout.AddWinAndEnable( &m_ExecuteCommandText, 4, 0 );
 		m_Layout.AddWinAndEnable( &m_ExecuteCommandEdit, 5, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandText, 6, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandEdit, 7, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryText, 8, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryEdit, 9, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandText, 10, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandEdit, 11, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryText, 12, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryEdit, 13, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryText, 6, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryEdit, 7, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandText, 8, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandEdit, 9, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryText, 10, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryEdit, 11, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandText, 12, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandEdit, 13, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryText, 14, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryEdit, 15, 0 );
 
 		AddLayout( &m_Layout );
 
@@ -157,14 +171,18 @@ public:
 		return &( m_ItemList->at(n) );
 	}
 
-	void Save();
+	clNCFileAssociation* GetCurrentData()
+	{
+		int n = GetCurrent( );
+		if ( n < 0 || n >= (int)m_ItemList->size() ) { return NULL; }
+		return &( m_ItemList->at(n) );
+	}
 
 	void Ins( const clNCFileAssociation& p )
 	{
 		m_ItemList->push_back( p );
 		SetCount( m_ItemList->size( ) );
 		SetCurrent( ( int )m_ItemList->size() - 1 );
-		Save();
 		CalcScroll();
 		Invalidate();
 	}
@@ -178,7 +196,6 @@ public:
 		m_ItemList->erase( m_ItemList->begin( ) + n );
 
 		SetCount( m_ItemList->size( ) );
-		Save();
 		CalcScroll();
 		Invalidate();
 	}
@@ -190,7 +207,6 @@ public:
 		if ( n < 0 || n >= ( int )m_ItemList->size( ) ) { return; }
 
 		m_ItemList->at(n) = p;
-		Save();
 		CalcScroll();
 		Invalidate();
 	}
@@ -200,15 +216,6 @@ public:
 private:
 	std::vector<clNCFileAssociation>* m_ItemList;
 };
-
-inline bool EqFirst( const unicode_t* s, int c )
-{
-	return s && UnicodeLC( *s ) == c;
-}
-
-void clFileAssociationsListWin::Save()
-{
-}
 
 static int uiFcColor = GetUiID( "first-char-color" );
 
@@ -358,19 +365,29 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_EDIT )
 	{
+		const clNCFileAssociation* ValueToEdit = m_ListWin.GetCurrentData();
+
+		if ( !ValueToEdit ) return true;
+
+		clEditFileAssociationsWin Dialog( ( NCDialogParent* )Parent(), ValueToEdit );
+		Dialog.SetEnterCmd( 0 );
+
+		if ( Dialog.DoModal( ) == CMD_OK )
+		{
+			m_ListWin.Rename( Dialog.GetResult( ) );
+		}
+
 		return true;
 	}
 
 	if ( id == CMD_PLUS )
 	{
-		clEditFileAssociationsWin Dialog( ( NCDialogParent* )Parent() );
+		clEditFileAssociationsWin Dialog( ( NCDialogParent* )Parent(), NULL );
 		Dialog.SetEnterCmd( 0 );
 
 		if ( Dialog.DoModal( ) == CMD_OK )
 		{
-			const clNCFileAssociation& Result = Dialog.GetResult( );
-
-			m_ListWin.Ins( Result );
+			m_ListWin.Ins( Dialog.GetResult( ) );
 		}
 
 		return true;
