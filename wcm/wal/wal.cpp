@@ -142,6 +142,8 @@ namespace wal
 
 	int unicode_strlen(const unicode_t* s)
 	{
+		if ( !s ) return 0;
+
 		const unicode_t* p = s;
 
 		while (*p) { p++; }
