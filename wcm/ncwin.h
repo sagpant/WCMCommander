@@ -33,6 +33,7 @@ public:
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
 	const unicode_t* Get() { return text.data(); }
 	void Set( const unicode_t* txt );
+	void Set( const std::vector<unicode_t>& txt );
 	virtual void OnChangeStyles();
 	virtual int UiGetClassId();
 	virtual  ~StringWin();
@@ -377,6 +378,7 @@ public:
 	void HideAutoComplete();
 	void NotifyAutoComplete();
 	void NotifyAutoCompleteChange();
+	void NotifyCurrentPathInfo();
 
 	NCHistory* GetHistory() { return &_history; }
 	const std::vector<clNCFileAssociation>& GetFileAssociations() const { return m_FileAssociations; }

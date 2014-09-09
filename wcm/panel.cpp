@@ -679,6 +679,8 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 		SetCurrent( _list.Find( s, HideDotsInDir() ) );
 		Invalidate();
 
+		GetNCWin()->NotifyCurrentPathInfo();
+
 //		}
 
 		return true;
@@ -1688,6 +1690,7 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 		_inOperState = false;
 		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), ex->message(), true );
 		ex->destroy();
+		GetNCWin()->NotifyCurrentPathInfo();
 	}
 }
 
@@ -1714,6 +1717,7 @@ void PanelWin::OperThreadStopped()
 			//Invalidate();
 			NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), _operData.errorString.GetUtf8(), true );
 			NCWin* ncWin = GetNCWin();
+			ncWin->NotifyCurrentPathInfo();
 			ncWin->SelectDrive(this, ncWin->GetOtherPanel(this));
 			return;
 		}
@@ -1767,6 +1771,8 @@ void PanelWin::OperThreadStopped()
 		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), ex->message(), true );
 		ex->destroy();
 	}
+
+	GetNCWin()->NotifyCurrentPathInfo();
 
 	Invalidate();
 }

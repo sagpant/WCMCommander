@@ -391,27 +391,6 @@ NCWin::NCWin()
 
 	_edit.SetFocus();
 
-	char hostName[0x100] = "";
-
-	if ( !gethostname( hostName, sizeof( hostName ) ) )
-	{
-	}
-
-	int len = strlen( hostName );
-
-	if ( len > 16 ) { len = 16; hostName[len] = 0; }
-
-	hostName[len++] =
-#ifdef _WIN32
-	   '>';
-#else
-	   geteuid() ? '$' : '#';
-#endif
-
-	hostName[len] = 0;
-
-	_editPref.Set( utf8_to_unicode( hostName ).data() );
-
 	SetName( appName );
 
 	this->AddLayout( &_lo );
@@ -2157,6 +2136,49 @@ void NCWin::Tab( bool forceShellTab )
 			_edit.Invalidate();
 		}
 	};
+
+	NotifyCurrentPathInfo();
+}
+
+void NCWin::NotifyCurrentPathInfo()
+{
+	std::vector<unicode_t> Info;
+
+	if ( wcmConfig.systemShowHostName )
+	{
+		char hostName[0x100] = "";
+
+		if ( !gethostname( hostName, sizeof( hostName ) ) ) {}
+
+		int len = strlen( hostName );
+
+		if ( len > 16 ) { len = 16; hostName[len] = 0; }
+
+		hostName[len++] =
+#ifdef _WIN32
+	   '>';
+#else
+	   geteuid() ? '$' : '#';
+#endif
+		hostName[len] = 0;
+
+		Info = utf8_to_unicode( hostName );
+	}
+	else
+	{
+		Info = new_unicode_str( _panel->UriOfDir().GetUnicode() );
+		// add a nice trailing > symbol
+		if ( Info.size() ) Info.pop_back();
+		Info.push_back( '>' );
+		Info.push_back( 0 );
+	}
+
+	if ( !unicode_is_equal( _editPref.Get(), Info.data() ) )
+	{
+		_editPref.Set( Info );
+
+		RecalcLayouts();
+	}
 }
 
 void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
@@ -3929,6 +3951,11 @@ void StringWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.FillRect( r );
 	gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0xFFFFFF ) );
 	gc.TextOutF( 0, ( r.Height() - textSize.y ) / 2, text.data() );
+}
+
+void StringWin::Set( const std::vector<unicode_t>& txt )
+{
+	Set( txt.data() );
 }
 
 void StringWin::Set( const unicode_t* txt )

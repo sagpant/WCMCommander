@@ -634,6 +634,7 @@ WcmConfig::WcmConfig()
 	   systemEscPanel( true ),
 	   systemBackSpaceUpDir( false ),
 		systemAutoComplete( true ),
+		systemShowHostName( false ),
 	   systemLang( new_char_str( "+" ) ),
 	   showToolBar( true ),
 	   showButtonBar( true ),
@@ -671,6 +672,7 @@ WcmConfig::WcmConfig()
 	MapBool( sectionSystem, "esc_panel", &systemEscPanel, systemEscPanel );
 	MapBool( sectionSystem, "back_updir", &systemBackSpaceUpDir, systemBackSpaceUpDir );
 	MapBool( sectionSystem, "auto_complete", &systemAutoComplete, systemAutoComplete );
+	MapBool( sectionSystem, "show_hostname", &systemShowHostName, systemShowHostName );
 	MapStr( sectionSystem,  "lang", &systemLang );
 
 	MapBool( sectionSystem, "show_toolbar", &showToolBar, showToolBar );
@@ -1848,7 +1850,7 @@ public:
 	SButton  escPanelButton;
 	SButton  backUpDirButton;
 	SButton  autoCompleteButton;
-//	SButton  intLocale;
+	SButton  showHostNameButton;
 
 	StaticLine langStatic;
 	StaticLine langVal;
@@ -1897,41 +1899,24 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
 	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
 	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable autocomplete" ) ).data(), 0, wcmConfig.systemAutoComplete )
-//	,intLocale(this, utf8_to_unicode( _LT("Interface localisation (save config and restart)") ).data(), 0, wcmConfig.systemIntLocale)
+	   , showHostNameButton( 0, this, utf8_to_unicode( _LT( "Show host name" ) ).data(), 0, wcmConfig.systemShowHostName )
 	   , langStatic( 0, this, utf8_to_unicode( _LT( "Language:" ) ).data() )
 	   , langVal( 0, this, utf8_to_unicode( "______________________" ).data() )
 	   , langButton( 0, this, utf8_to_unicode( ">" ).data(), 1000 )
 {
 
 #ifndef _WIN32
-	iL.AddWin( &askOpenExecButton, 0, 0, 0, 2 );
-	askOpenExecButton.Enable();
-	askOpenExecButton.Show();
+	iL.AddWinAndEnable( &askOpenExecButton, 0, 0, 0, 2 );
 #endif
-	iL.AddWin( &escPanelButton, 1, 0, 1, 2 );
-	escPanelButton.Enable();
-	escPanelButton.Show();
+	iL.AddWinAndEnable( &escPanelButton, 1, 0, 1, 2 );
+	iL.AddWinAndEnable( &backUpDirButton, 2, 0, 2, 2 );
+	iL.AddWinAndEnable( &autoCompleteButton, 3, 0, 3, 2 );
+	iL.AddWinAndEnable( &showHostNameButton, 4, 0, 4, 2 );
 
-	iL.AddWin( &backUpDirButton, 2, 0, 2, 2 );
-	backUpDirButton.Enable();
-	backUpDirButton.Show();
+	iL.AddWinAndEnable( &langStatic,     5, 0 );
+	iL.AddWinAndEnable( &langVal,     5, 2 );
+	iL.AddWinAndEnable( &langButton,     5, 1 );
 
-	iL.AddWin( &autoCompleteButton, 3, 0, 3, 2 );
-	autoCompleteButton.Enable();
-	autoCompleteButton.Show();
-//	iL.AddWin(&intLocale,      2, 0, 2, 2); intLocale.Enable();  intLocale.Show();
-
-	iL.AddWin( &langStatic,     4, 0 );
-	langStatic.Enable();
-	langStatic.Show();
-
-	iL.AddWin( &langVal,     4, 2 );
-	langVal.Enable();
-	langVal.Show();
-
-	iL.AddWin( &langButton,     4, 1 );
-	langButton.Enable();
-	langButton.Show();
 	iL.SetColGrowth( 2 );
 
 	AddLayout( &iL );
@@ -1944,7 +1929,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	order.append( &escPanelButton );
 	order.append( &backUpDirButton );
 	order.append( &autoCompleteButton );
-//	order.append(&intLocale);
+	order.append( &showHostNameButton );
 	order.append( &langButton );
 
 	SetPosition();
@@ -2005,6 +1990,7 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 		wcmConfig.systemEscPanel = dlg.escPanelButton.IsSet();
 		wcmConfig.systemBackSpaceUpDir = dlg.backUpDirButton.IsSet();
 		wcmConfig.systemAutoComplete = dlg.autoCompleteButton.IsSet();
+		wcmConfig.systemShowHostName = dlg.showHostNameButton.IsSet();
 		const char* s = wcmConfig.systemLang.data();
 
 		if ( !s ) { s = "+"; }
