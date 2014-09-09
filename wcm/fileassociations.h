@@ -4,6 +4,16 @@
 
 #include <vector>
 
+enum eFileAssociation
+{
+	eFileAssociation_Execute,
+	eFileAssociation_ExecuteSecondary,
+	eFileAssociation_View,
+	eFileAssociation_ViewSecondary,
+	eFileAssociation_Edit,
+	eFileAssociation_EditSecondary,
+};
+
 class clNCFileAssociation
 {
 public:
@@ -16,6 +26,23 @@ public:
 	const std::vector<unicode_t>& GetEditCommand() const { return m_EditCommand; }
 	const std::vector<unicode_t>& GetEditCommandSecondary() const { return m_EditCommandSecondary; }
 	const bool GetHasTerminal() const { return m_HasTerminal; }
+
+	const std::vector<unicode_t>& Get( eFileAssociation Mode ) const
+	{
+		switch ( Mode )
+		{
+		case eFileAssociation_Execute: return GetExecuteCommand();
+		case eFileAssociation_ExecuteSecondary: return GetExecuteCommandSecondary();
+		case eFileAssociation_View: return GetViewCommand();
+		case eFileAssociation_ViewSecondary: return GetViewCommandSecondary();
+		case eFileAssociation_Edit: return GetEditCommand();
+		case eFileAssociation_EditSecondary: return GetEditCommandSecondary();
+		default:
+			throw( "Unknown mode" );
+		}
+
+		return GetExecuteCommand();
+	}
 
 	void SetMask( const std::vector<unicode_t>& S ) { m_Mask = S; }
 	void SetDescription( const std::vector<unicode_t>& S ) { m_Description = S; }
