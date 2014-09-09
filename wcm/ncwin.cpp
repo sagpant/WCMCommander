@@ -851,13 +851,9 @@ public:
 			Next++;
 			// and trailing spaces
 			while ( Next < m_MultiMask.size() && m_MultiMask[Next] <= ' ' ) Next++;
-
-			printf( "Next = %u\n", (unsigned int)Next );
 		}
 
 		m_CurrentPos = Next;
-
-		printf( "NextMask = '%s'\n", unicode_to_utf8( Result.data() ).data() );
 
 		return Result;
 	}
