@@ -885,7 +885,7 @@ void SaveFileAssociations( NCWin* nc
 		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
 		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetExecuteCommand().data() );
 		std::vector<char> ExecuteSecondary_utf8 = unicode_to_utf8( A.GetExecuteCommandSecondary().data() );
-		std::vector<char> View_utf8 = unicode_to_utf8( A.GetViewCommandSecondary().data() );
+		std::vector<char> View_utf8 = unicode_to_utf8( A.GetViewCommand().data() );
 		std::vector<char> ViewSecondary_utf8 = unicode_to_utf8( A.GetViewCommandSecondary().data() );
 		std::vector<char> Edit_utf8 = unicode_to_utf8( A.GetEditCommand().data() );
 		std::vector<char> EditSecondary_utf8 = unicode_to_utf8( A.GetEditCommandSecondary().data() );
