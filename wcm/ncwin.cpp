@@ -2561,6 +2561,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		if ( pEvent->Key() == VK_O && ( pEvent->Mod() & KM_CTRL ) )
 		{
 			ShowPanels( !_panelVisible );
+			m_AutoCompleteList.Hide();
 			return true;
 		}
 
