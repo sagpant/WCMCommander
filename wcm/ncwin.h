@@ -288,12 +288,12 @@ private:
 
 	void ApplyCommand();
 	void CreateDirectory();
-	void View();
+	void View( bool Secondary );
 	void ViewExit();
 	void ViewCharsetTable();
 	void ViewSearch( bool next );
 
-	void Edit( bool enterFileName );
+	void Edit( bool enterFileName, bool Secondary );
 	bool EditSave( bool saveAs );
 	void EditExit();
 	void EditNextCharset();
@@ -386,6 +386,7 @@ public:
 	void SetFileAssociations( const std::vector<clNCFileAssociation>& Assoc ) { m_FileAssociations = Assoc; }
 
 	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
+	bool StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode );
 };
 
 

@@ -635,24 +635,7 @@ void NCWin::PanelCtrlPgDown()
 		return;
 	}
 
-	const clNCFileAssociation* Assoc = this->FindFileAssociation( _panel->GetCurrentFileName() );
-
-	if ( !Assoc ) return;
-
-	std::vector<unicode_t> Cmd = MakeCommand( Assoc->GetExecuteCommandSecondary(), _panel->GetCurrentFileName() );
-
-	if ( Cmd.data() && *Cmd.data() )
-	{
-#if !defined( _WIN32 )
-		if ( !Assoc->GetHasTerminal() )
-		{
-			ExecNoTerminalProcess( Cmd.data() );
-			return;
-		}
-#endif
-
-		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath() );
-	}
+	StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_ExecuteSecondary );
 }
 
 void NCWin::PanelEnter()
@@ -679,29 +662,15 @@ void NCWin::PanelEnter()
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
 
-	const clNCFileAssociation* Assoc = this->FindFileAssociation( _panel->GetCurrentFileName() );
+	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) return;
 
-	if ( Assoc )
-	{
-//		printf( "Using file association: %s\n", unicode_to_utf8( Assoc->GetMask().data() ).data() );
-		cmd = MakeCommand( Assoc->GetExecuteCommand(), _panel->GetCurrentFileName() );
-		if ( cmd.data() && *cmd.data() )
-		{
-			terminal = Assoc->GetHasTerminal();
-			cmdChecked = true;
-		}
-		else
-		{
-			Assoc = NULL;
-		}
-	}
-	else if ( wcmConfig.systemAskOpenExec )
+	if ( wcmConfig.systemAskOpenExec )
 	{
 		cmd = GetOpenCommand( _panel->UriOfCurrent().GetUnicode(), &terminal, &pAppName );
 		cmdChecked = true;
 	}
 
-	if ( !Assoc && p->IsExe() )
+	if ( p->IsExe() )
 	{
 #ifndef _WIN32
 
@@ -916,11 +885,11 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 		{
 			if (
 #if defined( _WIN32 ) || defined( __APPLE__ )
-				accmask_nocase_begin(
+				accmask_nocase_begin
 #else
-				accmask( 
+				accmask
 #endif
-				FileName, Splitter.GetNextMask().data() ) )
+				( FileName, Splitter.GetNextMask().data() ) )
 			{
 				return &(*i);
 			}
@@ -1446,12 +1415,40 @@ void NCWin::QuitQuestion()
 	}
 }
 
-void NCWin::View()
+bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode )
+{
+	const clNCFileAssociation* Assoc = this->FindFileAssociation( FileName );
+
+	if ( !Assoc ) return false;
+
+	std::vector<unicode_t> Cmd = MakeCommand( Assoc->Get(Mode), FileName );
+
+	if ( Cmd.data() && *Cmd.data() )
+	{
+#if !defined( _WIN32 )
+		if ( !Assoc->GetHasTerminal() )
+		{
+			ExecNoTerminalProcess( Cmd.data() );
+			return true;
+		}
+#endif
+
+		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath() );
+
+		return true;
+	}
+
+	return false;
+}
+
+void NCWin::View( bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
 
 	try
 	{
+		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) ) return;
+
 		FSPath path = _panel->GetPath();
 		clPtr<FS> fs = _panel->GetFSPtr();
 
@@ -1515,12 +1512,14 @@ void NCWin::ViewExit()
 static cstrhash<sEditorScrollCtx, unicode_t> editPosHash;
 
 
-void NCWin::Edit( bool enterFileName )
+void NCWin::Edit( bool enterFileName, bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
 
 	try
 	{
+		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) ) return;
+
 		FSPath path = _panel->GetPath();;
 		clPtr<FS> fs = _panel->GetFSPtr();
 
@@ -3007,7 +3006,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case FC( VK_F4, KM_SHIFT ):
-				Edit( true );
+				Edit( true, false );
 				break;
 
 			case FC( VK_F9, KM_SHIFT ):
@@ -3016,11 +3015,19 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case VK_NUMPAD_CENTER:
 			case VK_F3:
-				View();
+				View( false );
+				break;
+
+			case FC( VK_F3, KM_ALT ):
+				View( true );
 				break;
 
 			case VK_F4:
-				Edit( false );
+				Edit( false, false );
+				break;
+
+			case FC( VK_F4, KM_ALT ):
+				Edit( false, true );
 				break;
 
 			case VK_F5:
@@ -3333,15 +3340,15 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 				return true;
 
 			case ID_VIEW:
-				View();
+				View( false );
 				return true;
 
 			case ID_EDIT:
-				Edit( false );
+				Edit( false, false );
 				return true;
 
 			case ID_EDIT_INP:
-				Edit( true );
+				Edit( true, false );
 				return true;
 
 			case ID_COPY:
@@ -3762,8 +3769,8 @@ ButtonWinData panelAltButtons[] =
 {
 	{"Left", 0},
 	{"Right", 0},
-	{"", 0},
-	{"", 0},
+	{"View...", 0},
+	{"Edit...", 0},
 	{"", 0},
 	{"", 0},
 	{"Find", ID_SEARCH_2},
