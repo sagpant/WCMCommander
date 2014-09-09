@@ -133,6 +133,8 @@ int NCCommandLine::UiGetClassId()
 void NCWin::EventSize( cevent_size* pEvent )
 {
 	Win::EventSize( pEvent );
+
+	this->NotifyCurrentPathInfo();
 }
 
 void NCWin::NotifyAutoComplete()
@@ -2173,8 +2175,31 @@ void NCWin::NotifyCurrentPathInfo()
 		Info.push_back( 0 );
 	}
 
+	// update only if not equal
 	if ( !unicode_is_equal( _editPref.Get(), Info.data() ) )
 	{
+		// allow at most half the window
+		int Length_MaxPixels = this->Rect().Width() / 2;
+
+		// actual width of the text
+		wal::GC gc( this );
+		gc.Set( _editPref.GetFont() );
+		int Length_Pixels = gc.GetTextExtents( Info.data() ).x;
+
+		// clip the long text
+		if ( Length_Pixels > Length_MaxPixels && Length_Pixels > 0 )
+		{
+			float Shrink = (float)Length_MaxPixels / (float)Length_Pixels;
+
+			int Length_Chars  = (int)Info.size();
+			int NewLength_Chars = std::max( 3, int( Shrink * Length_Chars )-3 );
+
+			Info = std::vector<unicode_t>( Info.begin()+(Length_Chars-NewLength_Chars), Info.end() );
+			// add ... at the beginning
+			const unicode_t Prefix[] = { '.', '.', '.' };
+			Info.insert( Info.begin(), Prefix, Prefix+3 );
+		}
+
 		_editPref.Set( Info );
 
 		RecalcLayouts();
