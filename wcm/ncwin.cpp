@@ -623,6 +623,38 @@ void NCWin::ExecuteFile()
 #define CMD_OPEN_FILE 1000
 #define CMD_EXEC_FILE 1001
 
+void NCWin::PanelCtrlPgDown()
+{
+	if ( _mode != PANEL ) { return; }
+
+	FSNode* p =  _panel->GetCurrent();
+
+	if ( !p || p->IsDir() )
+	{
+		_panel->DirEnter();
+		return;
+	}
+
+	const clNCFileAssociation* Assoc = this->FindFileAssociation( _panel->GetCurrentFileName() );
+
+	if ( !Assoc ) return;
+
+	std::vector<unicode_t> Cmd = MakeCommand( Assoc->GetExecuteCommandSecondary(), _panel->GetCurrentFileName() );
+
+	if ( Cmd.data() && *Cmd.data() )
+	{
+#if !defined( _WIN32 )
+		if ( !Assoc->GetHasTerminal() )
+		{
+			ExecNoTerminalProcess( Cmd.data() );
+			return;
+		}
+#endif
+
+		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath() );
+	}
+}
+
 void NCWin::PanelEnter()
 {
 	if ( _mode != PANEL ) { return; }
@@ -653,8 +685,15 @@ void NCWin::PanelEnter()
 	{
 //		printf( "Using file association: %s\n", unicode_to_utf8( Assoc->GetMask().data() ).data() );
 		cmd = MakeCommand( Assoc->GetExecuteCommand(), _panel->GetCurrentFileName() );
-		terminal = Assoc->GetHasTerminal();
-		cmdChecked = true;
+		if ( cmd.data() && *cmd.data() )
+		{
+			terminal = Assoc->GetHasTerminal();
+			cmdChecked = true;
+		}
+		else
+		{
+			Assoc = NULL;
+		}
 	}
 	else if ( wcmConfig.systemAskOpenExec )
 	{
@@ -2654,7 +2693,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 
 				case FC( VK_NEXT,  KM_CTRL ):
-					_panel->DirEnter();
+					PanelCtrlPgDown();
 					return true;
 
 #if defined( __APPLE__)

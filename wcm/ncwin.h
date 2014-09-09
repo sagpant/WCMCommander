@@ -278,6 +278,7 @@ private:
 	}
 
 	void PanelEnter();
+	void PanelCtrlPgDown();
 
 	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
