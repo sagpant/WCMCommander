@@ -640,10 +640,11 @@ WcmConfig::WcmConfig()
 	   //whiteStyle(false),
 
 	   panelShowHiddenFiles( true ),
-	   panelShowIcons( true ),
 	   panelCaseSensitive( false ),
 	   panelSelectFolders( false ),
 		panelShowDotsInRoot( false ),
+		panelShowFolderIcons( true ),
+		panelShowExecutableIcons( true ),
 	   panelColorMode( 0 ),
 
 	   panelModeLeft( 0 ),
@@ -677,10 +678,11 @@ WcmConfig::WcmConfig()
 	//MapBool(sectionSystem, "white", &whiteStyle, whiteStyle);
 
 	MapBool( sectionPanel, "show_hidden_files",   &panelShowHiddenFiles, panelShowHiddenFiles );
-	MapBool( sectionPanel, "show_icons",    &panelShowIcons, panelShowIcons );
 	MapBool( sectionPanel, "case_sensitive_sort", &panelCaseSensitive, panelCaseSensitive );
 	MapBool( sectionPanel, "select_folders",   &panelSelectFolders, panelSelectFolders );
 	MapBool( sectionPanel, "show_dots",     &panelShowDotsInRoot, panelShowDotsInRoot );
+	MapBool( sectionPanel, "show_foldericons",     &panelShowFolderIcons, panelShowFolderIcons );
+	MapBool( sectionPanel, "show_executableicons",     &panelShowExecutableIcons, panelShowExecutableIcons );
 	MapInt( sectionPanel,  "color_mode",    &panelColorMode, panelColorMode );
 	MapInt( sectionPanel,  "mode_left",     &panelModeLeft, panelModeLeft );
 	MapInt( sectionPanel,  "mode_right",    &panelModeRight, panelModeRight );
@@ -1168,10 +1170,11 @@ class PanelOptDialog: public NCVertDialog
 	Layout iL;
 public:
 	SButton  showHiddenButton;
-	SButton  showIconsButton;
 	SButton  caseSensitive;
 	SButton  selectFolders;
 	SButton  showDotsInRoot;
+	SButton  showFolderIcons;
+	SButton  showExecutableIcons;
 
 	PanelOptDialog( NCDialogParent* parent );
 	virtual ~PanelOptDialog();
@@ -1180,30 +1183,22 @@ public:
 PanelOptDialog::~PanelOptDialog() {}
 
 PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel ),
-	   iL( 16, 3 ),
-	   showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles ),
-	   showIconsButton( 0, this, utf8_to_unicode( _LT( "Show icons" ) ).data(), 0, wcmConfig.panelShowIcons ),
-	   caseSensitive( 0, this, utf8_to_unicode( _LT( "Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive ),
-	   selectFolders( 0, this, utf8_to_unicode( _LT( "Select folders" ) ).data(), 0, wcmConfig.panelSelectFolders ),
-	   showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the root folder" ) ).data(), 0, wcmConfig.panelShowDotsInRoot )
+ :  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel )
+ , iL( 16, 3 )
+ , showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles )
+ , caseSensitive( 0, this, utf8_to_unicode( _LT( "Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive )
+ , selectFolders( 0, this, utf8_to_unicode( _LT( "Select folders" ) ).data(), 0, wcmConfig.panelSelectFolders )
+ , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the root folder" ) ).data(), 0, wcmConfig.panelShowDotsInRoot )
+ , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder icons" ) ).data(), 0, wcmConfig.panelShowFolderIcons )
+ , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show executable icons" ) ).data(), 0, wcmConfig.panelShowExecutableIcons )
 {
-	iL.AddWin( &showHiddenButton,  0, 0 );
-	showHiddenButton.Enable();
+	iL.AddWinAndEnable( &showHiddenButton,  0, 0 );
 	showHiddenButton.SetFocus();
-	showHiddenButton.Show();
-	iL.AddWin( &showIconsButton,   1, 0 );
-	showIconsButton.Enable();
-	showIconsButton.Show();
-	iL.AddWin( &caseSensitive,  2, 0 );
-	caseSensitive.Enable();
-	caseSensitive.Show();
-	iL.AddWin( &selectFolders,  3, 0 );
-	selectFolders.Enable();
-	selectFolders.Show();
-	iL.AddWin( &showDotsInRoot,  4, 0 );
-	showDotsInRoot.Enable();
-	showDotsInRoot.Show();
+	iL.AddWinAndEnable( &caseSensitive,  1, 0 );
+	iL.AddWinAndEnable( &selectFolders,  2, 0 );
+	iL.AddWinAndEnable( &showDotsInRoot, 3, 0 );
+	iL.AddWinAndEnable( &showFolderIcons, 4, 0 );
+	iL.AddWinAndEnable( &showExecutableIcons, 5, 0 );
 
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
@@ -1211,10 +1206,11 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	showHiddenButton.SetFocus();
 
 	order.append( &showHiddenButton );
-	order.append( &showIconsButton );
 	order.append( &caseSensitive );
 	order.append( &selectFolders );
 	order.append( &showDotsInRoot );
+	order.append( &showFolderIcons );
+	order.append( &showExecutableIcons );
 	SetPosition();
 }
 
@@ -1225,10 +1221,11 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		wcmConfig.panelShowHiddenFiles = dlg.showHiddenButton.IsSet();
-		wcmConfig.panelShowIcons = dlg.showIconsButton.IsSet();
 		wcmConfig.panelCaseSensitive = dlg.caseSensitive.IsSet();
 		wcmConfig.panelSelectFolders = dlg.selectFolders.IsSet();
 		wcmConfig.panelShowDotsInRoot = dlg.showDotsInRoot.IsSet();
+		wcmConfig.panelShowFolderIcons  = dlg.showFolderIcons.IsSet();
+		wcmConfig.panelShowExecutableIcons  = dlg.showExecutableIcons.IsSet();
 		return true;
 	}
 

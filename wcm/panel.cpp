@@ -900,7 +900,7 @@ int PanelWin::GetXMargin() const
 {
 	int x = 0;
 
-	if ( wcmConfig.panelShowIcons )
+	if ( wcmConfig.panelShowFolderIcons || wcmConfig.panelShowExecutableIcons )
 	{
 		x += PANEL_ICON_SIZE;
 	}
@@ -990,7 +990,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( isDir )
 	{
-		if ( wcmConfig.panelShowIcons )
+		if ( wcmConfig.panelShowFolderIcons )
 		{
 			switch ( p->extType )
 			{
@@ -1021,7 +1021,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	}
 	else if ( isExe )
 	{
-		if ( wcmConfig.panelShowIcons )
+		if ( wcmConfig.panelShowExecutableIcons )
 		{
 			executableIcon.DrawF( gc, x, y );
 		}
