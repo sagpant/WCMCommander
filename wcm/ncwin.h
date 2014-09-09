@@ -381,6 +381,8 @@ public:
 	NCHistory* GetHistory() { return &_history; }
 	const std::vector<clNCFileAssociation>& GetFileAssociations() const { return m_FileAssociations; }
 	void SetFileAssociations( const std::vector<clNCFileAssociation>& Assoc ) { m_FileAssociations = Assoc; }
+
+	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
 };
 
 
