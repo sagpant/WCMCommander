@@ -144,6 +144,8 @@ public:
 	SButton m_HasTerminalButton;
 
 	mutable clNCFileAssociation m_Result;
+
+	bool m_Saved;
 };
 
 class clFileAssociationsListWin: public VListWin
@@ -275,7 +277,7 @@ class clFileAssociationsWin: public NCDialog
 	Button m_AddCurrentButton;
 	Button m_DelButton;
 	Button m_EditButton;
-
+	bool   m_Saved;
 public:
 	clFileAssociationsWin( NCDialogParent* parent, std::vector<clNCFileAssociation>* Associations )
 	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel )
@@ -284,6 +286,7 @@ public:
 	 , m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).data(), CMD_PLUS )
 	 , m_DelButton( 0, this, utf8_to_unicode( "- (Del)" ).data(), CMD_MINUS )
 	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "Edit" ) ).data(), CMD_EDIT )
+	 , m_Saved( true )
 	{
 		m_AddCurrentButton.Enable();
 		m_AddCurrentButton.Show();
@@ -326,7 +329,6 @@ public:
 	virtual bool EventKey( cevent_key* pEvent );
 
 	bool Key( cevent_key* pEvent );
-	void Selected();
 
 	virtual ~clFileAssociationsWin();
 };
@@ -335,28 +337,11 @@ int uiClassFileAssociations = GetUiID( "Shortcuts" );
 
 int clFileAssociationsWin::UiGetClassId() { return uiClassFileAssociations; }
 
-void clFileAssociationsWin::Selected()
-{
-	const clNCFileAssociation* p = m_ListWin.GetCurrentData();
-
-	if ( p )
-	{
-		// we have something selected, tell'em it's ok
-		EndModal( CMD_OK );
-	}
-}
-
 bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 {
-	if ( id == CMD_ITEM_CLICK && win == &m_ListWin )
-	{
-		Selected();
-		return true;
-	}
-
 	if ( id == CMD_OK )
 	{
-		Selected();
+		EndModal( CMD_OK );
 		return true;
 	}
 
@@ -371,12 +356,13 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 		                   false, bListOkCancel ) == CMD_OK )
 		{
 			m_ListWin.Del();
+			m_Saved = false;
 		}
 
 		return true;
 	}
 
-	if ( id == CMD_EDIT )
+	if ( id == CMD_EDIT || ( id == CMD_ITEM_CLICK && win == &m_ListWin ) )
 	{
 		const clNCFileAssociation* ValueToEdit = m_ListWin.GetCurrentData();
 
@@ -388,6 +374,7 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 		if ( Dialog.DoModal( ) == CMD_OK )
 		{
 			m_ListWin.Rename( Dialog.GetResult( ) );
+			m_Saved = false;
 		}
 
 		return true;
@@ -401,6 +388,7 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 		if ( Dialog.DoModal( ) == CMD_OK )
 		{
 			m_ListWin.Ins( Dialog.GetResult( ) );
+			m_Saved = false;
 		}
 
 		return true;
@@ -413,6 +401,16 @@ bool clFileAssociationsWin::Key( cevent_key* pEvent )
 {
 	if ( pEvent->Type() == EV_KEYDOWN )
 	{
+		if ( pEvent->Key() == VK_ESCAPE )
+		{
+			if ( m_Saved || NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Warning" ), _LT( "Quit without saving?" ), true, bListOkCancel ) == CMD_OK )
+			{
+				return false;
+			}
+			
+			return true;
+		}
+
 		if ( pEvent->Key() == VK_INSERT )
 		{
 			Command( CMD_PLUS, 0, this, 0 );
@@ -433,7 +431,7 @@ bool clFileAssociationsWin::Key( cevent_key* pEvent )
 
 		if ( pEvent->Key() == VK_RETURN && m_ListWin.InFocus() )
 		{
-			Selected();
+			Command( CMD_EDIT, 0, this, 0 );
 			return true;
 		}
 
