@@ -1,10 +1,11 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
+#pragma once
 
-#ifndef NCEDIT_H
-#define NCEDIT_H
 #include "wal.h"
 #include "swl.h"
 #include "vfs.h"
@@ -832,5 +833,3 @@ inline void EditString::operator = ( const EditString& a )
 	flags = a.flags;
 	data = a.data;
 }
-
-#endif

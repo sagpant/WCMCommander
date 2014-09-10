@@ -448,20 +448,12 @@
 				RelativePath=".\wcm-config.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\wcm.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\bfile.h"
-				>
-			</File>
 			<File
 				RelativePath=".\charsetdlg.h"
 				>
@@ -704,10 +696,6 @@
 			</File>
 			<File
 				RelativePath=".\wcm-config.h"
-				>
-			</File>
-			<File
-				RelativePath=".\wcm.h"
 				>
 			</File>
 		</Filter>

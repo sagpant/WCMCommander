@@ -3,8 +3,7 @@
 */
 
 
-#ifndef WINBASE_H
-#define WINBASE_H
+#pragma once
 
 namespace wal
 {
@@ -75,7 +74,7 @@ namespace wal
 	public:
 		SButton( int nId, Win* parent, unicode_t* txt, int _group, bool _isSet = false, crect* rect = 0 );
 
-		bool IsSet() { return isSet; }
+		bool IsSet() const { return isSet; }
 		void Change( bool _isSet );
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
@@ -123,10 +122,11 @@ namespace wal
 
 		void Insert( unicode_t t );
 		void Insert( const unicode_t* txt );
-		void Del();
+		void Del( bool DelteWord );
 		void Backspace( bool DeleteWord );
 		void Set( const unicode_t* s, bool mark = false );
 
+		const unicode_t* Ptr() const { return data.data(); }
 		unicode_t* Ptr() { return data.data(); }
 		unicode_t operator []( int n ) { return data[n]; }
 
@@ -180,7 +180,7 @@ namespace wal
 		bool IsEmpty() const;
 		int GetCursorPos() { return text.Cursor(); }
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
-		std::vector<unicode_t> GetText();
+		std::vector<unicode_t> GetText() const;
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();
@@ -526,5 +526,3 @@ namespace wal
 
 }; // namespace wal
 
-
-#endif

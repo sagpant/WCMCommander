@@ -2,9 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef INTERNAL_H
-#define INTERNAL_H
+#pragma once
 
 namespace wal
 {
@@ -107,5 +105,3 @@ namespace wal
 
 
 }; //namespace wal
-
-#endif

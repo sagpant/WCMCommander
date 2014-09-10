@@ -26,6 +26,15 @@ namespace wal
 		objList.append( new LItemWin( w, r1, r2, c1, c2 ) );
 	}
 
+	void Layout::AddWinAndEnable( Win* w, int r1, int c1, int r2, int c2 )
+	{
+		if ( !w ) return;
+
+		this->AddWin( w, r1, c1, r2, c2 );
+		w->Enable();
+		w->Show();
+	}
+
 	void Layout::AddLayout( Layout* l, int r1, int c1, int r2, int c2 )
 	{
 		if ( r2 < 0 ) { r2 = r1; }

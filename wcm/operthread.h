@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef OPERTHREAD_H
-#define OPERTHREAD_H
+#pragma once
 
 #include "ncdialogs.h"
 #include "operwin.h"
@@ -43,6 +43,3 @@ protected:
 	int RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, const char* s6, const char* s7, ButtonDataNode* buttons = bOk, const char* sysErr = 0 );
 };
 
-
-
-#endif

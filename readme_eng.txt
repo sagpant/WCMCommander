@@ -21,13 +21,8 @@ Install:
 		libsmbclient-dev
 		libfreetype-dev
 
-	Run once:
-		cd libtester
-		./libconf.create
-		cd ..
+Build (FreeBSD, Linux, OS X, MinGW):
 
-Build:
-			
-		make clean
-		make all
+		cd wcm
+		make all -B
 		sudo make install

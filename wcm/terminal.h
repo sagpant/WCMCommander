@@ -1,9 +1,11 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-#ifndef TERMINAL_H
-#define TERMINAL_H
+#pragma once
+
 #include "wal.h"
 #include "shell.h"
 
@@ -159,5 +161,4 @@ public:
 
 void* TerminalInputThreadFunc( void* data );
 
-#endif
 #endif

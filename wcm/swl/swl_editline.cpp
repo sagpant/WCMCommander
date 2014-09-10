@@ -5,6 +5,8 @@
 
 #include "swl.h"
 
+#include <algorithm>
+
 namespace wal
 {
 
@@ -98,11 +100,31 @@ namespace wal
 		marker = cursor;
 	}
 
-	void EditBuf::Del()
+	void EditBuf::Del( bool DeleteWord )
 	{
 		if ( DelMarked() ) { return; }
 
-		if ( cursor < count )
+		if ( DeleteWord )
+		{
+			int PrevCursor = cursor;
+
+			int group = cursor < count ? GetCharGroup( data[cursor] ) : -1;
+
+			int CharsToDelete = 0;
+
+			while ( cursor < count && GetCharGroup( data[cursor] ) == group )
+			{
+				cursor++;
+				CharsToDelete++;
+			}
+
+			cursor = PrevCursor;
+
+			CharsToDelete = std::min( CharsToDelete, count-cursor );
+
+			if ( CharsToDelete > 0 ) DeleteBlock( cursor, CharsToDelete );
+		}
+		else if ( cursor < count )
 		{
 			DeleteBlock( cursor, 1 );
 		}
@@ -402,7 +424,7 @@ namespace wal
 		return oldFirst != first;
 	}
 
-	std::vector<unicode_t> EditLine::GetText()
+	std::vector<unicode_t> EditLine::GetText() const
 	{
 		int count = text.Count();
 		std::vector<unicode_t> p( count + 1 );
@@ -633,7 +655,7 @@ namespace wal
 				{
 					if ( text.Cursor() > text.Count() ) { return true; }
 
-					text.Del();
+					text.Del( ctrl );
 					Changed();
 				}
 				break;
@@ -755,7 +777,7 @@ namespace wal
 		if ( text.Marked() )
 		{
 			ClipboardCopy();
-			text.Del();
+			text.Del( false );
 			CheckCursorPos();
 			Invalidate();
 		}

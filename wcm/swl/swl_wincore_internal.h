@@ -2,9 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef SWL_WINCORE_INTERNAL_H
-#define SWL_WINCORE_INTERNAL_H
+#pragma once
 
 namespace wal
 {
@@ -112,5 +110,3 @@ namespace wal
 
 
 }; //namespace wal
-
-#endif

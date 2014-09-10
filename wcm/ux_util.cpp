@@ -1,8 +1,14 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "ux_util.h"
 
-#ifndef _WIN32
-#include "bfile.h"
-#include <wal.h>
+#if !defined( _WIN32 )
+#	include <wal.h>
+
 using namespace wal;
 
 static int  GetNWords( char* str, char** a, int n )
@@ -107,6 +113,5 @@ bool UxMntList( wal::ccollect< MntListNode >* pList )
 
 	return true;
 }
-
 
 #endif

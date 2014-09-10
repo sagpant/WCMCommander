@@ -115,6 +115,8 @@ namespace wal
 
 	bool unicode_is_equal( const unicode_t* s, const unicode_t* ss )
 	{
+		if ( !s || !ss ) return false;
+
 		while ( *ss != 0 ) if ( *s++ != *ss++ )
 		{
 			return false;
@@ -127,6 +129,8 @@ namespace wal
 
 	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr )
 	{
+		if ( !Str || !SubStr ) return false;
+
 		const unicode_t* S = Str;
 		const unicode_t* SS = SubStr;
 
@@ -142,6 +146,8 @@ namespace wal
 
 	int unicode_strlen(const unicode_t* s)
 	{
+		if ( !s ) return 0;
+
 		const unicode_t* p = s;
 
 		while (*p) { p++; }
@@ -158,6 +164,8 @@ namespace wal
 
 	unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s)
 	{
+		if ( !d || !s ) return NULL;
+
 		unicode_t* ret = d;
 		while ((*d++ = *s++) != 0)
 			;
@@ -168,6 +176,8 @@ namespace wal
 	// d is always 0-ended
 	unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n)
 	{
+		if ( !d || !s ) return NULL;
+
 		unicode_t* ret = d;
 		for (;;)
 		{
@@ -186,6 +196,8 @@ namespace wal
 
 	void unicode_strcat(unicode_t* d, const unicode_t* s)
 	{
+		if ( !d || !s ) return;
+
 		while (*d)
 			d++;
 		while ((*d++ = *s++) != 0)

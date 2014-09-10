@@ -1,9 +1,12 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "dircalc.h"
 #include "string-util.h"
 #include "ltext.h"
-//#include "fileopers.h"
-//#include "ncdialogs.h"
-//#include "operwin.h"
 
 class OperDirCalcData: public OperData
 {

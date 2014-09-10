@@ -1,9 +1,11 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-#ifndef NCVIEW_H
-#define NCVIEW_H
+#pragma once
+
 #include "swl.h"
 #include "vfs.h"
 
@@ -171,5 +173,3 @@ public:
 
 	virtual ~ViewWin();
 };
-
-#endif

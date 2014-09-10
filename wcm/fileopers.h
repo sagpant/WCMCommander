@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef FILEOPERS_H
-#define FILEOPERS_H
+#pragma once
 
 #include "operthread.h"
 #include "vfs.h"
@@ -82,5 +82,3 @@ bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent );
 bool DeleteList( clPtr<FS> f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent );
 clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
 bool MoveFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
-
-#endif

@@ -1,17 +1,17 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef NCWIN_H
-#define NCWIN_H
+#pragma once
 
 #include "swl.h"
 #include "panel.h"
 #ifdef _WIN32
-#include "w32cons.h"
+#	include "w32cons.h"
 #else
-#include "termwin.h"
+#	include "termwin.h"
 #endif
 
 #include "ncview.h"
@@ -20,6 +20,7 @@
 #include "ncdialogs.h"
 #include "ext-app.h"
 #include "toolbar.h"
+#include "fileassociations.h"
 
 using namespace wal;
 
@@ -32,6 +33,7 @@ public:
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
 	const unicode_t* Get() { return text.data(); }
 	void Set( const unicode_t* txt );
+	void Set( const std::vector<unicode_t>& txt );
 	virtual void OnChangeStyles();
 	virtual int UiGetClassId();
 	virtual  ~StringWin();
@@ -43,17 +45,6 @@ struct ButtonWinData
 	const char* txt;
 	int commandId;
 };
-
-
-extern ButtonWinData panelNormalButtons[];
-extern ButtonWinData panelControlButtons[];
-extern ButtonWinData panelShiftButtons[];
-extern ButtonWinData panelAltButtons[];
-extern ButtonWinData editNormalButtons[];
-extern ButtonWinData editShiftButtons[];
-extern ButtonWinData editCtrlButtons[];
-extern ButtonWinData viewNormalButtons[];
-extern ButtonWinData viewShiftButtons[];
 
 class ButtonWin: public Win
 {
@@ -252,6 +243,9 @@ private:
 
 	NCHistory _history;
 
+	/// currently active file associations
+	std::vector<clNCFileAssociation> m_FileAssociations;
+
 	int _shiftSelectType;
 
 	void SetMode( MODE m );
@@ -273,6 +267,7 @@ private:
 	}
 
 	void PanelEnter();
+	void PanelCtrlPgDown();
 
 	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
@@ -282,12 +277,12 @@ private:
 
 	void ApplyCommand();
 	void CreateDirectory();
-	void View();
+	void View( bool Secondary );
 	void ViewExit();
 	void ViewCharsetTable();
 	void ViewSearch( bool next );
 
-	void Edit( bool enterFileName );
+	void Edit( bool enterFileName, bool Secondary );
 	bool EditSave( bool saveAs );
 	void EditExit();
 	void EditNextCharset();
@@ -310,6 +305,7 @@ private:
 	void Tab( bool forceShellTab );
 	void PanelEqual();
 	void Shortcuts();
+	void FileAssociations();
 	void OnOffShl();
 
 	void SetToolbarPanel();
@@ -372,10 +368,12 @@ public:
 	void HideAutoComplete();
 	void NotifyAutoComplete();
 	void NotifyAutoCompleteChange();
+	void NotifyCurrentPathInfo();
 
 	NCHistory* GetHistory() { return &_history; }
+	const std::vector<clNCFileAssociation>& GetFileAssociations() const { return m_FileAssociations; }
+	void SetFileAssociations( const std::vector<clNCFileAssociation>& Assoc ) { m_FileAssociations = Assoc; }
+
+	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
+	bool StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode );
 };
-
-
-
-#endif

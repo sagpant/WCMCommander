@@ -144,7 +144,6 @@
 		</Build>
 		<Unit filename="ReadMe.txt" />
 		<Unit filename="Resource.h" />
-		<Unit filename="bfile.h" />
 		<Unit filename="charsetdlg.cpp" />
 		<Unit filename="charsetdlg.h" />
 		<Unit filename="color-style.cpp" />
@@ -309,8 +308,6 @@
 		<Unit filename="wal/wal_tmpls.h" />
 		<Unit filename="wcm-config.cpp" />
 		<Unit filename="wcm-config.h" />
-		<Unit filename="wcm.cpp" />
-		<Unit filename="wcm.h" />
 		<Unit filename="wcm.ico" />
 		<Extensions>
 			<code_completion />

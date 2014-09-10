@@ -1,5 +1,13 @@
-#if defined(_WIN32) && !defined(W32CONS_H)
-#define W32CONS_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
+
+#if defined(_WIN32)
+
 #include "nc.h"
 
 extern int uiClassTerminal;

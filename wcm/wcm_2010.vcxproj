@@ -236,10 +236,8 @@
     <ClCompile Include="wal\wal_sys_api.cpp" />
     <ClCompile Include="wal\wal_tmpls.cpp" />
     <ClCompile Include="wcm-config.cpp" />
-    <ClCompile Include="wcm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bfile.h" />
     <ClInclude Include="charsetdlg.h" />
     <ClInclude Include="color-style.h" />
     <ClInclude Include="dircalc.h" />
@@ -302,7 +300,6 @@
     <ClInclude Include="wal\wal_sys_api.h" />
     <ClInclude Include="wal\wal_tmpls.h" />
     <ClInclude Include="wcm-config.h" />
-    <ClInclude Include="wcm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="icon1.ico" />

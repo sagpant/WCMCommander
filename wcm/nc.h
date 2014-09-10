@@ -1,13 +1,13 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef NC_H
-#define NC_H
+#pragma once
 
 #ifdef _WIN32
-#include "stdafx.h"
+#	include "stdafx.h"
 #endif
 
 #include "swl.h"
@@ -110,6 +110,7 @@ enum CommandIDs
    ID_PANEL_EQUAL,
    ID_SEARCH_2,
    ID_SHORTCUTS,
+	ID_FILEASSOCIATIONS,
    ID_REFRESH,
 
    ID_DEV_SELECT_LEFT,
@@ -127,8 +128,3 @@ enum CommandIDs
    ID_MNT_UX0 = 300,
    ID_CHANGED_CONFIG_BROADCAST = 1000
 };
-
-
-
-
-#endif

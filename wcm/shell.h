@@ -1,10 +1,12 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 #ifndef _WIN32
-#ifndef SHELL_H
-#define SHELL_H
 
 #include "wal.h"
 
@@ -28,5 +30,4 @@ public:
 	~Shell();
 };
 
-#endif
 #endif

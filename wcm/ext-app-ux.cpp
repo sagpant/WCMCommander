@@ -1,6 +1,13 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include <wal.h>
+
 using namespace wal;
-#include "bfile.h"
+
 #include "string-util.h"
 #include "ext-app.h"
 #include "unicode_lc.h"

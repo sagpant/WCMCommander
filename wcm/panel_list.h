@@ -1,9 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-#ifndef PANEL_LIST_H
-#define PANEL_LIST_H
+#pragma once
 
 #include "swl.h"
 #include "vfs.h"
@@ -248,8 +249,3 @@ public:
 
 	~PanelList() {};
 };
-
-
-
-
-#endif

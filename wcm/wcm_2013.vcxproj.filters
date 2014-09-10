@@ -190,9 +190,6 @@
     <ClCompile Include="wal\wal.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>
-    <ClCompile Include="wcm.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
     <ClCompile Include="wcm-config.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>
@@ -201,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="wal\IntrusivePtr.h">
       <Filter>%2a.h</Filter>
+    </ClCompile>
+    <ClCompile Include="fileassociations.cpp">
+      <Filter>%2a.cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -233,9 +233,6 @@
     </ClInclude>
     <ClInclude Include="wal\wal_tmpls.h">
       <Filter>wal</Filter>
-    </ClInclude>
-    <ClInclude Include="bfile.h">
-      <Filter>%2a.h</Filter>
     </ClInclude>
     <ClInclude Include="charsetdlg.h">
       <Filter>%2a.h</Filter>
@@ -336,9 +333,6 @@
     <ClInclude Include="wcm-config.h">
       <Filter>%2a.h</Filter>
     </ClInclude>
-    <ClInclude Include="wcm.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
     <ClInclude Include="w32cons.h">
       <Filter>%2a.h</Filter>
     </ClInclude>
@@ -391,6 +385,9 @@
       <Filter>%2a.h</Filter>
     </ClInclude>
     <ClInclude Include="w32util.h">
+      <Filter>%2a.h</Filter>
+    </ClInclude>
+    <ClInclude Include="fileassociations.h">
       <Filter>%2a.h</Filter>
     </ClInclude>
   </ItemGroup>

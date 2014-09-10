@@ -1,9 +1,13 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "shell-tools.h"
 #include "nc.h"
 #include "vfs-uri.h"
 #include "unicode_lc.h"
-
-//#include "string-util.h"
 
 struct ShellLoadDirTD
 {

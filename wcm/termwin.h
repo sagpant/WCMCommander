@@ -1,9 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-#ifndef TERMWIN_H
-#define TERMWIN_H
+#pragma once
 
 #include "nc.h"
 
@@ -107,6 +108,3 @@ public:
 	virtual int UiGetClassId();
 	virtual void OnChangeStyles();
 };
-
-
-#endif

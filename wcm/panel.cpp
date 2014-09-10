@@ -1,8 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
-
-//#define panelColors !!!
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
@@ -239,7 +239,7 @@ clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 	return ret;
 }
 
-static bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
+bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
 {
 	if ( !*mask )
 	{
@@ -679,6 +679,8 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 		SetCurrent( _list.Find( s, HideDotsInDir() ) );
 		Invalidate();
 
+		GetNCWin()->NotifyCurrentPathInfo();
+
 //		}
 
 		return true;
@@ -900,7 +902,7 @@ int PanelWin::GetXMargin() const
 {
 	int x = 0;
 
-	if ( wcmConfig.panelShowIcons )
+	if ( wcmConfig.panelShowFolderIcons || wcmConfig.panelShowExecutableIcons )
 	{
 		x += PANEL_ICON_SIZE;
 	}
@@ -990,7 +992,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( isDir )
 	{
-		if ( wcmConfig.panelShowIcons )
+		if ( wcmConfig.panelShowFolderIcons )
 		{
 			switch ( p->extType )
 			{
@@ -1021,7 +1023,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	}
 	else if ( isExe )
 	{
-		if ( wcmConfig.panelShowIcons )
+		if ( wcmConfig.panelShowExecutableIcons )
 		{
 			executableIcon.DrawF( gc, x, y );
 		}
@@ -1688,6 +1690,7 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 		_inOperState = false;
 		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), ex->message(), true );
 		ex->destroy();
+		GetNCWin()->NotifyCurrentPathInfo();
 	}
 }
 
@@ -1714,6 +1717,7 @@ void PanelWin::OperThreadStopped()
 			//Invalidate();
 			NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), _operData.errorString.GetUtf8(), true );
 			NCWin* ncWin = GetNCWin();
+			ncWin->NotifyCurrentPathInfo();
 			ncWin->SelectDrive(this, ncWin->GetOtherPanel(this));
 			return;
 		}
@@ -1767,6 +1771,8 @@ void PanelWin::OperThreadStopped()
 		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), ex->message(), true );
 		ex->destroy();
 	}
+
+	GetNCWin()->NotifyCurrentPathInfo();
 
 	Invalidate();
 }

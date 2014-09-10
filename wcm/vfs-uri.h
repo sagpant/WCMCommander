@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef VFS_URI_H
-#define VFS_URI_H
+#pragma once
 
 #include "vfs.h"
 
@@ -21,7 +21,3 @@
 clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count );
 
 clPtr<FS> ParzeCurrentSystemURL( FSPath& path );
-
-//extern clPtr<FS> systemclPtr<FS>;
-
-#endif

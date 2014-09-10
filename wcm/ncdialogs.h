@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef NCDIALOGS_H
-#define NCDIALOGS_H
+#pragma once
 
 #include "swl.h"
 #include "nchistory.h"
@@ -154,6 +154,3 @@ public:
 
 
 int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, DlgMenuData* d );
-
-#endif
-

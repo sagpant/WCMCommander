@@ -1,6 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal) 2010
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #include <algorithm>
 
@@ -30,6 +32,7 @@
 #include "filesearch.h"
 #include "help.h"
 #include "shortcuts.h"
+#include "fileassociations.h"
 #include "fontdlg.h"
 #include "color-style.h"
 #include "search-dlg.h"
@@ -41,9 +44,207 @@
 #  include "ux_util.h"
 #endif
 
+const int CMD_SWITCH = 32167;
+
+static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {0, 0}};
+
+ButtonWinData panelNormalButtons[] =
+{
+	{"Help", ID_HELP },
+	{"", 0}, //{"UserMn", ID_USER_MENU},
+	{"View", ID_VIEW},
+	{"Edit", ID_EDIT},
+	{"Copy", ID_COPY},
+	{"Move", ID_MOVE},
+	{"MkDir", ID_MKDIR},
+	{"Delete", ID_DELETE},
+	{"Menu", ID_MENU},
+	{"Quit", ID_QUIT},
+	{0}
+};
+
+ButtonWinData panelControlButtons[] =
+{
+	{"", 0}, //{L"Left", ID_LEFT },
+	{"", 0}, //{L"Right", ID_RIGHT},
+	{"Name", ID_SORT_BY_NAME},
+	{"Extens", ID_SORT_BY_EXT},
+	{"Modif", ID_SORT_BY_MODIF},
+	{"Size", ID_SORT_BY_SIZE},
+	{"Unsort", ID_UNSORT},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+ButtonWinData panelAltButtons[] =
+{
+	{"Left", 0},
+	{"Right", 0},
+	{"View...", 0},
+	{"Edit...", 0},
+	{"", 0},
+	{"", 0},
+	{"Find", ID_SEARCH_2},
+	{"History", ID_HISTORY},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+ButtonWinData panelShiftButtons[] =
+{
+	{"Left",  ID_DEV_SELECT_LEFT},
+	{"Right", ID_DEV_SELECT_RIGHT},
+	{"", 0},
+	{"Edit...", ID_EDIT_INP},
+	{"Copy", ID_COPY_SHIFT},
+	{"Rename", ID_MOVE_SHIFT},
+	{"", 0},
+	{"", 0},
+	{"Save", ID_CONFIG_SAVE},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+
+ButtonWinData editNormalButtons[] =
+{
+	{"Help", ID_HELP },
+	{"Save", ID_SAVE},
+	{"", 0},
+	{"Exit", ID_QUIT},
+	{"", 0},
+	{"", 0},
+	{"Search", ID_SEARCH_TEXT},
+	{"Charset", ID_CHARSET},
+	{"", 0},
+	{"Exit", ID_QUIT},
+	{0}
+};
+
+
+ButtonWinData editShiftButtons[] =
+{
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"Table", ID_CHARSET_TABLE},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+ButtonWinData editCtrlButtons[] =
+{
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"Replace", ID_REPLACE_TEXT},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+
+ButtonWinData viewNormalButtons[] =
+{
+	{"Help", ID_HELP },
+	{"Wrap/Un...", ID_WRAP},
+	{"Exit", ID_QUIT},
+	{"Hex/Text", ID_HEX},
+	{"", 0},
+	{"", 0},
+	{"Search", ID_SEARCH_TEXT},
+	{"Charset", ID_CHARSET},
+	{"", 0},
+	{"Exit", ID_QUIT},
+	{0}
+};
+
+ButtonWinData viewShiftButtons[] =
+{
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"Table", ID_CHARSET_TABLE},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+static const int CMD_OPEN_FILE = 1000;
+static const int CMD_EXEC_FILE = 1001;
+
 template <typename T> void SkipSpaces( T& p )
 {
 	while ( *p == ' ' ) { p++; }
+}
+
+static bool StrHaveSpace( const unicode_t* s )
+{
+	for ( ; *s; s++ )
+		if ( *s == ' ' )
+		{
+			return true;
+		}
+
+	return false;
+}
+
+std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
+{
+	if ( begin >= end ) return end;
+
+	return std::search( begin, end, SubStr.begin(), SubStr.end() );
+}
+
+std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const unicode_t* FileName )
+{
+	std::vector<unicode_t> Result( cmd );
+	std::vector<unicode_t> Name = new_unicode_str( FileName );
+
+	bool HasSpaces = StrHaveSpace( Name.data() );
+
+	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
+
+	if ( HasSpaces )
+	{
+		Name.insert( Name.begin(), '"' );
+		Name.push_back( '"' );
+	}
+
+	std::vector<unicode_t> Mask;
+	Mask.push_back( '!' );
+	Mask.push_back( '.' );
+	Mask.push_back( '!' );	
+
+	auto pos = FindSubstr( Result.begin(), Result.end(), Mask );
+
+	while ( pos != Result.end() )
+	{
+		pos = Result.erase( pos, pos + Mask.size() );
+		size_t idx = pos - Result.begin();
+		Result.insert( pos, Name.begin(), Name.end() );
+		pos = Result.begin() + idx;
+		pos = FindSubstr( pos + Name.size(), Result.end(), Mask );
+	}
+
+	return Result;
 }
 
 extern SearchAndReplaceParams searchParams;
@@ -51,8 +252,6 @@ extern SearchAndReplaceParams searchParams;
 static crect acWinRect( 0, 0, 850, 500 );
 
 static unicode_t panelButtonStr[] = {'*', 0};
-
-//static char verString[] = "Wal Commander v 0.8.2 beta\nCopyright (c) by Valery Goryachev 2011";
 
 void NCWin::SetToolbarPanel()
 {
@@ -101,6 +300,8 @@ int NCCommandLine::UiGetClassId()
 void NCWin::EventSize( cevent_size* pEvent )
 {
 	Win::EventSize( pEvent );
+
+	this->NotifyCurrentPathInfo();
 }
 
 void NCWin::NotifyAutoComplete()
@@ -327,7 +528,7 @@ NCWin::NCWin()
 	_mdOptions.AddCmd( ID_CONFIG_TERMINAL,  _LT( "&Terminal settings" ) );
 #endif
 
-	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "St&yles" ) );
+	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "S&tyles" ) );
 	_mdOptions.AddSplit();
 	_mdOptions.AddCmd( ID_CONFIG_SAVE,   _LT( "&Save setup" ),   "Shift-F9" );
 
@@ -355,29 +556,9 @@ NCWin::NCWin()
 	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl =" );
 	_mdCommands.AddSplit();
 	_mdCommands.AddCmd( ID_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl D" );
+	_mdCommands.AddCmd( ID_FILEASSOCIATIONS, _LT( "File &associations" ) );
 
 	_edit.SetFocus();
-
-	char hostName[0x100] = "";
-
-	if ( !gethostname( hostName, sizeof( hostName ) ) )
-	{
-	}
-
-	int len = strlen( hostName );
-
-	if ( len > 16 ) { len = 16; hostName[len] = 0; }
-
-	hostName[len++] =
-#ifdef _WIN32
-	   '>';
-#else
-	   geteuid() ? '$' : '#';
-#endif
-
-	hostName[len] = 0;
-
-	_editPref.Set( utf8_to_unicode( hostName ).data() );
 
 	SetName( appName );
 
@@ -389,15 +570,24 @@ NCWin::NCWin()
 
 	cpoint ScreenSize = GetScreenSize();
 
-	Rect.left   = std::max( Rect.left, 0 );
-	Rect.right  = std::min( Rect.right, ScreenSize.x );
-	Rect.top    = std::max( Rect.top, 0 );
-	Rect.bottom = std::min( Rect.bottom, ScreenSize.y );
+	// enforce main window Rect restrictions:
+	// size is least minW x minH (#3), and screensize at most (#4)
+	// topleft is on the screen (#1), and no closer than minW, minH from the rightbottom of the screen (#2)
 
-	if ( Rect.Width() > 0 && Rect.Height() > 0 )
-	{
-		NCDialogParent::Move( Rect, true );
-	}
+	const int minW = 100;
+	const int minH = 100;
+
+	Rect.left   = std::max( Rect.left, 0 ); // #1
+	Rect.left = std::min(Rect.left, ScreenSize.x - minW); // #2
+	Rect.top = std::max(Rect.top, 0); //#1
+	Rect.top = std::min(Rect.top, ScreenSize.y - minH); //#2
+	
+	Rect.right = std::max(Rect.right, Rect.left + minW); // #3
+	Rect.right = std::min(Rect.right, Rect.left + ScreenSize.x); //#4
+	Rect.bottom = std::max(Rect.bottom, Rect.top + minH); // #3
+	Rect.bottom = std::min(Rect.bottom, Rect.top + ScreenSize.y); //#4
+
+	NCDialogParent::Move( Rect, true );
 
 	// apply saved panel paths
 //	printf( "Left = %s\n", wcmConfig.leftPanelPath.data() );
@@ -578,8 +768,20 @@ void NCWin::ExecuteFile()
 	}
 }
 
-#define CMD_OPEN_FILE 1000
-#define CMD_EXEC_FILE 1001
+void NCWin::PanelCtrlPgDown()
+{
+	if ( _mode != PANEL ) { return; }
+
+	FSNode* p =  _panel->GetCurrent();
+
+	if ( !p || p->IsDir() )
+	{
+		_panel->DirEnter();
+		return;
+	}
+
+	StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_ExecuteSecondary );
+}
 
 void NCWin::PanelEnter()
 {
@@ -604,6 +806,8 @@ void NCWin::PanelEnter()
 	std::vector<unicode_t> cmd;
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
+
+	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) return;
 
 	if ( wcmConfig.systemAskOpenExec )
 	{
@@ -657,7 +861,7 @@ void NCWin::PanelEnter()
 
 	if ( cmd.data() )
 	{
-#ifndef _WIN32
+#if !defined( _WIN32 )
 		if ( !terminal )
 		{
 			ExecNoTerminalProcess( cmd.data() );
@@ -769,6 +973,76 @@ void NCWin::RightButtonPressed( cpoint point )
 	return;
 }
 
+bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask );
+bool accmask( const unicode_t* name, const unicode_t* mask );
+
+class clMultimaskSplitter
+{
+public:
+	explicit clMultimaskSplitter( const std::vector<unicode_t>& MultiMask )
+	 : m_MultiMask( MultiMask )
+	 , m_CurrentPos( 0 )
+	{}
+
+	bool HasNextMask() const
+	{
+		return m_CurrentPos < m_MultiMask.size();
+	}
+
+	std::vector<unicode_t> GetNextMask()
+	{
+		size_t Next = m_CurrentPos;
+
+		// find the nearest ','
+		while ( Next < m_MultiMask.size() && m_MultiMask[Next] != ',' ) Next++;
+
+		if ( m_CurrentPos == Next ) return std::vector<unicode_t>();
+
+		std::vector<unicode_t> Result( m_MultiMask.begin()+m_CurrentPos, m_MultiMask.begin()+Next );
+
+		if ( Next < m_MultiMask.size() && m_MultiMask[Next] == ',' )
+		{
+			// skip ','
+			Next++;
+			// and trailing spaces
+			while ( Next < m_MultiMask.size() && m_MultiMask[Next] <= ' ' ) Next++;
+		}
+
+		m_CurrentPos = Next;
+
+		return Result;
+	}
+
+private:
+	const std::vector<unicode_t>& m_MultiMask;
+	size_t m_CurrentPos;
+};
+
+const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
+{
+	for ( auto i = m_FileAssociations.begin(); i != m_FileAssociations.end(); i++ )
+	{
+		std::vector<unicode_t> Mask = i->GetMask();
+
+		clMultimaskSplitter Splitter( Mask );
+
+		while ( Splitter.HasNextMask() )
+		{
+			if (
+#if defined( _WIN32 ) || defined( __APPLE__ )
+				accmask_nocase_begin
+#else
+				accmask
+#endif
+				( FileName, Splitter.GetNextMask().data() ) )
+			{
+				return &(*i);
+			}
+		}
+	}
+
+	return NULL;
+}
 
 void NCWin::ReturnToDefaultSysDir()
 {
@@ -1200,39 +1474,6 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	};
 }
 
-std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
-{
-	if ( begin >= end ) return end;
-
-	return std::search( begin, end, SubStr.begin(), SubStr.end() );
-}
-
-std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const unicode_t* FileName )
-{
-	std::vector<unicode_t> Result( cmd );
-	std::vector<unicode_t> Name = new_unicode_str( FileName );
-
-	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
-
-	std::vector<unicode_t> Mask;
-	Mask.push_back( '!' );
-	Mask.push_back( '.' );
-	Mask.push_back( '!' );	
-
-	auto pos = FindSubstr( Result.begin(), Result.end(), Mask );
-
-	while ( pos != Result.end() )
-	{
-		pos = Result.erase( pos, pos + Mask.size() );
-		size_t idx = pos - Result.begin();
-		Result.insert( pos, Name.begin(), Name.end() );
-		pos = Result.begin() + idx;
-		pos = FindSubstr( pos + Name.size(), Result.end(), Mask );
-	}
-
-	return Result;
-}
-
 void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
 {
 	if ( !cmd.data() ) { return; }
@@ -1319,12 +1560,51 @@ void NCWin::QuitQuestion()
 	}
 }
 
-void NCWin::View()
+bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode )
+{
+	const clNCFileAssociation* Assoc = this->FindFileAssociation( FileName );
+
+	if ( !Assoc ) return false;
+
+	std::vector<unicode_t> Cmd = MakeCommand( Assoc->Get(Mode), FileName );
+
+	if ( Cmd.data() && *Cmd.data() )
+	{
+#if !defined( _WIN32 )
+		if ( !Assoc->GetHasTerminal() )
+		{
+			ExecNoTerminalProcess( Cmd.data() );
+			return true;
+		}
+#endif
+
+		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath() );
+
+		return true;
+	}
+
+	return false;
+}
+
+void NCWin::View( bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
 
 	try
 	{
+		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) ) return;
+
+		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
+		{
+			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to view a new file while a background editor is active.\nDo you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
+			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) return;
+			if ( Msg == CMD_SWITCH )
+			{
+				SwitchToBackgroundActivity();
+				return;
+			}
+		}
+
 		FSPath path = _panel->GetPath();
 		clPtr<FS> fs = _panel->GetFSPtr();
 
@@ -1387,13 +1667,25 @@ void NCWin::ViewExit()
 
 static cstrhash<sEditorScrollCtx, unicode_t> editPosHash;
 
-
-void NCWin::Edit( bool enterFileName )
+void NCWin::Edit( bool enterFileName, bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
 
 	try
 	{
+		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) ) return;
+
+		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
+		{
+			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to edit a new file while a background editor is active.\nDo you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
+			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) return;
+			if ( Msg == CMD_SWITCH )
+			{
+				SwitchToBackgroundActivity();
+				return;
+			}
+		}
+
 		FSPath path = _panel->GetPath();;
 		clPtr<FS> fs = _panel->GetFSPtr();
 
@@ -1452,17 +1744,6 @@ void NCWin::Edit( bool enterFileName )
 		NCMessageBox( this, _LT( "Edit" ), ex->message(), true );
 		ex->destroy();
 	}
-}
-
-static bool StrHaveSpace( const unicode_t* s )
-{
-	for ( ; *s; s++ )
-		if ( *s == ' ' )
-		{
-			return true;
-		}
-
-	return false;
 }
 
 const unicode_t* NCWin::GetCurrentFileName() const
@@ -1812,6 +2093,15 @@ void NCWin::Shortcuts()
 	}
 }
 
+void NCWin::FileAssociations()
+{
+	if ( _mode != PANEL ) { return; }
+
+	if ( FileAssociationsDlg( this, &m_FileAssociations ) )
+	{
+	}
+}
+
 bool NCWin::EditSave( bool saveAs )
 {
 
@@ -2061,6 +2351,71 @@ void NCWin::Tab( bool forceShellTab )
 			_edit.Invalidate();
 		}
 	};
+
+	NotifyCurrentPathInfo();
+}
+
+void NCWin::NotifyCurrentPathInfo()
+{
+	std::vector<unicode_t> Info;
+
+	if ( wcmConfig.systemShowHostName )
+	{
+		char hostName[0x100] = "";
+
+		if ( !gethostname( hostName, sizeof( hostName ) ) ) {}
+
+		int len = strlen( hostName );
+
+		if ( len > 16 ) { len = 16; hostName[len] = 0; }
+
+		hostName[len++] =
+#ifdef _WIN32
+	   '>';
+#else
+	   geteuid() ? '$' : '#';
+#endif
+		hostName[len] = 0;
+
+		Info = utf8_to_unicode( hostName );
+	}
+	else
+	{
+		Info = new_unicode_str( _panel->UriOfDir().GetUnicode() );
+		// add a nice trailing > symbol
+		if ( Info.size() ) Info.pop_back();
+		Info.push_back( '>' );
+		Info.push_back( 0 );
+	}
+
+	// allow at most half the window
+	int Length_MaxPixels = this->Rect().Width() / 2;
+
+	// actual width of the text
+	wal::GC gc( this );
+	gc.Set( _editPref.GetFont() );
+	int Length_Pixels = gc.GetTextExtents( Info.data() ).x;
+
+	// clip the long text
+	if ( Length_Pixels > Length_MaxPixels && Length_Pixels > 0 )
+	{
+		float Shrink = (float)Length_MaxPixels / (float)Length_Pixels;
+
+		int Length_Chars  = (int)Info.size();
+		int NewLength_Chars = std::max( 3, int( Shrink * Length_Chars )-3 );
+
+		Info = std::vector<unicode_t>( Info.begin()+(Length_Chars-NewLength_Chars), Info.end() );
+		// add ... at the beginning
+		const unicode_t Prefix[] = { '.', '.', '.' };
+		Info.insert( Info.begin(), Prefix, Prefix+3 );
+	}
+
+	// update only if not equal
+	if ( !unicode_is_equal( _editPref.Get(), Info.data() ) )
+	{
+		_editPref.Set( Info );
+		RecalcLayouts();
+	}
 }
 
 void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
@@ -2418,6 +2773,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		if ( pEvent->Key() == VK_O && ( pEvent->Mod() & KM_CTRL ) )
 		{
 			ShowPanels( !_panelVisible );
+			m_AutoCompleteList.Hide();
 			return true;
 		}
 
@@ -2502,7 +2858,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 
 				case FC( VK_NEXT,  KM_CTRL ):
-					_panel->DirEnter();
+					PanelCtrlPgDown();
 					return true;
 
 #if defined( __APPLE__)
@@ -2816,7 +3172,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case FC( VK_F4, KM_SHIFT ):
-				Edit( true );
+				Edit( true, false );
 				break;
 
 			case FC( VK_F9, KM_SHIFT ):
@@ -2825,11 +3181,19 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case VK_NUMPAD_CENTER:
 			case VK_F3:
-				View();
+				View( false );
+				break;
+
+			case FC( VK_F3, KM_ALT ):
+				View( true );
 				break;
 
 			case VK_F4:
-				Edit( false );
+				Edit( false, false );
+				break;
+
+			case FC( VK_F4, KM_ALT ):
+				Edit( false, true );
 				break;
 
 			case VK_F5:
@@ -3142,15 +3506,15 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 				return true;
 
 			case ID_VIEW:
-				View();
+				View( false );
 				return true;
 
 			case ID_EDIT:
-				Edit( false );
+				Edit( false, false );
 				return true;
 
 			case ID_EDIT_INP:
-				Edit( true );
+				Edit( true, false );
 				return true;
 
 			case ID_COPY:
@@ -3271,6 +3635,10 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 
 			case ID_SHORTCUTS:
 				Shortcuts();
+				return true;
+
+			case ID_FILEASSOCIATIONS:
+				FileAssociations();
 				return true;
 
 			case ID_REFRESH:
@@ -3533,146 +3901,6 @@ NCWin::~NCWin() {}
    _LT("BB>Table")
 */
 
-ButtonWinData panelNormalButtons[] =
-{
-	{"Help", ID_HELP },
-	{"", 0}, //{"UserMn", ID_USER_MENU},
-	{"View", ID_VIEW},
-	{"Edit", ID_EDIT},
-	{"Copy", ID_COPY},
-	{"Move", ID_MOVE},
-	{"MkDir", ID_MKDIR},
-	{"Delete", ID_DELETE},
-	{"Menu", ID_MENU},
-	{"Quit", ID_QUIT},
-	{0}
-};
-
-ButtonWinData panelControlButtons[] =
-{
-	{"", 0}, //{L"Left", ID_LEFT },
-	{"", 0}, //{L"Right", ID_RIGHT},
-	{"Name", ID_SORT_BY_NAME},
-	{"Extens", ID_SORT_BY_EXT},
-	{"Modif", ID_SORT_BY_MODIF},
-	{"Size", ID_SORT_BY_SIZE},
-	{"Unsort", ID_UNSORT},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-ButtonWinData panelAltButtons[] =
-{
-	{"Left", 0},
-	{"Right", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"Find", ID_SEARCH_2},
-	{"History", ID_HISTORY},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-ButtonWinData panelShiftButtons[] =
-{
-	{"Left",  ID_DEV_SELECT_LEFT},
-	{"Right", ID_DEV_SELECT_RIGHT},
-	{"", 0},
-	{"Edit...", ID_EDIT_INP},
-	{"Copy", ID_COPY_SHIFT},
-	{"Rename", ID_MOVE_SHIFT},
-	{"", 0},
-	{"", 0},
-	{"Save", ID_CONFIG_SAVE},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-
-ButtonWinData editNormalButtons[] =
-{
-	{"Help", ID_HELP },
-	{"Save", ID_SAVE},
-	{"", 0},
-	{"Exit", ID_QUIT},
-	{"", 0},
-	{"", 0},
-	{"Search", ID_SEARCH_TEXT},
-	{"Charset", ID_CHARSET},
-	{"", 0},
-	{"Exit", ID_QUIT},
-	{0}
-};
-
-
-ButtonWinData editShiftButtons[] =
-{
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"Table", ID_CHARSET_TABLE},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-ButtonWinData editCtrlButtons[] =
-{
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"Replace", ID_REPLACE_TEXT},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-
-ButtonWinData viewNormalButtons[] =
-{
-	{"Help", ID_HELP },
-	{"Wrap/Un...", ID_WRAP},
-	{"Exit", ID_QUIT},
-	{"Hex/Text", ID_HEX},
-	{"", 0},
-	{"", 0},
-	{"Search", ID_SEARCH_TEXT},
-	{"Charset", ID_CHARSET},
-	{"", 0},
-	{"Exit", ID_QUIT},
-	{0}
-};
-
-ButtonWinData viewShiftButtons[] =
-{
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"Table", ID_CHARSET_TABLE},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-
 static unicode_t NN1[] = {'1', 0};
 static unicode_t NN2[] = {'2', 0};
 static unicode_t NN3[] = {'3', 0};
@@ -3829,6 +4057,11 @@ void StringWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.FillRect( r );
 	gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0xFFFFFF ) );
 	gc.TextOutF( 0, ( r.Height() - textSize.y ) / 2, text.data() );
+}
+
+void StringWin::Set( const std::vector<unicode_t>& txt )
+{
+	Set( txt.data() );
 }
 
 void StringWin::Set( const unicode_t* txt )

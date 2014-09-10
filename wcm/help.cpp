@@ -1,13 +1,18 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include <swl.h>
 #include "help.h"
 #include "ncfonts.h"
 #include "wcm-config.h"
 #include "ltext.h"
 #include "globals.h"
-#include "bfile.h"
 #include "string-util.h"
 #ifdef _WIN32
-#include "w32util.h"
+#	include "w32util.h"
 #endif
 
 using namespace wal;

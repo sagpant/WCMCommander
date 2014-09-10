@@ -1,5 +1,10 @@
-#ifndef SEARCH_DLG_H
-#define SEARCH_DLG_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 #include <vector>
 
@@ -28,5 +33,3 @@ struct SearchAndReplaceParams
 bool DoSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
 bool DoFileSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
 bool DoReplaceEditDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
-
-#endif

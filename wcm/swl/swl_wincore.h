@@ -2,20 +2,18 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef WINCORE_H
-#define WINCORE_H
+#pragma once
 
 #define USE_3D_BUTTONS 0
 
 #ifdef _WIN32
-#include <windows.h>
+#	include <windows.h>
 typedef HWND WinID;
 extern HINSTANCE appInstance;
-#else       //#elif __linux__
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#include <wchar.h>
+#else
+#	include <X11/Xlib.h>
+#	include <X11/keysym.h>
+#	include <wchar.h>
 typedef Window WinID;
 #endif
 
@@ -1180,7 +1178,3 @@ namespace wal
 	extern void UiReadMem( const char* s ); //can throw
 
 }; //namespace wal
-
-
-
-#endif
