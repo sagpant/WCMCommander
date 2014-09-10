@@ -1,8 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
-
-//#define panelColors !!!
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>

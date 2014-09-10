@@ -190,9 +190,6 @@
     <ClCompile Include="wal\wal.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>
-    <ClCompile Include="wcm.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
     <ClCompile Include="wcm-config.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>

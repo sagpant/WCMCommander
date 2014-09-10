@@ -1,6 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal) 2010
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #include <algorithm>
 

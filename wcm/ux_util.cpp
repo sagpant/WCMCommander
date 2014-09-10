@@ -1,3 +1,9 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "ux_util.h"
 
 #if !defined( _WIN32 )

@@ -1,3 +1,9 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "filesearch.h"
 #include "string-util.h"
 #include "search-dlg.h"

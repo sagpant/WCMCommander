@@ -1,3 +1,9 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #ifdef _WIN32
 #include "w32util.h"
 

@@ -1,7 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
-
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #include "vfs-smb.h"
 
@@ -10,9 +11,9 @@
 #include "string-util.h"
 
 #ifdef LIBSMB40
-#include <samba-4.0/libsmbclient.h>
+#	include <samba-4.0/libsmbclient.h>
 #else
-#include <libsmbclient.h>
+#	include <libsmbclient.h>
 #endif
 
 #include <sys/types.h>
@@ -20,9 +21,9 @@
 #include <sys/time.h>
 
 #ifdef __linux__
-#define OPENFLAG_LARGEFILE (O_LARGEFILE)
+#	define OPENFLAG_LARGEFILE (O_LARGEFILE)
 #else
-#define OPENFLAG_LARGEFILE (0)
+#	define OPENFLAG_LARGEFILE (0)
 #endif
 
 static Mutex smbMutex;

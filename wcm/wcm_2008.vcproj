@@ -448,10 +448,6 @@
 				RelativePath=".\wcm-config.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\wcm.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

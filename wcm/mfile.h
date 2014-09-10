@@ -1,5 +1,10 @@
-#ifndef MFILE_H
-#define MFILE_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 //для загрузки и выгрузки данныз редактора
 
@@ -150,5 +155,3 @@ ttt:
 
 	~MemFile() { Clear(); }
 };
-
-#endif

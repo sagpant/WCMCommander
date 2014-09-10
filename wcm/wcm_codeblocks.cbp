@@ -308,7 +308,6 @@
 		<Unit filename="wal/wal_tmpls.h" />
 		<Unit filename="wcm-config.cpp" />
 		<Unit filename="wcm-config.h" />
-		<Unit filename="wcm.cpp" />
 		<Unit filename="wcm.ico" />
 		<Extensions>
 			<code_completion />

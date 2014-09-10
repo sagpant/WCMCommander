@@ -1,3 +1,9 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #pragma once
 
 template<class T> inline const T* find_right_char( const T* s, T c )

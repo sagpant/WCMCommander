@@ -1,6 +1,9 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #ifdef LIBSSH_EXIST
 
 #include "vfs-sftp.h"

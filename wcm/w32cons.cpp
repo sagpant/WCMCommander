@@ -1,10 +1,14 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "w32cons.h"
 #include "string-util.h"
 
 /*
    надо сделать, чтоб можно было выяснить запущен процесс или нет
-   !!!
-   !!!
 
    курсор глючит
    программы надо сначала так поискать, а потом отдавать cmd если не нашлись

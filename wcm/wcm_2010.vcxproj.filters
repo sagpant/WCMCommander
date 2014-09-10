@@ -207,9 +207,6 @@
     <ClCompile Include="wcm-config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wcm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="charsetdlg.h">
