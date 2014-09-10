@@ -1,5 +1,4 @@
-#ifndef TOOLBAR_H
-#define TOOLBAR_H
+#pragma once
 
 #include "swl.h"
 
@@ -47,5 +46,3 @@ public:
 	void AddSplitter();
 	virtual ~ToolBar();
 };
-
-#endif

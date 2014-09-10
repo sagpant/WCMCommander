@@ -1,9 +1,6 @@
-#ifndef SHORTCUTS_H
-#define SHORTCUTS_H
+#pragma once
 
 #include "ncdialogs.h"
 #include "vfs.h"
 
 bool ShortcutDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath );
-
-#endif

@@ -2,9 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef NCDIALOGS_H
-#define NCDIALOGS_H
+#pragma once
 
 #include "swl.h"
 #include "nchistory.h"
@@ -154,6 +152,3 @@ public:
 
 
 int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, DlgMenuData* d );
-
-#endif
-

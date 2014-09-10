@@ -1,9 +1,8 @@
-#ifndef EXT_APP_H
-#define EXT_APP_H
+#pragma once
 
 #include <swl.h>
-using namespace wal;
 
+using namespace wal;
 
 inline void InitExtensionApp() {};
 
@@ -22,13 +21,9 @@ struct AppList: public iIntrusiveCounter
 	};
 	ccollect<Node> list;
 	int Count() const { return list.count(); }
-//	void Print(int lev=0);
 };
 
 
 std::vector<unicode_t> GetOpenCommand( const unicode_t* uri, bool* needTerminal, const unicode_t** pAppName );
 
 clPtr<AppList> GetAppList( const unicode_t* uri );
-
-
-#endif

@@ -702,10 +702,6 @@
 				RelativePath=".\wcm-config.h"
 				>
 			</File>
-			<File
-				RelativePath=".\wcm.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

@@ -6,7 +6,7 @@
 //
 
 #include "stdafx.h"
-#include "wcm.h"
+#include "resource.h"
 
 #define MAX_LOADSTRING 100
 

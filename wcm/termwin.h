@@ -2,8 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-#ifndef TERMWIN_H
-#define TERMWIN_H
+#pragma once
 
 #include "nc.h"
 
@@ -107,6 +106,3 @@ public:
 	virtual int UiGetClassId();
 	virtual void OnChangeStyles();
 };
-
-
-#endif

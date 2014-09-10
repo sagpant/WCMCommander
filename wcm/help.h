@@ -1,8 +1,5 @@
-#ifndef HELP_H
-#define HELP_H
+#pragma once
 
 #include "ncdialogs.h"
 
 void Help( NCDialogParent* parent, const char* theme );
-
-#endif

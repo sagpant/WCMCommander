@@ -1,5 +1,4 @@
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#pragma once
 
 //unix
 #define UNIX_PREFIX "/usr" //or "/usr/local"
@@ -13,5 +12,3 @@
 
 ////////////////////////////////
 #define UNIX_CONFIG_DIR_PATH  UNIX_PREFIX "/share" "/" UNIX_APP_NAME
-
-#endif

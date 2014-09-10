@@ -2,9 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef OPERWIN_H
-#define OPERWIN_H
+#pragma once
 
 #include "swl.h"
 
@@ -86,6 +84,3 @@ public:
 	virtual void ThreadStopped( int id, void* data );
 	virtual ~OperThreadWin();
 };
-
-
-#endif

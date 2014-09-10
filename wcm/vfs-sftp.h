@@ -2,9 +2,8 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
+#pragma once
 
-#ifndef VFS_SFTP_H
-#define VFS_SFTP_H
 #include "libconf.h"
 #include "vfs.h"
 
@@ -128,6 +127,4 @@ void InitSSH();
 #else
 inline void InitSSH() {};
 #endif
-#endif
-
 #endif

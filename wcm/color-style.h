@@ -1,5 +1,5 @@
-#ifndef COLOR_STYLE_H
-#define COLOR_STYLE_H
+#pragma once
+
 #include <swl.h>
+
 void SetColorStyle( int style );
-#endif

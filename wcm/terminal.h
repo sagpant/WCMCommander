@@ -2,8 +2,8 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-#ifndef TERMINAL_H
-#define TERMINAL_H
+#pragma once
+
 #include "wal.h"
 #include "shell.h"
 
@@ -159,5 +159,4 @@ public:
 
 void* TerminalInputThreadFunc( void* data );
 
-#endif
 #endif

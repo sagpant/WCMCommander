@@ -2,9 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef PANEL_H
-#define PANEL_H
+#pragma once
 
 #include "swl.h"
 #include "vfs.h"
@@ -314,5 +312,3 @@ public:
 	virtual void OnChangeStyles();
 	virtual ~PanelWin();
 };
-
-#endif

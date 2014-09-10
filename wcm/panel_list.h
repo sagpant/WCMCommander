@@ -2,8 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-#ifndef PANEL_LIST_H
-#define PANEL_LIST_H
+#pragma once
 
 #include "swl.h"
 #include "vfs.h"
@@ -248,8 +247,3 @@ public:
 
 	~PanelList() {};
 };
-
-
-
-
-#endif

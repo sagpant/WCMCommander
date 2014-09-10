@@ -1,5 +1,4 @@
-#ifndef T_EMULATOR_H
-#define T_EMULATOR_H
+#pragma once
 
 #include "wal.h"
 
@@ -226,5 +225,3 @@ public:
 	void InternalPrint( const unicode_t* str, unsigned fg, unsigned bg );
 	void Append( char ch );
 };
-
-#endif

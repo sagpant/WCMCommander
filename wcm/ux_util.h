@@ -1,5 +1,6 @@
-#if !defined(UX_UTIL_H) && !defined(_WIN32)
-#define UX_UTIL_H
+#pragma once
+
+#if !defined(_WIN32)
 
 #include <wal.h>
 

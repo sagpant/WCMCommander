@@ -1,5 +1,4 @@
-#ifndef SHL_H
-#define SHL_H
+#pragma once
 
 #include <wal.h>
 
@@ -217,5 +216,3 @@ namespace SHL
 
 
 }; //namespace SHL
-
-#endif

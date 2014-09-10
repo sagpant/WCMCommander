@@ -1,5 +1,4 @@
-#ifndef SEARCH_DLG_H
-#define SEARCH_DLG_H
+#pragma once
 
 #include <vector>
 
@@ -28,5 +27,3 @@ struct SearchAndReplaceParams
 bool DoSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
 bool DoFileSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
 bool DoReplaceEditDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
-
-#endif

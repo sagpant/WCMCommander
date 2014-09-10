@@ -2,9 +2,8 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
+#pragma once
 
-#ifndef VFS_SMB_H
-#define VFS_SMB_H
 #include "libconf.h"
 
 #ifdef LIBSMBCLIENT_EXIST
@@ -48,7 +47,5 @@ public:
 
 	void GetParam( FSSmbParam* p ) { if ( !p ) { return; } MutexLock lock( &mutex ); *p = _param; }
 };
-
-#endif
 
 #endif

@@ -309,7 +309,6 @@
 		<Unit filename="wcm-config.cpp" />
 		<Unit filename="wcm-config.h" />
 		<Unit filename="wcm.cpp" />
-		<Unit filename="wcm.h" />
 		<Unit filename="wcm.ico" />
 		<Extensions>
 			<code_completion />

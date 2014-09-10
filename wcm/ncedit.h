@@ -3,8 +3,8 @@
 */
 
 
-#ifndef NCEDIT_H
-#define NCEDIT_H
+#pragma once
+
 #include "wal.h"
 #include "swl.h"
 #include "vfs.h"
@@ -832,5 +832,3 @@ inline void EditString::operator = ( const EditString& a )
 	flags = a.flags;
 	data = a.data;
 }
-
-#endif

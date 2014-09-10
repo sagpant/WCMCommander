@@ -395,9 +395,6 @@
     <ClInclude Include="wcm-config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wcm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="icon1.ico">

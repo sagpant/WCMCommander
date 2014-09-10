@@ -3,8 +3,7 @@
 */
 
 
-#ifndef WINBASE_H
-#define WINBASE_H
+#pragma once
 
 namespace wal
 {
@@ -527,5 +526,3 @@ namespace wal
 
 }; // namespace wal
 
-
-#endif

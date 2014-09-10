@@ -2,9 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef VFS_FTP_H
-#define VFS_FTP_H
+#pragma once
 
 #include "vfs.h"
 #include "tcp_sock.h"
@@ -174,5 +172,3 @@ public:
 	virtual unicode_t* GetUserName( int user, unicode_t buf[64] );
 	virtual unicode_t* GetGroupName( int group, unicode_t buf[64] );
 };
-
-#endif

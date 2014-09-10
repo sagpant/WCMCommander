@@ -2,9 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef NCVFSPATH_H
-#define NCVFSPATH_H
+#pragma once
 
 #include <wal.h>
 
@@ -250,7 +248,3 @@ inline const void* FSString::Get( int cs )
 
 	return _temp.str();
 };
-
-
-
-#endif

@@ -336,9 +336,6 @@
     <ClInclude Include="wcm-config.h">
       <Filter>%2a.h</Filter>
     </ClInclude>
-    <ClInclude Include="wcm.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
     <ClInclude Include="w32cons.h">
       <Filter>%2a.h</Filter>
     </ClInclude>

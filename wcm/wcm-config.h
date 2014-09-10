@@ -1,5 +1,4 @@
-#ifndef WCM_CONFIG_H
-#define WCM_CONFIG_H
+#pragma once
 
 #include "ncdialogs.h"
 
@@ -100,5 +99,3 @@ bool DoTerminalConfigDialog( NCDialogParent* parent );
 
 bool LoadStringList( const char* section, ccollect< std::vector<char> >& list );
 void SaveStringList( const char* section, ccollect< std::vector<char> >& list );
-
-#endif

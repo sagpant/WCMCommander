@@ -2,9 +2,9 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
+#pragma once
+
 #ifndef _WIN32
-#ifndef SHELL_H
-#define SHELL_H
 
 #include "wal.h"
 
@@ -28,5 +28,4 @@ public:
 	~Shell();
 };
 
-#endif
 #endif

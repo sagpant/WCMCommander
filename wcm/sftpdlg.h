@@ -1,5 +1,4 @@
-#ifndef SFTPLOGON_H
-#define SFTPLOGON_H
+#pragma once
 
 #include "vfs-sftp.h"
 
@@ -13,7 +12,4 @@ struct PromptCBData
 };
 
 bool GetPromptAnswer( PromptCBData* data );
-
 bool GetSftpLogon( NCDialogParent* parent, FSSftpParam& params );
-
-#endif

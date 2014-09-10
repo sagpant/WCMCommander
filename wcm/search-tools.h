@@ -1,5 +1,5 @@
-#ifndef SEARCH_TOOLS_H
-#define SEARCH_TOOLS_H
+#pragma once
+
 #include <wal.h>
 
 using namespace wal;
@@ -57,6 +57,3 @@ public:
 	int Count() const { return list.count(); }
 	~MegaSearcher() {}
 };
-
-
-#endif

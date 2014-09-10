@@ -1,6 +1,5 @@
 #ifdef USEFREETYPE
 
-
 namespace FTU
 {
 
@@ -623,6 +622,5 @@ clPtr<cfont::FTInfo> cfont::GetFTFileInfo( const char* path )
 
 	return node;
 }
-
 
 #endif

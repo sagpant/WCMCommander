@@ -2,9 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef NCHISTORY_H
-#define NCHISTORY_H
+#pragma once
 
 #include <wal.h>
 
@@ -30,6 +28,3 @@ public:
 
 	~NCHistory() {}
 };
-
-
-#endif

@@ -3,8 +3,7 @@
 */
 
 
-#ifndef LAYOUT_H
-#define LAYOUT_H
+#pragma once
 
 namespace wal
 {
@@ -144,5 +143,3 @@ namespace wal
 	};
 
 }; //namespace wal
-
-#endif

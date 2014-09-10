@@ -2,8 +2,8 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-#ifndef NCVIEW_H
-#define NCVIEW_H
+#pragma once
+
 #include "swl.h"
 #include "vfs.h"
 
@@ -171,5 +171,3 @@ public:
 
 	virtual ~ViewWin();
 };
-
-#endif

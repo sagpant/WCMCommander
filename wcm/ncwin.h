@@ -2,16 +2,14 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef NCWIN_H
-#define NCWIN_H
+#pragma once
 
 #include "swl.h"
 #include "panel.h"
 #ifdef _WIN32
-#include "w32cons.h"
+#	include "w32cons.h"
 #else
-#include "termwin.h"
+#	include "termwin.h"
 #endif
 
 #include "ncview.h"
@@ -377,7 +375,3 @@ public:
 	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
 	bool StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode );
 };
-
-
-
-#endif

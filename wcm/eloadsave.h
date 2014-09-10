@@ -1,5 +1,4 @@
-#ifndef ELOADSAVE_H
-#define ELOADSAVE_H
+#pragma once
 
 #include "fileopers.h"
 #include "ncdialogs.h"
@@ -8,5 +7,3 @@
 
 clPtr<MemFile> LoadFile( clPtr<FS> f, FSPath& p, NCDialogParent* parent, bool ignoreENOENT );
 bool SaveFile( clPtr<FS> f, FSPath& p, clPtr<MemFile> file, NCDialogParent* parent );
-
-#endif

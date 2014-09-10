@@ -1,5 +1,4 @@
-#ifndef STRCONFIG_H
-#define STRCONFIG_H
+#pragma once
 
 #include <wal.h>
 
@@ -19,6 +18,3 @@ public:
 	void Clear();
 	~StrConfig();
 };
-
-
-#endif

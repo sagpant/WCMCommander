@@ -1,5 +1,7 @@
-#if defined(_WIN32) && !defined(W32CONS_H)
-#define W32CONS_H
+#pragma once
+
+#if defined(_WIN32)
+
 #include "nc.h"
 
 extern int uiClassTerminal;

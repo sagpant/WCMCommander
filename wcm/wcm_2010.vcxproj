@@ -301,7 +301,6 @@
     <ClInclude Include="wal\wal_sys_api.h" />
     <ClInclude Include="wal\wal_tmpls.h" />
     <ClInclude Include="wcm-config.h" />
-    <ClInclude Include="wcm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="icon1.ico" />

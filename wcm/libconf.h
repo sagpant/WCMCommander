@@ -1,5 +1,4 @@
-#ifndef LIBCONF_H
-#define LIBCONF_H
+#pragma once
 
 #if defined( _WIN32 )
 #	include "libconf_win32.h"
@@ -7,6 +6,4 @@
 #	include "libconf_osx.h"
 #else
 #	include "libconf_ux.h"
-#endif
-
 #endif
