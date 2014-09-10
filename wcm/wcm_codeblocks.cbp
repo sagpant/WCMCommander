@@ -144,7 +144,6 @@
 		</Build>
 		<Unit filename="ReadMe.txt" />
 		<Unit filename="Resource.h" />
-		<Unit filename="bfile.h" />
 		<Unit filename="charsetdlg.cpp" />
 		<Unit filename="charsetdlg.h" />
 		<Unit filename="color-style.cpp" />

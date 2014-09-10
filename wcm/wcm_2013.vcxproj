@@ -247,7 +247,6 @@
     <ClCompile Include="wcm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bfile.h" />
     <ClInclude Include="charsetdlg.h" />
     <ClInclude Include="color-style.h" />
     <ClInclude Include="dircalc.h" />

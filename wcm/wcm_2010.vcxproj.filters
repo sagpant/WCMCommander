@@ -212,9 +212,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bfile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="charsetdlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>

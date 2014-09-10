@@ -1,5 +1,4 @@
 #include "ltext.h"
-#include "bfile.h"
 
 using namespace wal;
 

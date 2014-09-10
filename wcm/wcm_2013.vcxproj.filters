@@ -237,9 +237,6 @@
     <ClInclude Include="wal\wal_tmpls.h">
       <Filter>wal</Filter>
     </ClInclude>
-    <ClInclude Include="bfile.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
     <ClInclude Include="charsetdlg.h">
       <Filter>%2a.h</Filter>
     </ClInclude>

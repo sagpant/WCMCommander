@@ -129,7 +129,6 @@ SET(wcm_SOURCES
 )
 
 SET(wcm_HEADERS
-	bfile.h
 	charsetdlg.h
 	color-style.h
 	dircalc.h

@@ -1,6 +1,5 @@
 #include <wal.h>
 using namespace wal;
-#include "bfile.h"
 #include "string-util.h"
 #include "ext-app.h"
 #include "unicode_lc.h"
