@@ -46,17 +46,6 @@ struct ButtonWinData
 	int commandId;
 };
 
-
-extern ButtonWinData panelNormalButtons[];
-extern ButtonWinData panelControlButtons[];
-extern ButtonWinData panelShiftButtons[];
-extern ButtonWinData panelAltButtons[];
-extern ButtonWinData editNormalButtons[];
-extern ButtonWinData editShiftButtons[];
-extern ButtonWinData editCtrlButtons[];
-extern ButtonWinData viewNormalButtons[];
-extern ButtonWinData viewShiftButtons[];
-
 class ButtonWin: public Win
 {
 	Layout _lo;

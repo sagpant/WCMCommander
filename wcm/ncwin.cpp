@@ -42,6 +42,148 @@
 #  include "ux_util.h"
 #endif
 
+ButtonWinData panelNormalButtons[] =
+{
+	{"Help", ID_HELP },
+	{"", 0}, //{"UserMn", ID_USER_MENU},
+	{"View", ID_VIEW},
+	{"Edit", ID_EDIT},
+	{"Copy", ID_COPY},
+	{"Move", ID_MOVE},
+	{"MkDir", ID_MKDIR},
+	{"Delete", ID_DELETE},
+	{"Menu", ID_MENU},
+	{"Quit", ID_QUIT},
+	{0}
+};
+
+ButtonWinData panelControlButtons[] =
+{
+	{"", 0}, //{L"Left", ID_LEFT },
+	{"", 0}, //{L"Right", ID_RIGHT},
+	{"Name", ID_SORT_BY_NAME},
+	{"Extens", ID_SORT_BY_EXT},
+	{"Modif", ID_SORT_BY_MODIF},
+	{"Size", ID_SORT_BY_SIZE},
+	{"Unsort", ID_UNSORT},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+ButtonWinData panelAltButtons[] =
+{
+	{"Left", 0},
+	{"Right", 0},
+	{"View...", 0},
+	{"Edit...", 0},
+	{"", 0},
+	{"", 0},
+	{"Find", ID_SEARCH_2},
+	{"History", ID_HISTORY},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+ButtonWinData panelShiftButtons[] =
+{
+	{"Left",  ID_DEV_SELECT_LEFT},
+	{"Right", ID_DEV_SELECT_RIGHT},
+	{"", 0},
+	{"Edit...", ID_EDIT_INP},
+	{"Copy", ID_COPY_SHIFT},
+	{"Rename", ID_MOVE_SHIFT},
+	{"", 0},
+	{"", 0},
+	{"Save", ID_CONFIG_SAVE},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+
+ButtonWinData editNormalButtons[] =
+{
+	{"Help", ID_HELP },
+	{"Save", ID_SAVE},
+	{"", 0},
+	{"Exit", ID_QUIT},
+	{"", 0},
+	{"", 0},
+	{"Search", ID_SEARCH_TEXT},
+	{"Charset", ID_CHARSET},
+	{"", 0},
+	{"Exit", ID_QUIT},
+	{0}
+};
+
+
+ButtonWinData editShiftButtons[] =
+{
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"Table", ID_CHARSET_TABLE},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+ButtonWinData editCtrlButtons[] =
+{
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"Replace", ID_REPLACE_TEXT},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+
+ButtonWinData viewNormalButtons[] =
+{
+	{"Help", ID_HELP },
+	{"Wrap/Un...", ID_WRAP},
+	{"Exit", ID_QUIT},
+	{"Hex/Text", ID_HEX},
+	{"", 0},
+	{"", 0},
+	{"Search", ID_SEARCH_TEXT},
+	{"Charset", ID_CHARSET},
+	{"", 0},
+	{"Exit", ID_QUIT},
+	{0}
+};
+
+ButtonWinData viewShiftButtons[] =
+{
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"Table", ID_CHARSET_TABLE},
+	{"", 0},
+	{"", 0},
+	{0}
+};
+
+static const int CMD_OPEN_FILE = 1000;
+static const int CMD_EXEC_FILE = 1001;
+
 template <typename T> void SkipSpaces( T& p )
 {
 	while ( *p == ' ' ) { p++; }
@@ -619,9 +761,6 @@ void NCWin::ExecuteFile()
 #endif
 	}
 }
-
-#define CMD_OPEN_FILE 1000
-#define CMD_EXEC_FILE 1001
 
 void NCWin::PanelCtrlPgDown()
 {
@@ -3734,146 +3873,6 @@ NCWin::~NCWin() {}
    _LT("BB>Exit")
    _LT("BB>Table")
 */
-
-ButtonWinData panelNormalButtons[] =
-{
-	{"Help", ID_HELP },
-	{"", 0}, //{"UserMn", ID_USER_MENU},
-	{"View", ID_VIEW},
-	{"Edit", ID_EDIT},
-	{"Copy", ID_COPY},
-	{"Move", ID_MOVE},
-	{"MkDir", ID_MKDIR},
-	{"Delete", ID_DELETE},
-	{"Menu", ID_MENU},
-	{"Quit", ID_QUIT},
-	{0}
-};
-
-ButtonWinData panelControlButtons[] =
-{
-	{"", 0}, //{L"Left", ID_LEFT },
-	{"", 0}, //{L"Right", ID_RIGHT},
-	{"Name", ID_SORT_BY_NAME},
-	{"Extens", ID_SORT_BY_EXT},
-	{"Modif", ID_SORT_BY_MODIF},
-	{"Size", ID_SORT_BY_SIZE},
-	{"Unsort", ID_UNSORT},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-ButtonWinData panelAltButtons[] =
-{
-	{"Left", 0},
-	{"Right", 0},
-	{"View...", 0},
-	{"Edit...", 0},
-	{"", 0},
-	{"", 0},
-	{"Find", ID_SEARCH_2},
-	{"History", ID_HISTORY},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-ButtonWinData panelShiftButtons[] =
-{
-	{"Left",  ID_DEV_SELECT_LEFT},
-	{"Right", ID_DEV_SELECT_RIGHT},
-	{"", 0},
-	{"Edit...", ID_EDIT_INP},
-	{"Copy", ID_COPY_SHIFT},
-	{"Rename", ID_MOVE_SHIFT},
-	{"", 0},
-	{"", 0},
-	{"Save", ID_CONFIG_SAVE},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-
-ButtonWinData editNormalButtons[] =
-{
-	{"Help", ID_HELP },
-	{"Save", ID_SAVE},
-	{"", 0},
-	{"Exit", ID_QUIT},
-	{"", 0},
-	{"", 0},
-	{"Search", ID_SEARCH_TEXT},
-	{"Charset", ID_CHARSET},
-	{"", 0},
-	{"Exit", ID_QUIT},
-	{0}
-};
-
-
-ButtonWinData editShiftButtons[] =
-{
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"Table", ID_CHARSET_TABLE},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-ButtonWinData editCtrlButtons[] =
-{
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"Replace", ID_REPLACE_TEXT},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
-
-ButtonWinData viewNormalButtons[] =
-{
-	{"Help", ID_HELP },
-	{"Wrap/Un...", ID_WRAP},
-	{"Exit", ID_QUIT},
-	{"Hex/Text", ID_HEX},
-	{"", 0},
-	{"", 0},
-	{"Search", ID_SEARCH_TEXT},
-	{"Charset", ID_CHARSET},
-	{"", 0},
-	{"Exit", ID_QUIT},
-	{0}
-};
-
-ButtonWinData viewShiftButtons[] =
-{
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"", 0},
-	{"Table", ID_CHARSET_TABLE},
-	{"", 0},
-	{"", 0},
-	{0}
-};
-
 
 static unicode_t NN1[] = {'1', 0};
 static unicode_t NN2[] = {'2', 0};
