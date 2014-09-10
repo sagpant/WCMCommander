@@ -44,6 +44,10 @@
 #  include "ux_util.h"
 #endif
 
+const int CMD_SWITCH = 32167;
+
+static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {0, 0}};
+
 ButtonWinData panelNormalButtons[] =
 {
 	{"Help", ID_HELP },
@@ -1590,6 +1594,17 @@ void NCWin::View( bool Secondary )
 	{
 		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) ) return;
 
+		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
+		{
+			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to view a new file while a background editor is active.\nDo you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
+			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) return;
+			if ( Msg == CMD_SWITCH )
+			{
+				SwitchToBackgroundActivity();
+				return;
+			}
+		}
+
 		FSPath path = _panel->GetPath();
 		clPtr<FS> fs = _panel->GetFSPtr();
 
@@ -1652,7 +1667,6 @@ void NCWin::ViewExit()
 
 static cstrhash<sEditorScrollCtx, unicode_t> editPosHash;
 
-
 void NCWin::Edit( bool enterFileName, bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
@@ -1660,6 +1674,17 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 	try
 	{
 		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) ) return;
+
+		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
+		{
+			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to edit a new file while a background editor is active.\nDo you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
+			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) return;
+			if ( Msg == CMD_SWITCH )
+			{
+				SwitchToBackgroundActivity();
+				return;
+			}
+		}
 
 		FSPath path = _panel->GetPath();;
 		clPtr<FS> fs = _panel->GetFSPtr();
