@@ -36,11 +36,37 @@ namespace wal
 	extern unicode_t ABCString[];
 	extern int ABCStringLen;
 
+	// Menu text that is split to 3 parts by hot key. 
+	// The hot key character is prepended by '&', like in Windows menu
+	class MenuTextInfo
+	{
+		unicode_t* strBeforeHk;
+		unicode_t* strHk;
+		unicode_t* strAfterHk;
+		unicode_t* strFull; // required to calculate text extents quickly
+		unicode_t hotkeyUpperCase;
+		void Clear();
+		void ParseHkText(const unicode_t* inStr);
+	public:
+		explicit MenuTextInfo(const unicode_t* inStr);
+		MenuTextInfo(const MenuTextInfo& src);
+		~MenuTextInfo();
+		void SetText(const unicode_t* inStr);
+		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
+		cpoint GetTextExtents(GC& gc, cfont* font = 0) const
+		{
+			if (strFull == 0) return cpoint(0, 0);
+			if (font)  gc.Set(font);
+			return gc.GetTextExtents(strFull);
+		}
+		int isEmpty() const { return strFull == 0; }
+		int isHotkeyMatching(unicode_t charUpperCase) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
+	};
 
 	class Button: public Win
 	{
 		bool pressed;
-		std::vector<unicode_t> text;
+		MenuTextInfo text;
 		clPtr<cicon> icon;
 		int commandId;
 
@@ -69,7 +95,8 @@ namespace wal
 	class SButton: public Win
 	{
 		bool isSet;
-		std::vector<unicode_t> text;
+		//std::vector<unicode_t> text;
+		MenuTextInfo text;
 		int group;
 	public:
 		SButton( int nId, Win* parent, unicode_t* txt, int _group, bool _isSet = false, crect* rect = 0 );
@@ -191,11 +218,13 @@ namespace wal
 
 	class StaticLine: public Win
 	{
+		//MenuTextInfo text;
 		std::vector<unicode_t> text;
 	public:
 		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = 0 );
 		virtual void Paint( GC& gc, const crect& paintRect );
-		void SetText( const unicode_t* txt ) { text = wal::new_unicode_str( txt ); Invalidate(); }
+		//void SetText( const unicode_t* txt ) { text.SetText(txt) ; Invalidate(); }
+		void SetText(const unicode_t* txt) { text = wal::new_unicode_str(txt); Invalidate(); }
 		virtual int UiGetClassId();
 		virtual ~StaticLine();
 	};
@@ -380,25 +409,6 @@ namespace wal
 	};
 
 	class PopupMenu;
-
-	// Menu text that is split to 3 parts by hot key. 
-	// The hot key character is prepended by '&', like in Windows menu
-	class MenuTextInfo
-	{
-		unicode_t* strBeforeHk;
-		unicode_t* strHk;
-		unicode_t* strAfterHk;
-		unicode_t* strFull; // required to calculate text extents quickly
-		unicode_t hotkeyUpperCase;
-	public:
-		explicit MenuTextInfo(const unicode_t* inStr);
-		MenuTextInfo(const MenuTextInfo& src);
-		~MenuTextInfo();
-		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
-		cpoint GetTextExtents(GC& gc) const { return (strFull!=0) ? gc.GetTextExtents(strFull): cpoint(0,0); }
-		int isEmpty() const { return strFull == 0; }
-		int isHotkeyMatching(unicode_t charUpperCase) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
-	};
 
 	class MenuData: public iIntrusiveCounter
 	{
