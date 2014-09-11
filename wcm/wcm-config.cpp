@@ -1020,6 +1020,63 @@ void LoadCommandsHistory( NCWin* nc
 }
 
 extern std::map<std::vector<unicode_t>, sEditorScrollCtx> g_EditPosHash;
+extern std::map<std::vector<unicode_t>, int> g_ViewPosHash;
+
+void LoadEditorPositions()
+{
+	ccollect< std::vector<char> > Positions;
+
+	LoadStringList( "EditorPositions", Positions );
+
+	g_EditPosHash.clear();
+
+	for ( int i = 0; i != Positions.count(); i++ )
+	{
+		std::vector<char> Line = Positions[i];
+
+		int FL, L, P;
+		char Buf[0xFFFF];
+
+		int NumRead = sscanf( Line.data(), "FL = %i L = %i P = %i FN = %65535s", &FL, &L, &P, Buf );
+
+		if ( NumRead != 4 ) break;
+
+		printf( "FL = %i L = %i P = %i FN = %s\n", FL, L, P, Buf );
+
+		std::vector<unicode_t> FileName = utf8_to_unicode( Buf );
+		sEditorScrollCtx Ctx;
+		Ctx.m_FirstLine = FL;
+		Ctx.m_Point.line = L;
+		Ctx.m_Point.pos = P;
+
+		g_EditPosHash[ FileName ] = Ctx;
+	}
+}
+
+void LoadViewerPositions()
+{
+	ccollect< std::vector<char> > Positions;
+
+	LoadStringList( "ViewerPositions", Positions );
+
+	g_ViewPosHash.clear();
+
+	for ( int i = 0; i != Positions.count(); i++ )
+	{
+		std::vector<char> Line = Positions[i];
+
+		int L;
+		char Buf[0xFFFF];
+
+		int NumRead = sscanf( Line.data(), "L = %i FN = %65535s", &L, Buf );
+
+		if ( NumRead != 2 ) break;
+
+		std::vector<unicode_t> FileName = utf8_to_unicode( Buf );
+
+		g_ViewPosHash[ FileName ] = L;
+	}
+}
 
 void WcmConfig::Load( NCWin* nc )
 {
@@ -1083,34 +1140,48 @@ void WcmConfig::Load( NCWin* nc )
 
 	if ( editTabSize <= 0 || editTabSize > 64 ) { editTabSize = 3; }
 
-	// load editor positions
-	ccollect< std::vector<char> > EditorPositions;
+	LoadEditorPositions();
+	LoadViewerPositions();
+}
 
-	LoadStringList( "EditorPositions", EditorPositions );
+void SaveEditorPositions()
+{
+	ccollect< std::vector<char> > Positions;
 
-	g_EditPosHash.clear();
-
-	for ( int i = 0; i != EditorPositions.count(); i++ )
+	for ( auto i = g_EditPosHash.begin(); i != g_EditPosHash.end(); i++ )
 	{
-		std::vector<char> Line = EditorPositions[i];
+		std::vector<unicode_t> FileName = i->first;
+		sEditorScrollCtx       Ctx      = i->second;
 
-		int FL, L, P;
+		std::vector<char> FileName_utf8 = unicode_to_utf8( FileName.data() );
+
 		char Buf[0xFFFF];
+		snprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
 
-		int NumRead = sscanf( Line.data(), "FL = %i L = %i P = %i FN = %65535s", &FL, &L, &P, Buf );
-
-		if ( NumRead != 4 ) break;
-
-		printf( "FL = %i L = %i P = %i FN = %s\n", FL, L, P, Buf );
-
-		std::vector<unicode_t> FileName = utf8_to_unicode( Buf );
-		sEditorScrollCtx Ctx;
-		Ctx.m_FirstLine = FL;
-		Ctx.m_Point.line = L;
-		Ctx.m_Point.pos = P;
-
-		g_EditPosHash[ FileName ] = Ctx;
+		Positions.append( new_char_str( Buf ) );
 	}
+
+	SaveStringList( "EditorPositions", Positions );
+}
+
+void SaveViewerPositions()
+{
+	ccollect< std::vector<char> > Positions;
+
+	for ( auto i = g_ViewPosHash.begin(); i != g_ViewPosHash.end(); i++ )
+	{
+		std::vector<unicode_t> FileName = i->first;
+		int                    Line     = i->second;
+
+		std::vector<char> FileName_utf8 = unicode_to_utf8( FileName.data() );
+
+		char Buf[0xFFFF];
+		snprintf( Buf, sizeof( Buf ) - 1, "L = %i FN = %s", Line, FileName_utf8.data() );
+
+		Positions.append( new_char_str( Buf ) );
+	}
+
+	SaveStringList( "ViewerPositions", Positions );
 }
 
 void WcmConfig::Save( NCWin* nc )
@@ -1179,23 +1250,8 @@ void WcmConfig::Save( NCWin* nc )
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
 #endif
 
-	// save editor positions
-	ccollect< std::vector<char> > EditorPositions;
-
-	for ( auto i = g_EditPosHash.begin(); i != g_EditPosHash.end(); i++ )
-	{
-		std::vector<unicode_t> FileName = i->first;
-		sEditorScrollCtx       Ctx      = i->second;
-
-		std::vector<char> FileName_utf8 = unicode_to_utf8( FileName.data() );
-
-		char Buf[0xFFFF];
-		snprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
-
-		EditorPositions.append( new_char_str( Buf ) );
-	}
-
-	SaveStringList( "EditorPositions", EditorPositions );
+	SaveEditorPositions();
+	SaveViewerPositions();
 }
 
 
@@ -1398,6 +1454,12 @@ bool DoEditConfigDialog( NCDialogParent* parent )
 		if ( tabSize > 0 && tabSize <= 64 )
 		{
 			wcmConfig.editTabSize = tabSize;
+		}
+
+		if ( !wcmConfig.editSavePos )
+		{
+			g_EditPosHash.clear();
+			g_ViewPosHash.clear();
 		}
 
 		return true;

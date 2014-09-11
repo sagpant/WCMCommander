@@ -48,6 +48,7 @@
 #include <vector>
 
 std::map<std::vector<unicode_t>, sEditorScrollCtx> g_EditPosHash;
+std::map<std::vector<unicode_t>, int> g_ViewPosHash;
 
 const int CMD_SWITCH = 32167;
 
@@ -1650,7 +1651,11 @@ void NCWin::View( bool Secondary )
 
 		_viewer.SetFile( fs, path, p->Size() );
 
-	}
+		if ( wcmConfig.editSavePos )
+		{
+			_viewer.SetCol( g_ViewPosHash[ new_unicode_str( fs->Uri( path ).GetUnicode() ) ] );
+		}
+}
 	catch ( cexception* ex )
 	{
 		NCMessageBox( this, _LT( "View" ), ex->message(), true );
@@ -1663,6 +1668,11 @@ void NCWin::ViewExit()
 	SetBackgroundActivity( eBackgroundActivity_None );
 
 	if ( _mode != VIEW ) { return; }
+
+	if ( wcmConfig.editSavePos )
+	{
+		g_ViewPosHash[ new_unicode_str( _viewer.Uri().GetUnicode() ) ] = _viewer.GetCol();
+	}
 
 	//...
 	_viewer.ClearFile();
