@@ -1449,10 +1449,15 @@ sEditorScrollCtx EditWin::GetScrollCtx() const
 
 void EditWin::SetScrollCtx( const sEditorScrollCtx& Ctx )
 {
-	firstLine = Ctx.m_FirstLine;
+	recomendedCursorCol = -1;
 	int MaxLine = std::max( 0, text.Count() - rows );
-	firstLine = std::min( firstLine, MaxLine );
 	SetCursorPos( Ctx.m_Point );
+	firstLine = Ctx.m_FirstLine;
+	firstLine = std::min( firstLine, MaxLine );
+	colOffset = 0;
+	marker = cursor;
+	SendChanges();
+	Refresh();
 }
 
 void EditWin::CalcScroll()

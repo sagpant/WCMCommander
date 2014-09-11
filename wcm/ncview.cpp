@@ -839,7 +839,7 @@ struct ViewerEvent
 	enum
 	{
 	   NO = 0,
-	   //SET, //set offset, trach must be in first line
+	   SET, //set offset, track must be in first line
 	   VTRACK, HTRACK,
 	   UP, DOWN, LEFT, RIGHT,
 	   PAGEUP, PAGEDOWN, PAGELEFT, PAGERIGHT,
@@ -1035,6 +1035,10 @@ void* ViewerThread( void* param )
 
 					switch ( event.type )
 					{
+						case ViewerEvent::SET:
+							pos.begin = std::max( (int64)0, event.track );
+							break;
+
 						case ViewerEvent::HOME:
 							pos.begin = 0;
 							break;
@@ -1096,6 +1100,11 @@ void* ViewerThread( void* param )
 
 					switch ( event.type )
 					{
+						case ViewerEvent::SET:
+							pos.begin = std::max( (int64)0, event.track );
+							pos.col = 0;
+							break;
+
 						case ViewerEvent::HOME:
 							pos.begin = 0;
 							pos.col = 0;
@@ -1315,6 +1324,11 @@ void* ViewerThread( void* param )
 
 					switch ( event.type )
 					{
+						case ViewerEvent::SET:
+							pos.begin = std::max( 0, (int)event.track );
+							pos.col = 0;
+							break;
+
 						case ViewerEvent::HOME:
 							pos.begin = 0;
 							pos.col = 0;
@@ -2487,9 +2501,19 @@ int ViewWin::GetPercent()
 
 int ViewWin::GetCol()
 {
-	if ( lastResult.mode.hex || lastResult.mode.wrap ) { return -1; }
+	if ( threadData )
+	{
+		return threadData->pos.begin;
+	}
 
-	return lastPos.col;
+	return -1;
+}
+
+void ViewWin::SetCol(int Col)
+{
+	if ( Col < 0 ) return;
+
+	threadData->SetEvent( ViewerEvent( ViewerEvent::SET, Col ) );
 }
 
 
