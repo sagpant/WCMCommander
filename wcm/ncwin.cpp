@@ -2367,8 +2367,6 @@ void NCWin::NotifyCurrentPathInfo()
 
 		int len = strlen( hostName );
 
-		if ( len > 16 ) { len = 16; hostName[len] = 0; }
-
 		hostName[len++] =
 #ifdef _WIN32
 	   '>';
