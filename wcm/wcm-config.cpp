@@ -905,6 +905,9 @@ void SaveFileAssociations( NCWin* nc
 		Cfg.Write( "EditSecondary%i", i, EditSecondary_utf8.data( ) );
 		Cfg.WriteBool( "HasTerminal%i", i, A.GetHasTerminal() );
 	}
+
+	// end marker
+	Cfg.Write( "Mask%i", Assoc.size(), "" );
 }
 
 void LoadFilesAssociations( NCWin* nc

@@ -1,5 +1,8 @@
 [main]
 <v10>/n
+/c{<shead><sbold>https:////github.com//corporateshark//WalCommander/n}
+/c{<shead><sbold>walcommander/@linderdaum.com/n}
+<v5>/n
 /c{<shead>Основные команды/n}
 <v5>/n
 /c@t
