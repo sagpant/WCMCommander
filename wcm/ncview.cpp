@@ -16,6 +16,7 @@
 #include <time.h>
 #endif
 
+#include <algorithm>
 
 using namespace wal;
 
