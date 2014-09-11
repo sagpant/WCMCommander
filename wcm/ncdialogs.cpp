@@ -478,10 +478,10 @@ NCVertDialog::~NCVertDialog() {}
    _LT("DB>No")
 */
 
-char OkButtonText[] = "O&k";
-char CancelButtonText[] = "&Cancel";
-char YesButtonText[] = "&Yes";
-char NoButtonText[] = "&No";
+char OkButtonText[] = "Ok";
+char CancelButtonText[] = "Cancel";
+char YesButtonText[] = "Yes";
+char NoButtonText[] = "No";
 
 ButtonDataNode bListOk[] = { {OkButtonText, CMD_OK}, {0, 0}};
 ButtonDataNode bListCancel[] = { {CancelButtonText, CMD_CANCEL}, {0, 0}};
