@@ -44,6 +44,11 @@
 #  include "ux_util.h"
 #endif
 
+#include <map>
+#include <vector>
+
+std::map<std::vector<unicode_t>, sEditorScrollCtx> g_EditPosHash;
+
 const int CMD_SWITCH = 32167;
 
 static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {0, 0}};
@@ -1664,9 +1669,6 @@ void NCWin::ViewExit()
 	SetMode( PANEL );
 }
 
-
-static cstrhash<sEditorScrollCtx, unicode_t> editPosHash;
-
 void NCWin::Edit( bool enterFileName, bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
@@ -1727,7 +1729,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 		if ( wcmConfig.editSavePos )
 		{
-			_editor.SetScrollCtx( editPosHash[fs->Uri( path ).GetUnicode()] );
+			_editor.SetScrollCtx( g_EditPosHash[ new_unicode_str( fs->Uri( path ).GetUnicode() ) ] );
 		}
 		else
 		{
@@ -1737,7 +1739,6 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 		SetBackgroundActivity( eBackgroundActivity_Editor );
 
 		SetMode( EDIT );
-
 	}
 	catch ( cexception* ex )
 	{
@@ -2225,7 +2226,7 @@ void NCWin::EditExit()
 	{
 		FSPath path;
 		_editor.GetPath( path );
-		editPosHash[fs->Uri( path ).GetUnicode()] = _editor.GetScrollCtx();
+		g_EditPosHash[ new_unicode_str( fs->Uri( path ).GetUnicode() ) ] = _editor.GetScrollCtx();
 	}
 
 	if ( _editor.Changed() )

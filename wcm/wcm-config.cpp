@@ -19,6 +19,8 @@
 #  include "w32util.h"
 #endif
 
+#include <map>
+
 WcmConfig wcmConfig;
 
 #ifndef _WIN32
@@ -1017,6 +1019,8 @@ void LoadCommandsHistory( NCWin* nc
 	}
 }
 
+extern std::map<std::vector<unicode_t>, sEditorScrollCtx> g_EditPosHash;
+
 void WcmConfig::Load( NCWin* nc )
 {
 #ifdef _WIN32
@@ -1078,6 +1082,35 @@ void WcmConfig::Load( NCWin* nc )
 #endif
 
 	if ( editTabSize <= 0 || editTabSize > 64 ) { editTabSize = 3; }
+
+	// load editor positions
+	ccollect< std::vector<char> > EditorPositions;
+
+	LoadStringList( "EditorPositions", EditorPositions );
+
+	g_EditPosHash.clear();
+
+	for ( int i = 0; i != EditorPositions.count(); i++ )
+	{
+		std::vector<char> Line = EditorPositions[i];
+
+		int FL, L, P;
+		char Buf[0xFFFF];
+
+		int NumRead = sscanf( Line.data(), "FL = %i L = %i P = %i FN = %65535s", &FL, &L, &P, Buf );
+
+		if ( NumRead != 4 ) break;
+
+		printf( "FL = %i L = %i P = %i FN = %s\n", FL, L, P, Buf );
+
+		std::vector<unicode_t> FileName = utf8_to_unicode( Buf );
+		sEditorScrollCtx Ctx;
+		Ctx.m_FirstLine = FL;
+		Ctx.m_Point.line = L;
+		Ctx.m_Point.pos = P;
+
+		g_EditPosHash[ FileName ] = Ctx;
+	}
 }
 
 void WcmConfig::Save( NCWin* nc )
@@ -1145,6 +1178,24 @@ void WcmConfig::Save( NCWin* nc )
 
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
 #endif
+
+	// save editor positions
+	ccollect< std::vector<char> > EditorPositions;
+
+	for ( auto i = g_EditPosHash.begin(); i != g_EditPosHash.end(); i++ )
+	{
+		std::vector<unicode_t> FileName = i->first;
+		sEditorScrollCtx       Ctx      = i->second;
+
+		std::vector<char> FileName_utf8 = unicode_to_utf8( FileName.data() );
+
+		char Buf[0xFFFF];
+		snprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
+
+		EditorPositions.append( new_char_str( Buf ) );
+	}
+
+	SaveStringList( "EditorPositions", EditorPositions );
 }
 
 
