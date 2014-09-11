@@ -1430,13 +1430,13 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   iL( 16, 3 ),
 	   pList( p ),
 	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
-	   styleDefButton( 0, this, utf8_to_unicode( _LT( "Default colors" ) ).data(), 1, wcmConfig.panelColorMode != 1 && wcmConfig.panelColorMode != 2 ),
-	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "Black" ) ).data(), 1, wcmConfig.panelColorMode == 1 ),
-	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "White" ) ).data(), 1, wcmConfig.panelColorMode == 2 ),
+	   styleDefButton( 0, this, utf8_to_unicode( _LT( "&Default colors" ) ).data(), 1, wcmConfig.panelColorMode != 1 && wcmConfig.panelColorMode != 2 ),
+	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "&Black" ) ).data(), 1, wcmConfig.panelColorMode == 1 ),
+	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "&White" ) ).data(), 1, wcmConfig.panelColorMode == 2 ),
 
 	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
-	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show toolbar" ) ).data(), 0, wcmConfig.showToolBar ),
-	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show buttonbar" ) ).data(), 0, wcmConfig.showButtonBar ),
+	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, wcmConfig.showToolBar ),
+	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar" ) ).data(), 0, wcmConfig.showButtonBar ),
 
 	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
 	   fontList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),

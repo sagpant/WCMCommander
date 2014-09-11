@@ -69,7 +69,7 @@ namespace wal
 	SButton::SButton( int nId, Win* parent, unicode_t* txt, int _group, bool _isSet, crect* rect )
 		:  Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId ),
 		   isSet( _isSet ),
-		   text( new_unicode_str( txt ) ),
+		   text( txt ),
 		   group( _group )
 	{
 		if ( !rect )
@@ -120,12 +120,16 @@ namespace wal
 		}
 
 		gc.Set( GetFont() );
-		cpoint tsize = gc.GetTextExtents( text.data() );
+		cpoint tsize = text.GetTextExtents(gc);
 
 		gc.SetFillColor( colorBg );
-		gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 ) );
+		//gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 ) );
 
-		gc.TextOutF( 14 + 1 + 1 + 1 , ( cr.Height() - tsize.y ) / 2, text.data() );
+		//gc.TextOutF( 14 + 1 + 1 + 1 , ( cr.Height() - tsize.y ) / 2, text.data() );
+		UiCondList ucl;
+		int color_text = UiGetColor(uiColor, uiItem, &ucl, 0x0);
+		int color_hotkey = UiGetColor(uiHotkeyColor, uiItem, &ucl, 0x0);
+		text.DrawItem(gc, 14 + 1 + 1 + 1, (cr.Height() - tsize.y) / 2, color_text, color_hotkey);
 
 		if ( InFocus() )
 		{

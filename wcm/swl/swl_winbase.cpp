@@ -202,12 +202,13 @@ namespace wal
 	int StaticLine::UiGetClassId() {  return uiClassStatic;}
 
 	StaticLine::StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect )
-		: Win( Win::WT_CHILD, 0, parent, rect, nId ), text( new_unicode_str( txt ) )
+		: Win(Win::WT_CHILD, 0, parent, rect, nId), text(new_unicode_str(txt))
 	{
 		if ( !rect )
 		{
 			GC gc( this );
-			SetLSize( LSize( GetStaticTextExtent( gc, txt, GetFont() ) ) );
+			SetLSize(LSize(GetStaticTextExtent(gc, txt, GetFont())));
+			//SetLSize(LSize(text.GetTextExtents(gc, GetFont())));
 		}
 	}
 
@@ -219,7 +220,8 @@ namespace wal
 		gc.FillRect( rect ); //CCC
 		gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 )/*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ ); //CCC
 		gc.Set( GetFont() );
-		DrawStaticText( gc, 0, 0, text.data() );
+		DrawStaticText(gc, 0, 0, text.data());
+		//text.DrawItem(gc, 0, 0, UiGetColor(uiColor, 0, 0, 0), UiGetColor(uiHotkeyColor, 0, 0, 0));
 	}
 
 
