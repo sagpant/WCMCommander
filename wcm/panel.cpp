@@ -376,7 +376,7 @@ void PanelWin::SortBySize()
 	}
 	else
 	{
-		_list.Sort( PanelList::SORT_SIZE, true );
+		_list.Sort( PanelList::SORT_SIZE, false );
 	}
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -394,7 +394,7 @@ void PanelWin::SortByMTime()
 	}
 	else
 	{
-		_list.Sort( PanelList::SORT_MTIME, true );
+		_list.Sort( PanelList::SORT_MTIME, false );
 	}
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -1630,7 +1630,7 @@ void PanelWin::Paint( wal::GC& gc, const crect& paintRect )
 					break;
 
 				case PanelList::SORT_MTIME:
-					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "w" : "W" ) ).data() );
+					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "W" : "w" ) ).data() );
 					break;
 			};
 		}
