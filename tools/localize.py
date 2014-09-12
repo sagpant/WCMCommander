@@ -14,7 +14,7 @@ Dictionary = []
 
 for Index, Line in enumerate(Words):
 	if Line.find( "id " ) == 0:
-		S = Line[ Line.find( "\"" )+1 : -2 : ]
+		S = Line[ Line.find( "\"" )+1 : Line.rfind( "\"" ) : ]
 		Dictionary.append( S )
 #		print( S )
 
