@@ -355,6 +355,8 @@ namespace wal
 		if ( file_close( _fd ) ) { Throw(); }
 
 		_fileName.clear();
+
+		_fd = FILE_NULL;
 	}
 
 	inline int File::Read( void* buf, int size )
@@ -384,7 +386,7 @@ namespace wal
 		return ret;
 	}
 
-	inline File::~File() {   if ( _fd != FILE_NULL ) { file_close( _fd ); } }
+	inline File::~File() { if ( _fd != FILE_NULL ) { file_close( _fd ); _fd = FILE_NULL;  } }
 
 
 
