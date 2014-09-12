@@ -207,6 +207,9 @@
     <ClCompile Include="wcm-config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="wal\IntrusivePtr.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="charsetdlg.h">

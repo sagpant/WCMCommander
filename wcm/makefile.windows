@@ -142,7 +142,7 @@ $(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) shortcuts.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) shortcuts.cpp -o $(OBJDIR)/shortcuts.o
 
 $(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) fileassociations.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) fileassociations.cpp -o $(OBJDIR)fileassociations.o
+	$(CC) $(COPTS) -c $(CFLAGS) fileassociations.cpp -o $(OBJDIR)/fileassociations.o
 
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
