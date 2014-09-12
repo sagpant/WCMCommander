@@ -4,9 +4,7 @@ before_script:
     - gcc -v
     - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
     - sudo apt-get update
-    - sudo apt-get install gcc-4.8 g++-4.8
-    - sudo apt-get install libsmbclient-dev
-    - sudo apt-get install libssh2-1-dev
+    - sudo apt-get install gcc-4.8 g++-4.8 libsmbclient-dev libssh2-1-dev
     - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20
     - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
     - sudo update-alternatives --config gcc
@@ -19,4 +17,4 @@ compiler:
     - clang
 
 script:
-    - make all -j4 -B && cd .. && mkdir build && cd build && cmake -DWITH_FREETYPE=YES -DWITH_LIBSSH2=YES -DWITH_SMBCLIENT=YES .. && make -j4 # tests both cmake and custom builds
+    - make all -B && cd .. && mkdir build && cd build && cmake .. && make # tests both cmake and custom builds
