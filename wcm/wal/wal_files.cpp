@@ -4,12 +4,15 @@
 
 
 #ifdef _WIN32
-#include <windows.h>
+#	if !defined( NOMINMAX )
+#		define NOMINMAX
+#	endif
+#	include <windows.h>
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#	include <sys/types.h>
+#	include <sys/stat.h>
+#	include <fcntl.h>
+#	include <unistd.h>
 #endif
 
 #include "wal.h"

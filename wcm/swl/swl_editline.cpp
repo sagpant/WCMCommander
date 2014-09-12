@@ -2,7 +2,6 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
 #include "swl.h"
 
 #include <algorithm>

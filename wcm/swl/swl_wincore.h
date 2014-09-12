@@ -7,6 +7,9 @@
 #define USE_3D_BUTTONS 0
 
 #ifdef _WIN32
+#	if !defined( NOMINMAX )
+#		define NOMINMAX
+#	endif
 #	include <windows.h>
 typedef HWND WinID;
 extern HINSTANCE appInstance;

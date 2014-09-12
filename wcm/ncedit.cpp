@@ -4,6 +4,10 @@
  * walcommander@linderdaum.com
  */
 
+#if !defined( NOMINMAX )
+#define NOMINMAX
+#endif
+
 #include "nc.h"
 #include "ncedit.h"
 #include "wcm-config.h"

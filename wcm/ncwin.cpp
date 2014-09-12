@@ -9,6 +9,9 @@
 #include <sys/types.h>
 
 #ifdef _WIN32
+#	if !defined( NOMINMAX )
+#		define NOMINMAX
+#	endif
 #  include <winsock2.h>
 #else
 #  include <signal.h>
