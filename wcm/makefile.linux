@@ -11,9 +11,12 @@ CFLAGS += -I /opt/X11/include
 CFLAGS += -Wno-logical-op-parentheses -Wno-bitwise-op-parentheses
 CFLAGS_FREETYPE = -I /opt/X11/include/freetype2
 LIBFREETYPE = -l freetype
+else
+LIBSMB = -l smbclient
+LIBSSH = -l ssh2 
+LIBFREETYPE = -l freetype
+CFLAGS_FREETYPE = -I /usr/include/freetype2 -I /usr/local/include/freetype2 -D USEFREETYPE
 endif
-
-include makelib.mk
 
 LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l stdc++  -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 
@@ -100,10 +103,13 @@ OBJS = \
 	$(OBJDIR)/dircalc.o \
 	$(OBJDIR)/ltext.o
 
-#all: libconf_ux.h wcm
+all: libconf_ux.h wcm
 #	cat info.txt
 
-all:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
+libconf_ux.h: libtester/libconf.create
+	cd libtester &&	./libconf.create
+
+wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
 	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
 	
 #libconf.h: libtester/libconf.create
@@ -342,6 +348,3 @@ clean:
 install: wcm
 	cp -f wcm /usr/bin
 	cp -f -R install-files/* /usr
-
-libconf_ux.h: libtester/libconf.create
-	cd libtester &&	./libconf.create
