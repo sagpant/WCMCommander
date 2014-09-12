@@ -1041,7 +1041,7 @@ void LoadEditorPositions()
 
 		if ( NumRead != 4 ) break;
 
-		printf( "FL = %i L = %i P = %i FN = %s\n", FL, L, P, Buf );
+//		printf( "FL = %i L = %i P = %i FN = %s\n", FL, L, P, Buf );
 
 		std::vector<unicode_t> FileName = utf8_to_unicode( Buf );
 		sEditorScrollCtx Ctx;
