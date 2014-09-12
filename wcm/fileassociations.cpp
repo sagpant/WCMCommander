@@ -37,7 +37,7 @@ public:
 	 , m_ViewCommandSecondaryEdit( 0, this, 0, 0, 16 )
 	 , m_EditCommandText( 0, this, utf8_to_unicode( _LT( "Edit command (used for F4)" ) ).data() )
 	 , m_EditCommandEdit( 0, this, 0, 0, 16 )
-	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Edit command (used for Alf+F4)" ) ).data() )
+	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Edit command (used for Alt+F4)" ) ).data() )
 	 , m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
 	 , m_HasTerminalButton( 0, this, utf8_to_unicode( _LT( "Start in this terminal" ) ).data(), 0, true )
 	{
