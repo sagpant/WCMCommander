@@ -26,4 +26,4 @@ xcopy ..\install-files\share\wcm Temp /S /Y
 
 erase Temp /F /S /Q
 
-if not exist WalCommander-0.16.2.exe exit 1
+if not exist WalCommanderGitHub-0.16.2.exe exit 1
