@@ -8,7 +8,7 @@ rem
 rem Prepare binaries
 
 cd ..
-make all -j4
+make all -j4 -B
 if ERRORLEVEL 1 exit 1
 
 cd install-windows
