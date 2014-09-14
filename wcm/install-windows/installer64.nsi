@@ -1,9 +1,9 @@
 SetCompressor /SOLID /FINAL lzma
 
-Name "Wal Commander GitHub Edition 0.16.2"
+Name "Wal Commander GitHub Edition 0.16.2 (64-bit)"
 
 ; The file to write
-OutFile "WalCommanderGitHub-0.16.2.exe"
+OutFile "WalCommanderGitHub-0.16.2-x64.exe"
 
 ; The default installation directory
 InstallDir "D:\Program Files\WalCommander"
@@ -70,7 +70,7 @@ Section "" ;No components page, name is not important
   SetOutPath $INSTDIR
   
   ; Put file there
-  File /r Temp\*.*
+  File /r Temp64\*.*
 
   ; Write the uninstall keys for Windows
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WalCommander" "DisplayName" "Wal Commander GitHub Edition"
