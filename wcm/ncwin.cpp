@@ -575,13 +575,25 @@ NCWin::NCWin()
 
 	// apply position
 
-	wal::crect Rect( wcmConfig.windowX, wcmConfig.windowY, wcmConfig.windowX + wcmConfig.windowWidth, wcmConfig.windowY + wcmConfig.windowHeight );
-
 	cpoint ScreenSize = GetScreenSize();
+
+	// Upon fresh start all wcmConfig.* are zeros. In this case set window width and heigh to 3/4 of the screen size
+	if (wcmConfig.windowWidth == 0)
+	{
+		wcmConfig.windowWidth = ScreenSize.x * 3 / 4;
+	}
+
+	if (wcmConfig.windowHeight == 0)
+	{
+		wcmConfig.windowHeight = ScreenSize.y * 3 / 4;
+	}
+
+	wal::crect Rect(wcmConfig.windowX, wcmConfig.windowY, wcmConfig.windowX + wcmConfig.windowWidth, wcmConfig.windowY + wcmConfig.windowHeight);
 
 	// enforce main window Rect restrictions:
 	// size is least minW x minH (#3), and screensize at most (#4)
 	// topleft is on the screen (#1), and no closer than minW, minH from the rightbottom of the screen (#2)
+
 
 	const int minW = 100;
 	const int minH = 100;
