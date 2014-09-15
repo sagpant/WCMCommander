@@ -38,9 +38,23 @@ using namespace wal;
 #elif defined(_WIN32)
 #  define BUILD_OS "Win32"
 #elif defined(__APPLE__)
-#	define BUILD_OS "OS X"
+#	if __x86_64__ || __ppc64__
+#		define BUILD_OS "OS X 64"
+#	else
+#  	define BUILD_OS "OS X 32"
+#	endif
+#elif defined(__FreeBSD__)
+#	if __x86_64__ || __ppc64__
+#  	define BUILD_OS "FreeBSD 64"
+#	else
+#  	define BUILD_OS "FreeBSD 32"
+#	endif
 #else
-#  define BUILD_OS "Linux"
+#	if __x86_64__ || __ppc64__
+#  	define BUILD_OS "Linux64"
+#	else
+#  	define BUILD_OS "Linux32"
+#	endif
 #endif
 
 
