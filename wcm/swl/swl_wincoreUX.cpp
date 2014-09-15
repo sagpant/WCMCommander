@@ -771,7 +771,7 @@ namespace wal
 
 	int DoEvents( XEvent* event ) //return count of windows
 	{
-		dbg_printf( "e(%i) ", event->type );
+		//dbg_printf( "e(%i) ", event->type );
 		fflush( stdout );
 
 		switch ( event->type )
