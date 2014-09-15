@@ -342,7 +342,14 @@ bool NCDialog::EventChildKey( Win* child, cevent_key* pEvent )
 		}
 		else if ( pEvent->Key() == VK_TAB )
 		{
-			FocusNextChild();
+			if ((pEvent->Mod() & KM_SHIFT) != 0)
+			{
+				FocusPrevChild();
+			}
+			else
+			{
+				FocusNextChild();
+			}
 			return true;
 		}
 		else if ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN )
