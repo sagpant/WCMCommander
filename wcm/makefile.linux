@@ -111,7 +111,7 @@ all: libconf_ux.h wcm
 endif
 
 libconf_ux.h: libtester/libconf.create
-	cd libtester &&	./libconf.create
+	cd libtester &&	. ./libconf.create
 
 wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
 	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
