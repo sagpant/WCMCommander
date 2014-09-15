@@ -26,7 +26,7 @@ xcopy ..\install-files\share\wcm Temp /S /Y
 
 erase Temp /F /S /Q
 
-if not exist WalCommanderGitHub-0.16.2-x86.exe exit 1
+if not exist WalCommanderGitHub-0.17.0-x86.exe exit 1
 
 rem Prepare x64 binaries
 
@@ -49,4 +49,4 @@ xcopy ..\install-files\share\wcm Temp64 /S /Y
 
 erase Temp64 /F /S /Q
 
-if not exist WalCommanderGitHub-0.16.2-x64.exe exit 1
+if not exist WalCommanderGitHub-0.17.0-x64.exe exit 1
