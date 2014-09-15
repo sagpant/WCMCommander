@@ -4,6 +4,8 @@
 
 
 #include "swl.h"
+// XXX: refactor to move the header to .
+#include "../unicode_lc.h" 
 
 #define CBC_BOXFRAME 0
 #define CBC_BOX_BG 0xFFFFFF
@@ -172,8 +174,10 @@ namespace wal
 
 	bool SButton::EventKey( cevent_key* pEvent )
 	{
-		if ( pEvent->Type() == EV_KEYUP && ( pEvent->Key() == VK_SPACE )
-		     && IsEnabled() )
+		if (IsEnabled() &&
+			pEvent->Type() == EV_KEYUP &&
+			(pEvent->Key() == VK_SPACE || text.isHotkeyMatching(UnicodeUC(pEvent->Char())))
+  			)
 		{
 			if ( group > 0 )
 			{
@@ -188,6 +192,11 @@ namespace wal
 		}
 
 		return false;
+	}
+
+	bool SButton::IsMyHotKey(cevent_key* pEvent)
+	{
+		return text.isHotkeyMatching(UnicodeUC(pEvent->Char()));
 	}
 
 	bool SButton::EventFocus( bool recv )
