@@ -160,6 +160,7 @@
 		</Unit>
 		<Unit filename="ext-app.cpp" />
 		<Unit filename="ext-app.h" />
+		<Unit filename="fileassociations.cpp" />
 		<Unit filename="fileopers.cpp" />
 		<Unit filename="fileopers.h" />
 		<Unit filename="filesearch.cpp" />
