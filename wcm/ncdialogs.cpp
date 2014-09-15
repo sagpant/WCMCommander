@@ -335,6 +335,7 @@ bool NCDialog::EventChildKey( Win* child, cevent_key* pEvent )
 {
 	if ( pEvent->Type() == EV_KEYDOWN )
 	{
+		//dbg_printf("key=0x%x\n",pEvent->Key());
 		if ( pEvent->Key() == VK_ESCAPE )
 		{
 			CloseDialog( CMD_CANCEL );
@@ -352,6 +353,14 @@ bool NCDialog::EventChildKey( Win* child, cevent_key* pEvent )
 			}
 			return true;
 		}
+// on UNIX shift-tab gives XK_ISO_Left_Tab
+#ifdef XK_ISO_Left_Tab
+		else if(pEvent->Key() == XK_ISO_Left_Tab)
+		{
+			FocusPrevChild();
+			return true;
+		}
+#endif // XK_ISO_Left_Tab
 		else if ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN )
 		{
 			if ( enterCmd && GetFocusButtonNum() < 0 )
