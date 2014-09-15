@@ -1,3 +1,9 @@
+0.18.0 GitHub Edition
+	Added: hotkeys in dialogs
+	Hotkey: Shift+Tab to switch between controls in dialogs
+	Improved: CR/LF handling in the editor on Linux and OS X
+	Improved: window size selection on fresh install
+
 0.17.0 GitHub Edition
 	Added: share search text between all search and search-n-replace dialogs
 	Added: indicator of the current sorting order in the panel
