@@ -4,6 +4,8 @@
 
 
 #include "swl.h"
+// XXX: refactor to move the header to .
+#include "../unicode_lc.h" 
 
 namespace wal
 {
@@ -148,24 +150,30 @@ namespace wal
 
 	bool Button::EventKey( cevent_key* pEvent )
 	{
-		if ( pEvent->Type() == EV_KEYDOWN && ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN ) )
+		if ((pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN) || text.isHotkeyMatching(UnicodeUC(pEvent->Char())))
 		{
-			pressed = true;
-			Invalidate();
-			return true;
+			if (pEvent->Type() == EV_KEYDOWN)
+			{
+				pressed = true;
+			}
+			else if (pressed && pEvent->Type() == EV_KEYUP)
+			{
+				pressed = false;
+				SendCommand();
+			}
+			else
+			{
+				return false;
+			}
 		}
-
-		if ( pressed && pEvent->Type() == EV_KEYUP && ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN ) )
-		{
-			pressed = false;
-			Invalidate();
-			SendCommand();
-			return true;
-		}
-
-		return false;
+		Invalidate();
+		return true;
 	}
 
+	bool Button::IsMyHotKey(cevent_key* pEvent)
+	{
+		return text.isHotkeyMatching(UnicodeUC(pEvent->Char()));
+	}
 
 	void Button::Paint( GC& gc, const crect& paintRect )
 	{

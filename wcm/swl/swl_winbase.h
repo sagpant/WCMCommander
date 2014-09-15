@@ -60,7 +60,7 @@ namespace wal
 			return gc.GetTextExtents(strFull);
 		}
 		int isEmpty() const { return strFull == 0; }
-		int isHotkeyMatching(unicode_t charUpperCase) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
+		bool isHotkeyMatching(unicode_t charUpperCase) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
 	};
 
 	class Button: public Win
@@ -79,6 +79,7 @@ namespace wal
 		virtual bool EventFocus( bool recv );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
+		virtual bool IsMyHotKey(cevent_key* pEvent);
 		virtual void OnChangeStyles();
 		virtual int UiGetClassId();
 		virtual ~Button();
@@ -106,6 +107,7 @@ namespace wal
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
+		virtual bool IsMyHotKey( cevent_key* pEvent );
 		virtual bool EventFocus( bool recv );
 		virtual bool Broadcast( int id, int subId, Win* win, void* data );
 		virtual int UiGetClassId();
