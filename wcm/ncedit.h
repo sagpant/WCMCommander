@@ -174,7 +174,6 @@ public:
 			{
 				str.len--;
 				str.SetLF();
-#ifdef _WIN32
 
 				if ( str.len > 0 && str.data[str.len - 1] == '\r' )
 				{
@@ -182,7 +181,6 @@ public:
 					str.SetCR();
 				}
 
-#endif
 			}
 
 			Append();

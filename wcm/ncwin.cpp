@@ -1668,7 +1668,9 @@ void NCWin::View( bool Secondary )
 
 		if ( wcmConfig.editSavePos )
 		{
-			_viewer.SetCol( g_ViewPosHash[ new_unicode_str( fs->Uri( path ).GetUnicode() ) ] );
+			std::vector<unicode_t> Name = new_unicode_str( fs->Uri( path ).GetUnicode() );
+			auto i = g_ViewPosHash.find( Name );
+			if ( i != g_ViewPosHash.end() ) _viewer.SetCol( i->second );
 		}
 }
 	catch ( cexception* ex )
@@ -1754,7 +1756,16 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 		if ( wcmConfig.editSavePos )
 		{
-			_editor.SetScrollCtx( g_EditPosHash[ new_unicode_str( fs->Uri( path ).GetUnicode() ) ] );
+			std::vector<unicode_t> Name = new_unicode_str( fs->Uri( path ).GetUnicode() );
+			auto i = g_EditPosHash.find( Name );
+			if ( i != g_EditPosHash.end() )
+			{
+				_editor.SetScrollCtx( i->second );
+			}
+			else
+			{
+				_editor.SetCursorPos( EditPoint( 0, 0 ) );
+			}
 		}
 		else
 		{
