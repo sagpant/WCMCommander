@@ -1,4 +1,4 @@
-0.16.2 GitHub Edition
+0.17.0 GitHub Edition
 	Added: share search text between all search and search-n-replace dialogs
 	Added: indicator of the current sorting order in the panel
 	Added: taskbar hints for the Alt key
@@ -41,8 +41,10 @@
 	Fixed: save/restore panel paths on Windows
 	Fixed: save the configuration on exit
 	Fixed: place cursor on a newly created folder
+	Fixed: sorting modes are the same as in Far Manager
 	Development: added CMake and Code::Blocks configs
 	Development: can be compiled with Clang
+	Development: added Windows x64 builds
 	Disabled most of the 3D UI
 	Disabled auto indent in the editor
 

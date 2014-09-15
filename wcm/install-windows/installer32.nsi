@@ -1,9 +1,9 @@
 SetCompressor /SOLID /FINAL lzma
 
-Name "Wal Commander GitHub Edition 0.16.2"
+Name "Wal Commander GitHub Edition 0.17.0"
 
 ; The file to write
-OutFile "WalCommanderGitHub-0.16.2-x86.exe"
+OutFile "WalCommanderGitHub-0.17.0-x86.exe"
 
 ; The default installation directory
 InstallDir "D:\Program Files\WalCommander"
