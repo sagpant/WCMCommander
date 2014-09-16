@@ -27,6 +27,7 @@ public:
 	 , m_MaskEdit( 0, this, 0, 0, 16 )
 	 , m_DescriptionText( 0, this, utf8_to_unicode( _LT( "Description of the file association" ) ).data() )
 	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
+	 , m_HasTerminalButton( 0, this, utf8_to_unicode( _LT( "Start in this terminal" ) ).data(), 0, true )
 	 , m_ExecuteCommandText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Enter)" ) ).data() )
 	 , m_ExecuteCommandEdit( 0, this, 0, 0, 16 )
 	 , m_ExecuteCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Ctrl+PgDn)" ) ).data() )
@@ -39,7 +40,6 @@ public:
 	 , m_EditCommandEdit( 0, this, 0, 0, 16 )
 	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Edit command (used for Alt+F4)" ) ).data() )
 	 , m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
-	 , m_HasTerminalButton( 0, this, utf8_to_unicode( _LT( "Start in this terminal" ) ).data(), 0, true )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
 
@@ -47,13 +47,13 @@ public:
 		{
 			m_MaskEdit.SetText( Assoc->GetMask().data(), false );
 			m_DescriptionEdit.SetText( Assoc->GetDescription().data(), false );
+			m_HasTerminalButton.Change( Assoc->GetHasTerminal() );
 			m_ExecuteCommandEdit.SetText( Assoc->GetExecuteCommand().data(), false );
 			m_ExecuteCommandSecondaryEdit.SetText( Assoc->GetExecuteCommandSecondary().data(), false );
 			m_ViewCommandEdit.SetText( Assoc->GetViewCommand().data(), false );
 			m_ViewCommandSecondaryEdit.SetText( Assoc->GetViewCommandSecondary().data(), false );
 			m_EditCommandEdit.SetText( Assoc->GetEditCommand().data(), false );
 			m_EditCommandSecondaryEdit.SetText( Assoc->GetEditCommandSecondary().data(), false );
-			m_HasTerminalButton.Change( Assoc->GetHasTerminal() );
 		}
 
 		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
@@ -78,13 +78,13 @@ public:
 
 		order.append( &m_MaskEdit );
 		order.append( &m_DescriptionEdit );
+		order.append( &m_HasTerminalButton );
 		order.append( &m_ExecuteCommandEdit );
 		order.append( &m_ExecuteCommandSecondaryEdit );
 		order.append( &m_ViewCommandEdit );
 		order.append( &m_ViewCommandSecondaryEdit );
 		order.append( &m_EditCommandEdit );
 		order.append( &m_EditCommandSecondaryEdit );
-		order.append( &m_HasTerminalButton );
 
 		SetPosition();
 	}
@@ -123,6 +123,8 @@ public:
 	StaticLine m_DescriptionText;
 	EditLine   m_DescriptionEdit;
 
+	SButton m_HasTerminalButton;
+
 	StaticLine m_ExecuteCommandText;
 	EditLine   m_ExecuteCommandEdit;
 
@@ -140,8 +142,6 @@ public:
 
 	StaticLine m_EditCommandSecondaryText;
 	EditLine   m_EditCommandSecondaryEdit;
-
-	SButton m_HasTerminalButton;
 
 	mutable clNCFileAssociation m_Result;
 
