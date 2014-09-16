@@ -555,9 +555,9 @@ NCWin::NCWin()
 	_mdFiles.AddCmd( ID_MKDIR, _LT( "&Make directory" ),   "F7" );
 	_mdFiles.AddCmd( ID_DELETE, _LT( "&Delete" ), "F8" );
 	_mdFiles.AddSplit();
-	_mdFiles.AddCmd( ID_GROUP_SELECT, _LT( "Select &group" ) );
-	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "U&nselect group" ) );
-	_mdFiles.AddCmd( ID_GROUP_INVERT, _LT( "&Invert group" ) );
+	_mdFiles.AddCmd( ID_GROUP_SELECT, _LT( "Select &group" ),"Gray +" );
+	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "U&nselect group"),"Gray -" );
+	_mdFiles.AddCmd( ID_GROUP_INVERT, _LT( "&Invert selection" ),"Gray *" );
 
 	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Shift F7" );
 	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Shift-F8 (Ctrl-K)" );
