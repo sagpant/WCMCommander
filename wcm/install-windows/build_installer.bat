@@ -27,6 +27,7 @@ xcopy ..\install-files\share\wcm Temp /S /Y
 cd Temp
 "C:\Program Files\7-Zip\7z.exe" a WalCommanderGitHub-0.17.0-x86.zip .
 cd ..
+copy Temp\WalCommanderGitHub-0.17.0-x86.zip .
 
 erase Temp /F /S /Q
 
@@ -54,6 +55,7 @@ xcopy ..\install-files\share\wcm Temp64 /S /Y
 cd Temp64
 "C:\Program Files\7-Zip\7z.exe" a WalCommanderGitHub-0.17.0-x64.zip .
 cd ..
+copy Temp64\WalCommanderGitHub-0.17.0-x64.zip .
 
 erase Temp64 /F /S /Q
 
