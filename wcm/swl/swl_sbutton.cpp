@@ -194,9 +194,9 @@ namespace wal
 		return false;
 	}
 
-	bool SButton::IsMyHotKey(cevent_key* pEvent)
+	Win* SButton::IsHisHotKey(cevent_key* pEvent)
 	{
-		return text.isHotkeyMatching(UnicodeUC(pEvent->Char()));
+		return text.isHotkeyMatching(UnicodeUC(pEvent->Char())) ? this: 0;
 	}
 
 	bool SButton::EventFocus( bool recv )

@@ -79,7 +79,7 @@ namespace wal
 		virtual bool EventFocus( bool recv );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
-		virtual bool IsMyHotKey(cevent_key* pEvent);
+		virtual Win* IsHisHotKey(cevent_key* pEvent);
 		virtual void OnChangeStyles();
 		virtual int UiGetClassId();
 		virtual ~Button();
@@ -107,7 +107,7 @@ namespace wal
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
-		virtual bool IsMyHotKey( cevent_key* pEvent );
+		virtual Win* IsHisHotKey( cevent_key* pEvent );
 		virtual bool EventFocus( bool recv );
 		virtual bool Broadcast( int id, int subId, Win* win, void* data );
 		virtual int UiGetClassId();
@@ -184,6 +184,8 @@ namespace wal
 		int _chars;
 		bool cursorVisible;
 		bool passwordMode;
+		// quick search line accepts alt keys. Edit controls do not: alt is used for hotkeys in dialogs
+		bool doAcceptAltKeys;
 		int first;
 		bool frame3d;
 		int charH, charW;
@@ -196,6 +198,7 @@ namespace wal
 		void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
 	public:
 		EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true );
+		void SetAcceptAltKeys(){ doAcceptAltKeys = true; }
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
@@ -230,6 +233,21 @@ namespace wal
 		virtual int UiGetClassId();
 		virtual ~StaticLine();
 	};
+
+	// single line label that may have '&' in the text to designate hotkey
+	// Has master dialog control, which is returned by IsHisHotKey on matching hotkey
+	class StaticLabel : public Win
+	{
+		MenuTextInfo text;
+		Win* master;
+	public:
+		StaticLabel(int nId, Win* parent, const unicode_t* txt, Win* _master = 0, crect* rect = 0);
+		virtual void Paint(GC& gc, const crect& paintRect);
+		virtual Win* IsHisHotKey(cevent_key* pEvent);
+		virtual int UiGetClassId();
+		virtual ~StaticLabel();
+	};
+
 
 	enum ScrollCmd
 	{

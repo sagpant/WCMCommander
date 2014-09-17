@@ -288,7 +288,8 @@ namespace wal
 		   cursorVisible( false ),
 		   first( 0 ),
 		   frame3d( frame ),
-		   passwordMode( false )
+		   passwordMode( false ),
+		   doAcceptAltKeys(false)
 	{
 		text.End();
 
@@ -605,6 +606,12 @@ namespace wal
 
 	bool EditLine::EventKey( cevent_key* pEvent )
 	{
+
+		if (!doAcceptAltKeys && (pEvent->Mod() & KM_ALT) != 0)
+		{
+			return false;
+		}
+
 		if ( pEvent->Type() == EV_KEYDOWN )
 		{
 

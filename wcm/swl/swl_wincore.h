@@ -1084,7 +1084,9 @@ namespace wal
 		virtual bool Event( cevent* pEvent );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventChildKey( Win* child, cevent_key* pEvent );
-		virtual bool IsMyHotKey(cevent_key* pEvent){ return false; }; // overridden in dialog elements to help dialog winow to find child that matches the hotkey
+		// overridden in dialog elements to help dialog winow to find child that matches the hotkey
+		// returns window to activate on the hotkey, or 0 if the key is unknown
+		virtual Win* IsHisHotKey(cevent_key* pEvent){ return 0; }; 
 		virtual bool EventKey(cevent_key* pEvent);
 		virtual bool EventFocus( bool recv );
 		virtual bool EventActivate( bool activated, Win* w );

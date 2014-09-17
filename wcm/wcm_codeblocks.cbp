@@ -242,6 +242,7 @@
 		<Unit filename="swl/swl_popupmenu.cpp" />
 		<Unit filename="swl/swl_sbutton.cpp" />
 		<Unit filename="swl/swl_scrollbar.cpp" />
+		<Unit filename="swl/swl_staticlabel.cpp" />
 		<Unit filename="swl/swl_textlist.cpp" />
 		<Unit filename="swl/swl_vlist.cpp" />
 		<Unit filename="swl/swl_winbase.cpp" />

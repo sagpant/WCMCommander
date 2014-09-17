@@ -202,6 +202,9 @@
     <ClCompile Include="fileassociations.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>
+    <ClCompile Include="swl\swl_staticlabel.cpp">
+      <Filter>swl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">

@@ -101,6 +101,7 @@ SET(wcm_SOURCES
 	swl/swl_popupmenu.cpp
 	swl/swl_sbutton.cpp
 	swl/swl_scrollbar.cpp
+	swl/swl_staticlabel.cpp
 	swl/swl_textlist.cpp
 	swl/swl_vlist.cpp
 	swl/swl_winbase.cpp

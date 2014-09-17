@@ -37,6 +37,7 @@ PanelSearchWin::PanelSearchWin( PanelWin* parent, cevent_key* key )
 	   _static( 0, this, utf8_to_unicode( _LT( "Search:" ) ).data() ),
 	   _lo( 3, 4 )
 {
+	_edit.SetAcceptAltKeys();
 	_lo.AddWin( &_static, 1, 1 );
 	_lo.AddWin( &_edit, 1, 2 );
 	_lo.LineSet( 0, 2 );
