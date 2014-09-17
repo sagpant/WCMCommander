@@ -25,7 +25,7 @@ xcopy ..\install-files\share\wcm Temp /S /Y
 "D:\Program Files (x86)\NSIS\makensis.exe" installer32.nsi
 
 cd Temp
-7z a WalCommanderGitHub-0.17.0-x86.zip .
+"C:\Program Files\7-Zip\7z.exe" a WalCommanderGitHub-0.17.0-x86.zip .
 cd ..
 
 erase Temp /F /S /Q
@@ -52,7 +52,7 @@ xcopy ..\install-files\share\wcm Temp64 /S /Y
 "D:\Program Files (x86)\NSIS\makensis.exe" installer64.nsi
 
 cd Temp64
-7z a WalCommanderGitHub-0.17.0-x64.zip .
+"C:\Program Files\7-Zip\7z.exe" a WalCommanderGitHub-0.17.0-x64.zip .
 cd ..
 
 erase Temp64 /F /S /Q
