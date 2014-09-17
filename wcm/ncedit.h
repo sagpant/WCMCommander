@@ -74,6 +74,9 @@ public:
 	class Pos
 	{
 		friend class EditList;
+		// b - bufferNo
+		// p - posInBuffer
+		// n - offset from beg of data
 		int b, p, n;
 	public:
 		Pos(): b( 0 ), p( 0 ), n( 0 ) {}
