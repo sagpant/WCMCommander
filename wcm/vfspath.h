@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef NCVFSPATH_H
-#define NCVFSPATH_H
+#pragma once
 
 #include <wal.h>
 
@@ -250,7 +250,3 @@ inline const void* FSString::Get( int cs )
 
 	return _temp.str();
 };
-
-
-
-#endif

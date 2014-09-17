@@ -1,10 +1,11 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
+#pragma once
 
-#ifndef VFS_SFTP_H
-#define VFS_SFTP_H
 #include "libconf.h"
 #include "vfs.h"
 
@@ -128,6 +129,4 @@ void InitSSH();
 #else
 inline void InitSSH() {};
 #endif
-#endif
-
 #endif

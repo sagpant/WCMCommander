@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef FILEOPERS_H
-#define FILEOPERS_H
+#pragma once
 
 #include "operthread.h"
 #include "vfs.h"
@@ -69,23 +69,8 @@ class OperFileNameWin: public Win
 	std::vector<unicode_t> text;
 	int _ccount;
 public:
-	OperFileNameWin( Win* parent, int ccount = 80 )
-		:  Win( Win::WT_CHILD, 0, parent, 0 ), _ccount( ccount )
-	{
-		wal::GC gc( this );
-		cpoint size = GetStaticTextExtent( gc, ABCString, GetFont() );
-		size.x = size.x / ABCStringLen * ccount;
-
-		if ( size.x > 500 ) { size.x = 550; }
-
-		SetLSize( LSize( size ) );
-	}
-	void SetText( const unicode_t* s )
-	{
-		text = new_unicode_str( s );
-		Invalidate();
-	}
-
+	OperFileNameWin( Win* parent, int ccount = 80 );
+	void SetText( const unicode_t* s );
 	void Paint( wal::GC& gc, const crect& paintRect );
 	virtual ~OperFileNameWin();
 };
@@ -97,5 +82,3 @@ bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent );
 bool DeleteList( clPtr<FS> f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent );
 clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
 bool MoveFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
-
-#endif

@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef NCHISTORY_H
-#define NCHISTORY_H
+#pragma once
 
 #include <wal.h>
 
@@ -30,6 +30,3 @@ public:
 
 	~NCHistory() {}
 };
-
-
-#endif

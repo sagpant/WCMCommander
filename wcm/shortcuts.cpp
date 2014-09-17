@@ -1,5 +1,11 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #ifdef _WIN32
-#include <winsock2.h>
+#	include <winsock2.h>
 #endif
 
 

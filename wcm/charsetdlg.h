@@ -1,5 +1,11 @@
-#ifndef CHARSETDLG_H
-#define CHARSETDLG_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
+
 #include "ncdialogs.h"
 
 bool SelectCharset( NCDialogParent* parent, int* pCharsetId, int currentId = 0 );
@@ -8,5 +14,3 @@ bool SelectOperCharset( NCDialogParent* parent, int* pCharsetId, int currentId =
 void InitOperCharsets();
 int GetFirstOperCharsetId();
 int GetNextOperCharsetId( int id );
-
-#endif

@@ -1,10 +1,13 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #ifdef _WIN32
-#include <Winsock2.h>
-#include "resource.h"
-#include "w32util.h"
+#	include <Winsock2.h>
+#	include "resource.h"
+#	include "w32util.h"
 #endif
 
 #include "nc.h"

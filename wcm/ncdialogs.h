@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef NCDIALOGS_H
-#define NCDIALOGS_H
+#pragma once
 
 #include "swl.h"
 #include "nchistory.h"
@@ -60,12 +60,14 @@ class NCDialog: public OperThreadWin
 	ccollect<clPtr<Button> > _bList;
 	int enterCmd;
 
+	int m_nId;
+
 protected:
 	Win* GetDownButton();
 	int GetFocusButtonNum();
 public:
 	NCDialog( bool child, int nId, NCDialogParent* parent, const unicode_t* headerText, ButtonDataNode* blist );
-	void MaximizeIfChild( bool x = true, bool y = true ); //чтоб делать большие дочерние диалоги (типа поиска файлов и тд)
+	void MaximizeIfChild( bool x = true, bool y = true ); //С‡С‚РѕР± РґРµР»Р°С‚СЊ Р±РѕР»СЊС€РёРµ РґРѕС‡РµСЂРЅРёРµ РґРёР°Р»РѕРіРё (С‚РёРїР° РїРѕРёСЃРєР° С„Р°Р№Р»РѕРІ Рё С‚Рґ)
 	void SetPosition();
 	void AddWin( Win* w ) { _lo.AddWin( w, 4, 4 ); }
 	void AddLayout( Layout* l ) { _lo.AddLayout( l, 4, 4 ); }
@@ -152,6 +154,3 @@ public:
 
 
 int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, DlgMenuData* d );
-
-#endif
-

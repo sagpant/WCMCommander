@@ -1,3 +1,9 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "search-tools.h"
 #include "unicode_lc.h"
 
@@ -106,7 +112,7 @@ inline   int SBigNode::MinLen()
 }
 
 
-static char* VSearchStr( char* s, char* end, SNode* list ) //считается, что после end есть строка длины(list)-1
+static char* VSearchStr( char* s, char* end, SNode* list ) //СЃС‡РёС‚Р°РµС‚СЃСЏ, С‡С‚Рѕ РїРѕСЃР»Рµ end РµСЃС‚СЊ СЃС‚СЂРѕРєР° РґР»РёРЅС‹(list)-1
 {
 	for ( ; s < end; s++ )
 		if ( list[0].Eq( *s ) )

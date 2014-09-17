@@ -15,18 +15,21 @@
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
-#include <errno.h>
+#	if !defined( NOMINMAX )
+#		define NOMINMAX
+#	endif
+#	include <windows.h>
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <pthread.h>
-#include <string.h>
-#include <stdlib.h>
+#	include <sys/types.h>
+#	include <sys/stat.h>
+#	include <fcntl.h>
+#	include <unistd.h>
+#	include <pthread.h>
+#	include <string.h>
+#	include <stdlib.h>
 #endif
+
+#include <errno.h>
 
 namespace wal
 {
@@ -527,5 +530,7 @@ namespace wal
 
 
 }; //namespace wal
+
+using namespace wal;
 
 #endif

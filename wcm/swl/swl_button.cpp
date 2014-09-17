@@ -4,6 +4,8 @@
 
 
 #include "swl.h"
+// XXX: refactor to move the header to .
+#include "../unicode_lc.h" 
 
 namespace wal
 {
@@ -23,7 +25,7 @@ namespace wal
 	{
 		GC gc( this );
 		gc.Set( GetFont() );
-		cpoint p = gc.GetTextExtents( text.data() );
+		cpoint p = text.GetTextExtents(gc);
 
 		if ( icon.ptr() )
 		{
@@ -52,14 +54,13 @@ namespace wal
 		:  Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId ),
 		   pressed( false ),
 		   icon( new cicon( id, iconX, iconY ) ),
-		   commandId( id )
+		   commandId( id ),
+		   text(txt && txt[0] ? txt : spaceUnicodeStr)
 	{
 		if ( !icon->Valid() )
 		{
 			icon.clear();
 		}
-
-		text = new_unicode_str( txt && txt[0] ? txt : spaceUnicodeStr );
 
 		if ( !rect )
 		{
@@ -69,7 +70,7 @@ namespace wal
 
 	void Button::Set( const unicode_t* txt, int id, int iconX, int iconY )
 	{
-		text = new_unicode_str( txt && txt[0] ? txt : spaceUnicodeStr );
+		text.SetText( txt && txt[0] ? txt : spaceUnicodeStr );
 
 		commandId = id;
 		icon = new cicon( id, iconX, iconY );
@@ -149,24 +150,30 @@ namespace wal
 
 	bool Button::EventKey( cevent_key* pEvent )
 	{
-		if ( pEvent->Type() == EV_KEYDOWN && ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN ) )
+		if ((pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN) || text.isHotkeyMatching(UnicodeUC(pEvent->Char())))
 		{
-			pressed = true;
-			Invalidate();
-			return true;
+			if (pEvent->Type() == EV_KEYDOWN)
+			{
+				pressed = true;
+			}
+			else if (pressed && pEvent->Type() == EV_KEYUP)
+			{
+				pressed = false;
+				SendCommand();
+			}
+			else
+			{
+				return false;
+			}
 		}
-
-		if ( pressed && pEvent->Type() == EV_KEYUP && ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN ) )
-		{
-			pressed = false;
-			Invalidate();
-			SendCommand();
-			return true;
-		}
-
-		return false;
+		Invalidate();
+		return true;
 	}
 
+	Win*  Button::IsHisHotKey(cevent_key* pEvent)
+	{
+		return text.isHotkeyMatching(UnicodeUC(pEvent->Char()))? this:0;
+	}
 
 	void Button::Paint( GC& gc, const crect& paintRect )
 	{
@@ -208,7 +215,7 @@ namespace wal
 
 		gc.SetTextColor( /*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ UiGetColor( uiColor, 0, 0, 0 ) );
 		gc.Set( GetFont() );
-		cpoint tsize = gc.GetTextExtents( text.data() );
+		cpoint tsize = text.GetTextExtents(gc);
 
 		/*
 		int l = tsize.x + (icon.ptr() ? icon->Width() + ICONX_RIGHTSPACE : 0);
@@ -233,7 +240,7 @@ namespace wal
 		}
 
 		gc.SetClipRgn( &rect );
-		gc.TextOutF( x, rect.top + ( rect.Height() - tsize.y ) / 2 + ( pressed ? 2 : 0 ), text.data() );
+		text.DrawItem(gc, x, rect.top + (rect.Height() - tsize.y) / 2 + (pressed ? 2 : 0), UiGetColor(uiColor, 0, 0, 0), UiGetColor(uiHotkeyColor, 0, 0, 0));
 	}
 
 	Button::~Button() {}

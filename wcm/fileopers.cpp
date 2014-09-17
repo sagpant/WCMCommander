@@ -1,9 +1,11 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #ifdef _WIN32
-#include <winsock2.h>
+#	include <winsock2.h>
 #endif
 
 #include <time.h>
@@ -754,6 +756,25 @@ bool OperCFThread::SendProgressInfo( int64 size, int64 progress )
 	if ( !WinThreadSignal( INFO_NEXTFILE ) ) { return false; }
 
 	return true;
+}
+
+OperFileNameWin::OperFileNameWin( Win* parent, int ccount )
+ : Win( Win::WT_CHILD, 0, parent, 0 )
+ , _ccount( ccount )
+{
+	wal::GC gc( this );
+	cpoint size = GetStaticTextExtent( gc, ABCString, GetFont() );
+	size.x = size.x / ABCStringLen * ccount;
+
+	if ( size.x > 500 ) { size.x = 550; }
+
+	SetLSize( LSize( size ) );
+}
+
+void OperFileNameWin::SetText( const unicode_t* s )
+{
+	text = new_unicode_str( s );
+	Invalidate();
 }
 
 void OperFileNameWin::Paint( wal::GC& gc, const crect& paintRect )

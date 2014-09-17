@@ -1,5 +1,10 @@
-#ifndef T_EMULATOR_H
-#define T_EMULATOR_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 #include "wal.h"
 
@@ -226,5 +231,3 @@ public:
 	void InternalPrint( const unicode_t* str, unsigned fg, unsigned bg );
 	void Append( char ch );
 };
-
-#endif

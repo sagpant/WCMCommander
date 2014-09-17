@@ -90,8 +90,8 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -114,7 +114,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -135,7 +135,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -161,7 +161,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -178,6 +178,7 @@
     <ClCompile Include="dircalc.cpp" />
     <ClCompile Include="eloadsave.cpp" />
     <ClCompile Include="ext-app.cpp" />
+    <ClCompile Include="fileassociations.cpp" />
     <ClCompile Include="fileopers.cpp" />
     <ClCompile Include="filesearch.cpp" />
     <ClCompile Include="ftplogon.cpp" />
@@ -218,6 +219,7 @@
     <ClCompile Include="swl\swl_popupmenu.cpp" />
     <ClCompile Include="swl\swl_sbutton.cpp" />
     <ClCompile Include="swl\swl_scrollbar.cpp" />
+    <ClCompile Include="swl\swl_staticlabel.cpp" />
     <ClCompile Include="swl\swl_textlist.cpp" />
     <ClCompile Include="swl\swl_vlist.cpp" />
     <ClCompile Include="swl\swl_winbase.cpp" />
@@ -243,15 +245,14 @@
     <ClCompile Include="wal\wal_sys_api.cpp" />
     <ClCompile Include="wal\wal_tmpls.cpp" />
     <ClCompile Include="wcm-config.cpp" />
-    <ClCompile Include="wcm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bfile.h" />
     <ClInclude Include="charsetdlg.h" />
     <ClInclude Include="color-style.h" />
     <ClInclude Include="dircalc.h" />
     <ClInclude Include="eloadsave.h" />
     <ClInclude Include="ext-app.h" />
+    <ClInclude Include="fileassociations.h" />
     <ClInclude Include="fileopers.h" />
     <ClInclude Include="filesearch.h" />
     <ClInclude Include="ftplogon.h" />
@@ -309,7 +310,6 @@
     <ClInclude Include="wal\wal_sys_api.h" />
     <ClInclude Include="wal\wal_tmpls.h" />
     <ClInclude Include="wcm-config.h" />
-    <ClInclude Include="wcm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="icon1.ico" />

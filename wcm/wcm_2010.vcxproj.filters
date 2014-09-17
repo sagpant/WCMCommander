@@ -207,14 +207,11 @@
     <ClCompile Include="wcm-config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wcm.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="wal\IntrusivePtr.h">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bfile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="charsetdlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -396,9 +393,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wcm-config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wcm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

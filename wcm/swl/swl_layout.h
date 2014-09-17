@@ -3,8 +3,7 @@
 */
 
 
-#ifndef LAYOUT_H
-#define LAYOUT_H
+#pragma once
 
 namespace wal
 {
@@ -59,8 +58,8 @@ namespace wal
 		SpaceStruct(): growth( false ), size( 0 ) {};
 	};
 
-//структура для сбора списка окон, которым требуется изменение позиции или размера
-//чтоб потом оптом все изменить
+//СЃС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ СЃР±РѕСЂР° СЃРїРёСЃРєР° РѕРєРѕРЅ, РєРѕС‚РѕСЂС‹Рј С‚СЂРµР±СѓРµС‚СЃСЏ РёР·РјРµРЅРµРЅРёРµ РїРѕР·РёС†РёРё РёР»Рё СЂР°Р·РјРµСЂР°
+//С‡С‚РѕР± РїРѕС‚РѕРј РѕРїС‚РѕРј РІСЃРµ РёР·РјРµРЅРёС‚СЊ
 	struct WSS
 	{
 		Win* w;
@@ -69,7 +68,7 @@ namespace wal
 
 	struct LItem: public iIntrusiveCounter
 	{
-		//надо включить выравнивание
+		//РЅР°РґРѕ РІРєР»СЋС‡РёС‚СЊ РІС‹СЂР°РІРЅРёРІР°РЅРёРµ
 		int r1, r2, c1, c2;
 		LItem( int _r1, int _r2, int _c1, int _c2 ): r1( _r1 ), r2( _r2 ), c1( _c1 ), c2( _c2 ) {}
 		virtual void GetLSize( LSize* ls ) = 0;
@@ -130,6 +129,7 @@ namespace wal
 		Layout( int lineCount, int colCount );
 		void DelObj( void* p );
 		void AddWin( Win* w, int r1, int c1, int r2 = -1, int c2 = -1 );
+		void AddWinAndEnable( Win* w, int r1, int c1, int r2 = -1, int c2 = -1 );
 		void AddLayout( Layout* l, int r1, int c1, int r2 = -1, int c2 = -1 );
 		void AddRect( crect* rect, int r1, int c1, int r2 = -1, int c2 = -1 );
 		void GetLSize( LSize* ls );
@@ -143,5 +143,3 @@ namespace wal
 	};
 
 }; //namespace wal
-
-#endif

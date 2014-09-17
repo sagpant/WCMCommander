@@ -1,5 +1,11 @@
-#ifndef SEARCH_TOOLS_H
-#define SEARCH_TOOLS_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
+
 #include <wal.h>
 
 using namespace wal;
@@ -57,6 +63,3 @@ public:
 	int Count() const { return list.count(); }
 	~MegaSearcher() {}
 };
-
-
-#endif

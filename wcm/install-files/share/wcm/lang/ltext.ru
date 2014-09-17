@@ -65,6 +65,15 @@ txt "Редактирование"
 id "BB>Edit..."
 txt "Ред..."
 
+id "BB>View..."
+txt "Просм..."
+
+id "BB>Find"
+txt "Найти"
+
+id "BB>History"
+txt "История"
+
 #ncwin.cpp:2198
 #ncwin.cpp:2201
 #ncwin.cpp:2206
@@ -74,7 +83,7 @@ txt "Выход"
 
 #ncwin.cpp:2186
 id "BB>Extens"
-txt "Расшитерие"
+txt "Расширение"
 
 #ncwin.cpp:2176
 #ncwin.cpp:2196
@@ -166,17 +175,17 @@ id "Bad directories:"
 txt "Нечитаемых каталогов"
 
 #wcm-config.cpp:973
-id "Black"
+id "&Black"
 txt "Черный"
 
 #ncwin.cpp:162
 #ncwin.cpp:170
-id "Brief"
+id "&Brief"
 txt "Краткий"
 
 #fileopers.cpp:1292
 id "Can't copy directory\n"
-txt "Не удается скопировать каталог"
+txt "Не удается скопировать папку\n"
 
 #fileopers.cpp:894
 id "Can't copy file to itself:\n"
@@ -224,7 +233,7 @@ txt "Невозможно перемещение файла в себя:\n"
 
 #fileopers.cpp:1386
 id "Can't move files, bad destination directory:\n"
-txt "Не удается переместить файл, неверная папка приемник"
+txt "Не удается переместить файл, неверная папка приемник\n"
 
 #fileopers.cpp:1409
 id "Can't move to:\n"
@@ -288,7 +297,7 @@ txt "Учитывать регистр"
 
 #ncwin.cpp:185
 #ncwin.cpp:194
-id "Change drive"
+id "Change &drive"
 txt "Сменить диск"
 
 #charsetdlg.cpp:201
@@ -305,12 +314,16 @@ id "Colors:"
 txt "Цвет:"
 
 #ncwin.cpp:214
-id "Commands"
+id "&Commands"
 txt "Команды"
 
 #fileopers.cpp:785
 #ncwin.cpp:220
 #ncwin.cpp:1156
+id "&Copy"
+txt "Копирование"
+
+#fileopers.cpp:983
 id "Copy"
 txt "Копирование"
 
@@ -337,6 +350,9 @@ txt "Все"
 #ncdialogs.cpp:437
 id "DB>Cancel"
 txt ""
+
+id "Cancel"
+txt "Отмена"
 
 #fileopers.cpp:27
 id "DB>Delete"
@@ -369,7 +385,7 @@ id "DB>Yes"
 txt "Да"
 
 #wcm-config.cpp:972
-id "Default colors"
+id "&Default colors"
 txt "По умолчанию"
 
 #charsetdlg.cpp:264
@@ -437,6 +453,10 @@ txt "Выкинуть текущую консоль"
 #ncwin.cpp:1034
 #ncwin.cpp:1348
 #ncwin.cpp:1412
+id "&Edit"
+txt "Редактирование"
+
+#fileassociations.cpp:287
 id "Edit"
 txt "Редактирование"
 
@@ -445,7 +465,7 @@ id "Edit:"
 txt "Редакт.:"
 
 #ncwin.cpp:201
-id "Editor settings"
+id "&Editor settings"
 txt "Настройки редактора"
 
 #wcm-config.cpp:853
@@ -471,7 +491,7 @@ id "Enter shortcut name"
 txt "Введите имя закладки"
 
 #ncwin.cpp:232
-id "Equal panels"
+id "E&qual panels"
 txt "Сделать панели одинаковыми"
 
 #ncwin.cpp:526
@@ -512,7 +532,7 @@ id "Files size:"
 txt "Размер файлов:"
 
 #ncwin.cpp:213
-id "Files"
+id "&Files"
 txt "Файлы"
 
 #dircalc.cpp:183
@@ -524,7 +544,7 @@ id "Find file"
 txt "Поиск файла"
 
 #ncwin.cpp:234
-id "Folder shortcuts"
+id "Folder &shortcuts"
 txt "Закладки"
 
 #dircalc.cpp:438
@@ -541,21 +561,21 @@ txt "Папок:"
 
 #wcm-config.cpp:980
 id "Fonts:"
-txt "Фонты:"
+txt "Шрифты:"
 
 #ncwin.cpp:167
 #ncwin.cpp:175
-id "Full (access)"
+id "Full (&access)"
 txt "Широкий (доступ)"
 
 #ncwin.cpp:165
 #ncwin.cpp:173
-id "Full (name)"
+id "Full (&name)"
 txt "Широкий"
 
 #ncwin.cpp:166
 #ncwin.cpp:174
-id "Full (size, time)"
+id "Full (si&ze, time)"
 txt "Широкий (разм.,время)"
 
 #wcm-config.cpp:1167
@@ -608,7 +628,7 @@ id "Language:"
 txt "Язык:"
 
 #ncwin.cpp:212
-id "Left"
+id "&Left"
 txt "Левая"
 
 #ftplogon.cpp:42
@@ -619,7 +639,7 @@ txt "Имя пользователя:"
 
 #ncwin.cpp:163
 #ncwin.cpp:171
-id "Medium"
+id "&Medium"
 txt "Средний"
 
 #fileopers.cpp:785
@@ -645,7 +665,7 @@ id "Note"
 txt "Предупреждение"
 
 #ncwin.cpp:215
-id "Options"
+id "&Options"
 txt "Настройки"
 
 #charsetdlg.cpp:204
@@ -663,6 +683,9 @@ txt "Панели Вкл/Выкл"
 
 #wcm-config.cpp:795
 #ncwin.cpp:200
+id "&Panel settings"
+txt "Настройки панели"
+
 id "Panel settings"
 txt "Настройки панели"
 
@@ -729,7 +752,7 @@ id "Reread\ncurrent panel"
 txt "перечитать каталог\nв текущей панеле"
 
 #ncwin.cpp:216
-id "Right"
+id "&Right"
 txt "Правая"
 
 #ncwin.cpp:367
@@ -783,7 +806,7 @@ txt "сохранить файл"
 
 #ncwin.cpp:209
 #ncwin.cpp:1274
-id "Save setup"
+id "&Save setup"
 txt "Сохранение настроек"
 
 #dircalc.cpp:377
@@ -823,11 +846,11 @@ txt "Поиск:"
 
 #fontdlg.cpp:86
 id "Select X11 server font"
-txt "Выбор фонта X сервера"
+txt "Выбор шрифта X сервера"
 
 #fontdlg.cpp:458
 id "Select font"
-txt "Выбор фонта"
+txt "Выбор шрифта"
 
 #ncwin.cpp:225
 id "Select group"
@@ -842,11 +865,11 @@ txt "Сервер:"
 
 #wcm-config.cpp:984
 id "Set X11 font..."
-txt "Установить X11 фонт..."
+txt "Установить X11 шрифт..."
 
 #wcm-config.cpp:983
 id "Set font..."
-txt "Установить фонт"
+txt "Установить шрифт..."
 
 #shortcuts.cpp:266
 id "Shortcuts"
@@ -861,7 +884,7 @@ id "Show Shortcuts"
 txt "Показать закладки"
 
 #wcm-config.cpp:978
-id "Show buttonbar"
+id "Show &buttonbar"
 txt "Показывать нижние кнопки"
 
 #wcm-config.cpp:797
@@ -873,8 +896,8 @@ id "Show icons"
 txt "Показывать иконки"
 
 #wcm-config.cpp:977
-id "Show toolbar"
-txt "Показывать tooldar"
+id "Show &toolbar"
+txt "Показывать панель инструментов"
 
 #ncwin.cpp:59
 id "Show/Hide panel"
@@ -886,7 +909,7 @@ txt "Размер:"
 
 #ncwin.cpp:184
 #ncwin.cpp:193
-id "Sort mode"
+id "&Sort mode"
 txt "Режим сортировки"
 
 #ncwin.cpp:1902
@@ -904,7 +927,7 @@ id "Style"
 txt "Внешний вид"
 
 #ncwin.cpp:207
-id "Styles"
+id "S&tyles"
 txt "Внешеий вид"
 
 #wcm-config.cpp:858
@@ -913,6 +936,9 @@ txt "Подсветка синтаксиса"
 
 #wcm-config.cpp:1378
 #ncwin.cpp:198
+id "S&ystem settings"
+txt "Системные параметры"
+
 id "System settings"
 txt "Системные параметры"
 
@@ -925,7 +951,7 @@ id "Terminal options"
 txt "Настройки терминала"
 
 #ncwin.cpp:204
-id "Terminal settings"
+id "&Terminal settings"
 txt "Настройки терминала"
 
 #wcm-config.cpp:1165
@@ -938,7 +964,7 @@ txt "Текст:"
 
 #ncwin.cpp:164
 #ncwin.cpp:172
-id "Two columns"
+id "&Two columns"
 txt "В две колонки"
 
 #ncwin.cpp:78
@@ -952,6 +978,9 @@ txt "Снять пометку"
 #ncwin.cpp:218
 #ncwin.cpp:964
 #ncwin.cpp:972
+id "&View"
+txt "Просмотр"
+
 id "View"
 txt "Просмотр"
 
@@ -964,7 +993,7 @@ id "Viewer"
 txt "Вьювер"
 
 #wcm-config.cpp:974
-id "White"
+id "&White"
 txt "Белый"
 
 #ncwin.cpp:1112
@@ -996,3 +1025,149 @@ txt "в файл"
 id "to"
 txt "в"
 
+#fileassociations.cpp:23
+id "Edit file associations"
+txt "Редактировать файловую ассоциацию"
+
+#fileassociations.cpp:25
+id "A file mask or several file masks (separated with commas)"
+txt "Маска или несколько масок (разделенных запятыми)"
+
+#fileassociations.cpp:27
+id "Description of the file association"
+txt "Описание"
+
+#fileassociations.cpp:29
+id "Execute command (used for Enter)"
+txt "Команда выполнения (для Enter)"
+
+#fileassociations.cpp:31
+id "Execute command (used for Ctrl+PgDn)"
+txt "Команда выполнения (для Ctrl+PgDn)"
+
+#fileassociations.cpp:33
+id "View command (used for F3)"
+txt "Команда просмотра (для F3)"
+
+#fileassociations.cpp:35
+id "View command (used for Alt+F3)"
+txt "Команда просмотра (для Alt+F3)"
+
+#fileassociations.cpp:37
+id "Edit command (used for F4)"
+txt "Команда редактирования (для F4)"
+
+#fileassociations.cpp:39
+id "Edit command (used for Alt+F4)"
+txt "Команда редактирования (для Alt+F4)"
+
+#fileassociations.cpp:41
+id "Start in this terminal"
+txt "Запускать в этом терминале"
+
+#fileassociations.cpp:282
+id "File associations"
+txt "Файловые ассоциации"
+
+#ncwin.cpp:564
+id "File &associations"
+txt "Файловые ассоциации"
+
+#fileassociations.cpp:405
+id "Warning"
+txt "Внимание"
+
+#fileassociations.cpp:405
+id "Quit without saving?"
+txt "Выйти без сохранения?"
+
+#wcm-config.cpp:1331
+id "Select folders"
+txt "Выбирать папки"
+
+#wcm-config.cpp:1332
+id "Show .. in the root folder"
+txt "Показывать .. в корне"
+
+#wcm-config.cpp:1333
+id "Show folder icons"
+txt "Показывать иконки папок"
+
+#wcm-config.cpp:1334
+id "Show executable icons"
+txt "Показывать иконки исполнимых файлов"
+
+#wcm-config.cpp:2046
+id "Enable autocomplete"
+txt "Включить автодополнение"
+
+#wcm-config.cpp:2047
+id "Show host name"
+txt "Показывать имя хоста"
+
+#dircalc.cpp:535
+id "Selected folders size"
+txt "Размер выбранных папок"
+
+#ncwin.cpp:2055
+id "Do you with to save current setup?"
+txt "Сохранить текущие настройки?"
+
+#ncwin.cpp:1509
+id "Apply command to the selected files"
+txt "Применить команду к выбранным файлам"
+
+#ncwin.cpp:1604
+id "You are trying to view a new file while a background editor is active.\nDo you want to drop all unsaved changes?"
+txt "В фоне работает редактор.\nЗакрыть его сбросив все изменения?"
+
+#ncwin.cpp:1691
+id "You are trying to edit a new file while a background editor is active.\nDo you want to drop all unsaved changes?"
+txt "В фоне работает редактор.\nЗакрыть его сбросив все изменения?"
+
+#panel.cpp:1381
+id "%s bytes in %i file"
+txt "%s быйт в %i файлах"
+
+#ncwin.cpp:550
+id "&Rename or move"
+txt "Переименовать"
+
+#ncwin.cpp:551
+id "&Make directory"
+txt "Создать папку"
+
+#ncwin.cpp:552
+id "&Delete"
+txt "Удалить"
+
+#ncwin.cpp:554
+id "Select &group"
+txt "Выделить"
+
+#ncwin.cpp:555
+id "U&nselect group"
+txt "Снять выделение"
+
+#ncwin.cpp:556
+id "&Invert group"
+txt "Инвертировать"
+
+#ncwin.cpp:558
+id "&Find file"
+txt "Найти файл"
+
+#ncwin.cpp:559
+id "&History"
+txt "История"
+
+#ncwin.cpp:560
+id "&Panel on/off"
+txt "Панель вкл/выкл"
+
+#ncwin.cpp:2030
+id "Select"
+txt "Выбрать"
+
+id "Save setup"
+txt "Сохранить настройки"

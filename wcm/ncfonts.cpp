@@ -1,3 +1,9 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "wcm-config.h"
 
 clPtr<cfont> panelFont;
@@ -30,7 +36,6 @@ void InitFonts()
 
 	IFE( &panelFont,   wcmConfig.panelFontUri.data() );
 #ifdef _WIN32
-	//IFE(&panelFont, "-100:Consola:B");
 	IFE( &panelFont, "-100:Arial:B" );
 #else
 	IFE( &panelFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );

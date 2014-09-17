@@ -1,5 +1,10 @@
-#ifndef SFTPLOGON_H
-#define SFTPLOGON_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 #include "vfs-sftp.h"
 
@@ -13,7 +18,4 @@ struct PromptCBData
 };
 
 bool GetPromptAnswer( PromptCBData* data );
-
 bool GetSftpLogon( NCDialogParent* parent, FSSftpParam& params );
-
-#endif

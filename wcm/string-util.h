@@ -1,5 +1,13 @@
-#ifndef STRING_UTIL_H
-#define STRING_UTIL_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
+
+#include <vector>
+#include "wal_sys_api.h"
 
 template<class T> inline const T* find_right_char( const T* s, T c )
 {
@@ -168,6 +176,3 @@ template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, 
 
 #undef X
 #undef CP
-
-
-#endif

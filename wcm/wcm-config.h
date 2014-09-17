@@ -1,5 +1,10 @@
-#ifndef WCM_CONFIG_H
-#define WCM_CONFIG_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 #include "ncdialogs.h"
 
@@ -36,6 +41,7 @@ struct WcmConfig
 	bool systemEscPanel;
 	bool systemBackSpaceUpDir;
 	bool systemAutoComplete;
+	bool systemShowHostName;
 	std::vector<char> systemLang; //"+" - auto "-" -internal eng.
 
 	bool showToolBar;
@@ -43,10 +49,11 @@ struct WcmConfig
 //	bool whiteStyle;
 
 	bool panelShowHiddenFiles;
-	bool panelShowIcons;
 	bool panelCaseSensitive;
 	bool panelSelectFolders;
 	bool panelShowDotsInRoot;
+	bool panelShowFolderIcons;
+	bool panelShowExecutableIcons;
 	int panelColorMode;
 	int panelModeLeft;
 	int panelModeRight;
@@ -98,5 +105,3 @@ bool DoTerminalConfigDialog( NCDialogParent* parent );
 
 bool LoadStringList( const char* section, ccollect< std::vector<char> >& list );
 void SaveStringList( const char* section, ccollect< std::vector<char> >& list );
-
-#endif

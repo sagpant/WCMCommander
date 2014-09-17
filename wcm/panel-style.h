@@ -1,5 +1,10 @@
-#ifndef PANET_STYLE_H
-#define PANEL_STYLE_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 struct PanetItemColor
 {
@@ -55,5 +60,3 @@ struct PanelColors
 
 extern PanelColors defPanelColors;
 extern PanelColors blackPanelColors;
-
-#endif

@@ -1,3 +1,9 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "strconfig.h"
 
 using namespace wal;
@@ -27,9 +33,9 @@ inline void UpStr( char* s )
 }
 
 
-//синтаксис var = [val]; ..
+//СЃРёРЅС‚Р°РєСЃРёСЃ var = [val]; ..
 //var - [_0-9a-zA-Z]+
-//val - "..." или '..' или слово без пробелов и ; ,  \ -экран
+//val - "..." РёР»Рё '..' РёР»Рё СЃР»РѕРІРѕ Р±РµР· РїСЂРѕР±РµР»РѕРІ Рё ; ,  \ -СЌРєСЂР°РЅ
 
 bool StrConfig::Load( const char* s )
 {

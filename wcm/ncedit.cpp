@@ -1,7 +1,12 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
+#if !defined( NOMINMAX )
+#define NOMINMAX
+#endif
 
 #include "nc.h"
 #include "ncedit.h"
@@ -959,9 +964,9 @@ void EditWin::FromClipboard() //!Undo
 {
 	ClipboardText ctx;
 	ClipboardGetText( this, &ctx );
-	int count = ctx.Count();
+	int ctxLen = ctx.Count();
 
-	if ( count <= 0 ) { return; }
+	if ( ctxLen <= 0 ) { return; }
 
 	clPtr<UndoBlock> undoBlock = new UndoBlock( false, _changed );
 	undoBlock->SetBeginPos( cursor, marker );
@@ -972,50 +977,57 @@ void EditWin::FromClipboard() //!Undo
 		recomendedCursorCol = -1;
 		SetChanged( cursor.line );
 
-		int i = 0;
+		int ctxPos = 0;
 
-		while ( i < count )
+		// insert clipboard text (ctx) into editor buffer (text) line by line
+		while (ctxPos < ctxLen)
 		{
 			char buf[1024];
-			int n = 0;
+			int bufPos = 0;
 			bool newline = false;
 
-			for ( ; i < count && n < 1024 - 32; i++ )
+			// find next newline char
+			for ( ; ctxPos < ctxLen && bufPos < 1024 - 32; ctxPos++ )
 			{
-				unicode_t ch = ctx[i];
+				unicode_t ch = ctx[ctxPos];
 
 				if ( ch == '\n' )
 				{
 					newline = true;
-					i++;
+					ctxPos++;
 					break;
 				}
 
-				n += charset->SetChar( buf + n, ch );
+				bufPos += charset->SetChar( buf + bufPos, ch );
 			}
 
 			EditString& line = text.Get( cursor.line );
 
-			if ( n > 0 )
+			if ( bufPos > 0 ) // insert clipboard fragment up to newline to cursor pos
 			{
-				line.Insert( buf, cursor.pos, n );
-				undoBlock->InsText( cursor.line, cursor.pos, buf, n );
+				line.Insert( buf, cursor.pos, bufPos );
+				undoBlock->InsText( cursor.line, cursor.pos, buf, bufPos );
 			}
 
-			cursor.pos += n;
+			cursor.pos += bufPos;
 
-			if ( newline )
+			if ( newline ) // then we need to add new line to edit buffer
 			{
 				EditString& str = text.Get( cursor.line );
 				text.Insert( cursor.line + 1, 1, line.flags );
 
-				if ( cursor.pos < str.len )
+				if ( cursor.pos < str.len ) // move original text that was after cursor on current line to a new line
 				{
-					text.Get( cursor.line + 1 ).Set( str.Get() + cursor.pos, str.len - cursor.pos );
+					char* textAfterCursor = str.Get() + cursor.pos;
+					int lenTextAfterCursor = str.len - cursor.pos;
+					undoBlock->AddLine(cursor.line + 1, line.flags, textAfterCursor, lenTextAfterCursor);
+					// copy the aftercursor text to new line
+					text.Get(cursor.line + 1).Set(textAfterCursor, lenTextAfterCursor);
+					// remove the aftercursor text from current line
 					str.len = cursor.pos;
-					undoBlock->AddLine( cursor.line + 1, line.flags,  str.Get() + cursor.pos, str.len - cursor.pos );
+					undoBlock->DelText(cursor.line, cursor.pos, textAfterCursor, lenTextAfterCursor);
 				}
-				else
+				else // we have added an empty line
 				{
 					undoBlock->AddLine( cursor.line + 1, line.flags,  0, 0 );
 				}
@@ -1188,7 +1200,16 @@ void EditWin::Backspace( bool DeleteWord ) //!Undo
 
 				while ( StepLeft( &p, &c ) && GetCharGroup( c ) == group )
 				{
-					cursor = p;
+					if ( cursor.line == p.line )
+					{
+						cursor = p;
+					}
+					else
+					{
+						// just stay at the beginning of this line
+						cursor.pos = 0;
+						break;
+					}
 				}
 
 				int totalDelCount = oldcursor.pos - cursor.pos;
@@ -1439,10 +1460,15 @@ sEditorScrollCtx EditWin::GetScrollCtx() const
 
 void EditWin::SetScrollCtx( const sEditorScrollCtx& Ctx )
 {
-	firstLine = Ctx.m_FirstLine;
+	recomendedCursorCol = -1;
 	int MaxLine = std::max( 0, text.Count() - rows );
-	firstLine = std::min( firstLine, MaxLine );
 	SetCursorPos( Ctx.m_Point );
+	firstLine = Ctx.m_FirstLine;
+	firstLine = std::min( firstLine, MaxLine );
+	colOffset = 0;
+	marker = cursor;
+	SendChanges();
+	Refresh();
 }
 
 void EditWin::CalcScroll()
@@ -2103,10 +2129,16 @@ bool EditWin::EventKey( cevent_key* pEvent )
 				break;
 
 			case VK_DOWN:
+#if defined( __APPLE__)
+				if ( ctrl ) PageDown( shift ); else
+#endif
 				CursorDown( shift );
 				break;
 
 			case VK_UP:
+#if defined( __APPLE__)
+				if ( ctrl ) PageUp( shift ); else
+#endif
 				CursorUp( shift );
 				break;
 

@@ -1,17 +1,30 @@
-0.16.2 GitHub Edition
+0.18.0 GitHub Edition
+	Added: hotkeys in dialogs
+	Hotkey: Shift+Tab to switch between controls in dialogs
+	Improved: CR/LF handling in the editor on Linux and OS X
+	Improved: window size selection on fresh install
+
+0.17.0 GitHub Edition
 	Added: share search text between all search and search-n-replace dialogs
 	Added: indicator of the current sorting order in the panel
 	Added: taskbar hints for the Alt key
 	Added: option 'Select folders'
 	Added: F3 calculates the size of multiple selected folders
-	Added: command line autocomplete
-	Hotket: Shift+Enter to start command without the terminal
+	Added: command line autocomplete (use Del key to erase a command)
+	Added: hotkeys in the main menu
+	Added: option to hide '..' in the root folder (hidden by default)
+	Added: experimental OS X support on top of XQuartz (https://github.com/corporateshark/WalCommander/issues/5)
+	Added: file associations (Main menu -> Commands -> File associations)
+	Added: separate settings to show folder icons and executable icons
+	Added: option to show current path in the command line (enabled by default)
+	Hotkey: Shift+Enter to start command without the terminal
 	Hotkey: Ctrl+Tab to switch between editor/viewer and panels
 	Hotkey: Ctrl+O in editor/viewer shows the terminal terminal
+	Hotkey: Ctrl+F to paste the full name of the currently selected file/folder to the command line
 	Hotkey: '5' on numpad calculates the size of the selected files
 	Hotkey: Ctrl+U swap panels
-	Hotkey: Ctrl+Del in the editor
-	Hotkey: Ctrl+BackSpace in the editor
+	Hotkey: Ctrl+Del in the editor and edit lines
+	Hotkey: Ctrl+BackSpace in the editor and edit lines
 	Hotkey: Ctrl+[ and Ctrl+] paste a path from the left/right panel to the command line
 	Hotkey: Ctrl+Enter in Alt-search moved to the next file
 	Hotkey: Ctrl+G apply command to the selected files
@@ -23,6 +36,8 @@
 	Improved: inaccessible paths bring you to the root folder or to the drive selection dialog
 	Improved: panel footer text (less garbage, info on free space)
 	Improved: show other panel's full path in the drive selection dialog
+	Improved: show a save setup dialog
+	Improved: default color style is more alike Far Manager
 	Fixed: vertical lines in Full panel modes
 	Fixed: command line is now black
 	Fixed: numpad Enter
@@ -31,7 +46,11 @@
 	Fixed: bug with the first letter in Alt-search
 	Fixed: save/restore panel paths on Windows
 	Fixed: save the configuration on exit
+	Fixed: place cursor on a newly created folder
+	Fixed: sorting modes are the same as in Far Manager
 	Development: added CMake and Code::Blocks configs
+	Development: can be compiled with Clang
+	Development: added Windows x64 builds
 	Disabled most of the 3D UI
 	Disabled auto indent in the editor
 

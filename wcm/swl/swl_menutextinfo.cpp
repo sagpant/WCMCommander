@@ -4,10 +4,9 @@
 
 namespace wal
 {
-
-	MenuTextInfo::MenuTextInfo(const unicode_t* inStr)
-		:hotkeyUpperCase(0)
+	void MenuTextInfo::ParseHkText(const unicode_t* inStr)
 	{
+		hotkeyUpperCase = 0;
 		if (inStr == 0)
 		{
 			strBeforeHk = 0;
@@ -16,11 +15,11 @@ namespace wal
 			strFull = 0;
 			return;
 		}
-		unicode_t* pAmpersand = unicode_strchr(inStr,'&');
+		unicode_t* pAmpersand = unicode_strchr(inStr, '&');
 
-		if (pAmpersand == 0 || pAmpersand[1]==0) // no hot key defined, or HK is the last char
+		if (pAmpersand == 0 || pAmpersand[1] == 0) // no hot key defined, or HK is the last char
 		{
-			 strBeforeHk = unicode_strdup(inStr);
+			strBeforeHk = unicode_strdup(inStr);
 			strHk = 0;
 			strAfterHk = 0;
 
@@ -57,9 +56,14 @@ namespace wal
 		if (strBeforeHk != 0)
 			unicode_strcat(strFull, strBeforeHk);
 		if (strHk != 0)
-			unicode_strcat(strFull,strHk);
+			unicode_strcat(strFull, strHk);
 		if (strAfterHk != 0)
 			unicode_strcat(strFull, strAfterHk);
+	}
+
+	MenuTextInfo::MenuTextInfo(const unicode_t* inStr)
+	{
+		ParseHkText(inStr);
 	}
 
 	MenuTextInfo::MenuTextInfo(const MenuTextInfo& src)
@@ -71,16 +75,31 @@ namespace wal
 		hotkeyUpperCase = src.hotkeyUpperCase;
 	}
 
+	inline static void _clearUnicodeArray(unicode_t** p)
+	{
+		if (*p)
+		{
+			delete[] * p;
+			*p = 0;
+		}
+	}
+	void MenuTextInfo::Clear()
+	{
+		_clearUnicodeArray(&strBeforeHk);
+		_clearUnicodeArray(&strHk);
+		_clearUnicodeArray(&strAfterHk);
+		_clearUnicodeArray(&strFull);
+	}
+
 	MenuTextInfo::~MenuTextInfo()
 	{
-		if (strBeforeHk)
-			delete[] strBeforeHk;
-		if (strHk)
-			delete[] strHk;
-		if (strAfterHk)
-			delete[] strAfterHk;
-		if (strFull)
-			delete[] strFull;
+		Clear();
+	}
+
+	void MenuTextInfo::SetText(const unicode_t* inStr)
+	{
+		Clear();
+		ParseHkText(inStr);
 	}
 
 	void MenuTextInfo::DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const
@@ -103,4 +122,5 @@ namespace wal
 			gc.TextOut(x, y, strAfterHk);
 		}
 	}
+
 }

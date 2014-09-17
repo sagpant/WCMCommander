@@ -17,10 +17,12 @@
 #include FT_FREETYPE_H
 #endif
 
+#if defined( __APPLE__ )
+const unsigned int MetaMask = 0x0010;
+#endif
 
 namespace wal
 {
-
 	Win* GetWinByID( WinID hWnd );
 	int DelWinFromHash( WinID w );
 	unsigned RunTimers();
@@ -92,6 +94,19 @@ namespace wal
 	static Atom atom_INCR = 0;
 
 	static Window clipboardWinId = 0;
+
+	cpoint GetScreenSize()
+	{
+		cpoint s;
+
+		XWindowAttributes xwAttr;
+
+		Status ret = XGetWindowAttributes( display, DefaultRootWindow( display ), &xwAttr );
+		s.x = xwAttr.width;
+		s.y = xwAttr.height;
+
+		return s;
+	}
 
 	static void X11_Clipbopard_Init()
 	{
@@ -664,7 +679,9 @@ namespace wal
 		unsigned state = event->state;
 
 		unsigned km = 0;
-
+#if defined( __APPLE__ )
+		if ( state & MetaMask ) { km |= KM_CTRL; }
+#endif
 		if ( state & ShiftMask ) { km |= KM_SHIFT; }
 
 		if ( state & ControlMask ) { km |= KM_CTRL; }
@@ -754,7 +771,7 @@ namespace wal
 
 	int DoEvents( XEvent* event ) //return count of windows
 	{
-		dbg_printf( "e(%i) ", event->type );
+		//dbg_printf( "e(%i) ", event->type );
 		fflush( stdout );
 
 		switch ( event->type )
@@ -789,7 +806,9 @@ namespace wal
 
 				unsigned km = 0;
 				unsigned state = event->xbutton.state;
-
+#if defined( __APPLE__ )
+				if ( state & MetaMask ) { km |= KM_CTRL; }
+#endif
 				if ( state & ShiftMask ) { km |= KM_SHIFT; }
 
 				if ( state & ControlMask ) { km |= KM_CTRL; }
@@ -2693,11 +2712,8 @@ stopped:
 		if ( type == WT_MAIN )
 		{
 			unicode_t u[100];
-			int i;
+			unicode_strncpy0(u, name, sizeof(u)/sizeof(u[0]));
 
-			for ( i = 0; i < 100 && *name; i++, name++ ) { u[i] = *name; }
-
-			u[i] = 0;
 			char buf[400];
 			unicode_to_utf8( buf, u );
 			XStoreName( display, handle, buf );
@@ -2791,7 +2807,7 @@ stopped:
 	{
 		wth_DropWindow( this );
 
-		if ( modal ) // ???? может и не надо
+		if ( modal ) // ???? РјРѕР¶РµС‚ Рё РЅРµ РЅР°РґРѕ
 		{
 			( ( ModalStruct* )modal )->EndModal( 0 );
 		}
@@ -3314,14 +3330,12 @@ stopped:
 	{
 		clear();
 
-
 		int w = image.width();
 		int h = image.height();
 
-		if ( w <= 0 && h <= 0 ) { return; }
+		if ( w <= 0 || h <= 0 ) { return; }
 
 		init( w, h );
-
 
 		if ( visualInfo.c_class != TrueColor )
 		{
@@ -3360,27 +3374,26 @@ stopped:
 		unsigned32* p = ( unsigned32* )data.data();
 		unsigned32* t = image.line( 0 );
 
-		unsigned32 last = 0xFFFFFFFF;
-		unsigned32 b;
+		unsigned32 lastPixVal = 0;
+		unsigned32 lastColor = CreateColor(lastPixVal);
 		int n;
-
 		for ( n = w * h; n > 0; n--, p++, t++ )
 		{
-			unsigned32 a = *t;
+			unsigned32 pixVal = *t;
 
-			if ( a >= 0x80000000 )
+			if ( lastPixVal >= 0x80000000 )
 			{
 				goto haveMask;
 			}
 
-			if ( a == last )
+			if ( pixVal == lastPixVal )
 			{
-				*p = b;
+				*p = lastColor;
 			}
 			else
 			{
-				last = a;
-				*p = b =  CreateColor( a );
+				lastPixVal = pixVal;
+				*p = lastColor =  CreateColor( pixVal );
 			}
 		}
 
@@ -3394,21 +3407,21 @@ haveMask:
 
 		for ( ; n > 0; n--, p++, t++, m++ )
 		{
-			unsigned32 a = *t;
+			unsigned32 pixVal = *t;
 
-			if ( a >= 0x80000000 )
+			if ( pixVal >= 0x80000000 )
 			{
 				*m = 0;
 			}
 
-			if ( a == last )
+			if ( pixVal == lastPixVal )
 			{
-				*p = b;
+				*p = lastColor;
 			}
 			else
 			{
-				last = a;
-				*p = b =  CreateColor( a );
+				lastPixVal = pixVal;
+				*p = lastColor =  CreateColor( pixVal );
 			}
 		}
 	}

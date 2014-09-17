@@ -1,5 +1,12 @@
-#if !defined(UX_UTIL_H) && !defined(_WIN32)
-#define UX_UTIL_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
+
+#if !defined(_WIN32)
 
 #include <wal.h>
 

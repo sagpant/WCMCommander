@@ -1,7 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
-
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #include "nc.h"
 #include "ncfonts.h"
@@ -54,7 +55,12 @@ bool NCDialog::Command( int id, int subId, Win* win, void* data )
 }
 
 int uiClassNCDialog = GetUiID( "NCDialog" );
-int NCDialog::UiGetClassId() { return uiClassNCDialog; }
+
+int NCDialog::UiGetClassId()
+{
+	return m_nId;
+//	return uiClassNCDialog;
+}
 
 NCDialog::NCDialog( bool asChild, int nId, NCDialogParent* parent, const unicode_t* headerText, ButtonDataNode* blist ) //, unsigned bcolor, unsigned fcolor)
 	: OperThreadWin( asChild ? Win::WT_CHILD : WT_MAIN /*WT_POPUP*/, 0, nId, parent ), //, &crect(0,0,300,100)),
@@ -66,7 +72,8 @@ NCDialog::NCDialog( bool asChild, int nId, NCDialogParent* parent, const unicode
 	  _buttonLo( 3, 16 ),
 	  _headerLo( 3, 3 ),
 	  _parentLo( 3, 3 ),
-	  enterCmd( 0 )
+	  enterCmd( 0 ),
+	  m_nId( nId )
 {
 	Enable();
 
@@ -328,6 +335,7 @@ bool NCDialog::EventChildKey( Win* child, cevent_key* pEvent )
 {
 	if ( pEvent->Type() == EV_KEYDOWN )
 	{
+		//dbg_printf("key=0x%x\n",pEvent->Key());
 		if ( pEvent->Key() == VK_ESCAPE )
 		{
 			CloseDialog( CMD_CANCEL );
@@ -335,9 +343,24 @@ bool NCDialog::EventChildKey( Win* child, cevent_key* pEvent )
 		}
 		else if ( pEvent->Key() == VK_TAB )
 		{
-			FocusNextChild();
+			if ((pEvent->Mod() & KM_SHIFT) != 0)
+			{
+				FocusPrevChild();
+			}
+			else
+			{
+				FocusNextChild();
+			}
 			return true;
 		}
+// on UNIX shift-tab gives XK_ISO_Left_Tab
+#ifdef XK_ISO_Left_Tab
+		else if(pEvent->Key() == XK_ISO_Left_Tab)
+		{
+			FocusPrevChild();
+			return true;
+		}
+#endif // XK_ISO_Left_Tab
 		else if ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN )
 		{
 			if ( enterCmd && GetFocusButtonNum() < 0 )

@@ -2,20 +2,21 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
-#ifndef WINCORE_H
-#define WINCORE_H
+#pragma once
 
 #define USE_3D_BUTTONS 0
 
 #ifdef _WIN32
-#include <windows.h>
+#	if !defined( NOMINMAX )
+#		define NOMINMAX
+#	endif
+#	include <windows.h>
 typedef HWND WinID;
 extern HINSTANCE appInstance;
-#else       //#elif __linux__
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#include <wchar.h>
+#else
+#	include <X11/Xlib.h>
+#	include <X11/keysym.h>
+#	include <wchar.h>
 typedef Window WinID;
 #endif
 
@@ -26,7 +27,7 @@ namespace wal
 
 	enum CoreCommands
 	{
-	   CMD_CHECK = 0, //команда проверки (поддерживается команда или нет) номер команды в этом случае передается в подкоманде
+	   CMD_CHECK = 0, //РєРѕРјР°РЅРґР° РїСЂРѕРІРµСЂРєРё (РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ РєРѕРјР°РЅРґР° РёР»Рё РЅРµС‚) РЅРѕРјРµСЂ РєРѕРјР°РЅРґС‹ РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РїРµСЂРµРґР°РµС‚СЃСЏ РІ РїРѕРґРєРѕРјР°РЅРґРµ
 	   CMD_OK = 1,
 	   CMD_CANCEL = 2,
 	   CMD_YES = 3,
@@ -81,6 +82,8 @@ namespace wal
 		bool operator != ( const crect& a ) const { return !( *this == a ); }
 		bool IsEmpty() const { return bottom <= top || right <= left; }
 		void Zero() { left = top = right = bottom = 0; }
+		void SetWidth( int w ) { right = left + w; }
+		void SetHeight( int h ) { bottom = top + h; }
 
 		bool Cross( const crect& a ) const
 		{
@@ -106,6 +109,9 @@ namespace wal
 	{
 	   VK_NUMPAD_CENTER = 0x0C,
 	   VK_NUMPAD_RETURN = 0xFFFF,
+
+		VK_LMETA      = VK_LWIN,
+		VK_RMETA      = VK_RWIN,
 
 #ifndef VK_SLASH
 	   VK_SLASH      =   0xBF,
@@ -197,6 +203,9 @@ namespace wal
 	   VK_GRAVE = XK_grave,
 
 	   VK_INSERT = XK_Insert,
+
+		VK_LMETA = XK_Meta_L,
+		VK_RMETA = XK_Meta_R,
 
 	   VK_LCONTROL = XK_Control_L,
 	   VK_RCONTROL = XK_Control_R,
@@ -364,7 +373,7 @@ namespace wal
 	};
 
 
-// применяются виндовозные Virtual keys
+// РїСЂРёРјРµРЅСЏСЋС‚СЃСЏ РІРёРЅРґРѕРІРѕР·РЅС‹Рµ Virtual keys
 	class cevent_key: public cevent_input
 	{
 		int key; //virtual key
@@ -416,7 +425,7 @@ namespace wal
 
 #ifdef _WIN32
 		HFONT handle;
-		bool external; //true если внешний хэндл (чтоб не удалять в деструкторе)
+		bool external; //true РµСЃР»Рё РІРЅРµС€РЅРёР№ С…СЌРЅРґР» (С‡С‚РѕР± РЅРµ СѓРґР°Р»СЏС‚СЊ РІ РґРµСЃС‚СЂСѓРєС‚РѕСЂРµ)
 		void drop() { if ( handle && !external ) { ::DeleteObject( handle ); } handle = 0;  }
 #else
 		enum { TYPE_X11 = 0, TYPE_FT = 1 };
@@ -734,7 +743,7 @@ namespace wal
 		bool textColorSet;
 		bool bkColorSet;
 
-		int bkMode; // -1 - неизвестно 0 - transparent 1 - OPAQUE
+		int bkMode; // -1 - РЅРµРёР·РІРµСЃС‚РЅРѕ 0 - transparent 1 - OPAQUE
 		GC( HDC h, bool needDel );
 		void Restore();
 
@@ -961,8 +970,8 @@ namespace wal
 		wal::ccollect<Win*> childList;
 		WTYPE type;
 
-		WinID blockedBy; //Каким модальным окном заблокировано
-		void* modal; //если не 0 то окно в модальном состоянии
+		WinID blockedBy; //РљР°РєРёРј РјРѕРґР°Р»СЊРЅС‹Рј РѕРєРЅРѕРј Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРѕ
+		void* modal; //РµСЃР»Рё РЅРµ 0 С‚Рѕ РѕРєРЅРѕ РІ РјРѕРґР°Р»СЊРЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё
 
 		unsigned whint;
 		unsigned state;
@@ -978,7 +987,7 @@ namespace wal
 		void ClearState( unsigned s ) { state &= ~s; }
 
 		bool IsOneParentWith( WinID h );
-		void PopupTreeList( ccollect<WinID>& list ); //добавляет в список текущее окно и его попапы
+		void PopupTreeList( ccollect<WinID>& list ); //РґРѕР±Р°РІР»СЏРµС‚ РІ СЃРїРёСЃРѕРє С‚РµРєСѓС‰РµРµ РѕРєРЅРѕ Рё РµРіРѕ РїРѕРїР°РїС‹
 
 		Win* FocusNPChild( bool next );
 
@@ -1075,7 +1084,10 @@ namespace wal
 		virtual bool Event( cevent* pEvent );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventChildKey( Win* child, cevent_key* pEvent );
-		virtual bool EventKey( cevent_key* pEvent );
+		// overridden in dialog elements to help dialog winow to find child that matches the hotkey
+		// returns window to activate on the hotkey, or 0 if the key is unknown
+		virtual Win* IsHisHotKey(cevent_key* pEvent){ return 0; }; 
+		virtual bool EventKey(cevent_key* pEvent);
 		virtual bool EventFocus( bool recv );
 		virtual bool EventActivate( bool activated, Win* w );
 		virtual bool EventShow( bool show );
@@ -1151,7 +1163,7 @@ namespace wal
 
 namespace wal
 {
-
+	cpoint GetScreenSize();
 	cpoint StaticTextSize( GC& gc, const unicode_t* s, cfont* font = 0 );
 	void DrawStaticText( GC& gc, int x, int y, const unicode_t* s, cfont* font = 0, bool transparent = true );
 	unsigned ColorTone( unsigned color, int tone /*0-255*/ );
@@ -1172,7 +1184,3 @@ namespace wal
 	extern void UiReadMem( const char* s ); //can throw
 
 }; //namespace wal
-
-
-
-#endif

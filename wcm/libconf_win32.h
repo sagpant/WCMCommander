@@ -1,14 +1,18 @@
-#ifndef LIBCONF_WIN32_H
-#  define LIBCONF_WIN32_H
-#  define LIBSSH2_EXIST
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-#	if defined(__GNUC__)
-#      undef LIBSSH2_EXIST
-#	endif
+#pragma once
 
-#  if defined(_WIN32)
-//		Disable LibSSH2 on Win builds
-//#      undef LIBSSH2_EXIST
-#  endif // _WIN64
+#define LIBSSH2_EXIST
 
+#if defined(__GNUC__)
+#	undef LIBSSH2_EXIST
 #endif
+
+#if defined(_WIN64)
+//		Disable LibSSH2 on Win64 builds
+#	undef LIBSSH2_EXIST
+#endif // _WIN64

@@ -330,7 +330,25 @@ namespace wal
 
 	bool Win::EventMouse( cevent_mouse* pEvent ) {  return false; }
 	bool Win::EventKey( cevent_key* pEvent ) {   return false;}
-	bool Win::EventChildKey( Win* child, cevent_key* pEvent ) { return false;}
+
+	bool Win::EventChildKey( Win* child, cevent_key* pEvent ) 
+	{ 
+		// check if any child recognizes the key as its hot key
+		if (pEvent->Mod() && KM_ALT)
+		{
+			for (int i = 0; i < childList.count(); i++)
+			{
+				Win* tchild = childList[i];
+				Win* tHotkeyWin;
+				if ((tHotkeyWin=tchild->IsHisHotKey(pEvent))!=0)
+				{
+					tHotkeyWin->SetFocus();
+					return tHotkeyWin->EventKey(pEvent);
+				}
+			}
+		}
+		return false;
+	}
 
 	bool Win::EventFocus( bool recv )
 	{

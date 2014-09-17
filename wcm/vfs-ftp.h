@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef VFS_FTP_H
-#define VFS_FTP_H
+#pragma once
 
 #include "vfs.h"
 #include "tcp_sock.h"
@@ -174,5 +174,3 @@ public:
 	virtual unicode_t* GetUserName( int user, unicode_t buf[64] );
 	virtual unicode_t* GetGroupName( int group, unicode_t buf[64] );
 };
-
-#endif

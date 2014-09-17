@@ -1,16 +1,24 @@
-#ifndef TCP_SOCK_H
-#define TCP_SOCK_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 #include <wal.h>
 #include <sys/types.h>
+
 #ifdef _WIN32
-#include <windows.h>
-//#include <Winsock2.h>
+#	if !defined( NOMINMAX )
+#		define NOMINMAX
+#	endif
+#	include <windows.h>
 #else
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-#include <netinet/in.h>
+#	include <sys/socket.h>
+#	include <arpa/inet.h>
+#	include <netinet/tcp.h>
+#	include <netinet/in.h>
 #endif
 
 using namespace wal;
@@ -417,5 +425,3 @@ public:
 };
 
 bool GetHostIp( const char* utf8, unsigned* ip, int* err );
-
-#endif

@@ -1,7 +1,3 @@
-PROJECT(wcm)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
 # dependencies
 FIND_PACKAGE(Threads)
 FIND_PACKAGE(X11)
@@ -22,24 +18,42 @@ INCLUDE_DIRECTORIES(${X11_X11_INCLUDE_PATH})
 SET(wcm_LIBS ${CMAKE_THREAD_LIBS_INIT} ${X11_X11_LIB})
 
 IF(WITH_FREETYPE)
-	FIND_PACKAGE(Freetype REQUIRED)
+	FIND_PACKAGE(Freetype)
+	IF(NOT ${FREETYPE_FOUND})
+		MESSAGE(FATAL_ERROR "Freetype not found. You should either install it or disable WITH_FREETYPE cmake option")
+	ENDIF(NOT ${FREETYPE_FOUND})
 	ADD_DEFINITIONS(-DUSEFREETYPE)
 	INCLUDE_DIRECTORIES(${FREETYPE_INCLUDE_DIRS})
 	SET(wcm_LIBS ${wcm_LIBS} ${FREETYPE_LIBRARIES})
+	MESSAGE(STATUS "Freetype support enabled")
+ELSE(WITH_FREETYPE)
+	MESSAGE(STATUS "Freetype support disabled")
 ENDIF(WITH_FREETYPE)
 
 IF(WITH_LIBSSH2)
-	FIND_PACKAGE(SSH2 REQUIRED)
+	FIND_PACKAGE(SSH2)
+	IF(NOT ${SSH2_FOUND})
+		MESSAGE(FATAL_ERROR "libssh2 not found. You should either install it or disable WITH_LIBSSH2 cmake option")
+	ENDIF(NOT ${SSH2_FOUND})
 	ADD_DEFINITIONS(-DLIBSSH2_EXIST)
 	INCLUDE_DIRECTORIES(${SSH2_INCLUDE_DIR})
 	SET(wcm_LIBS ${wcm_LIBS} ${SSH2_LIBRARY})
+	MESSAGE(STATUS "libssh2 support enabled")
+ELSE(WITH_LIBSSH2)
+	MESSAGE(STATUS "libssh2 support disabled")
 ENDIF(WITH_LIBSSH2)
 
 IF(WITH_SMBCLIENT)
-	FIND_PACKAGE(SMBClient REQUIRED)
+	FIND_PACKAGE(SMBClient)
+	IF(NOT ${SMBCLIENT_FOUND})
+		MESSAGE(FATAL_ERROR "libsmbclient not found. You should either install it or disable WITH_SMBCLIENT cmake option")
+	ENDIF(NOT ${SMBCLIENT_FOUND})
 	ADD_DEFINITIONS(-DLIBSMBCLIENT_EXIST)
 	INCLUDE_DIRECTORIES(${SMBCLIENT_INCLUDE_DIR})
 	SET(wcm_LIBS ${wcm_LIBS} ${SMBCLIENT_LIBRARY})
+	MESSAGE(STATUS "smbclient support enabled")
+ELSE(WITH_SMBCLIENT)
+	MESSAGE(STATUS "smbclient support disabled")
 ENDIF(WITH_SMBCLIENT)
 
 # sources
@@ -52,6 +66,7 @@ SET(wcm_SOURCES
 	dircalc.cpp
 	eloadsave.cpp
 	ext-app-ux.cpp
+	fileassociations.cpp
 	fileopers.cpp
 	filesearch.cpp
 	fontdlg.cpp
@@ -86,6 +101,7 @@ SET(wcm_SOURCES
 	swl/swl_popupmenu.cpp
 	swl/swl_sbutton.cpp
 	swl/swl_scrollbar.cpp
+	swl/swl_staticlabel.cpp
 	swl/swl_textlist.cpp
 	swl/swl_vlist.cpp
 	swl/swl_winbase.cpp
@@ -114,7 +130,6 @@ SET(wcm_SOURCES
 )
 
 SET(wcm_HEADERS
-	bfile.h
 	charsetdlg.h
 	color-style.h
 	dircalc.h

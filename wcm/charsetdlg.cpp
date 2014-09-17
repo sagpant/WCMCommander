@@ -1,10 +1,19 @@
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
 #include "charsetdlg.h"
 #include "string-util.h"
 #include "wcm-config.h"
 #include "ltext.h"
 
 #ifdef _WIN32
-#include <windows.h>
+#	if !defined( NOMINMAX )
+#		define NOMINMAX
+#	endif
+#	include <windows.h>
 #endif
 
 static const char charsetSection[] = "charset";

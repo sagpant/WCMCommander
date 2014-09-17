@@ -26,6 +26,15 @@ namespace wal
 		objList.append( new LItemWin( w, r1, r2, c1, c2 ) );
 	}
 
+	void Layout::AddWinAndEnable( Win* w, int r1, int c1, int r2, int c2 )
+	{
+		if ( !w ) return;
+
+		this->AddWin( w, r1, c1, r2, c2 );
+		w->Enable();
+		w->Show();
+	}
+
 	void Layout::AddLayout( Layout* l, int r1, int c1, int r2, int c2 )
 	{
 		if ( r2 < 0 ) { r2 = r1; }
@@ -63,7 +72,7 @@ namespace wal
 		currentRect( 0, 0, 0, 0 ),
 		valid( false )
 	{
-//	int i; //ошибка была в конструсторе ccollect(int n)
+//	int i; //РѕС€РёР±РєР° Р±С‹Р»Р° РІ РєРѕРЅСЃС‚СЂСѓСЃС‚РѕСЂРµ ccollect(int n)
 //	for (i=0; i<lineCount; i++) lines.append();
 //	for (i=0; i<colCount; i++) columns.append();
 	}
@@ -131,7 +140,7 @@ namespace wal
 			if ( objList[i]->ObjPtr() == p )
 			{
 				valid = false;
-				objList[i] = 0; ///из-за недочета ccollect.del :(
+				objList[i] = 0; ///РёР·-Р·Р° РЅРµРґРѕС‡РµС‚Р° ccollect.del :(
 				objList.del( i );
 				return;
 			}
@@ -184,7 +193,7 @@ namespace wal
 	{
 		int i, n, addon, rem, space;
 
-		for ( i = 0; i < count; i++ ) //выставляем по минимуму
+		for ( i = 0; i < count; i++ ) //РІС‹СЃС‚Р°РІР»СЏРµРј РїРѕ РјРёРЅРёРјСѓРјСѓ
 		{
 			size -=  list[i].range.minimal;
 		}
@@ -382,7 +391,7 @@ namespace wal
 	{
 		int i, n, addon, rem;
 
-		for ( i = 0; i < count; i++ ) //выставляем по минимуму
+		for ( i = 0; i < count; i++ ) //РІС‹СЃС‚Р°РІР»СЏРµРј РїРѕ РјРёРЅРёРјСѓРјСѓ
 		{
 			size -= ( list[i].size = list[i].range.minimal );
 		}
@@ -537,7 +546,7 @@ namespace wal
 				SetIdealRangeN( columns.ptr() + p->c1, p->c2 - p->c1 + 1, ls->x.ideal );
 				SetMaxRangeN  ( columns.ptr() + p->c1, p->c2 - p->c1 + 1, ls->x.maximal );
 
-				/*чо за херня тут была
+				/*С‡Рѕ Р·Р° С…РµСЂРЅСЏ С‚СѓС‚ Р±С‹Р»Р°
 				SetMinRangeN(columns.ptr()+p->r1, p->r2-p->r1+1,ls->x.minimal);
 				SetIdealRangeN(columns.ptr()+p->r1, p->r2-p->r1+1,ls->x.ideal);
 				SetMaxRangeN(columns.ptr()+p->r1, p->r2-p->r1+1,ls->x.maximal);

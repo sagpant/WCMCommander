@@ -1,5 +1,10 @@
-#include "toolbar.h"
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
+#include "toolbar.h"
 
 const int SPLITTER_WIDTH = 6;
 const int XSPACE = 3;

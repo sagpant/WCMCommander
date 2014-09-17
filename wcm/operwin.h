@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef OPERWIN_H
-#define OPERWIN_H
+#pragma once
 
 #include "swl.h"
 
@@ -86,6 +86,3 @@ public:
 	virtual void ThreadStopped( int id, void* data );
 	virtual ~OperThreadWin();
 };
-
-
-#endif

@@ -1,5 +1,10 @@
-#ifndef TOOLBAR_H
-#define TOOLBAR_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
+
+#pragma once
 
 #include "swl.h"
 
@@ -47,5 +52,3 @@ public:
 	void AddSplitter();
 	virtual ~ToolBar();
 };
-
-#endif

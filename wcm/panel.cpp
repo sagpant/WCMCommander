@@ -1,8 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
-
-//#define panelColors !!!
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
@@ -37,6 +37,7 @@ PanelSearchWin::PanelSearchWin( PanelWin* parent, cevent_key* key )
 	   _static( 0, this, utf8_to_unicode( _LT( "Search:" ) ).data() ),
 	   _lo( 3, 4 )
 {
+	_edit.SetAcceptAltKeys();
 	_lo.AddWin( &_static, 1, 1 );
 	_lo.AddWin( &_edit, 1, 2 );
 	_lo.LineSet( 0, 2 );
@@ -170,6 +171,8 @@ bool PanelSearchWin::EventChildKey( Win* child, cevent_key* pEvent )
 		case VK_CONTROL:
 		case VK_SHIFT:
 #endif
+		case VK_LMETA:
+		case VK_RMETA:
 		case VK_LCONTROL:
 		case VK_RCONTROL:
 		case VK_LSHIFT:
@@ -237,7 +240,7 @@ clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 	return ret;
 }
 
-static bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
+bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
 {
 	if ( !*mask )
 	{
@@ -374,7 +377,7 @@ void PanelWin::SortBySize()
 	}
 	else
 	{
-		_list.Sort( PanelList::SORT_SIZE, true );
+		_list.Sort( PanelList::SORT_SIZE, false );
 	}
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -392,7 +395,7 @@ void PanelWin::SortByMTime()
 	}
 	else
 	{
-		_list.Sort( PanelList::SORT_MTIME, true );
+		_list.Sort( PanelList::SORT_MTIME, false );
 	}
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -677,6 +680,8 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 		SetCurrent( _list.Find( s, HideDotsInDir() ) );
 		Invalidate();
 
+		GetNCWin()->NotifyCurrentPathInfo();
+
 //		}
 
 		return true;
@@ -898,7 +903,7 @@ int PanelWin::GetXMargin() const
 {
 	int x = 0;
 
-	if ( wcmConfig.panelShowIcons )
+	if ( wcmConfig.panelShowFolderIcons || wcmConfig.panelShowExecutableIcons )
 	{
 		x += PANEL_ICON_SIZE;
 	}
@@ -988,7 +993,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( isDir )
 	{
-		if ( wcmConfig.panelShowIcons )
+		if ( wcmConfig.panelShowFolderIcons )
 		{
 			switch ( p->extType )
 			{
@@ -1019,7 +1024,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	}
 	else if ( isExe )
 	{
-		if ( wcmConfig.panelShowIcons )
+		if ( wcmConfig.panelShowExecutableIcons )
 		{
 			executableIcon.DrawF( gc, x, y );
 		}
@@ -1626,7 +1631,7 @@ void PanelWin::Paint( wal::GC& gc, const crect& paintRect )
 					break;
 
 				case PanelList::SORT_MTIME:
-					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "w" : "W" ) ).data() );
+					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "W" : "w" ) ).data() );
 					break;
 			};
 		}
@@ -1686,6 +1691,7 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 		_inOperState = false;
 		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), ex->message(), true );
 		ex->destroy();
+		GetNCWin()->NotifyCurrentPathInfo();
 	}
 }
 
@@ -1712,6 +1718,7 @@ void PanelWin::OperThreadStopped()
 			//Invalidate();
 			NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), _operData.errorString.GetUtf8(), true );
 			NCWin* ncWin = GetNCWin();
+			ncWin->NotifyCurrentPathInfo();
 			ncWin->SelectDrive(this, ncWin->GetOtherPanel(this));
 			return;
 		}
@@ -1765,6 +1772,8 @@ void PanelWin::OperThreadStopped()
 		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), ex->message(), true );
 		ex->destroy();
 	}
+
+	GetNCWin()->NotifyCurrentPathInfo();
 
 	Invalidate();
 }

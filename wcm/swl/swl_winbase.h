@@ -3,8 +3,7 @@
 */
 
 
-#ifndef WINBASE_H
-#define WINBASE_H
+#pragma once
 
 namespace wal
 {
@@ -23,7 +22,7 @@ namespace wal
 	enum BASE_COMMANDS
 	{
 	   _CMD_BASE_BEGIN_POINT_ = -99,
-	   CMD_ITEM_CLICK,      //может случаться в объектах с подэлементами при нажатии enter или doubleclick (например VList)
+	   CMD_ITEM_CLICK,      //РјРѕР¶РµС‚ СЃР»СѓС‡Р°С‚СЊСЃСЏ РІ РѕР±СЉРµРєС‚Р°С… СЃ РїРѕРґСЌР»РµРјРµРЅС‚Р°РјРё РїСЂРё РЅР°Р¶Р°С‚РёРё enter РёР»Рё doubleclick (РЅР°РїСЂРёРјРµСЂ VList)
 	   CMD_ITEM_CHANGED,
 	   CMD_SBUTTON_INFO, //with subcommands
 	   CMD_SCROLL_INFO,     //with subcommands
@@ -37,11 +36,37 @@ namespace wal
 	extern unicode_t ABCString[];
 	extern int ABCStringLen;
 
+	// Menu text that is split to 3 parts by hot key. 
+	// The hot key character is prepended by '&', like in Windows menu
+	class MenuTextInfo
+	{
+		unicode_t* strBeforeHk;
+		unicode_t* strHk;
+		unicode_t* strAfterHk;
+		unicode_t* strFull; // required to calculate text extents quickly
+		unicode_t hotkeyUpperCase;
+		void Clear();
+		void ParseHkText(const unicode_t* inStr);
+	public:
+		explicit MenuTextInfo(const unicode_t* inStr);
+		MenuTextInfo(const MenuTextInfo& src);
+		~MenuTextInfo();
+		void SetText(const unicode_t* inStr);
+		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
+		cpoint GetTextExtents(GC& gc, cfont* font = 0) const
+		{
+			if (strFull == 0) return cpoint(0, 0);
+			if (font)  gc.Set(font);
+			return gc.GetTextExtents(strFull);
+		}
+		int isEmpty() const { return strFull == 0; }
+		bool isHotkeyMatching(unicode_t charUpperCase) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
+	};
 
 	class Button: public Win
 	{
 		bool pressed;
-		std::vector<unicode_t> text;
+		MenuTextInfo text;
 		clPtr<cicon> icon;
 		int commandId;
 
@@ -54,6 +79,7 @@ namespace wal
 		virtual bool EventFocus( bool recv );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
+		virtual Win* IsHisHotKey(cevent_key* pEvent);
 		virtual void OnChangeStyles();
 		virtual int UiGetClassId();
 		virtual ~Button();
@@ -70,16 +96,18 @@ namespace wal
 	class SButton: public Win
 	{
 		bool isSet;
-		std::vector<unicode_t> text;
+		//std::vector<unicode_t> text;
+		MenuTextInfo text;
 		int group;
 	public:
 		SButton( int nId, Win* parent, unicode_t* txt, int _group, bool _isSet = false, crect* rect = 0 );
 
-		bool IsSet() { return isSet; }
+		bool IsSet() const { return isSet; }
 		void Change( bool _isSet );
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
+		virtual Win* IsHisHotKey( cevent_key* pEvent );
 		virtual bool EventFocus( bool recv );
 		virtual bool Broadcast( int id, int subId, Win* win, void* data );
 		virtual int UiGetClassId();
@@ -123,10 +151,11 @@ namespace wal
 
 		void Insert( unicode_t t );
 		void Insert( const unicode_t* txt );
-		void Del();
-		void Backspace();
+		void Del( bool DelteWord );
+		void Backspace( bool DeleteWord );
 		void Set( const unicode_t* s, bool mark = false );
 
+		const unicode_t* Ptr() const { return data.data(); }
 		unicode_t* Ptr() { return data.data(); }
 		unicode_t operator []( int n ) { return data[n]; }
 
@@ -155,11 +184,13 @@ namespace wal
 		int _chars;
 		bool cursorVisible;
 		bool passwordMode;
+		// quick search line accepts alt keys. Edit controls do not: alt is used for hotkeys in dialogs
+		bool doAcceptAltKeys;
 		int first;
 		bool frame3d;
 		int charH, charW;
 		void DrawCursor( GC& gc );
-		bool CheckCursorPos(); //true - РµСЃР»Рё РЅСѓР¶РЅР° РїРµСЂРµСЂРёСЃРѕРІРєР°
+		bool CheckCursorPos(); //true -РµСЃР»Рё РЅСѓР¶РЅР° РїРµСЂРµСЂРёСЃРѕРІРєР°
 		void ClipboardCopy();
 		void ClipboardPaste();
 		void ClipboardCut();
@@ -167,6 +198,7 @@ namespace wal
 		void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
 	public:
 		EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true );
+		void SetAcceptAltKeys(){ doAcceptAltKeys = true; }
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
@@ -180,7 +212,7 @@ namespace wal
 		bool IsEmpty() const;
 		int GetCursorPos() { return text.Cursor(); }
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
-		std::vector<unicode_t> GetText();
+		std::vector<unicode_t> GetText() const;
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();
@@ -191,14 +223,31 @@ namespace wal
 
 	class StaticLine: public Win
 	{
+		//MenuTextInfo text;
 		std::vector<unicode_t> text;
 	public:
 		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = 0 );
 		virtual void Paint( GC& gc, const crect& paintRect );
-		void SetText( const unicode_t* txt ) { text = wal::new_unicode_str( txt ); Invalidate(); }
+		//void SetText( const unicode_t* txt ) { text.SetText(txt) ; Invalidate(); }
+		void SetText(const unicode_t* txt) { text = wal::new_unicode_str(txt); Invalidate(); }
 		virtual int UiGetClassId();
 		virtual ~StaticLine();
 	};
+
+	// single line label that may have '&' in the text to designate hotkey
+	// Has master dialog control, which is returned by IsHisHotKey on matching hotkey
+	class StaticLabel : public Win
+	{
+		MenuTextInfo text;
+		Win* master;
+	public:
+		StaticLabel(int nId, Win* parent, const unicode_t* txt, Win* _master = 0, crect* rect = 0);
+		virtual void Paint(GC& gc, const crect& paintRect);
+		virtual Win* IsHisHotKey(cevent_key* pEvent);
+		virtual int UiGetClassId();
+		virtual ~StaticLabel();
+	};
+
 
 	enum ScrollCmd
 	{
@@ -230,14 +279,14 @@ namespace wal
 		bool vertical;
 		ScrollInfo si;
 
-		int len; //расстояние между крайними кнопками
-		int bsize; // размер средней кнопки
-		int bpos; // расстояние от средней кнопки до первой
+		int len; //СЂР°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ РєСЂР°Р№РЅРёРјРё РєРЅРѕРїРєР°РјРё
+		int bsize; // СЂР°Р·РјРµСЂ СЃСЂРµРґРЅРµР№ РєРЅРѕРїРєРё
+		int bpos; // СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ СЃСЂРµРґРЅРµР№ РєРЅРѕРїРєРё РґРѕ РїРµСЂРІРѕР№
 
 		crect b1Rect, b2Rect, b3Rect;
 
-		bool trace; // состояние трассировки
-		int traceBPoint; // точка нажатия мыши от начала средней кнопки (испю при трассировке)
+		bool trace; // СЃРѕСЃС‚РѕСЏРЅРёРµ С‚СЂР°СЃСЃРёСЂРѕРІРєРё
+		int traceBPoint; // С‚РѕС‡РєР° РЅР°Р¶Р°С‚РёСЏ РјС‹С€Рё РѕС‚ РЅР°С‡Р°Р»Р° СЃСЂРµРґРЅРµР№ РєРЅРѕРїРєРё (РёСЃРїСЋ РїСЂРё С‚СЂР°СЃСЃРёСЂРѕРІРєРµ)
 
 		bool autoHide;
 
@@ -289,7 +338,7 @@ namespace wal
 
 		Layout layout;
 
-		crect listRect; //rect в котором надо рисовать список
+		crect listRect; //rect РІ РєРѕС‚РѕСЂРѕРј РЅР°РґРѕ СЂРёСЃРѕРІР°С‚СЊ СЃРїРёСЃРѕРє
 		crect scrollRect;
 
 		IntList selectList;
@@ -380,25 +429,6 @@ namespace wal
 	};
 
 	class PopupMenu;
-
-	// Menu text that is split to 3 parts by hot key. 
-	// The hot key character is prepended by '&', like in Windows menu
-	class MenuTextInfo
-	{
-		unicode_t* strBeforeHk;
-		unicode_t* strHk;
-		unicode_t* strAfterHk;
-		unicode_t* strFull; // required to calculate text extents quickly
-		unicode_t hotkeyUpperCase;
-	public:
-		explicit MenuTextInfo(const unicode_t* inStr);
-		MenuTextInfo(const MenuTextInfo& src);
-		~MenuTextInfo();
-		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
-		cpoint GetTextExtents(GC& gc) const { return (strFull!=0) ? gc.GetTextExtents(strFull): cpoint(0,0); }
-		int isEmpty() const { return strFull == 0; }
-		int isHotkeyMatching(unicode_t charUpperCase) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
-	};
 
 	class MenuData: public iIntrusiveCounter
 	{
@@ -526,5 +556,3 @@ namespace wal
 
 }; // namespace wal
 
-
-#endif

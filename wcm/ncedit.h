@@ -1,10 +1,11 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
+#pragma once
 
-#ifndef NCEDIT_H
-#define NCEDIT_H
 #include "wal.h"
 #include "swl.h"
 #include "vfs.h"
@@ -73,6 +74,9 @@ public:
 	class Pos
 	{
 		friend class EditList;
+		// b - bufferNo
+		// p - posInBuffer
+		// n - offset from beg of data
 		int b, p, n;
 	public:
 		Pos(): b( 0 ), p( 0 ), n( 0 ) {}
@@ -173,7 +177,6 @@ public:
 			{
 				str.len--;
 				str.SetLF();
-#ifdef _WIN32
 
 				if ( str.len > 0 && str.data[str.len - 1] == '\r' )
 				{
@@ -181,7 +184,6 @@ public:
 					str.SetCR();
 				}
 
-#endif
 			}
 
 			Append();
@@ -832,5 +834,3 @@ inline void EditString::operator = ( const EditString& a )
 	flags = a.flags;
 	data = a.data;
 }
-
-#endif

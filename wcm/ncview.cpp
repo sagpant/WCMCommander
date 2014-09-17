@@ -1,6 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #include "ncview.h"
 #include "wcm-config.h"
@@ -14,6 +16,7 @@
 #include <time.h>
 #endif
 
+#include <algorithm>
 
 using namespace wal;
 
@@ -447,7 +450,7 @@ VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 
 	int size = CACHE_BLOCK_SIZE;
 
-	//fs ìîæåò ÷èòàòü êëî÷êàìè, à íå ñðàçó âåñü áëîê, ïîýòîìó öèêë
+	//fs Ð¼Ð¾Ð¶ÐµÑ‚ Ñ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ ÐºÐ»Ð¾Ñ‡ÐºÐ°Ð¼Ð¸, Ð° Ð½Ðµ ÑÑ€Ð°Ð·Ñƒ Ð²ÐµÑÑŒ Ð±Ð»Ð¾Ðº, Ð¿Ð¾ÑÑ‚Ð¾Ð¼Ñƒ Ñ†Ð¸ÐºÐ»
 	while ( size > 0 )
 	{
 		int bytes = fs->Read( fd, ( unsigned char* )s, size, &err, info );
@@ -681,7 +684,7 @@ bool VFile::ReadString( seek_t offset, ViewerString& str, charset_struct* charse
 
 	int count = ReadBlock( offset, buf, sizeof( buf ), info );
 	offset += count;
-	int lbPos = 0; //íà÷àëî áóôåðà îò íà÷àëà ñòðîêè â áàéòàõ
+	int lbPos = 0; //Ð½Ð°Ñ‡Ð°Ð»Ð¾ Ð±ÑƒÑ„ÐµÑ€Ð° Ð¾Ñ‚ Ð½Ð°Ñ‡Ð°Ð»Ð° ÑÑ‚Ñ€Ð¾ÐºÐ¸ Ð² Ð±Ð°Ð¹Ñ‚Ð°Ñ…
 
 	char tabChar = charset->tabChar;
 
@@ -837,7 +840,7 @@ struct ViewerEvent
 	enum
 	{
 	   NO = 0,
-	   //SET, //set offset, trach must be in first line
+	   SET, //set offset, track must be in first line
 	   VTRACK, HTRACK,
 	   UP, DOWN, LEFT, RIGHT,
 	   PAGEUP, PAGEDOWN, PAGELEFT, PAGERIGHT,
@@ -1033,6 +1036,10 @@ void* ViewerThread( void* param )
 
 					switch ( event.type )
 					{
+						case ViewerEvent::SET:
+							pos.begin = std::max( (int64)0, event.track );
+							break;
+
 						case ViewerEvent::HOME:
 							pos.begin = 0;
 							break;
@@ -1094,6 +1101,11 @@ void* ViewerThread( void* param )
 
 					switch ( event.type )
 					{
+						case ViewerEvent::SET:
+							pos.begin = std::max( (int64)0, event.track );
+							pos.col = 0;
+							break;
+
 						case ViewerEvent::HOME:
 							pos.begin = 0;
 							pos.col = 0;
@@ -1313,6 +1325,11 @@ void* ViewerThread( void* param )
 
 					switch ( event.type )
 					{
+						case ViewerEvent::SET:
+							pos.begin = std::max( 0, (int)event.track );
+							pos.col = 0;
+							break;
+
 						case ViewerEvent::HOME:
 							pos.begin = 0;
 							pos.col = 0;
@@ -1880,7 +1897,7 @@ void ViewWin::ThreadSignal( int id, int data )
 
 		}
 
-		if ( threadData->inFlags ) { return; } //åñòü åùå íåîòðàáîòàííîå ñîáûòèå, ïîäîæäåì åãî âûïîëíåíèÿ
+		if ( threadData->inFlags ) { return; } //ÐµÑÑ‚ÑŒ ÐµÑ‰Ðµ Ð½ÐµÐ¾Ñ‚Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ð½Ð½Ð¾Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ, Ð¿Ð¾Ð´Ð¾Ð¶Ð´ÐµÐ¼ ÐµÐ³Ð¾ Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ñ
 
 		lastResult = threadData->ret;
 		lastPos = threadData->pos;
@@ -2485,9 +2502,19 @@ int ViewWin::GetPercent()
 
 int ViewWin::GetCol()
 {
-	if ( lastResult.mode.hex || lastResult.mode.wrap ) { return -1; }
+	if ( threadData )
+	{
+		return threadData->pos.begin;
+	}
 
-	return lastPos.col;
+	return -1;
+}
+
+void ViewWin::SetCol(int Col)
+{
+	if ( Col < 0 ) return;
+
+	threadData->SetEvent( ViewerEvent( ViewerEvent::SET, Col ) );
 }
 
 

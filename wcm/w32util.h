@@ -1,6 +1,16 @@
-#if !defined( W32UTIL_H ) && defined(_WIN32)
-#define W32UTIL_H
+/*
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
+#pragma once
+
+#if defined(_WIN32)
+
+#if !defined( NOMINMAX )
+#	define NOMINMAX
+#endif
 #include <windows.h>
 #include <wal.h>
 
@@ -20,6 +30,5 @@ public:
 	std::vector<wchar_t> SubKey( int n );
 	~RegKey();
 };
-
 
 #endif

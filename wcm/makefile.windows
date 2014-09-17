@@ -7,11 +7,11 @@ LIBS = -lgdi32 -lcomdlg32 -lstdc++ -lws2_32 -lwsock32 -lmpr $(LIBSMB) $(LIBSSH) 
 HW = wal/wal_tmpls.h wal/wal.h wal/wal_sys_api.h
 HS = swl/swl.h swl/swl_internal.h swl/swl_layout.h swl/swl_winbase.h swl/swl_wincore.h swl/swl_wincore_internal.h 
 HN = libconf.h nc.h ncwin.h panel.h ncdialogs.h  w32cons.h termwin.h ncedit.h nchistory.h \
- operthread.h operwin.h vfs.h vfspath.h vfs-smb.h vfs-uri.h fileopers.h mfile.h eloadsave.h smblogon.h ext-app.h bfile.h \
+ operthread.h operwin.h vfs.h vfspath.h vfs-smb.h vfs-uri.h fileopers.h mfile.h eloadsave.h smblogon.h ext-app.h \
  wcm-config.h panel_list.h tcp_sock.h vfs-ftp.h ftplogon.h charsetdlg.h vfs-sftp.h sftpdlg.h color-style.h filesearch.h help.h ux_util.h \
  strconfig.h shortcuts.h ncfonts.h shl.h toolbar.h ncview.h search-dlg.h search-tools.h shell-tools.h t-emulator.h dircalc.h ltext.h
 
-COPTS += -I swl -fpermissive -std=c++11 
+COPTS += -I swl -fpermissive -std=c++11 $(WINDOWS_TARGET)
 
 CC = gcc
 
@@ -35,6 +35,7 @@ OBJS = \
 	$(OBJDIR)/swl_popupmenu.o   \
 	$(OBJDIR)/swl_sbutton.o     \
 	$(OBJDIR)/swl_scrollbar.o   \
+	$(OBJDIR)/swl_staticlabel.o   \
 	$(OBJDIR)/swl_textlist.o    \
 	$(OBJDIR)/swl_vlist.o       \
 	$(OBJDIR)/swl_winbase.o     \
@@ -75,6 +76,7 @@ OBJS = \
 	$(OBJDIR)/ux_util.o\
 	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/shortcuts.o \
+	$(OBJDIR)/fileassociations.o \
 	$(OBJDIR)/shl.o \
 	$(OBJDIR)/ncfonts.o \
 	$(OBJDIR)/toolbar.o \
@@ -139,6 +141,9 @@ $(OBJDIR)/ncfonts.o: $(HW) $(HS) $(HN) ncfonts.cpp
 	
 $(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) shortcuts.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) shortcuts.cpp -o $(OBJDIR)/shortcuts.o
+
+$(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) fileassociations.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) fileassociations.cpp -o $(OBJDIR)/fileassociations.o
 
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
@@ -276,6 +281,9 @@ $(OBJDIR)/swl_sbutton.o: $(HW) $(HS) swl/swl_sbutton.cpp
 
 $(OBJDIR)/swl_scrollbar.o: $(HW) $(HS) swl/swl_scrollbar.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_scrollbar.cpp -o $(OBJDIR)/swl_scrollbar.o
+
+$(OBJDIR)/swl_staticlabel.o: $(HW) $(HS) swl/swl_staticlabel.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_staticlabel.cpp -o $(OBJDIR)/swl_staticlabel.o
 
 $(OBJDIR)/swl_textlist.o: $(HW) $(HS) swl/swl_textlist.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_textlist.cpp -o $(OBJDIR)/swl_textlist.o

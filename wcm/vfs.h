@@ -1,10 +1,10 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
-
-#ifndef NCVFS_H
-#define NCVFS_H
+#pragma once
 
 #include <wal.h>
 #include "ncdialogs.h"
@@ -604,8 +604,3 @@ public:
 
 //path - должен быть абсолютным (если нет - то вернет false)
 extern bool ParzeLink( FSPath& path, FSString& link );
-
-//inline clPtr<FS> GetSysFS(){ return clPtr<FS>(new FSSys()); }
-
-
-#endif

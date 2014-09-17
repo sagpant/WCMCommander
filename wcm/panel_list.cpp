@@ -1,7 +1,8 @@
 /*
-   Copyright (c) by Valery Goryachev (Wal)
-*/
-
+ * Part of Wal Commander GitHub Edition
+ * https://github.com/corporateshark/WalCommander
+ * walcommander@linderdaum.com
+ */
 
 #include "panel_list.h"
 #include "wcm-config.h"
@@ -83,7 +84,7 @@ void PanelList::Sort()
 }
 
 
-static bool accmask( const unicode_t* name, const unicode_t* mask )
+bool accmask( const unicode_t* name, const unicode_t* mask )
 {
 	if ( !*mask )
 	{
