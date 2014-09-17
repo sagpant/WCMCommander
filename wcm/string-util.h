@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <vector>
+#include "wal_sys_api.h"
+
 template<class T> inline const T* find_right_char( const T* s, T c )
 {
 	const T* p = 0;

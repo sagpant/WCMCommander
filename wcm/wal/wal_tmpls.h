@@ -1160,7 +1160,7 @@ namespace wal
 
 			do
 			{
-				int sl2 = sl * 2;
+//				int sl2 = sl * 2;
 				T* pp0 = p0, *pp1 = p1;
 
 				for ( int n = count; n > 0; )
