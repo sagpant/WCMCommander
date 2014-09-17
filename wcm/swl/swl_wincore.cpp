@@ -339,10 +339,11 @@ namespace wal
 			for (int i = 0; i < childList.count(); i++)
 			{
 				Win* tchild = childList[i];
-				if (tchild->IsMyHotKey(pEvent))
+				Win* tHotkeyWin;
+				if ((tHotkeyWin=tchild->IsHisHotKey(pEvent))!=0)
 				{
-					tchild->SetFocus();
-					return tchild->EventKey(pEvent);
+					tHotkeyWin->SetFocus();
+					return tHotkeyWin->EventKey(pEvent);
 				}
 			}
 		}

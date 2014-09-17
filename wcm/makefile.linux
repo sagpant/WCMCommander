@@ -51,6 +51,7 @@ OBJS = \
 	$(OBJDIR)/swl_popupmenu.o   \
 	$(OBJDIR)/swl_sbutton.o     \
 	$(OBJDIR)/swl_scrollbar.o   \
+	$(OBJDIR)/swl_staticlabel.o   \
 	$(OBJDIR)/swl_textlist.o    \
 	$(OBJDIR)/swl_vlist.o       \
 	$(OBJDIR)/swl_winbase.o     \
@@ -313,6 +314,9 @@ $(OBJDIR)/swl_sbutton.o: $(HW) $(HS) swl/swl_sbutton.cpp
 
 $(OBJDIR)/swl_scrollbar.o: $(HW) $(HS) swl/swl_scrollbar.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_scrollbar.cpp -o $(OBJDIR)/swl_scrollbar.o
+
+$(OBJDIR)/swl_staticlabel.o: $(HW) $(HS) swl/swl_staticlabel.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_staticlabel.cpp -o $(OBJDIR)/swl_staticlabel.o
 
 $(OBJDIR)/swl_textlist.o: $(HW) $(HS) swl/swl_textlist.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_textlist.cpp -o $(OBJDIR)/swl_textlist.o

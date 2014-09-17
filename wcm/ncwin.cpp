@@ -3155,7 +3155,11 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				Tab( false );
 				break;
 
-			case FC( VK_TAB, KM_SHIFT ):
+				// on UNIX shift-tab gives XK_ISO_Left_Tab
+#ifdef XK_ISO_Left_Tab
+			case XK_ISO_Left_Tab:
+#endif
+			case FC(VK_TAB, KM_SHIFT):
 				Tab( true );
 				break;
 

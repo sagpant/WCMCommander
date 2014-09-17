@@ -170,9 +170,9 @@ namespace wal
 		return true;
 	}
 
-	bool Button::IsMyHotKey(cevent_key* pEvent)
+	Win*  Button::IsHisHotKey(cevent_key* pEvent)
 	{
-		return text.isHotkeyMatching(UnicodeUC(pEvent->Char()));
+		return text.isHotkeyMatching(UnicodeUC(pEvent->Char()))? this:0;
 	}
 
 	void Button::Paint( GC& gc, const crect& paintRect )

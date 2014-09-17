@@ -23,22 +23,22 @@ public:
 	clEditFileAssociationsWin( NCDialogParent* parent, const clNCFileAssociation* Assoc )
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file associations" ) ).data(), bListOkCancel )
 	 , m_Layout( 17, 2 )
-	 , m_MaskText( 0, this, utf8_to_unicode( _LT( "A file mask or several file masks (separated with commas)" ) ).data() )
+	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several file masks (separated with commas)")).data(), &m_MaskEdit)
 	 , m_MaskEdit( 0, this, 0, 0, 16 )
-	 , m_DescriptionText( 0, this, utf8_to_unicode( _LT( "Description of the file association" ) ).data() )
+	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description of the file association")).data(), &m_DescriptionEdit)
 	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
-	 , m_HasTerminalButton( 0, this, utf8_to_unicode( _LT( "Start in this terminal" ) ).data(), 0, true )
-	 , m_ExecuteCommandText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Enter)" ) ).data() )
+	 , m_HasTerminalButton( 0, this, utf8_to_unicode( _LT( "Start in &this terminal" ) ).data(), 0, true )
+	 , m_ExecuteCommandText(0, this, utf8_to_unicode(_LT("E&xecute command (used for Enter)")).data(), &m_ExecuteCommandEdit)
 	 , m_ExecuteCommandEdit( 0, this, 0, 0, 16 )
-	 , m_ExecuteCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Ctrl+PgDn)" ) ).data() )
+	 , m_ExecuteCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Ctrl+&PgDn)" ) ).data(), &m_ExecuteCommandSecondaryEdit )
 	 , m_ExecuteCommandSecondaryEdit( 0, this, 0, 0, 16 )
-	 , m_ViewCommandText( 0, this, utf8_to_unicode( _LT( "View command (used for F3)" ) ).data() )
+	 , m_ViewCommandText(0, this, utf8_to_unicode(_LT("&View command (used for F3)")).data(), &m_ViewCommandEdit)
 	 , m_ViewCommandEdit( 0, this, 0, 0, 16 )
-	 , m_ViewCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "View command (used for Alt+F3)" ) ).data() )
+	 , m_ViewCommandSecondaryText(0, this, utf8_to_unicode(_LT("View command (used for Alt+F&3)")).data(), &m_ViewCommandSecondaryEdit)
 	 , m_ViewCommandSecondaryEdit( 0, this, 0, 0, 16 )
-	 , m_EditCommandText( 0, this, utf8_to_unicode( _LT( "Edit command (used for F4)" ) ).data() )
+	 , m_EditCommandText(0, this, utf8_to_unicode(_LT("&Edit command (used for F4)")).data(), &m_EditCommandEdit)
 	 , m_EditCommandEdit( 0, this, 0, 0, 16 )
-	 , m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Edit command (used for Alt+F4)" ) ).data() )
+	 , m_EditCommandSecondaryText(0, this, utf8_to_unicode(_LT("Edit command (used for Alt+F&4)")).data(), &m_EditCommandSecondaryEdit)
 	 , m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
@@ -117,30 +117,30 @@ private:
 	Layout m_Layout;
 
 public:
-	StaticLine m_MaskText;
+	StaticLabel m_MaskText;
 	EditLine   m_MaskEdit;
 
-	StaticLine m_DescriptionText;
+	StaticLabel m_DescriptionText;
 	EditLine   m_DescriptionEdit;
 
 	SButton m_HasTerminalButton;
 
-	StaticLine m_ExecuteCommandText;
+	StaticLabel m_ExecuteCommandText;
 	EditLine   m_ExecuteCommandEdit;
 
-	StaticLine m_ExecuteCommandSecondaryText;
+	StaticLabel m_ExecuteCommandSecondaryText;
 	EditLine   m_ExecuteCommandSecondaryEdit;
 
-	StaticLine m_ViewCommandText;
+	StaticLabel m_ViewCommandText;
 	EditLine   m_ViewCommandEdit;
 
-	StaticLine m_ViewCommandSecondaryText;
+	StaticLabel m_ViewCommandSecondaryText;
 	EditLine   m_ViewCommandSecondaryEdit;
 
-	StaticLine m_EditCommandText;
+	StaticLabel m_EditCommandText;
 	EditLine   m_EditCommandEdit;
 
-	StaticLine m_EditCommandSecondaryText;
+	StaticLabel m_EditCommandSecondaryText;
 	EditLine   m_EditCommandSecondaryEdit;
 
 	mutable clNCFileAssociation m_Result;
