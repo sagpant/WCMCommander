@@ -12,68 +12,123 @@ class NCWin;
 
 struct WcmConfig
 {
-	enum MapType { MT_BOOL, MT_INT, MT_STR };
-	struct Node
+private:
+	enum eMapType { MT_BOOL, MT_INT, MT_STR };
+	/// no need to make this polymorphic type
+	struct sNode
 	{
-		MapType type;
-		const char* section;
-		const char* name;
+		sNode()
+		 : m_Type( MT_INT )
+		 , m_Section( NULL )
+		 , m_Name( NULL )
+		 , m_Current()
+		 , m_Default()
+		{}
+		sNode( eMapType Type, const char* Section, const char* Name )
+		 : m_Type( Type )
+		 , m_Section( Section )
+		 , m_Name( Name )
+		 , m_Current()
+		 , m_Default()
+		{}
+		eMapType    m_Type;
+		const char* m_Section;
+		const char* m_Name;
+		/// holds a pointer to the currently valid value
 		union
 		{
-			int* pInt;
-			bool* pBool;
-			std::vector<char>* pStr;
-		} ptr;
+			int* m_Int;
+			bool* m_Bool;
+			std::vector<char>* m_Str;
+		} m_Current;
+
+		int GetDefaultInt() const { return m_Default.m_Int; }
+		bool GetDefaultBool() const { return m_Default.m_Bool; }
+		const char* GetDefaultStr() const { return m_Default.m_Str; }
+
+		int GetCurrentInt() const { return m_Current.m_Int ? *m_Current.m_Int : 0; }
+		bool GetCurrentBool() const { return m_Current.m_Bool ? *m_Current.m_Bool : false; }
+		const char* GetCurrentStr() const { return m_Current.m_Str ? m_Current.m_Str->data() : NULL; }
+
+		static sNode CreateIntNode( const char* Section, const char* Name, int* pInt, int DefaultValue )
+		{
+			sNode N( MT_INT, Section, Name );
+			N.m_Current.m_Int = pInt;
+			N.m_Default.m_Int = DefaultValue;
+			return N;
+		}
+		static sNode CreateBoolNode( const char* Section, const char* Name, bool* pBool, bool DefaultValue )
+		{	
+			sNode N( MT_BOOL, Section, Name );
+			N.m_Current.m_Bool = pBool;
+			N.m_Default.m_Bool = DefaultValue;
+			return N;
+		}
+		static sNode CreateStrNode( const char* Section, const char* Name, std::vector<char>* pStr, const char* DefaultValue )
+		{
+			sNode N( MT_STR, Section, Name );
+			N.m_Current.m_Str = pStr;
+			N.m_Default.m_Str = DefaultValue;
+			return N;
+		}
+
+	private:
+		/// default value
 		union
 		{
-			int defInt;
-			bool defBool;
-			const char* defStr;
-		} def;
+			int m_Int;
+			bool m_Bool;
+			const char* m_Str;
+		} m_Default;
 	};
 
-	ccollect<Node, 64> mapList;
-	void MapInt( const char* section, const char* name, int* pInt, int def );
-	void MapBool( const char* section, const char* name, bool* pInt, bool def );
-	void MapStr( const char* section, const char* name, std::vector<char>* pStr, const char* def = 0 );
+public:
 
+#pragma region System settings
 	bool systemAskOpenExec;
 	bool systemEscPanel;
 	bool systemBackSpaceUpDir;
 	bool systemAutoComplete;
 	bool systemShowHostName;
 	std::vector<char> systemLang; //"+" - auto "-" -internal eng.
+#pragma endregion
 
-	bool showToolBar;
-	bool showButtonBar;
-//	bool whiteStyle;
-
+#pragma region Panel settings
 	bool panelShowHiddenFiles;
 	bool panelCaseSensitive;
 	bool panelSelectFolders;
 	bool panelShowDotsInRoot;
 	bool panelShowFolderIcons;
 	bool panelShowExecutableIcons;
-	int panelColorMode;
 	int panelModeLeft;
 	int panelModeRight;
+#pragma endregion
 
+#pragma region Editor settings
 	bool editSavePos;
 	bool editAutoIdent;
 	int editTabSize;
-	int editColorMode;
 	bool editShl;
+#pragma endregion
 
+#pragma region Terminal settings
 	int terminalBackspaceKey;
+#pragma endregion
 
-	int viewColorMode;
+#pragma region Style settings
+	int styleColorMode;
+	bool styleShowToolBar;
+	bool styleShowButtonBar;
+#pragma endregion 
 
+#pragma region Window position and size to be restored on the next startup
 	int windowX;
 	int windowY;
 	int windowWidth;
 	int windowHeight;
+#pragma endregion
 
-	//fonts
+#pragma region Fonts
 	std::vector<char> panelFontUri;
 	std::vector<char> viewerFontUri;
 	std::vector<char> editorFontUri;
@@ -83,14 +138,26 @@ struct WcmConfig
 	std::vector<char> helpBoldFontUri;
 	std::vector<char> helpHeadFontUri;
 
+	/// store properties of the currently active fonts in ...Uri fields
+	void ImpCurrentFonts();
+#pragma endregion
+
+#pragma region Paths of the panels to be restored on the next startup
 	std::vector<char> leftPanelPath;
 	std::vector<char> rightPanelPath;
-
-	void ImpCurrentFonts(); //взять используемые шрифты и записать их реквизиты в ...Uri
+#pragma endregion
 
 	WcmConfig();
 	void Load( NCWin* nc );
 	void Save( NCWin* nc );
+
+private:
+	void MapInt( const char* Section, const char* Name, int* pInt, int DefaultValue );
+	void MapBool( const char* Section, const char* Name, bool* pInt, bool DefaultValue );
+	void MapStr( const char* Section, const char* Name, std::vector<char>* pStr, const char* DefaultValue = NULL );
+
+private:
+	std::vector<sNode> m_MapList;
 };
 
 extern WcmConfig wcmConfig;

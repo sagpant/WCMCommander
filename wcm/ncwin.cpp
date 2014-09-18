@@ -437,7 +437,7 @@ NCWin::NCWin()
 	_activityNotification.Enable();
 	_activityNotification.OnTop();
 
-	if ( wcmConfig.showButtonBar )
+	if ( wcmConfig.styleShowButtonBar )
 	{
 		_buttonWin.Show();
 	}
@@ -458,7 +458,7 @@ NCWin::NCWin()
 	SetToolbarPanel();
 	_toolBar.Enable();
 
-	if ( wcmConfig.showToolBar )
+	if ( wcmConfig.styleShowToolBar )
 	{
 		_toolBar.Show();
 	}
@@ -662,7 +662,7 @@ void NCWin::SetMode( MODE m )
 			else
 			{ _leftPanel.Hide(); _rightPanel.Hide(); _terminal.Show();}
 
-			if ( wcmConfig.showButtonBar ) { _buttonWin.Show(); }
+			if ( wcmConfig.styleShowButtonBar ) { _buttonWin.Show( ); }
 
 			_edit.Show();
 			//_terminal.Show();
@@ -670,7 +670,7 @@ void NCWin::SetMode( MODE m )
 			_menu.Show();
 			SetToolbarPanel();
 
-			if ( wcmConfig.showToolBar ) { _toolBar.Show(); }
+			if ( wcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
 
 			_edit.SetFocus();
 			_buttonWin.Set( panelNormalButtons ); //!!!
@@ -703,7 +703,7 @@ void NCWin::SetMode( MODE m )
 			_leftPanel.Hide();
 			_rightPanel.Hide();
 
-			if ( wcmConfig.showButtonBar ) { _buttonWin.Show(); }
+			if ( wcmConfig.styleShowButtonBar ) { _buttonWin.Show( ); }
 
 			_edit.Hide();
 			_terminal.Hide();
@@ -711,7 +711,7 @@ void NCWin::SetMode( MODE m )
 			_menu.Hide();
 			SetToolbarView();
 
-			if ( wcmConfig.showToolBar ) { _toolBar.Show(); }
+			if ( wcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
 
 			_buttonWin.Set( viewNormalButtons ); //!!!
 			break;
@@ -723,7 +723,7 @@ void NCWin::SetMode( MODE m )
 			_leftPanel.Hide();
 			_rightPanel.Hide();
 
-			if ( wcmConfig.showButtonBar )
+			if ( wcmConfig.styleShowButtonBar )
 			{
 				_buttonWin.Show();
 			}
@@ -734,7 +734,7 @@ void NCWin::SetMode( MODE m )
 			_menu.Hide();
 			SetToolbarEdit();
 
-			if ( wcmConfig.showToolBar ) { _toolBar.Show(); }
+			if ( wcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
 
 			_editor.Show();
 			_editor.SetFocus();
@@ -3764,7 +3764,7 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 			case ID_CONFIG_STYLE:
 				if ( DoStyleConfigDialog( this ) )
 				{
-					if ( wcmConfig.showToolBar )
+					if ( wcmConfig.styleShowToolBar )
 					{
 						_toolBar.Show( SHOW_INACTIVE );
 					}
@@ -3773,7 +3773,7 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 						_toolBar.Hide();
 					}
 
-					if ( wcmConfig.showButtonBar )
+					if ( wcmConfig.styleShowButtonBar )
 					{
 						_buttonWin.Show( SHOW_INACTIVE );
 					}
