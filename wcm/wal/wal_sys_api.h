@@ -531,4 +531,6 @@ namespace wal
 
 }; //namespace wal
 
+using namespace wal;
+
 #endif

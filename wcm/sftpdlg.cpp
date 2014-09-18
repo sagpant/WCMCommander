@@ -20,12 +20,13 @@ class SftpLogonDialog: public NCVertDialog
 {
 	Layout iL;
 public:
-	StaticLine serverText;
-	StaticLine userText;
+	StaticLabel serverText;
+	StaticLabel userText;
 //	StaticLine passwordText;
-	StaticLine portText;
+	StaticLabel portText;
 	int charset;
-	StaticLine charsetText, charsetIdText;
+	StaticLabel charsetText;
+	StaticLine charsetIdText;
 
 	EditLine serverEdit;
 	EditLine userEdit;
@@ -44,11 +45,11 @@ SftpLogonDialog::~SftpLogonDialog() {}
 SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "SFTP logon" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   serverText( 0, this, utf8_to_unicode( _LT( "Server:" ) ).data() ),
-	   userText( 0, this, utf8_to_unicode( _LT( "Login:" ) ).data() ),
+	   serverText(0, this, utf8_to_unicode(_LT("&Server:")).data(), &serverEdit),
+	   userText(0, this, utf8_to_unicode(_LT("&Login:")).data(), &userEdit),
 //	passwordText(this, utf8_to_unicode("Password:").ptr()),
-	   portText( 0, this, utf8_to_unicode( _LT( "Port:" ) ).data() ),
-	   charsetText( 0, this, utf8_to_unicode( _LT( "Charset:" ) ).data() ),
+	   portText( 0, this, utf8_to_unicode( _LT( "&Port:" ) ).data(), &portEdit ),
+	   charsetText(0, this, utf8_to_unicode(_LT("&Charset:")).data(), &charsetButton),
 
 	   charset( params.charset ),
 	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), //чтоб место забить
