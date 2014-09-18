@@ -47,11 +47,9 @@ namespace wal
 		void insert( int n );
 		void insert( int n, const T& a );
 		void insert( int n, int count );
-		void append();
 		void append ( const T& a );
 		void append_list ( const T* list, int number );
 		void append_n ( const T& p, int number );
-		void append ( const ccollect& a );
 		void clear();
 		int count() const;
 	private:
@@ -131,18 +129,11 @@ namespace wal
 		return m_data[ n ];
 	}
 
-
-	template <class T, size_t Step> inline void ccollect<T, Step>::append()
-	{
-		m_data.push_back( T() );
-	}
-
 	template <class T, size_t Step> inline void ccollect<T, Step>::append ( const T& a )
 	{
 		m_data.push_back( a );
 	}
-
-
+	
 	template <class T, size_t Step> void ccollect<T, Step>::append_list ( const T* p, int number )
 	{
 		m_data.reserve( m_data.size( ) + number );
@@ -157,16 +148,7 @@ namespace wal
 	{
 		m_data.insert( m_data.end(), number, p );
 	}
-
-
-	template <class T, size_t Step> void ccollect<T, Step>::append ( const ccollect& a )
-	{
-		for ( int i = 0; i < a.count(); i++ )
-		{
-			append( a.const_item( i ) );
-		}
-	}
-
+	
 	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n )
 	{
 		ASSERT( n >= 0 && n <= (int)m_data.size() );
