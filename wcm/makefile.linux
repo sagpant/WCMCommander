@@ -2,10 +2,12 @@
 INSTALL_DIR = install -d
 INSTALL_PROGRAM = install -c -m 755
 INSTALL_DATA = install -c -m 644
+INSTALL_TREE = cp -R
 # INSTALL = cp
 # INSTALL_DATA = cp
 BIN_DIR=$(DESTDIR)/usr/bin
 SHARE_DIR=$(DESTDIR)/usr/share
+TARGET_DIR=$(DESTDIR)/usr/
 
 
 CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
@@ -371,8 +373,8 @@ clean:
 
 debclean:
 	rm -rf debian/wcm
-	rm debian/wcm.debhelper.log
-	rm debian/files
+	rm -f debian/*.log
+	rm -f debian/files
 	rm -f ../wcm_0.17.0*
 
 build-deb-package: clean debclean
@@ -380,6 +382,13 @@ build-deb-package: clean debclean
 	dpkg-buildpackage -us -uc
 
 install: wcm
+	$(INSTALL_DIR)	$(BIN_DIR)
+	$(INSTALL_DIR)	$(TARGET_DIR)
+	$(INSTALL_PROGRAM) wcm $(BIN_DIR)
+	$(INSTALL_TREE) install-files/* $(TARGET_DIR)
+	
+
+install-bak:	
 	$(INSTALL_DIR)	$(BIN_DIR)
 	$(INSTALL_DIR)	$(SHARE_DIR)/applications
 	$(INSTALL_DIR)	$(SHARE_DIR)/wcm/fonts/
