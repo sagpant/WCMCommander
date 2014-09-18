@@ -1,16 +1,10 @@
-# Commands
 INSTALL_DIR = install -d
 INSTALL_PROGRAM = install -c -m 755
-INSTALL_DATA = install -c -m 644
 INSTALL_TREE = cp -R
-# INSTALL = cp
-# INSTALL_DATA = cp
 BIN_DIR=$(DESTDIR)/usr/bin
-SHARE_DIR=$(DESTDIR)/usr/share
 TARGET_DIR=$(DESTDIR)/usr/
 
-
-CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
+CFLAGS= -DWCM_VERSION='"$(WCM_VERSION)"' -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
 #CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -O1 -fno-inline -I wal -I swl -pthread $(CFLAGS_FREETYPE)
 
 UNAME_S := $(shell uname -s)
@@ -124,11 +118,6 @@ all: libconf_ux.h wcm
 endif
 
 build: all
-
-build-arch: build
-
-build-indep: build
-
 
 libconf_ux.h: libtester/libconf.create
 	cd libtester &&	. ./libconf.create
@@ -375,10 +364,11 @@ debclean:
 	rm -rf debian/wcm
 	rm -f debian/*.log
 	rm -f debian/files
-	rm -f ../wcm_0.17.0*
+	rm -f debian/wcm.substvars
+	rm -f ../wcm_$(WCM_VERSION)*
 
 build-deb-package: clean debclean
-	cd ..;	tar czf wcm_0.17.0.orig.tar.gz wcm ; cd wcm
+	cd ..;	tar czf wcm_$(WCM_VERSION).orig.tar.gz wcm ; cd wcm
 	dpkg-buildpackage -us -uc
 
 install: wcm
