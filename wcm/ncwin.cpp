@@ -2639,6 +2639,19 @@ bool IsCommand_CD( const unicode_t* p )
 #endif
 }
 
+bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
+{
+	if ( !Out ) return false;
+
+	const char* home = getenv( EnvVarName );
+
+	if ( !home ) return false;
+
+	*Out = utf8_to_unicode( home );
+	
+	return true;
+}
+
 bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal )
 {
 	const unicode_t* p = cmd.data();
@@ -2666,15 +2679,21 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 			std::vector<unicode_t> uHome;
 
-			if ( !*p )
-			{
-				const sys_char_t* home = ( sys_char_t* ) getenv( "HOME" );
+			const unicode_t HomeSymbol[] = { '~', 0 };
 
-				if ( home )
-				{
-					uHome = sys_to_unicode_array( home );
-					p = uHome.data();
-				}
+			if ( *p == '$' )
+			{
+				// skip `$`
+				p++;
+
+				std::vector<char> EnvVarName = unicode_to_utf8( p );
+
+				if ( ApplyEnvVariable( EnvVarName.data( ), &uHome ) ) p = uHome.data();
+			}
+			
+			if ( !*p || unicode_is_equal( p, HomeSymbol ) )
+			{
+				if ( ApplyEnvVariable( "HOME", &uHome ) ) p = uHome.data( );
 			}
 
 			unicode_t* lastNoSpace = 0;
