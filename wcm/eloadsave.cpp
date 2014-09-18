@@ -167,7 +167,7 @@ public:
 	clPtr<MemFile> file;
 
 	LoadThreadWin( NCDialogParent* parent, bool ignoreENOENT )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "Load file" ).data(), bListCancel ),
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "Loading file" ).data(), bListCancel ),
 		   _ignoreENOENT( ignoreENOENT ),
 		   threadData( parent )
 	{}
@@ -180,7 +180,7 @@ void LoadThreadWin::OperThreadStopped()
 {
 	if ( !threadData.errorString.IsEmpty() && !( _ignoreENOENT && threadData.notExist ) )
 	{
-		NCMessageBox( ( NCDialogParent* )Parent(), "Load file", threadData.errorString.GetUtf8(), true );
+		NCMessageBox( ( NCDialogParent* )Parent(), "Loading file", threadData.errorString.GetUtf8(), true );
 		EndModal( 0 );
 		return;
 	}
@@ -373,7 +373,7 @@ public:
 	clPtr<MemFile> file;
 
 	SaveThreadWin( NCDialogParent* parent )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "Load file" ).data(), bListCancel ), threadData( parent ) {}
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "Loading file" ).data(), bListCancel ), threadData( parent ) {}
 	virtual void OperThreadStopped();
 	virtual ~SaveThreadWin();
 };
@@ -382,7 +382,7 @@ void SaveThreadWin::OperThreadStopped()
 {
 	if ( !threadData.errorString.IsEmpty() )
 	{
-		NCMessageBox( ( NCDialogParent* )Parent(), "Save file", threadData.errorString.GetUtf8(), true );
+		NCMessageBox( ( NCDialogParent* )Parent(), "Saving file", threadData.errorString.GetUtf8(), true );
 		EndModal( 0 );
 		return;
 	}

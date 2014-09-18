@@ -177,7 +177,7 @@ namespace wal
 
 	void Button::Paint( GC& gc, const crect& paintRect )
 	{
-		unsigned colorBg = UiGetColor( uiBackground, 0, 0, 0x808080 ); //GetColor(0);
+		unsigned colorBg = UiGetColor(uiBackground, uiClassButton, 0, 0x808080); //GetColor(0);
 		crect cr = this->ClientRect();
 		crect rect = cr;
 		DrawBorder( gc, rect, ColorTone( colorBg, +20 ) );
@@ -213,7 +213,7 @@ namespace wal
 #endif
 		}
 
-		gc.SetTextColor( /*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ UiGetColor( uiColor, 0, 0, 0 ) );
+		//gc.SetTextColor( /*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ UiGetColor( uiColor, 0, 0, 0 ) );
 		gc.Set( GetFont() );
 		cpoint tsize = text.GetTextExtents(gc);
 
@@ -240,7 +240,9 @@ namespace wal
 		}
 
 		gc.SetClipRgn( &rect );
-		text.DrawItem(gc, x, rect.top + (rect.Height() - tsize.y) / 2 + (pressed ? 2 : 0), UiGetColor(uiColor, 0, 0, 0), UiGetColor(uiHotkeyColor, 0, 0, 0));
+		text.DrawItem(gc, x, rect.top + (rect.Height() - tsize.y) / 2 + (pressed ? 2 : 0), 
+			UiGetColor(uiColor, uiClassButton, 0, 0), 
+			UiGetColor(uiHotkeyColor, uiClassButton, 0, 0));
 	}
 
 	Button::~Button() {}

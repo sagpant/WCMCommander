@@ -1327,12 +1327,12 @@ PanelOptDialog::~PanelOptDialog() {}
 PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
  :  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel )
  , iL( 16, 3 )
- , showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles )
- , caseSensitive( 0, this, utf8_to_unicode( _LT( "Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive )
- , selectFolders( 0, this, utf8_to_unicode( _LT( "Select folders" ) ).data(), 0, wcmConfig.panelSelectFolders )
- , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the root folder" ) ).data(), 0, wcmConfig.panelShowDotsInRoot )
- , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder icons" ) ).data(), 0, wcmConfig.panelShowFolderIcons )
- , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show executable icons" ) ).data(), 0, wcmConfig.panelShowExecutableIcons )
+ , showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show &hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles )
+ , caseSensitive( 0, this, utf8_to_unicode( _LT( "&Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive )
+ , selectFolders( 0, this, utf8_to_unicode( _LT( "Select &folders" ) ).data(), 0, wcmConfig.panelSelectFolders )
+ , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the &root folder" ) ).data(), 0, wcmConfig.panelShowDotsInRoot )
+ , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, wcmConfig.panelShowFolderIcons )
+ , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, wcmConfig.panelShowExecutableIcons )
 {
 	iL.AddWinAndEnable( &showHiddenButton,  0, 0 );
 	showHiddenButton.SetFocus();
@@ -1386,7 +1386,7 @@ public:
 	SButton  autoIdentButton;
 	SButton  shlButton;
 
-	StaticLine tabText;
+	StaticLabel tabText;
 	EditLine tabEdit;
 
 	EditOptDialog( NCDialogParent* parent );
@@ -1401,10 +1401,10 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Editor" ) ).data(), bListOkCancel ),
 	   iL( 16, 2 ),
 
-	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file position" ) ).data(), 0, wcmConfig.editSavePos ),
-	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto indent" ) ).data(), 0, wcmConfig.editAutoIdent ),
-	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax highlighting" ) ).data(), 0, wcmConfig.editShl ),
-	   tabText( 0, this, utf8_to_unicode( _LT( "Tab size:" ) ).data() ),
+	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file &position" ) ).data(), 0, wcmConfig.editSavePos ),
+	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto &indent" ) ).data(), 0, wcmConfig.editAutoIdent ),
+	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax &highlighting" ) ).data(), 0, wcmConfig.editShl ),
+	   tabText(0, this, utf8_to_unicode(_LT("&Tab size:")).data(), &tabEdit),
 	   tabEdit( 0, this, 0, 0, 16 )
 {
 	char buf[0x100];
@@ -1557,8 +1557,8 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
 	   fontList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
 	   fontNameStatic( 0, this, utf8_to_unicode( "--------------------------------------------------" ).data() ),
-	   changeButton( 0, this, utf8_to_unicode( _LT( "Set font..." ) ).data(), CMD_CHFONT ),
-	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set X11 font..." ) ).data(), CMD_CHFONTX11 )
+	   changeButton( 0, this, utf8_to_unicode( _LT( "Set &font..." ) ).data(), CMD_CHFONT ),
+	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set &X11 font..." ) ).data(), CMD_CHFONTX11 )
 {
 	iL.AddWin( &colorStatic, 0, 0 );
 	colorStatic.Enable();
@@ -1998,7 +1998,7 @@ public:
 	SButton  autoCompleteButton;
 	SButton  showHostNameButton;
 
-	StaticLine langStatic;
+	StaticLabel langStatic;
 	StaticLine langVal;
 	Button langButton;
 
@@ -2042,11 +2042,11 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	   iL( 16, 3 )
 
 	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, wcmConfig.systemAskOpenExec )
-	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
-	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
-	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable autocomplete" ) ).data(), 0, wcmConfig.systemAutoComplete )
-	   , showHostNameButton( 0, this, utf8_to_unicode( _LT( "Show host name" ) ).data(), 0, wcmConfig.systemShowHostName )
-	   , langStatic( 0, this, utf8_to_unicode( _LT( "Language:" ) ).data() )
+	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
+	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
+	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, wcmConfig.systemAutoComplete )
+	   , showHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, wcmConfig.systemShowHostName )
+	   , langStatic(0, this, utf8_to_unicode(_LT("&Language:")).data(), &langButton)
 	   , langVal( 0, this, utf8_to_unicode( "______________________" ).data() )
 	   , langButton( 0, this, utf8_to_unicode( ">" ).data(), 1000 )
 {

@@ -25,10 +25,12 @@ namespace wal
 	void StaticLabel::Paint(GC& gc, const crect& paintRect)
 	{
 		crect rect = ClientRect();
-		gc.SetFillColor(UiGetColor(uiBackground, 0, 0, 0xFFFFFF)/*GetColor(0)*/);
+		gc.SetFillColor(UiGetColor(uiBackground, uiClassStaticLabel, 0, 0xFFFFFF)/*GetColor(0)*/);
 		gc.FillRect(rect); 
 		gc.Set(GetFont());
-		text.DrawItem(gc, 0, 0, UiGetColor(uiColor, 0, 0, 0), UiGetColor(uiHotkeyColor, 0, 0, 0));
+		text.DrawItem(gc, 0, 0, 
+			UiGetColor(uiColor, uiClassStaticLabel, 0, 0), 
+			UiGetColor(uiHotkeyColor, uiClassStaticLabel, 0, 0));
 	}
 
 	Win* StaticLabel::IsHisHotKey(cevent_key* pEvent)
