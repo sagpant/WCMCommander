@@ -226,9 +226,9 @@ public:
 		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Charset" ) ).data(), bListOkCancel ),
 		   layout( 10, 10 ),
 		   list( this, 7 ),
-		   otherButton( 0, this, utf8_to_unicode( _LT( "Other..." ) ).data(), CMD_OTHER ),
-		   addButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "Add..." ), "(Ins)" ).data() ).data(), CMD_ADD ),
-		   delButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "Del..." ), "(Del)" ).data() ).data(), CMD_DEL )
+		   otherButton( 0, this, utf8_to_unicode( _LT( "&Other..." ) ).data(), CMD_OTHER ),
+		   addButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "&Add..." ), "(Ins)" ).data() ).data(), CMD_ADD ),
+		   delButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "&Del..." ), "(Del)" ).data() ).data(), CMD_DEL )
 	{
 		int i;
 

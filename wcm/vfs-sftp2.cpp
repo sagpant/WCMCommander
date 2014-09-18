@@ -152,11 +152,11 @@ void KbIntCallback(
 			pData[i].prompt = utf8_to_unicode( CopyToStrZ( prompts[i].text, prompts[i].length ).data() ).data();
 		}
 
-		static unicode_t userSymbol = '@';
+		static unicode_t userSymbol[] = { '@', 0 };
 
 		if ( !kbdIntInfo->Prompt(
 		        utf8_to_unicode( "SFTP" ).data(),
-		        carray_cat<unicode_t>( kbdIntParam->user.Data(), &userSymbol, kbdIntParam->server.Data() ).data(),
+		        carray_cat<unicode_t>( kbdIntParam->user.Data(), userSymbol, kbdIntParam->server.Data() ).data(),
 		        pData.data(), num_prompts ) ) { return; }
 
 		for ( i = 0; i < num_prompts; i++ )
@@ -258,7 +258,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 		static const char kInterId[] = "keyboard-interactive";
 
 
-		static unicode_t userSymbol = '@';
+		static unicode_t userSymbol[] = { '@', 0 };
 
 		while ( true )
 		{
@@ -270,7 +270,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 				if ( !info->Prompt(
 				        utf8_to_unicode( "SFTP_" ).data(),
-				        carray_cat<unicode_t>( userName.GetUnicode(), &userSymbol, _operParam.server.Data() ).data(),
+				        carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).data(),
 				        &data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
 
 				int ret;

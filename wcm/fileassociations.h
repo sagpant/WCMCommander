@@ -23,6 +23,9 @@ enum eFileAssociation
 class clNCFileAssociation
 {
 public:
+	clNCFileAssociation()
+	 : m_HasTerminal( true )
+	{}
 	const std::vector<unicode_t>& GetMask() const { return m_Mask; }
 	const std::vector<unicode_t>& GetDescription() const { return m_Description; }
 	const std::vector<unicode_t>& GetExecuteCommand() const { return m_ExecuteCommand; }

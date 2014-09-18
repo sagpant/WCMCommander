@@ -146,7 +146,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 		int ret;
 
 
-		static unicode_t userSymbol = '@';
+		static unicode_t* userSymbol = "@";
 
 		if ( method & SSH_AUTH_METHOD_PASSWORD )
 		{
@@ -158,7 +158,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 			if ( !info->Prompt(
 			        utf8_to_unicode( "SFTP_" ).ptr(),
-			        carray_cat<unicode_t>( userName.GetUnicode(), &userSymbol, _operParam.server.Data() ).ptr(),
+			        carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).ptr(),
 			        &data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
 
 			ret = ssh_userauth_password( sshSession,
@@ -201,7 +201,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 				if ( !info->Prompt(
 				        utf8_to_unicode( "SFTP" ).ptr(),
-				        carray_cat<unicode_t>( userName.GetUnicode(), &userSymbol, _operParam.server.Data() ).ptr(),
+				        carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).ptr(),
 				        pData.ptr(), n ) ) { throw int( SSH_INTERROR_STOPPED ); }
 
 				for ( i = 0; i < n; i++ )

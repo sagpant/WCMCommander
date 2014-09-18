@@ -24,10 +24,16 @@ namespace wal
 
 	void dbg_printf( const char* format, ... )
 	{
+		char s[1024];
 		va_list ap;
 		va_start( ap, format );
-		vprintf( format, ap );
+		vsprintf( s, format, ap );
 		va_end( ap );
+#ifdef _WIN32
+		OutputDebugString(s);
+#else
+		printf("%s",s);
+#endif
 	}
 
 #endif

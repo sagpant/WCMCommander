@@ -643,9 +643,6 @@ WcmConfig::WcmConfig()
 		systemAutoComplete( true ),
 		systemShowHostName( false ),
 	   systemLang( new_char_str( "+" ) ),
-	   showToolBar( true ),
-	   showButtonBar( true ),
-	   //whiteStyle(false),
 
 	   panelShowHiddenFiles( true ),
 	   panelCaseSensitive( false ),
@@ -653,22 +650,24 @@ WcmConfig::WcmConfig()
 		panelShowDotsInRoot( false ),
 		panelShowFolderIcons( true ),
 		panelShowExecutableIcons( true ),
-	   panelColorMode( 0 ),
-
-	   panelModeLeft( 0 ),
+		panelModeLeft( 0 ),
 	   panelModeRight( 0 ),
 
 	   editSavePos( true ),
 	   editAutoIdent( false ),
 	   editTabSize( 3 ),
-	   editColorMode( 0 ),
 	   editShl( true ),
 
 	   terminalBackspaceKey( 0 ),
 
-	   viewColorMode( 0 ),
-	   
-	   windowX(0), windowY(0), windowWidth(0), windowHeight(0)
+		styleShowToolBar( true ),
+		styleShowButtonBar( true ),
+		styleColorMode( 0 ),
+
+	   windowX(0),
+		windowY(0),
+		windowWidth(0),
+		windowHeight(0)
 {
 	leftPanelPath = new_char_str( "" );
 	rightPanelPath = new_char_str( "" );
@@ -682,9 +681,9 @@ WcmConfig::WcmConfig()
 	MapBool( sectionSystem, "show_hostname", &systemShowHostName, systemShowHostName );
 	MapStr( sectionSystem,  "lang", &systemLang );
 
-	MapBool( sectionSystem, "show_toolbar", &showToolBar, showToolBar );
-	MapBool( sectionSystem, "show_buttonbar", &showButtonBar, showButtonBar );
-	//MapBool(sectionSystem, "white", &whiteStyle, whiteStyle);
+	MapBool( sectionSystem, "show_toolbar", &styleShowToolBar, styleShowToolBar );
+	MapBool( sectionSystem, "show_buttonbar", &styleShowButtonBar, styleShowButtonBar );
+	MapInt( sectionPanel, "color_mode", &styleColorMode, styleColorMode );
 
 	MapBool( sectionPanel, "show_hidden_files",   &panelShowHiddenFiles, panelShowHiddenFiles );
 	MapBool( sectionPanel, "case_sensitive_sort", &panelCaseSensitive, panelCaseSensitive );
@@ -692,7 +691,6 @@ WcmConfig::WcmConfig()
 	MapBool( sectionPanel, "show_dots",     &panelShowDotsInRoot, panelShowDotsInRoot );
 	MapBool( sectionPanel, "show_foldericons",     &panelShowFolderIcons, panelShowFolderIcons );
 	MapBool( sectionPanel, "show_executableicons",     &panelShowExecutableIcons, panelShowExecutableIcons );
-	MapInt( sectionPanel,  "color_mode",    &panelColorMode, panelColorMode );
 	MapInt( sectionPanel,  "mode_left",     &panelModeLeft, panelModeLeft );
 	MapInt( sectionPanel,  "mode_right",    &panelModeRight, panelModeRight );
 
@@ -707,7 +705,6 @@ WcmConfig::WcmConfig()
 
 	MapBool( sectionEditor, "save_file_position",    &editSavePos, editSavePos );
 	MapBool( sectionEditor, "auto_ident",   &editAutoIdent, editAutoIdent );
-	MapInt( sectionEditor,  "color_mode",   &editColorMode, editColorMode );
 	MapInt( sectionEditor, "tab_size",   &editTabSize, editTabSize );
 	MapBool( sectionEditor, "highlighting", &editShl, editShl );
 
@@ -721,8 +718,6 @@ WcmConfig::WcmConfig()
 	MapStr( sectionFonts, "helptext_font",  &helpTextFontUri );
 	MapStr( sectionFonts, "helpbold_font",  &helpBoldFontUri );
 	MapStr( sectionFonts, "helphead_font",  &helpHeadFontUri );
-
-	MapInt( sectionViewer,  "color_mode",   &viewColorMode, viewColorMode );
 
 	MapInt( sectionSystem,  "windowX",      &windowX,      windowX );
 	MapInt( sectionSystem,  "windowY",      &windowY,      windowY );
@@ -742,37 +737,22 @@ void WcmConfig::ImpCurrentFonts()
 	helpHeadFontUri  = new_char_str( helpHeadFont.ptr() ? helpHeadFont->uri() : "" );
 }
 
-void WcmConfig::MapInt( const char* section, const char* name, int* pInt, int def )
+void WcmConfig::MapInt( const char* Section, const char* Name, int* pInt, int def )
 {
-	Node node;
-	node.type = MT_INT;
-	node.section = section;
-	node.name = name;
-	node.ptr.pInt = pInt;
-	node.def.defInt = def;
-	mapList.append( node );
+	sNode Node = sNode::CreateIntNode( Section, Name, pInt, def );
+	m_MapList.push_back( Node );
 }
 
-void WcmConfig::MapBool( const char* section, const char* name, bool* pBool, bool def )
+void WcmConfig::MapBool( const char* Section, const char* Name, bool* pBool, bool def )
 {
-	Node node;
-	node.type = MT_BOOL;
-	node.section = section;
-	node.name = name;
-	node.ptr.pBool = pBool;
-	node.def.defBool = def;
-	mapList.append( node );
+	sNode Node = sNode::CreateBoolNode( Section, Name, pBool, def );
+	m_MapList.push_back( Node );
 }
 
-void WcmConfig::MapStr( const char* section, const char* name, std::vector<char>* pStr, const char* def )
+void WcmConfig::MapStr( const char* Section, const char* Name, std::vector<char>* pStr, const char* def )
 {
-	Node node;
-	node.type = MT_STR;
-	node.section = section;
-	node.name = name;
-	node.ptr.pStr = pStr;
-	node.def.defStr = def;
-	mapList.append( node );
+	sNode Node = sNode::CreateStrNode( Section, Name, pStr, def );
+	m_MapList.push_back( Node );
 }
 
 static const char* CommandsHistorySection = "CommandsHistory";
@@ -1081,21 +1061,21 @@ void LoadViewerPositions()
 void WcmConfig::Load( NCWin* nc )
 {
 #ifdef _WIN32
-	for ( int i = 0; i < mapList.count(); i++ )
+	for ( size_t i = 0; i < m_MapList.size(); i++ )
 	{
-		Node& node = mapList[i];
+		sNode& Node = m_MapList[i];
 
-		if ( node.type == MT_BOOL && node.ptr.pBool != 0 )
+		if ( Node.m_Type == MT_BOOL && Node.m_Current.m_Bool != 0 )
 		{
-			*node.ptr.pBool = RegReadInt( node.section, node.name, node.def.defBool ) != 0;
+			*Node.m_Current.m_Bool = RegReadInt( Node.m_Section, Node.m_Name, Node.GetDefaultBool() ) != 0;
 		}
-		else if ( node.type == MT_INT && node.ptr.pInt != 0 )
+		else if ( Node.m_Type == MT_INT && Node.m_Current.m_Int != 0 )
 		{
-			*node.ptr.pInt = RegReadInt( node.section, node.name, node.def.defInt );
+			*Node.m_Current.m_Int = RegReadInt( Node.m_Section, Node.m_Name, Node.GetDefaultInt() );
 		}
-		else if ( node.type == MT_STR && node.ptr.pStr != 0 )
+		else if ( Node.m_Type == MT_STR && Node.m_Current.m_Str != 0 )
 		{
-			*node.ptr.pStr = RegReadString( node.section, node.name, node.def.defStr );
+			*Node.m_Current.m_Str = RegReadString( Node.m_Section, Node.m_Name, Node.GetDefaultStr() );
 		}
 	}
 
@@ -1111,24 +1091,30 @@ void WcmConfig::Load( NCWin* nc )
 	hash.Load( DEFAULT_CONFIG_PATH );
 	hash.Load( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
-	for ( int i = 0; i < mapList.count(); i++ )
+	for ( size_t i = 0; i < m_MapList.size(); i++ )
 	{
-		Node& node = mapList[i];
+		sNode& Node = m_MapList[i];
 
-		if ( node.type == MT_BOOL && node.ptr.pBool != 0 )
+		if ( Node.m_Type == MT_BOOL && Node.m_Current.m_Bool != 0 )
 		{
-			*node.ptr.pBool = hash.GetBoolValue( node.section, node.name, node.def.defBool );
+			*Node.m_Current.m_Bool = hash.GetBoolValue( Node.m_Section, Node.m_Name, Node.GetDefaultBool() );
 		}
-		else if ( node.type == MT_INT && node.ptr.pInt != 0 )
+		else if ( Node.m_Type == MT_INT && Node.m_Current.m_Int != 0 )
 		{
-			*node.ptr.pInt = hash.GetIntValue( node.section, node.name, node.def.defInt );
+			*Node.m_Current.m_Int = hash.GetIntValue( Node.m_Section, Node.m_Name, Node.GetDefaultInt() );
 		}
-		else if ( node.type == MT_STR && node.ptr.pStr != 0 )
+		else if ( Node.m_Type == MT_STR && Node.m_Current.m_Str != 0 )
 		{
-			const char* s = hash.GetStrValue( node.section, node.name, node.def.defStr );
+			const char* s = hash.GetStrValue( Node.m_Section, Node.m_Name, Node.GetDefaultStr() );
 
-			if ( s ) { *node.ptr.pStr = new_char_str( s ); }
-			else { ( *node.ptr.pStr ).clear(); }
+			if ( s )
+			{
+				*Node.m_Current.m_Str = new_char_str( s );
+			}
+			else
+			{
+				( *Node.m_Current.m_Str ).clear();
+			}
 		}
 
 	}
@@ -1199,21 +1185,21 @@ void WcmConfig::Save( NCWin* nc )
 
 #ifdef _WIN32
 
-	for ( int i = 0; i < mapList.count(); i++ )
+	for ( size_t i = 0; i < m_MapList.size( ); i++ )
 	{
-		Node& node = mapList[i];
+		sNode& Node = m_MapList[i];
 
-		if ( node.type == MT_BOOL && node.ptr.pBool != 0 )
+		if ( Node.m_Type == MT_BOOL && Node.m_Current.m_Bool != 0 )
 		{
-			RegWriteInt( node.section, node.name, *node.ptr.pBool );
+			RegWriteInt( Node.m_Section, Node.m_Name, *Node.m_Current.m_Bool );
 		}
-		else if ( node.type == MT_INT && node.ptr.pInt != 0 )
+		else if ( Node.m_Type == MT_INT && Node.m_Current.m_Int != 0 )
 		{
-			RegWriteInt( node.section, node.name, *node.ptr.pInt );
+			RegWriteInt( Node.m_Section, Node.m_Name, *Node.m_Current.m_Int );
 		}
-		else if ( node.type == MT_STR && node.ptr.pStr != 0 )
+		else if ( Node.m_Type == MT_STR && Node.m_Current.m_Str != 0 )
 		{
-			RegWriteString( node.section, node.name, node.ptr.pStr->data() );
+			RegWriteString( Node.m_Section, Node.m_Name, Node.m_Current.m_Str->data() );
 		}
 	}
 
@@ -1226,21 +1212,21 @@ void WcmConfig::Save( NCWin* nc )
 	path.Push( CS_UTF8, "config" );
 	hash.Load( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
-	for ( int i = 0; i < mapList.count(); i++ )
+	for ( size_t i = 0; i < m_MapList.size(); i++ )
 	{
-		Node& node = mapList[i];
+		sNode& Node = m_MapList[i];
 
-		if ( node.type == MT_BOOL && node.ptr.pBool != 0 )
+		if ( Node.m_Type == MT_BOOL && Node.m_Current.m_Bool != 0 )
 		{
-			hash.SetBoolValue( node.section, node.name, *node.ptr.pBool );
+			hash.SetBoolValue( Node.m_Section, Node.m_Name, *Node.m_Current.m_Bool );
 		}
-		else if ( node.type == MT_INT && node.ptr.pInt != 0 )
+		else if ( Node.m_Type == MT_INT && Node.m_Current.m_Int != 0 )
 		{
-			hash.SetIntValue( node.section, node.name, *node.ptr.pInt );
+			hash.SetIntValue( Node.m_Section, Node.m_Name, *Node.m_Current.m_Int );
 		}
-		else if ( node.type == MT_STR && node.ptr.pStr != 0 )
+		else if ( Node.m_Type == MT_STR && Node.m_Current.m_Str != 0 )
 		{
-			hash.SetStrValue( node.section, node.name, node.ptr.pStr->data() );
+			hash.SetStrValue( Node.m_Section, Node.m_Name, Node.m_Current.m_Str->data() );
 		}
 	}
 
@@ -1257,8 +1243,7 @@ void WcmConfig::Save( NCWin* nc )
 
 void InitConfigPath()
 {
-#ifdef _WIN32
-#else
+#if !defined( _WIN32 )
 
 	const sys_char_t* home = ( sys_char_t* ) getenv( "HOME" );
 
@@ -1327,12 +1312,12 @@ PanelOptDialog::~PanelOptDialog() {}
 PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
  :  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel )
  , iL( 16, 3 )
- , showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles )
- , caseSensitive( 0, this, utf8_to_unicode( _LT( "Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive )
- , selectFolders( 0, this, utf8_to_unicode( _LT( "Select folders" ) ).data(), 0, wcmConfig.panelSelectFolders )
- , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the root folder" ) ).data(), 0, wcmConfig.panelShowDotsInRoot )
- , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder icons" ) ).data(), 0, wcmConfig.panelShowFolderIcons )
- , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show executable icons" ) ).data(), 0, wcmConfig.panelShowExecutableIcons )
+ , showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show &hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles )
+ , caseSensitive( 0, this, utf8_to_unicode( _LT( "&Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive )
+ , selectFolders( 0, this, utf8_to_unicode( _LT( "Select &folders" ) ).data(), 0, wcmConfig.panelSelectFolders )
+ , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the &root folder" ) ).data(), 0, wcmConfig.panelShowDotsInRoot )
+ , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, wcmConfig.panelShowFolderIcons )
+ , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, wcmConfig.panelShowExecutableIcons )
 {
 	iL.AddWinAndEnable( &showHiddenButton,  0, 0 );
 	showHiddenButton.SetFocus();
@@ -1386,7 +1371,7 @@ public:
 	SButton  autoIdentButton;
 	SButton  shlButton;
 
-	StaticLine tabText;
+	StaticLabel tabText;
 	EditLine tabEdit;
 
 	EditOptDialog( NCDialogParent* parent );
@@ -1401,10 +1386,10 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Editor" ) ).data(), bListOkCancel ),
 	   iL( 16, 2 ),
 
-	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file position" ) ).data(), 0, wcmConfig.editSavePos ),
-	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto indent" ) ).data(), 0, wcmConfig.editAutoIdent ),
-	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax highlighting" ) ).data(), 0, wcmConfig.editShl ),
-	   tabText( 0, this, utf8_to_unicode( _LT( "Tab size:" ) ).data() ),
+	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file &position" ) ).data(), 0, wcmConfig.editSavePos ),
+	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto &indent" ) ).data(), 0, wcmConfig.editAutoIdent ),
+	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax &highlighting" ) ).data(), 0, wcmConfig.editShl ),
+	   tabText(0, this, utf8_to_unicode(_LT("&Tab size:")).data(), &tabEdit),
 	   tabEdit( 0, this, 0, 0, 16 )
 {
 	char buf[0x100];
@@ -1546,19 +1531,19 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   iL( 16, 3 ),
 	   pList( p ),
 	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
-	   styleDefButton( 0, this, utf8_to_unicode( _LT( "&Default colors" ) ).data(), 1, wcmConfig.panelColorMode != 1 && wcmConfig.panelColorMode != 2 ),
-	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "&Black" ) ).data(), 1, wcmConfig.panelColorMode == 1 ),
-	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "&White" ) ).data(), 1, wcmConfig.panelColorMode == 2 ),
+	   styleDefButton( 0, this, utf8_to_unicode( _LT( "&Default colors" ) ).data(), 1, wcmConfig.styleColorMode != 1 && wcmConfig.styleColorMode != 2 ),
+	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "&Black" ) ).data(), 1, wcmConfig.styleColorMode == 1 ),
+	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "&White" ) ).data(), 1, wcmConfig.styleColorMode == 2 ),
 
 	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
-	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, wcmConfig.showToolBar ),
-	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar" ) ).data(), 0, wcmConfig.showButtonBar ),
+	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, wcmConfig.styleShowToolBar ),
+	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar" ) ).data(), 0, wcmConfig.styleShowButtonBar ),
 
 	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
 	   fontList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
 	   fontNameStatic( 0, this, utf8_to_unicode( "--------------------------------------------------" ).data() ),
-	   changeButton( 0, this, utf8_to_unicode( _LT( "Set font..." ) ).data(), CMD_CHFONT ),
-	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set X11 font..." ) ).data(), CMD_CHFONTX11 )
+	   changeButton( 0, this, utf8_to_unicode( _LT( "Set &font..." ) ).data(), CMD_CHFONT ),
+	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set &X11 font..." ) ).data(), CMD_CHFONTX11 )
 {
 	iL.AddWin( &colorStatic, 0, 0 );
 	colorStatic.Enable();
@@ -1792,26 +1777,21 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 	{
 		if ( dlg.styleBlackButton.IsSet() )
 		{
-			wcmConfig.viewColorMode = wcmConfig.editColorMode = wcmConfig.panelColorMode = 1;
-//			wcmConfig.whiteStyle = false;
+			wcmConfig.styleColorMode = 1;
 		}
 		else if ( dlg.styleWhiteButton.IsSet() )
 		{
-			wcmConfig.viewColorMode = wcmConfig.editColorMode = wcmConfig.panelColorMode = 2;
-//			wcmConfig.whiteStyle = true;
+			wcmConfig.styleColorMode = 2;
 		}
 		else
 		{
-			wcmConfig.viewColorMode = wcmConfig.editColorMode = wcmConfig.panelColorMode = 0;
-//			wcmConfig.whiteStyle = false;
+			wcmConfig.styleColorMode = 0;
 		}
 
-		SetColorStyle( wcmConfig.panelColorMode );
-//		SetEditorColorStyle(wcmConfig.editColorMode);
-//		SetViewerColorStyle(wcmConfig.viewColorMode);
+		SetColorStyle( wcmConfig.styleColorMode );
 
-		wcmConfig.showToolBar = dlg.showToolbarButton.IsSet();
-		wcmConfig.showButtonBar = dlg.showButtonbarButton.IsSet();
+		wcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );
+		wcmConfig.styleShowButtonBar = dlg.showButtonbarButton.IsSet( );
 
 		for ( int i = 0; i < list.count(); i++ )
 			if ( list[i].newFont.ptr() && list[i].newFont->uri()[0] && list[i].pUri )
@@ -1998,7 +1978,7 @@ public:
 	SButton  autoCompleteButton;
 	SButton  showHostNameButton;
 
-	StaticLine langStatic;
+	StaticLabel langStatic;
 	StaticLine langVal;
 	Button langButton;
 
@@ -2042,11 +2022,11 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	   iL( 16, 3 )
 
 	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, wcmConfig.systemAskOpenExec )
-	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
-	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
-	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable autocomplete" ) ).data(), 0, wcmConfig.systemAutoComplete )
-	   , showHostNameButton( 0, this, utf8_to_unicode( _LT( "Show host name" ) ).data(), 0, wcmConfig.systemShowHostName )
-	   , langStatic( 0, this, utf8_to_unicode( _LT( "Language:" ) ).data() )
+	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
+	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
+	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, wcmConfig.systemAutoComplete )
+	   , showHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, wcmConfig.systemShowHostName )
+	   , langStatic(0, this, utf8_to_unicode(_LT("&Language:")).data(), &langButton)
 	   , langVal( 0, this, utf8_to_unicode( "______________________" ).data() )
 	   , langButton( 0, this, utf8_to_unicode( ">" ).data(), 1000 )
 {

@@ -407,7 +407,6 @@ int FSSmb::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 static int SMB_FSTAT( int fd, struct stat* st )
 {
 	big_stat s;
-	s.st = *st;
 	int r = smbc_fstat( fd, &s.st );
 	*st = s.st;
 	return r;

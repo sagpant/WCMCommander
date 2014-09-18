@@ -129,8 +129,8 @@ namespace wal
 
 		//gc.TextOutF( 14 + 1 + 1 + 1 , ( cr.Height() - tsize.y ) / 2, text.data() );
 		UiCondList ucl;
-		int color_text = UiGetColor(uiColor, uiItem, &ucl, 0x0);
-		int color_hotkey = UiGetColor(uiHotkeyColor, uiItem, &ucl, 0x0);
+		int color_text = UiGetColor(uiColor, uiClassSButton, &ucl, 0x0);
+		int color_hotkey = UiGetColor(uiHotkeyColor, uiClassSButton, &ucl, 0x0);
 		text.DrawItem(gc, 14 + 1 + 1 + 1, (cr.Height() - tsize.y) / 2, color_text, color_hotkey);
 
 		if ( InFocus() )

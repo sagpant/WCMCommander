@@ -299,9 +299,9 @@ public:
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Shortcuts" ) ).data(), bListOkCancel ),
 		   lo( 10, 10 ),
 		   listWin( this ),
-		   addCurrentButton( 0, this, utf8_to_unicode( "+ (Ins)" ).data(), CMD_PLUS ),
-		   delButton( 0, this, utf8_to_unicode( "- (Del)" ).data(), CMD_MINUS ),
-		   renameButton( 0, this, utf8_to_unicode( _LT( "Rename" ) ).data(), CMD_RENAME ),
+		   addCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS ),
+		   delButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS ),
+		   renameButton( 0, this, utf8_to_unicode( _LT( "&Rename" ) ).data(), CMD_RENAME ),
 		   fs( fp ),
 		   path( pPath ),
 		   retData( 0 )
