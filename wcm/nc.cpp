@@ -183,7 +183,7 @@ int main( int argc, char** argv )
 
 		AppInit();
 
-		SetColorStyle( wcmConfig.panelColorMode );
+		SetColorStyle( wcmConfig.styleColorMode );
 
 		OldSysGetFont = SysGetFont;
 		SysGetFont = MSysGetFont;

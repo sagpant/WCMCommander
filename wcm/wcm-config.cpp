@@ -1093,7 +1093,7 @@ void WcmConfig::Load( NCWin* nc )
 
 	for ( size_t i = 0; i < m_MapList.size(); i++ )
 	{
-		sNode& node = m_MapList[i];
+		sNode& Node = m_MapList[i];
 
 		if ( Node.m_Type == MT_BOOL && Node.m_Current.m_Bool != 0 )
 		{
@@ -1214,7 +1214,7 @@ void WcmConfig::Save( NCWin* nc )
 
 	for ( size_t i = 0; i < m_MapList.size(); i++ )
 	{
-		sNode& node = m_MapList[i];
+		sNode& Node = m_MapList[i];
 
 		if ( Node.m_Type == MT_BOOL && Node.m_Current.m_Bool != 0 )
 		{
