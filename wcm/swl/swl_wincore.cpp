@@ -333,6 +333,7 @@ namespace wal
 
 	bool Win::EventChildKey( Win* child, cevent_key* pEvent ) 
 	{ 
+		//dbg_printf("Win::EventChildKey key=0x%x mod=%d\n", pEvent->Key(), pEvent->Mod());
 		// check if any child recognizes the key as its hot key
 		if (pEvent->Mod() && KM_ALT)
 		{

@@ -12,6 +12,7 @@ class SearchParamDialog: public NCVertDialog
 {
 	Layout iL;
 public:
+	StaticLabel textLabel;
 	EditLine textEdit;
 	SButton  caseButton;
 
@@ -25,17 +26,23 @@ SearchParamDialog::~SearchParamDialog() {}
 SearchParamDialog::SearchParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   textEdit ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).data(), 0, params->sens )
+	   textLabel(0, this, utf8_to_unicode(_LT("&Search for:")).data(), &textEdit),
+	   textEdit(0, this, 0, 0, 50),
+	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
+
 {
 	if ( params->txt.data() ) { textEdit.SetText( params->txt.data(), true ); }
 
-	iL.AddWin( &textEdit, 0, 0 );
+	iL.AddWin(&textLabel, 0, 0);
+	textLabel.Enable();
+	textLabel.Show();
+
+	iL.AddWin(&textEdit, 0, 1);
 	textEdit.Enable();
 	textEdit.Show();
 	textEdit.SetFocus();
 
-	iL.AddWin( &caseButton, 1, 0 );
+	iL.AddWin( &caseButton, 1, 1 );
 	caseButton.Enable();
 	caseButton.Show();
 
@@ -74,8 +81,8 @@ class SearchFileParamDialog: public NCVertDialog
 {
 	Layout iL;
 public:
-	StaticLine maskText;
-	StaticLine textText;
+	StaticLabel maskText;
+	StaticLabel textText;
 	EditLine maskEdit;
 	EditLine textEdit;
 	SButton  caseButton;
@@ -89,11 +96,11 @@ SearchFileParamDialog::~SearchFileParamDialog() {}
 SearchFileParamDialog::SearchFileParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   maskText( 0, this, utf8_to_unicode( _LT( "File mask:" ) ).data() ),
-	   textText( 0, this, utf8_to_unicode( _LT( "Text:" ) ).data() ),
-	   maskEdit ( 0, this, 0, 0, 50 ),
+	   maskText(0, this, utf8_to_unicode(_LT("File &mask:")).data(), &maskEdit),
+	   textText(0, this, utf8_to_unicode(_LT("&Text:")).data(), &textEdit),
+	   maskEdit(0, this, 0, 0, 50),
 	   textEdit ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).data(), 0, params->sens )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
 {
 	if ( params->mask.data() ) { maskEdit.SetText( params->mask.data(), true ); }
 
@@ -151,8 +158,8 @@ class ReplaceEditParamDialog: public NCVertDialog
 {
 	Layout iL;
 public:
-	StaticLine fromText;
-	StaticLine toText;
+	StaticLabel fromText;
+	StaticLabel toText;
 	EditLine fromEdit;
 	EditLine toEdit;
 	SButton  caseButton;
@@ -166,11 +173,11 @@ ReplaceEditParamDialog::~ReplaceEditParamDialog() {}
 ReplaceEditParamDialog::ReplaceEditParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Replace" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   fromText( 0, this, utf8_to_unicode( _LT( "Search for:" ) ).data() ),
-	   toText( 0, this, utf8_to_unicode( _LT( "Replace with:" ) ).data() ),
+	   fromText(0, this, utf8_to_unicode(_LT("&Search for:")).data(), &fromEdit),
+	   toText(0, this, utf8_to_unicode(_LT("&Replace with:")).data(), &toEdit),
 	   fromEdit ( 0, this, 0, 0, 50 ),
 	   toEdit   ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "Case sensitive" ) ).data(), 0, params->sens )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
 {
 	if ( params->txt.data() ) { fromEdit.SetText( params->txt.data(), true ); }
 
