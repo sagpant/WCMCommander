@@ -8,7 +8,7 @@ Copyright (c) Sergey Kosarevsky, 2014
 
 Maintained by Sergey Kosarevsky
 https://github.com/corporateshark/WalCommander
-
+http://wcm.linderdaum.com
 walcommander@linderdaum.com
 
 =============================
@@ -16,7 +16,16 @@ walcommander@linderdaum.com
 The purpose of this project is to create a multi-platform open source file manager (Windows, Linux, FreeBSD, OS X) mimicking the 
 look-n-feel of Far Manager.
 
-Currently Wal Commander runs on Windows, Linux and FreeBSD.
+Currently Wal Commander runs on Windows, Linux, FreeBSD and on OS X using XQuartz.
+
+=============================
+
+Getting the latest version:
+---------------------------
+
+The most feature complete up-to-date version is in the [master](https://github.com/corporateshark/WalCommander/commits/master) branch.
+However, this is mostly untested and can be broken from time to time (not for long).
+If you want a stable release for a day to day usage, check out our latest [releases](https://github.com/corporateshark/WalCommander/releases).
 
 =============================
 
