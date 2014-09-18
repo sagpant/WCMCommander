@@ -16,12 +16,13 @@ class FtpLogonDialog: public NCVertDialog
 {
 	Layout iL;
 public:
-	StaticLine serverText;
-	StaticLine userText;
-	StaticLine passwordText;
-	StaticLine portText;
+	StaticLabel serverText;
+	StaticLabel userText;
+	StaticLabel passwordText;
+	StaticLabel portText;
 	int charset;
-	StaticLine charsetText, charsetIdText;
+	StaticLabel charsetText;
+	StaticLine charsetIdText;
 
 	EditLine serverEdit;
 	SButton  anonymousButton;
@@ -44,12 +45,12 @@ FtpLogonDialog::~FtpLogonDialog() {}
 FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	:  NCVertDialog( ::createDialogAsChild, 0,  parent, utf8_to_unicode( _LT( "FTP logon" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   serverText( 0, this, utf8_to_unicode( _LT( "Server:" ) ).data() ),
-	   anonymousButton( 0, this, utf8_to_unicode( _LT( "Anonymous logon" ) ).data(), 0, params.anonymous ),
-	   userText( 0, this, utf8_to_unicode( _LT( "Login:" ) ).data() ),
-	   passwordText( 0, this, utf8_to_unicode(  _LT( "Password:" ) ).data() ),
-	   portText( 0, this, utf8_to_unicode( _LT( "Port:" ) ).data() ),
-	   charsetText( 0, this, utf8_to_unicode( _LT( "Charset:" ) ).data() ),
+	   serverText(0, this, utf8_to_unicode(_LT("&Server:")).data(), &serverEdit),
+	   anonymousButton( 0, this, utf8_to_unicode( _LT( "&Anonymous logon" ) ).data(), 0, params.anonymous ),
+	   userText(0, this, utf8_to_unicode(_LT("&Login:")).data(), &userEdit),
+	   passwordText(0, this, utf8_to_unicode(_LT("Pass&word:")).data(), &passwordEdit),
+	   portText(0, this, utf8_to_unicode(_LT("&Port:")).data(), &portEdit),
+	   charsetText(0, this, utf8_to_unicode(_LT("&Charset:")).data(), &charsetButton),
 
 	   charset( params.charset ),
 	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), // placeholder
@@ -60,7 +61,7 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	   portEdit ( 0, this, 0, 0, 16 ),
 
 	   charsetButton( 0, this, utf8_to_unicode( ">" ).data() , 1000 ),
-	   passiveButton( 0, this, utf8_to_unicode( _LT( "Passive mode" ) ).data(), 0, params.passive )
+	   passiveButton( 0, this, utf8_to_unicode( _LT( "Passi&ve mode" ) ).data(), 0, params.passive )
 {
 	serverEdit.SetText( params.server.Data(), true );
 	userEdit.SetText( params.user.Data(), true );
