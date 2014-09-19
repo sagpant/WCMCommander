@@ -1,6 +1,6 @@
-wcm (0.17.0-1) unstable; urgency=medium
+wcm (0.17.1-1) unstable; urgency=medium
 
-  * Initial release. (Closes: #XXXXXX)
+  * Fixed: non-makefile builds now retain version number
   * Added: share search text between all search and search-n-replace dialogs
   * Added: indicator of the current sorting order in the panel
   * Added: taskbar hints for the Alt key
