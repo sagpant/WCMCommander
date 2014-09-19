@@ -5,7 +5,7 @@ SCRIPTDIR=`pwd`
 WCMDIR=${SCRIPTDIR}/..
 SCRIPTNAME=`basename $0`
 
-WCM_VERSION=`awk '($2 ~ /WCM_VERSION/) {gsub(/"/,"",$3); print $3}'` < ${WCMDIR}/wcm_version.h
+WCM_VERSION=`awk '($2 ~ /WCM_VERSION/) {gsub(/"/,"",$3); print $3}'` < ${WCMDIR}/wcm-version.h
 
 if [ -z "`head -1 ${SCRIPTDIR}/changelog | grep ${WCM_VERSION}`" ]
 then
