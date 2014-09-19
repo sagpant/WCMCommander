@@ -1,5 +1,6 @@
-wcm (0.17.0-1) unstable; urgency=medium
+wcm (0.17.1-1) unstable; urgency=medium
 
+  * First deb package build  
   * Initial release. (Closes: #XXXXXX)
   * Added: share search text between all search and search-n-replace dialogs
   * Added: indicator of the current sorting order in the panel
