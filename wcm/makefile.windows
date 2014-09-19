@@ -1,5 +1,5 @@
 
-CFLAGS= -DWCM_VERSION='"$(WCM_VERSION)"' -D_FILE_OFFSET_BITS=64 -I ../libssh2 -O2 -I wal -I swl $(CFLAGS_FREETYPE)
+CFLAGS= -D_FILE_OFFSET_BITS=64 -I ../libssh2 -O2 -I wal -I swl $(CFLAGS_FREETYPE)
 
 LIBS = -lgdi32 -lcomdlg32 -lstdc++ -lws2_32 -lwsock32 -lmpr $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 
