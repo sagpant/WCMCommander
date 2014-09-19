@@ -69,7 +69,7 @@ ButtonWinData panelNormalButtons[] =
 	{"Delete", ID_DELETE},
 	{"Menu", ID_MENU},
 	{"Quit", ID_QUIT},
-	{0}
+	{0, 0}
 };
 
 ButtonWinData panelControlButtons[] =
@@ -84,7 +84,7 @@ ButtonWinData panelControlButtons[] =
 	{"", 0},
 	{"", 0},
 	{"", 0},
-	{0}
+	{0, 0}
 };
 
 ButtonWinData panelAltButtons[] =
@@ -99,7 +99,7 @@ ButtonWinData panelAltButtons[] =
 	{"History", ID_HISTORY},
 	{"", 0},
 	{"", 0},
-	{0}
+	{0, 0}
 };
 
 ButtonWinData panelShiftButtons[] =
@@ -115,7 +115,7 @@ ButtonWinData panelShiftButtons[] =
 	{"Save", ID_CONFIG_SAVE},
 	{"", 0},
 	{"", 0},
-	{0}
+	{0, 0}
 };
 
 
@@ -131,7 +131,7 @@ ButtonWinData editNormalButtons[] =
 	{"Charset", ID_CHARSET},
 	{"", 0},
 	{"Exit", ID_QUIT},
-	{0}
+	{0, 0}
 };
 
 
@@ -147,7 +147,7 @@ ButtonWinData editShiftButtons[] =
 	{"Table", ID_CHARSET_TABLE},
 	{"", 0},
 	{"", 0},
-	{0}
+	{0, 0}
 };
 
 ButtonWinData editCtrlButtons[] =
@@ -162,7 +162,7 @@ ButtonWinData editCtrlButtons[] =
 	{"", 0},
 	{"", 0},
 	{"", 0},
-	{0}
+	{0, 0}
 };
 
 
@@ -178,7 +178,7 @@ ButtonWinData viewNormalButtons[] =
 	{"Charset", ID_CHARSET},
 	{"", 0},
 	{"Exit", ID_QUIT},
-	{0}
+	{0, 0}
 };
 
 ButtonWinData viewShiftButtons[] =
@@ -193,7 +193,7 @@ ButtonWinData viewShiftButtons[] =
 	{"Table", ID_CHARSET_TABLE},
 	{"", 0},
 	{"", 0},
-	{0}
+	{0, 0}
 };
 
 static const int CMD_OPEN_FILE = 1000;
