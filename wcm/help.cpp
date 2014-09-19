@@ -58,9 +58,9 @@ using namespace wal;
 #endif
 
 
-#ifndef WCM_VERSION
-#define WCM_VERSION "non-canonical"
-#endif
+#ifndef WCM_VERSION
+#define WCM_VERSION "current"
+#endif
 static char verString[] = "Wal Commander v " WCM_VERSION " GitHub Edition (" __DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
 
 struct HelpStyle
