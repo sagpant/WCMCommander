@@ -9,6 +9,30 @@
 //надо нормально разукрасить
 
 using namespace wal;
+/*
+How the color scheme works:
+
+Colors are defined by a set of the statements in the rules text:
+CONTROL_CLASSID@ITEMID:CONDITION[: {COLOR_NAME: 0xRRGGBB; ...}
+
+ITEMID and CONDITION are optional, and can be omitted. To define default colorset for all classes
+that are not explicitly defined in the rules use '*' for CONTROL_CLASSID
+
+String tokens for CONTROL_CLASSID,ITEMID,CONDITION,COLOR_NAME from the  rules are converted to integers 
+upon parsing the rules text on startup. These integers can be retrieved by color consumers via 
+int ::GetUiID(char* itemName)
+
+String for CONTROL_CLASSID is defined by control C++ class with Win::UiGetClassId() or its overrides.
+
+CONDITION is set/reset with UiCondList::Set()
+
+Finally 0xBBGGRR is retrieved via 
+Win::UiGetColor( int CONTROL_CLASSID, int ITEMID, UiCondList* conditionList, unsigned default0xBBGGRR)
+
+The 0xBBGGRR is used in
+GC::SetTextColor()/GC::SetFillColor()/etc
+
+*/
 
 static char uiDefaultWcmRules[] =
    "* {color: 0; background: 0xD8E9EC; hotkey-color:0x55FFFF ;focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
