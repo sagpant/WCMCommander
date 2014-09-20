@@ -66,15 +66,6 @@ namespace wal
 		ParseHkText(inStr);
 	}
 
-	MenuTextInfo::MenuTextInfo(const MenuTextInfo& src)
-	{
-		strBeforeHk = (src.strBeforeHk == 0) ? 0 : unicode_strdup(src.strBeforeHk);
-		strHk       = (src.strHk       == 0) ? 0 : unicode_strdup(src.strHk);
-		strAfterHk  = (src.strAfterHk  == 0) ? 0 : unicode_strdup(src.strAfterHk);
-		strFull     = (src.strFull     == 0) ? 0 : unicode_strdup(src.strFull);
-		hotkeyUpperCase = src.hotkeyUpperCase;
-	}
-
 	inline static void _clearUnicodeArray(unicode_t** p)
 	{
 		if (*p)
@@ -91,9 +82,13 @@ namespace wal
 		_clearUnicodeArray(&strFull);
 	}
 
-	MenuTextInfo::~MenuTextInfo()
+	void MenuTextInfo::Init(const MenuTextInfo& src)
 	{
-		Clear();
+		strBeforeHk = (src.strBeforeHk == 0) ? 0 : unicode_strdup(src.strBeforeHk);
+		strHk = (src.strHk == 0) ? 0 : unicode_strdup(src.strHk);
+		strAfterHk = (src.strAfterHk == 0) ? 0 : unicode_strdup(src.strAfterHk);
+		strFull = (src.strFull == 0) ? 0 : unicode_strdup(src.strFull);
+		hotkeyUpperCase = src.hotkeyUpperCase;
 	}
 
 	void MenuTextInfo::SetText(const unicode_t* inStr)

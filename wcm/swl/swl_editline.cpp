@@ -204,7 +204,7 @@ namespace wal
 
 	int EditBuf::GetCharGroup( unicode_t c )
 	{
-		if ( c <= ' ' || c >= 0x7F && c <= 0xA0 )
+		if ( c <= ' ' || (c >= 0x7F && c <= 0xA0) )
 		{
 			return 0;
 		}

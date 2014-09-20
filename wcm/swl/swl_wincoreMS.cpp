@@ -563,7 +563,7 @@ namespace wal
 		{
 			int X, Y, W, H;
 
-			if ( !rect || type == WT_MAIN && ( hints & WH_USEDEFPOS ) != 0 )
+			if ( !rect || (type == WT_MAIN && ( hints & WH_USEDEFPOS ) != 0) )
 			{
 				X = CW_USEDEFAULT;
 				Y = 0;
@@ -663,7 +663,7 @@ namespace wal
 			if ( !visibled ) { Hide(); }
 
 ///
-			if ( type == WT_POPUP || type == WT_CHILD && parent )
+			if ( type == WT_POPUP || (type == WT_CHILD && parent) )
 			{
 				Win* w = GetWinByID( lastParentFC );
 

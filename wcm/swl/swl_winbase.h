@@ -45,12 +45,16 @@ namespace wal
 		unicode_t* strAfterHk;
 		unicode_t* strFull; // required to calculate text extents quickly
 		unicode_t hotkeyUpperCase;
-		void Clear();
 		void ParseHkText(const unicode_t* inStr);
+		void Clear();
+		void Init(const MenuTextInfo& src);
 	public:
 		explicit MenuTextInfo(const unicode_t* inStr);
-		MenuTextInfo(const MenuTextInfo& src);
-		~MenuTextInfo();
+		MenuTextInfo() :strBeforeHk(0), strHk(0), strAfterHk(0), strFull(0), hotkeyUpperCase(0){}
+		MenuTextInfo(const MenuTextInfo& src) { Init(src); }
+		MenuTextInfo& operator=(const MenuTextInfo& src){ Clear(); Init(src); };
+		~MenuTextInfo()	{Clear();}
+
 		void SetText(const unicode_t* inStr);
 		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
 		cpoint GetTextExtents(GC& gc, cfont* font = 0) const

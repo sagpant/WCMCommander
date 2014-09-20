@@ -14,6 +14,7 @@ namespace wal
 			int data;
 			Node( int d ): data( d ) {}
 			Node( const Node& a ): data( a.data ) {}
+			Node& operator=(const Node& a) = delete;
 			const int& key() const { return data; }
 			unsigned intKey() const { return ( unsigned )data; }
 			Node* next;

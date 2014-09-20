@@ -711,7 +711,8 @@ namespace wal
 		};
 	private:
 		GC() {};
-		GC( const GC& ) { exit( 1 ); }
+		GC(const GC&) = delete;
+		GC& operator=(const GC&) = delete;
 #ifdef _WIN32
 		friend LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 		friend class cfont;

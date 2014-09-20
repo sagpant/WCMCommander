@@ -461,9 +461,10 @@ namespace wal
 
 #ifdef _WIN32
 
-
 	struct _thread_info;
 	typedef _thread_info* thread_t;
+	unsigned thread_info_hash_code(_thread_info* ti);
+
 
 	typedef CRITICAL_SECTION mutex_t;
 

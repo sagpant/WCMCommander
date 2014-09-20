@@ -335,7 +335,7 @@ namespace wal
 	{ 
 		//dbg_printf("Win::EventChildKey key=0x%x mod=%d\n", pEvent->Key(), pEvent->Mod());
 		// check if any child recognizes the key as its hot key
-		if (pEvent->Mod() && KM_ALT)
+		if ((pEvent->Mod() & KM_ALT)!=0)
 		{
 			for (int i = 0; i < childList.count(); i++)
 			{
@@ -658,11 +658,7 @@ namespace wal
 
 	inline unsigned th_key( thread_t th )
 	{
-		unsigned key = 0;
-
-		for ( int i = 0; i < sizeof( th ); i++ ) { key = key + ( ( unsigned char* )&th )[i]; }
-
-		return key;
+		return thread_info_hash_code(th);
 	}
 
 	inline unsigned win_key( Win* w )
