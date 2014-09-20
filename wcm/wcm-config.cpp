@@ -1815,13 +1815,11 @@ struct LangListNode
 
 class CfgLangDialog: public NCDialog
 {
-	int _selected;
 	TextList _list;
 	ccollect<LangListNode>* nodeList;
 public:
 	CfgLangDialog( NCDialogParent* parent, char* id, ccollect<LangListNode>* nl )
 		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Language" ) ).data(), bListOkCancel ),
-		   _selected( 0 ),
 		   _list( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
 		   nodeList( nl )
 
