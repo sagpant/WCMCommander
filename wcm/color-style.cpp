@@ -35,91 +35,107 @@ GC::SetTextColor()/GC::SetFillColor()/etc
 */
 
 static char uiDefaultWcmRules[] =
-"* {color: 0; background: 0xD8E9EC; hotkey-color:0x55FFFF ;focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
-"*@item:odd		{color: 0; background: 0xE0FFE0; }"
-"*@item:current-item	{color: 0xFFFFFF; background: 0x800000; }"
-"*@item			{color: 0; background: 0xFFFFFF; }"
+   "* {color: 0; background: 0xD8E9EC; hotkey-color:0x55FFFF ;focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
+   "*@item:odd		{color: 0; background: 0xE0FFE0; }"
+   "*@item:current-item	{color: 0xFFFFFF; background: 0x800000; }"
+   "*@item			{color: 0; background: 0xFFFFFF; }"
 
-"ScrollBar { button-color: 0xD8E9EC;  }"
-"EditLine:!enabled { background: 0xD8E9EC; }"
-"EditLine:focus {color: 0; background: 0x909000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
-"EditLine {color: 0; background: 0x909000; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+   "ScrollBar { button-color: 0xD8E9EC;  }"
+   "EditLine:!enabled { background: 0xD8E9EC; }"
+   "EditLine:focus {color: 0; background: 0x909000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
+   "EditLine {color: 0; background: 0x909000; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
 
-"command-line:!enabled { background: 0; }"
-"command-line:focus {color: 0xFFFFFF; background: 0; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
-"command-line {color: 0xFFFFFF; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+   "command-line:!enabled { background: 0; }"
+   "command-line:focus {color: 0xFFFFFF; background: 0; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
+   "command-line {color: 0xFFFFFF; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
 
-"Autocomplete:!enabled { background: 0xB0B000; }"
-"Autocomplete:current-item {color: 0xFFFFFF; background: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
-"Autocomplete:current-item:odd {color: 0xFFFFFF; background: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
-"Autocomplete:odd {color: 0xFFFFFF; background: 0xA9A900; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
-"Autocomplete {color: 0xFFFFFF; background: 0xB0B000; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
+   "Autocomplete:!enabled { background: 0xB0B000; }"
+   "Autocomplete:current-item {color: 0xFFFFFF; background: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:current-item:odd {color: 0xFFFFFF; background: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:odd {color: 0xFFFFFF; background: 0xA9A900; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
+   "Autocomplete {color: 0xFFFFFF; background: 0xB0B000; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
 
-"Panel { color: 0xFFFF80; background: 0x800000; }"
-"Panel@item:exe { color: 0x80FF80 }"
-"Panel@item:dir { color: 0xFFFFFF }"
-"Panel@item:hidden { color: 0xFF8080 }"
-"Panel@item:hidden:selected-panel:current-item { color: 0x804040 }"
-"Panel@item:bad { color: 0xA0 }"
-"Panel@item:selected { color: 0x00FFFF }"
-"Panel@item:selected-panel:current-item { background: 0xB0B000 }"
+   "Panel { color: 0xFFFF00; background: 0x800000; }"					// default foreground color for all items - light cyan; RGB(0,255,255)
+   "Panel@item:selected-panel:current-item { color: 0x000000 }"			// default foreground color for all items in under cursor - black
+   "Panel@item:selected:current-item { color: 0x00FFFF }"				// default foreground color for all selected items in under cursor - light yellow
+
+   "Panel@item:exe { color: 0x00FF00 }"									// foreground color for executables - light green
+   "Panel@item:exe:selected-panel:current-item { color: 0x00FF00 }"    	// foreground color for executables under cursor - light green
+   "Panel@item:exe:selected:current-item { color: 0x00FFFF }"    		// foreground color for selected executables under cursor - light yellow
+
+   "Panel@item:dir { color: 0xFFFFFF }"									// foreground color for dir names - white
+   "Panel@item:dir:selected-panel:current-item { color: 0xFFFFFF }"		// foreground color for dir names under cursor - white
+   "Panel@item:dir:selected:current-item { color: 0x00FFFF }"    		// foreground color for selected dir names under cursor - light yellow
+
+   "Panel@item:hidden { color: 0x808000 }"								// foreground color for "hidden" items - dark cyan 
+   "Panel@item:hidden:selected-panel:current-item { color: 0x808080 }"	// foreground color for "hidden" items under cursor - dark gray; RGB(128,128,182)
+   "Panel@item:hidden:selected:current-item { color: 0x00FFFF }"		// foreground color for selected "hidden" items under cursor - light yellow
+
+   "Panel@item:bad { color: 0xA0 }"
+   "Panel@item:selected { color: 0x00FFFF }"
+   "Panel@item:selected-panel:current-item { background: 0x808000 }"	// background color of cursor - dark cyan; RGB(0,128,128)
 //"Panel@item:selected-panel:current-item:oper-state { background: 0xFF }"
-"Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar {  background: 0xB0B000; button-color: 0x909000 }"
-"Panel { border-color1: 0x000000; border-color2: 0xFFFFFF; border-color3: 0xFFFFFF; border-color4: 0x000000;"
-" vline-color1: 0xFFFFFF; vline-color2:0x707070; vline-color3:0x700000;"
-" line-color:0xFFFFFF; summary-color: 0xFFFFFF; }"
-"Panel@footer { color: 0xFFFFFF; background: 0x800000; }"
-"Panel { summary-color: 0xFFFF00; }"
-"Panel:have-selected { summary-color: 0xFFFF; }"
-"Panel:oper-state { summary-color: 0xFF; }"
+   "Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar {  background: 0xB0B000; button-color: 0x909000 }"
 
-"ButtonWin { color: 0xFFFFFF; background: 0; }"
-"ButtonWin Button { color: 0; background: 0xB0B000; }"
-"EditLine#command-line {color: 0xFFFFFF; background: 0; mark-color: 0; mark-background : 0x800000; }"
-"ToolTip { color: 0; background: 0x80FFFF; }"
-"ToolBar { color: 0; background: 0xB0B000; }"
-"MenuBar { color: 0; background: 0xB0B000; current-item-frame-color:0x00FF00; }"
-"MenuBar:current-item { color: 0xFFFFFF; background: 0;  } "
-"PopupMenu@item {color: 0xFFFFFF; background: 0xA0A000; pointer-color:0; line:0; } "
-"PopupMenu@item:current-item { background: 0x404000; } "
-"PopupMenu { background: 0xC0C000; frame-color: 0xFFFFFF; } "
+   // border-color1...4 - color of external borders, 1 is outmost, 4 is inmost. Make 2 and 4 light cyan RGB(0,255,255) and 1 and 3 equal to the color of background (dark blue)
+   "Panel { border-color1: 0x800000; border-color2: 0xFFFF00; border-color3: 0x800000; border-color4: 0xFFFF00;" 
 
-"drive-dlg { background: 0xB0B000; }"
-"drive-dlg * { background: 0xB0B000; color: 0xFFFFFF; }"
-"drive-dlg * @item { color: 0xFFFFFF; background: 0xB0B000; comment-color: 0xCCCCCC; first-char-color:0xFFFF }"
-"drive-dlg * @item:current-item { color: 0xFFFFFF;  background: 0; comment-color: 0xCCCCCC; first-char-color:0xFFFF }"
+   // vline-color1..3 - color of lines - colums separators. Make first two of them light cyan, 2 pixel thick and third line paint to the color of background (dark blue)
+   " vline-color1: 0xFFFF00; vline-color2:0xFFFF00; vline-color3:0x800000;"
+	
+   // line-color - color of horizontal top and bottom pane above and below items list. Make it light cyan
+   " line-color:0xFFFF00;"
 
-"#messagebox-red { color: 0xFFFFFF; background: 0xFF; }"
-"#messagebox-red Static { color: 0xFFFFFF; background: 0xFF; }"
-"HelpWin@style-head { color: 0xFFFFFF; }"
-"HelpWin@style-def  { color: 0xFFFFFF; }"
-"HelpWin@style-red  { color: 0xFF; }"
-"HelpWin@style-bold { color: 0xFFFF; }"
-"HelpWin { background: 0x808000; }"
+   "summary-color: 0xFFFFFF; }"
 
-"Viewer { background: 0x800000; color:0xFFFFFF; ctrl-color:0xFF0000; "
-"	makr-color:	0x0; mark-background: 0xFFFFFF; line-color:0x00FFFF; "
-"	hid: 0xB00000; load-background:	0xD00000; load-color: 0xFF;}"
-"Editor { background: 0x800000; color:0xFFFFFF; mark-background: 0xAAAA00; mark-color: 0; cursor-color: 0x00FFFF; "
-"	DEF:0xFFFFFF; KEYWORD:0x00FFFF; COMMENT:0xFF8080; STRING:0xFFFF00; PRE:0x00FF00; NUM:0xFFFF80; OPER:0x20FFFF; ATTN:0x0000FF; }"
-"StringWin { color: 0xFFFF00; background: 0; }"
-"EditorHeadWin, ViewerHeadWin { color: 0; background: 0xB0B000; prefix-color:0xFFFFFF; cs-color:0xFFFFFF;}"
+   "Panel@footer { color: 0xFFFF00; background: 0x800000; }"			// footer - full info (name, size, date etc.) at the bottom of panel about the item under cursor - light cyan on dark blue
 
-"TabDialog { background: 0x606060; color:0xFFFFFF; }"
-"TabDialog * { background: 0x606060; color:0xFFFFFF; button-color: 0x808080; }"
-"TabDialog EditLine { background: 0xD0D0D0; color:0; frame-color: 0x606060; }"
-"TabDialog *@item:dir {color: 0xFFFF00; background: 0; }"
-"TabDialog *@item:current-item	{background: 0x808080; }"
-"TabDialog *@item {color: 0xFFFFFF; background: 0; }"
+   "Panel { summary-color: 0xFFFF00; }"									// summary - total size of files in current forlder at the bottom of panel; light cyan
+   "Panel:have-selected { summary-color: 0x00FFFF; }"					// total size of selected items at the bottom of panel, light yellow
+   "Panel:oper-state { summary-color: 0xFF; }"
 
-"Shortcuts VListWin { background: 0xB0B000; first-char-color:0xFFFF; }"
-"Shortcuts VListWin@item {color: 0; background: 0xB0B000; }"
-"Shortcuts VListWin@item:current-item {color: 0xFFFFFF; background: 0x800000; }"
+   "ButtonWin { color: 0xFFFFFF; background: 0; }"
+   "ButtonWin Button { color: 0; background: 0xB0B000; }"
+   "EditLine#command-line {color: 0xFFFFFF; background: 0; mark-color: 0; mark-background : 0x800000; }"
+   "ToolTip { color: 0; background: 0x80FFFF; }"
+   "ToolBar { color: 0; background: 0xB0B000; }"
+   "MenuBar { color: 0; background: 0xB0B000; current-item-frame-color:0x00FF00; }"
+   "MenuBar:current-item { color: 0xFFFFFF; background: 0;  } "
+   "PopupMenu@item {color: 0xFFFFFF; background: 0xA0A000; pointer-color:0; line:0; } "
+   "PopupMenu@item:current-item { background: 0x404000; } "
+   "PopupMenu { background: 0xC0C000; frame-color: 0xFFFFFF; } "
 
-"StaticLabel {hotkey-color:0x0000C0; }"
-"Button {hotkey-color:0x0000C0; }"
-"SButton {hotkey-color:0x0000C0; }"
- 
+   "drive-dlg { background: 0xB0B000; }"
+   "drive-dlg * { background: 0xB0B000; color: 0xFFFFFF; }"
+   "drive-dlg * @item { color: 0xFFFFFF; background: 0xB0B000; comment-color: 0xCCCCCC; first-char-color:0xFFFF }"
+   "drive-dlg * @item:current-item { color: 0xFFFFFF;  background: 0; comment-color: 0xCCCCCC; first-char-color:0xFFFF }"
+
+   "#messagebox-red { color: 0xFFFFFF; background: 0xFF; }"
+   "#messagebox-red Static { color: 0xFFFFFF; background: 0xFF; }"
+   "HelpWin@style-head { color: 0xFFFFFF; }"
+   "HelpWin@style-def  { color: 0xFFFFFF; }"
+   "HelpWin@style-red  { color: 0xFF; }"
+   "HelpWin@style-bold { color: 0xFFFF; }"
+   "HelpWin { background: 0x808000; }"
+
+   "Viewer { background: 0x800000; color:0xFFFFFF; ctrl-color:0xFF0000; "
+   "	makr-color:	0x0; mark-background: 0xFFFFFF; line-color:0x00FFFF; "
+   "	hid: 0xB00000; load-background:	0xD00000; load-color: 0xFF;}"
+   "Editor { background: 0x800000; color:0xFFFFFF; mark-background: 0xAAAA00; mark-color: 0; cursor-color: 0x00FFFF; "
+   "	DEF:0xFFFFFF; KEYWORD:0x00FFFF; COMMENT:0xFF8080; STRING:0xFFFF00; PRE:0x00FF00; NUM:0xFFFF80; OPER:0x20FFFF; ATTN:0x0000FF; }"
+   "StringWin { color: 0xFFFF00; background: 0; }"
+   "EditorHeadWin, ViewerHeadWin { color: 0; background: 0xB0B000; prefix-color:0xFFFFFF; cs-color:0xFFFFFF;}"
+
+   "TabDialog { background: 0x606060; color:0xFFFFFF; }"
+   "TabDialog * { background: 0x606060; color:0xFFFFFF; button-color: 0x808080; }"
+   "TabDialog EditLine { background: 0xD0D0D0; color:0; frame-color: 0x606060; }"
+   "TabDialog *@item:dir {color: 0xFFFF00; background: 0; }"
+   "TabDialog *@item:current-item	{background: 0x808080; }"
+   "TabDialog *@item {color: 0xFFFFFF; background: 0; }"
+
+   "Shortcuts VListWin { background: 0xB0B000; first-char-color:0xFFFF; }"
+   "Shortcuts VListWin@item {color: 0; background: 0xB0B000; }"
+   "Shortcuts VListWin@item:current-item {color: 0xFFFFFF; background: 0x800000; }"
 
    ;
 
