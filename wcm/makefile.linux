@@ -1,3 +1,9 @@
+INSTALL_DIR = install -d
+INSTALL_PROGRAM = install -c -m 755
+INSTALL_TREE = cp -R
+BIN_DIR=$(DESTDIR)/usr/bin
+TARGET_DIR=$(DESTDIR)/usr/
+
 CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
 #CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -O1 -fno-inline -I wal -I swl -pthread $(CFLAGS_FREETYPE)
 
@@ -110,8 +116,10 @@ all: libconf_ux.h wcm
 #	cat info.txt
 endif
 
+build: all
+
 libconf_ux.h: libtester/libconf.create
-	cd libtester &&	./libconf.create
+	cd libtester &&	. ./libconf.create
 
 wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
 	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
@@ -338,7 +346,7 @@ $(OBJDIR)/shell.o: $(HW) $(HS) $(HN) shell.cpp
 	
 	
 clean:
-	rm -f *.o
+	rm -f $(OBJDIR)/*.o
 	rm -f wcm
 	rm -f libconf_ux.h
 	rm -f libtester/libsmbtest
@@ -348,7 +356,8 @@ clean:
 	rm -f info.txt
 	rm -f makelib.mk
 
-	
 install: wcm
-	cp -f wcm /usr/bin
-	cp -f -R install-files/* /usr
+	$(INSTALL_DIR)	$(BIN_DIR)
+	$(INSTALL_DIR)	$(TARGET_DIR)
+	$(INSTALL_PROGRAM) wcm $(BIN_DIR)
+	$(INSTALL_TREE) install-files/* $(TARGET_DIR)
