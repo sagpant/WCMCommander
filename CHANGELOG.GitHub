@@ -1,3 +1,7 @@
+0.17.1 GitHub Edition
+	Development: Debian package building
+	Development: disabled level 4 warnings	
+
 0.17.0 GitHub Edition
 	Added: share search text between all search and search-n-replace dialogs
 	Added: indicator of the current sorting order in the panel
