@@ -57,8 +57,8 @@ using namespace wal;
 #	endif
 #endif
 
-
-static char verString[] = "Wal Commander v 0.17.0 GitHub Edition (" __DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
+#include "wcm-version.h"
+static char verString[] = "Wal Commander v " WCM_VERSION " GitHub Edition (" __DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
 
 struct HelpStyle
 {
