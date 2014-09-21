@@ -19,7 +19,7 @@ namespace wal
 	{
 		WinID handle;
 		WINID( WinID h ): handle( h ) {}
-		operator unsigned () const { return unsigned( handle ); }
+		operator size_t () const { return (size_t)( handle ); }
 
 		//описание самой ф-ции как константной обязательно, иначе пиздец!!!
 		bool operator == ( const WINID& a ) const { return handle == a.handle; }
