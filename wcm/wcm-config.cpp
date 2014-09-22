@@ -1424,7 +1424,7 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	iL.AddWin( &tabText,     3, 0, 3, 0 );
 	tabText.Enable();
 	tabText.Show();
-	iL.AddWin( &tabEdit,     4, 1, 4, 1 );
+	iL.AddWin( &tabEdit,     3, 1, 4, 1 );
 	tabEdit.Enable();
 	tabEdit.Show();
 	AddLayout( &iL );
