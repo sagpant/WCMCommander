@@ -136,6 +136,8 @@ SET(wcm_HEADERS
 	dircalc.h
 	eloadsave.h
 	ext-app.h
+	fileassociations.h
+	filehighlighting.h
 	fileopers.h
 	filesearch.h
 	fontdlg.h
