@@ -11,6 +11,118 @@
 #include "ltext.h"
 #include "unicode_lc.h"
 
+/// dialog to edit a single file highlighting rule
+class clEditFileHighlightingWin: public NCVertDialog
+{
+public:
+	clEditFileHighlightingWin( NCDialogParent* parent, const clNCFileHighlightingRule* Rule )
+	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file highlighting" ) ).data(), bListOkCancel )
+	 , m_Layout( 17, 2 )
+	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several file masks (separated with commas)")).data(), &m_MaskEdit)
+	 , m_MaskEdit( 0, this, 0, 0, 16 )
+	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description of the file highlighting")).data(), &m_DescriptionEdit)
+	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
+	 , m_HasMaskButton( 0, this, utf8_to_unicode( _LT( "Mask" ) ).data(), 0, true )
+	{
+		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
+
+		if ( Rule )
+		{
+			m_MaskEdit.SetText( Rule->GetMask().data(), false );
+			m_DescriptionEdit.SetText( Rule->GetDescription().data(), false );
+/*
+			m_HasTerminalButton.Change( Assoc->GetHasTerminal() );
+			m_ExecuteCommandEdit.SetText( Assoc->GetExecuteCommand().data(), false );
+			m_ExecuteCommandSecondaryEdit.SetText( Assoc->GetExecuteCommandSecondary().data(), false );
+			m_ViewCommandEdit.SetText( Assoc->GetViewCommand().data(), false );
+			m_ViewCommandSecondaryEdit.SetText( Assoc->GetViewCommandSecondary().data(), false );
+			m_EditCommandEdit.SetText( Assoc->GetEditCommand().data(), false );
+			m_EditCommandSecondaryEdit.SetText( Assoc->GetEditCommandSecondary().data(), false );
+/*/
+		}
+
+		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
+
+		m_Layout.AddWinAndEnable( &m_HasMaskButton, 1, 0 );
+		m_Layout.AddWinAndEnable( &m_MaskEdit, 2, 0 );
+
+		m_Layout.AddWinAndEnable( &m_DescriptionText, 3, 0 );
+		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 4, 0 );
+/*
+		m_Layout.AddWinAndEnable( &m_HasTerminalButton, 4, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandText, 5, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandEdit, 6, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryText, 7, 0 );
+		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryEdit, 8, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandText, 9, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandEdit, 10, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryText, 11, 0 );
+		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryEdit, 12, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandText, 13, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandEdit, 14, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryText, 15, 0 );
+		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryEdit, 16, 0 );
+*/
+		AddLayout( &m_Layout );
+
+		order.append( &m_MaskEdit );
+		order.append( &m_HasMaskButton );
+		order.append( &m_DescriptionEdit );
+/*
+		order.append( &m_HasTerminalButton );
+		order.append( &m_ExecuteCommandEdit );
+		order.append( &m_ExecuteCommandSecondaryEdit );
+		order.append( &m_ViewCommandEdit );
+		order.append( &m_ViewCommandSecondaryEdit );
+		order.append( &m_EditCommandEdit );
+		order.append( &m_EditCommandSecondaryEdit );
+*/
+		SetPosition();
+	}
+
+	std::vector<unicode_t> GetMask() const { return m_MaskEdit.GetText(); }
+	std::vector<unicode_t> GetDescription() const { return m_DescriptionEdit.GetText(); }
+/*
+	std::vector<unicode_t> GetExecuteCommand() const { return m_ExecuteCommandEdit.GetText(); }
+	std::vector<unicode_t> GetExecuteCommandSecondary() const { return m_ExecuteCommandSecondaryEdit.GetText(); }
+	std::vector<unicode_t> GetViewCommand() const { return m_ViewCommandEdit.GetText(); }
+	std::vector<unicode_t> GetViewCommandSecondary() const { return m_ViewCommandSecondaryEdit.GetText(); }
+	std::vector<unicode_t> GetEditCommand() const { return m_EditCommandEdit.GetText(); }
+	std::vector<unicode_t> GetEditCommandSecondary() const { return m_EditCommandSecondaryEdit.GetText(); }
+*/
+	const clNCFileHighlightingRule& GetResult() const
+	{
+		m_Result.SetMask( GetMask() );
+		/*
+		m_Result.SetDescription( GetDescription() );
+		m_Result.SetExecuteCommand( GetExecuteCommand() );
+		m_Result.SetExecuteCommandSecondary( GetExecuteCommandSecondary() );
+		m_Result.SetViewCommand( GetViewCommand() );
+		m_Result.SetViewCommandSecondary( GetViewCommandSecondary() );
+		m_Result.SetEditCommand( GetEditCommand() );
+		m_Result.SetEditCommandSecondary( GetEditCommandSecondary() );
+		m_Result.SetHasTerminal( m_HasTerminalButton.IsSet() );
+			*/
+		return m_Result;
+	}
+
+private:
+	Layout m_Layout;
+
+public:
+	StaticLabel m_MaskText;
+	EditLine   m_MaskEdit;
+
+	StaticLabel m_DescriptionText;
+	EditLine   m_DescriptionEdit;
+
+	SButton m_HasMaskButton;
+
+	mutable clNCFileHighlightingRule m_Result;
+
+	bool m_Saved;
+};
+
 class clFileHighlightingListWin: public VListWin
 {
 public:
@@ -230,8 +342,8 @@ bool clFileHighlightingWin::Command( int id, int subId, Win* win, void* data )
 		const clNCFileHighlightingRule* ValueToEdit = m_ListWin.GetCurrentData( );
 
 		if ( !ValueToEdit ) return true;
-		/*
-		clFileHighlightingWin Dialog( ( NCDialogParent* )Parent(), ValueToEdit );
+
+		clEditFileHighlightingWin Dialog( ( NCDialogParent* )Parent(), ValueToEdit );
 		Dialog.SetEnterCmd( 0 );
 
 		if ( Dialog.DoModal( ) == CMD_OK )
@@ -241,12 +353,10 @@ bool clFileHighlightingWin::Command( int id, int subId, Win* win, void* data )
 		}
 
 		return true;
-		*/
 	}
 
 	if ( id == CMD_PLUS )
 	{
-		/*
 		clEditFileHighlightingWin Dialog( ( NCDialogParent* )Parent(), NULL );
 		Dialog.SetEnterCmd( 0 );
 
@@ -257,7 +367,6 @@ bool clFileHighlightingWin::Command( int id, int subId, Win* win, void* data )
 		}
 
 		return true;
-		*/
 	}
 
 	return NCDialog::Command( id, subId, win, data );
