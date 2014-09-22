@@ -67,6 +67,7 @@ SET(wcm_SOURCES
 	eloadsave.cpp
 	ext-app-ux.cpp
 	fileassociations.cpp
+	filehighlighting.cpp
 	fileopers.cpp
 	filesearch.cpp
 	fontdlg.cpp

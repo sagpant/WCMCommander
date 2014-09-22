@@ -175,6 +175,8 @@
     <ClCompile Include="dircalc.cpp" />
     <ClCompile Include="eloadsave.cpp" />
     <ClCompile Include="ext-app.cpp" />
+    <ClCompile Include="fileassociations.cpp" />
+    <ClCompile Include="filehighlighting.cpp" />
     <ClCompile Include="fileopers.cpp" />
     <ClCompile Include="filesearch.cpp" />
     <ClCompile Include="ftplogon.cpp" />

@@ -31,6 +31,7 @@ SOURCES += wcm/nc.cpp \
     wcm/ext-app-ux.cpp \
     wcm/ext-app.cpp \
     wcm/fileassociations.cpp \
+    wcm/filehighlighting.cpp \
     wcm/fileopers.cpp \
     wcm/filesearch.cpp \
     wcm/fontdlg.cpp \
@@ -94,6 +95,7 @@ HEADERS += \
     wcm/eloadsave.h \
     wcm/ext-app.h \
     wcm/fileassociations.h \
+    wcm/filehighlighting.h \
     wcm/fileopers.h \
     wcm/filesearch.h \
     wcm/fontdlg.h \

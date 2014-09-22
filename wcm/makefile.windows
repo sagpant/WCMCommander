@@ -145,6 +145,9 @@ $(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) shortcuts.cpp
 $(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) fileassociations.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) fileassociations.cpp -o $(OBJDIR)/fileassociations.o
 
+$(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) filehighlighting.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) filehighlighting.cpp -o $(OBJDIR)/filehighlighting.o
+
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
 
@@ -305,12 +308,4 @@ $(OBJDIR)/nc.o: $(HW) $(HS) $(HN) nc.cpp intarnal_icons.inc
 
 
 clean:
-	rm -f *.o
-	rm -f wcm
-	rm -f libconf_ux.h
-	rm -f libtester/libsmbtest
-	rm -f libtester/libsmb40test
-	rm -f libtester/libssh2test
-	rm -f libtester/libfreetype_test
-	rm -f info.txt
-	rm -f makelib.mk
+	del makelib.mk /Q

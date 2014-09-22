@@ -99,6 +99,7 @@ OBJS = \
 	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/shortcuts.o \
 	$(OBJDIR)/fileassociations.o \
+	$(OBJDIR)/filehighlighting.cpp \
 	$(OBJDIR)/fontdlg.o \
 	$(OBJDIR)/shl.o \
 	$(OBJDIR)/ncfonts.o \
@@ -188,6 +189,9 @@ $(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) shortcuts.cpp
 
 $(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) fileassociations.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) fileassociations.cpp -o $(OBJDIR)/fileassociations.o
+
+$(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) filehighlighting.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) filehighlighting.cpp -o $(OBJDIR)/filehighlighting.o
 
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
