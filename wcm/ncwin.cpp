@@ -539,6 +539,8 @@ NCWin::NCWin()
 
 	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "S&tyles" ) );
 	_mdOptions.AddSplit();
+	_mdOptions.AddCmd( ID_FILEHIGHLIGHTING, _LT( "Files &highlighting" ) );
+	_mdOptions.AddSplit();
 	_mdOptions.AddCmd( ID_CONFIG_SAVE,   _LT( "&Save setup" ),   "Shift-F9" );
 
 
@@ -2139,6 +2141,15 @@ void NCWin::FileAssociations()
 	}
 }
 
+void NCWin::FileHighlighting()
+{
+	if ( _mode != PANEL ) { return; }
+
+	if ( FileHighlightingDlg( this, &m_FileHighlightingRules ) )
+	{
+	}
+}
+
 bool NCWin::EditSave( bool saveAs )
 {
 
@@ -3697,6 +3708,10 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 
 			case ID_FILEASSOCIATIONS:
 				FileAssociations();
+				return true;
+
+			case ID_FILEHIGHLIGHTING:
+				FileHighlighting();
 				return true;
 
 			case ID_REFRESH:

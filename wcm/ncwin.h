@@ -21,6 +21,7 @@
 #include "ext-app.h"
 #include "toolbar.h"
 #include "fileassociations.h"
+#include "filehighlighting.h"
 
 using namespace wal;
 
@@ -246,6 +247,9 @@ private:
 	/// currently active file associations
 	std::vector<clNCFileAssociation> m_FileAssociations;
 
+	/// currently active file highlighting rules
+	std::vector<clNCFileHighlightingRule> m_FileHighlightingRules;
+
 	int _shiftSelectType;
 
 	void SetMode( MODE m );
@@ -306,6 +310,7 @@ private:
 	void PanelEqual();
 	void Shortcuts();
 	void FileAssociations();
+	void FileHighlighting();
 	void OnOffShl();
 
 	void SetToolbarPanel();

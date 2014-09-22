@@ -11,10 +11,7 @@
 #include "ltext.h"
 #include "strconfig.h"
 #include "unicode_lc.h"
-
-static const int CMD_PLUS  = 1000;
-static const int CMD_MINUS = 1001;
-static const int CMD_EDIT  = 1002;
+#include "dialog_enums.h"
 
 /// dialog to edit a single file association
 class clEditFileAssociationsWin: public NCVertDialog

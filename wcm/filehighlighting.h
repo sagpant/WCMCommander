@@ -17,6 +17,8 @@ public:
 	clNCFileHighlightingRule()
 	{}
 
+	const std::vector<unicode_t>& GetMask() const { return m_Mask; }
+
 	bool IsRulePassed( const std::vector<unicode_t>& FileName, uint64_t FileSize, uint64_t Attributes ) const;
 
 private:
