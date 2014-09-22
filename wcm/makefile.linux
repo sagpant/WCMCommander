@@ -99,7 +99,7 @@ OBJS = \
 	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/shortcuts.o \
 	$(OBJDIR)/fileassociations.o \
-	$(OBJDIR)/filehighlighting.cpp \
+	$(OBJDIR)/filehighlighting.o \
 	$(OBJDIR)/fontdlg.o \
 	$(OBJDIR)/shl.o \
 	$(OBJDIR)/ncfonts.o \

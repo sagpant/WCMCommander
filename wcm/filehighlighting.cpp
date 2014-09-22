@@ -6,7 +6,7 @@
 
 #include "filehighlighting.h"
 
-bool clNCFileHighlightingRule::IsRulePassed( const std::vector<unicode_t>& FileName, uint64 FileSize, uint64 Attributes ) const
+bool clNCFileHighlightingRule::IsRulePassed( const std::vector<unicode_t>& FileName, uint64_t FileSize, uint64_t Attributes ) const
 {
 	return false;
 }
