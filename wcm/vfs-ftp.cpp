@@ -78,7 +78,7 @@ inline void CheckFtpRet( int ret )
 
 int FTPNode::ReadCode()
 {
-	const char* last;
+	const char* last = NULL;
 	char buf[0x100];
 	int r = GETINT( ctrl.ReadLine( buf, sizeof( buf ) ), &last );
 

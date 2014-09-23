@@ -86,11 +86,14 @@ OBJS = \
 	$(OBJDIR)/shell-tools.o \
 	$(OBJDIR)/t-emulator.o \
 	$(OBJDIR)/dircalc.o \
-	$(OBJDIR)/ltext.o
-
+	$(OBJDIR)/ltext.o \
+	$(OBJDIR)/wcm.res
 
 all:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
 	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
+
+$(OBJDIR)/wcm.res: $(HW) $(HS) $(HN) wcm.rc
+	windres wcm.rc -O coff -o $(OBJDIR)/wcm.res
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
@@ -306,7 +309,6 @@ $(OBJDIR)/swl_wincoreMS.o: $(HW) $(HS) swl/swl_wincoreMS.cpp swl/swl_wincore_fre
 
 $(OBJDIR)/nc.o: $(HW) $(HS) $(HN) nc.cpp intarnal_icons.inc
 	$(CC) $(COPTS) -c $(CFLAGS) nc.cpp -o $(OBJDIR)/nc.o
-
 
 clean:
 	del makelib.mk /Q
