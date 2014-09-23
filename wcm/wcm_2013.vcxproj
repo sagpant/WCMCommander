@@ -254,7 +254,7 @@
     <ClInclude Include="eloadsave.h" />
     <ClInclude Include="ext-app.h" />
     <ClInclude Include="fileassociations.h" />
-    <ClCompile Include="filehighlighting.h" />
+    <ClInclude Include="filehighlighting.h" />
     <ClInclude Include="fileopers.h" />
     <ClInclude Include="filesearch.h" />
     <ClInclude Include="ftplogon.h" />
@@ -317,7 +317,6 @@
     <None Include="icon1.ico" />
     <None Include="small.ico" />
     <None Include="wcm.ico" />
-    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="wcm.rc" />

@@ -202,6 +202,9 @@
     <ClCompile Include="fileassociations.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>
+    <ClCompile Include="filehighlighting.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
     <ClCompile Include="swl\swl_staticlabel.cpp">
       <Filter>swl</Filter>
     </ClCompile>
@@ -393,12 +396,12 @@
     <ClInclude Include="fileassociations.h">
       <Filter>%2a.h</Filter>
     </ClInclude>
+    <ClInclude Include="filehighlighting.h">
+      <Filter>%2a.h</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="icon1.ico">
-      <Filter>resources</Filter>
-    </None>
-    <None Include="ReadMe.txt">
       <Filter>resources</Filter>
     </None>
     <None Include="small.ico">
