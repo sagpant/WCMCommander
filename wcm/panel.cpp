@@ -1681,6 +1681,7 @@ void PanelWin::LoadPathStringSafe( const char* path )
 {
 	if ( !path || !*path ) { return; }
 
+    dbg_printf("PanelWin::LoadPathStringSafe path=%s\n",path);
 	FSPath fspath;
 
 	clPtr<FS> fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, 0, 0 );
@@ -1697,6 +1698,7 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 	int err;
 
 //	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;
+    dbg_printf("PanelWin::LoadPath paramPath=%s\n",paramPath.GetUtf8());
 
 	try
 	{
@@ -1730,7 +1732,7 @@ void PanelWin::OperThreadStopped()
 	if ( !_inOperState )
 	{
 		fprintf( stderr, "BUG: PanelWin::OperThreadStopped\n" );
-		Invalidate();	
+		Invalidate();
 		return;
 	}
 

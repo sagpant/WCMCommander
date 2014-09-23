@@ -198,7 +198,7 @@ void OperRDThread::Run()
 		{
 			havePostponedStatError = 1;
 			postponedStrError = fs->StrError(ret_err);
-			if (!path.IsAbsolute() || !path.Pop())
+			if (!path.IsAbsolute() || path.Count() <=1 || !path.Pop())
 			{
 				throw_msg("%s", postponedStrError.GetUtf8());
 			}
@@ -237,7 +237,7 @@ void OperRDThread::Run()
 	{
 		havePostponedReadError = 1;
 		postponedStrError = fs->StrError(ret_err);
-		if (!path.IsAbsolute() || !path.Pop())
+		if (!path.IsAbsolute() || path.Count() <= 1 || !path.Pop())
 		{
 			throw_msg("%s", postponedStrError.GetUtf8());
 		}
@@ -273,6 +273,7 @@ void ReadDirThreadFunc( OperThreadNode* node )
 		if ( !node->Data() ) { return; }
 
 		OperRDData* data = ( ( OperRDData* )node->Data() );
+		//dbg_printf("ReadDirThreadFunc path=%s",data->path.GetUtf8());
 		OperRDThread thread( "panel::chdir", data->Parent(), node, data->fs, data->path );
 		lock.Unlock();//!!!
 

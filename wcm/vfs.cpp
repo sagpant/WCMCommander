@@ -438,6 +438,7 @@ static std::vector<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *
 }
 */
 
+// make UNC path by concati'ing input pars in an intelligent way
 static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wchar_t* cat )
 {
 	int lcat = Utf16Chars( cat );
@@ -466,15 +467,31 @@ static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wc
 		d += 2;
 	}
 
-	for ( ; *s; s++, d++ ) { *d = *s; }
+	
+	unicode_t lastChar = 0;
+	for (; *s; s++, d++) { lastChar = *d = *s; }
+
+	// ensure that we do not append double-backslash to the filepath.
+	// FindFirstFileW does not like UNC like \\?\c:\\*, and prefers \\?\c:\*
+	if (lastChar == '\\' && *cat == '\\'){ cat++; }
 
 	for ( ; *cat; cat++, d++ ) { *d = *cat; }
 
 	*d = 0;
+
 	return p;
 }
 
-
+#ifdef _DEBUG
+static void toStr(char* str, const wchar_t* wstr)
+{
+    for(;*wstr;)
+    {
+        *str++=*wstr++;
+    }
+    *str=0;
+}
+#endif
 
 int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 {
@@ -483,6 +500,13 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 	WIN32_FIND_DATAW ent;
 
 	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).data(), &ent );
+
+#ifdef _DEBUG
+	std::vector<wchar_t> wpath = FindPathStr(_drive, path.GetUnicode(), L"\\*");
+	char s[1024];
+	toStr(s,wpath.data());
+	dbg_printf("FSSys::ReadDir %s@UNC path=%s\n", handle == INVALID_HANDLE_VALUE ? "OK": "failed", s);
+#endif
 
 	if ( handle == INVALID_HANDLE_VALUE )
 	{
@@ -493,7 +517,6 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 		SetError( err, GetLastError() );
 		return -1;
 	}
-
 	try
 	{
 		while ( true )
@@ -1228,7 +1251,7 @@ err:
 
 int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 {
-#if defined( __linux__ ) && !defined( __APPLE__ ) 
+#if defined( __linux__ ) && !defined( __APPLE__ )
 	struct statfs64 s;
 
 	if ( statfs64( path.GetUtf8(), &s ) == -1 )
