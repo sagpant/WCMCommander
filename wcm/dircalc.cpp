@@ -168,7 +168,7 @@ void OperDirCalcThread::Calc()
 	{
 		bool IsDir = false;
 
-		path.SetItemStr( cnt, node->Name() );
+		path.SetItemStr( cnt, node->Name() ); //-V595
 
 		IsDir = node->IsDir() && !node->st.IsLnk();
 

@@ -391,7 +391,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 	{
 		SCListWin::Node* node = listWin.GetCurrentData();
 
-		if ( !node || !node->name.data() ) { return true; }
+		if ( !node || !node->name.data() ) { return true; } //-V560
 
 		if ( NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Delete item" ),
 		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( node->name.data() ).data() , "' ?" ).data(),
@@ -408,7 +408,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 	{
 		SCListWin::Node* node = listWin.GetCurrentData();
 
-		if ( !node || !node->name.data() ) { return true; }
+		if ( !node || !node->name.data() ) { return true; } //-V560
 
 		std::vector<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Rename item" ) ).data(),
 		                                            node->name.data() );
