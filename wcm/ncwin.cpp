@@ -3064,6 +3064,11 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			}
 
 			case VK_ESCAPE:
+				if ( _menu.GetSelect() != -1 )
+				{
+					_menu.EventKey( pEvent );
+					break;
+				}
 				if ( m_AutoCompleteList.IsVisible() )
 				{
 					HideAutoComplete();
