@@ -565,7 +565,6 @@ class EditWin : public Win
 
 	crect GetCursorRect( int x, int y ) const;
 
-	int GetCharGroup( unicode_t c ) { return EditBuf::GetCharGroup( c ); }
 	bool StepLeft( EditPoint* p, unicode_t* c );
 	bool StepRight( EditPoint* p, unicode_t* c );
 	void CursorCtrlLeft( bool mark );
