@@ -540,6 +540,7 @@ namespace wal
 		virtual void EventEnterLeave( cevent* pEvent );
 		virtual void EventSize( cevent_size* pEvent );
 		virtual int UiGetClassId();
+		virtual int GetSelect() const;
 		virtual void OnChangeStyles();
 
 		void Clear() { list.clear(); InvalidateRectList(); }
