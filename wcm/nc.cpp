@@ -80,7 +80,7 @@ cfont* MSysGetFont( Win* w, int id )
 #ifdef _WIN32
 namespace wal
 {
-	extern int Win32HIconId;
+	extern size_t Win32HIconId;
 	extern HINSTANCE Win32HInstance;
 };
 #endif
