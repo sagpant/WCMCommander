@@ -77,7 +77,6 @@ OBJS = \
 	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/shortcuts.o \
 	$(OBJDIR)/fileassociations.o \
-	$(OBJDIR)/filehighlighting.o \
 	$(OBJDIR)/shl.o \
 	$(OBJDIR)/ncfonts.o \
 	$(OBJDIR)/toolbar.o \
