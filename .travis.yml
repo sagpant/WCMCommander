@@ -19,9 +19,9 @@ before_script:
   - sudo apt-get -qq update
   - sudo apt-get -qq install libsmbclient-dev libssh2-1-dev
   - if [ "$CXX" = "g++" ]; then sudo apt-get -qq install gcc-4.8 g++-4.8 && export CXX=g++-4.8 CC=gcc-4.8; fi
-  - if [ "$BUILDMODE" = "cmake-mingw32" ]; then sudo apt-get -qq install binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686 && export CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++; fi
+  - if [ "$BUILDMODE" = "cmake-mingw32" ]; then sudo apt-get -qq install binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686; fi
 
 script:
   - if [ "$BUILDMODE" = "custom" ]; then echo "===> Building with custom buildsystem..." && cd "$TRAVIS_BUILD_DIR"/wcm && make all -B; fi
   - if [ "$BUILDMODE" = "cmake" ]; then echo "===> Building with cmake..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake .. && make; fi
-  - if [ "$BUILDMODE" = "cmake-mingw32" ]; then echo "===> Building with cmake+mingw32..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake -DCMAKE_SYSTEM_NAME=Windows .. && make; fi
+  - if [ "$BUILDMODE" = "cmake-mingw32" ]; then echo "===> Building with cmake+mingw32..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres .. && make; fi
