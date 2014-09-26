@@ -57,7 +57,24 @@ ELSE(WITH_SMBCLIENT)
 ENDIF(WITH_SMBCLIENT)
 
 # sources
-SET(wcm_SOURCES
+IF(MINGW)
+	SET(wcm_PLATFORM_SOURCES
+		ext-app.cpp
+		swl/swl_wincoreMS.cpp
+		w32cons.cpp
+		w32util.cpp
+	)
+ELSE(MINGW)
+	SET(wcm_PLATFORM_SOURCES
+		ext-app-ux.cpp
+		fontdlg.cpp
+		shell.cpp
+		swl/swl_wincoreUX.cpp
+		terminal.cpp
+	)
+ENDIF(MINGW)
+
+SET(wcm_COMMON_SOURCES
 	nc.cpp
 	panel.cpp
 
@@ -65,11 +82,9 @@ SET(wcm_SOURCES
 	color-style.cpp
 	dircalc.cpp
 	eloadsave.cpp
-	ext-app-ux.cpp
 	fileassociations.cpp
 	fileopers.cpp
 	filesearch.cpp
-	fontdlg.cpp
 	ftplogon.cpp
 	help.cpp
 	helpres.cpp
@@ -88,7 +103,6 @@ SET(wcm_SOURCES
 	search-tools.cpp
 	sftpdlg.cpp
 	shell-tools.cpp
-	shell.cpp
 	shl.cpp
 	shortcuts.cpp
 	smblogon.cpp
@@ -106,10 +120,8 @@ SET(wcm_SOURCES
 	swl/swl_vlist.cpp
 	swl/swl_winbase.cpp
 	swl/swl_wincore.cpp
-	swl/swl_wincoreUX.cpp
 	t-emulator.cpp
 	tcp_sock.cpp
-	terminal.cpp
 	termwin.cpp
 	toolbar.cpp
 	unicode_lc.cpp
@@ -188,7 +200,7 @@ SET(wcm_HEADERS
 )
 
 # targets
-ADD_EXECUTABLE(wcm ${wcm_SOURCES} ${wcm_HEADERS})
+ADD_EXECUTABLE(wcm ${wcm_COMMON_SOURCES} ${wcm_PLATFORM_SOURCES} ${wcm_HEADERS})
 TARGET_LINK_LIBRARIES(wcm ${wcm_LIBS})
 
 # install
