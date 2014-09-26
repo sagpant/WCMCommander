@@ -2,12 +2,14 @@
     https://github.com/corporateshark/WalCommander
 =======================================================
 
-Dual panel file manager with
+Dual panel multi-platform open source file manager
+for Windows, Linux, FreeBSD and OS X with
 
 - terminal emulator
-- built-on editor
-- built-ontext viewer
+- built-in editor with syntax highlighting (c/c++, java, pascal, latex, glsl, perl, php, python, sh, sql, xml)
+- built-in text viewer
 - virtual file systems: smb, ftp, sftp
+- file associations
 	
 =======================================================
 
