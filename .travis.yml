@@ -1,20 +1,29 @@
 language: cpp
 
-before_script:
-    - gcc -v
-    - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-    - sudo apt-get update
-    - sudo apt-get install gcc-4.8 g++-4.8 libsmbclient-dev libssh2-1-dev
-    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20
-    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
-    - sudo update-alternatives --config gcc
-    - sudo update-alternatives --config g++
-    - gcc -v 
-    - cd ./wcm
-
 compiler:
-    - gcc
-    - clang
+  - gcc
+  - clang
+
+env:
+  - BUILDMODE=custom
+  - BUILDMODE=cmake
+  - BUILDMODE=cmake-mingw32
+
+maxtrix:
+  exclude:
+    - compiler: clang
+      env: BUILDMODE=cmake-mingw32
+
+before_script:
+  - "$CXX" -v
+  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install libsmbclient-dev libssh2-1-dev
+  - [ "$CXX" = "g++" ] && sudo apt-get -qq install gcc-4.8 g++-4.8 && export CXX=g++-4.8 CC=gcc-4.8
+  - [ "$BUILDMODE" = "cmake-mingw32" ] && sudo apt-get -qq install binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686 && export CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++
+  - "$CXX" -v 
 
 script:
-    - make all -B && cd .. && mkdir build && cd build && cmake .. && make # tests both cmake and custom builds
+  - [ "$BUILDMODE" = "custom"] && echo "===> Building with custom buildsystem..." && cd "$TRAVIS_BUILD_DIR"/wcm && make all -B
+  - [ "$BUILDMODE" = "cmake"] && echo "===> Building with cmake..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake .. && make
+  - [ "$BUILDMODE" = "cmake-mingw32"] && echo "===> Building with cmake+mingw32..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake .. && make
