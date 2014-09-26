@@ -24,4 +24,4 @@ before_script:
 script:
   - if [ "$BUILDMODE" = "custom" ]; then echo "===> Building with custom buildsystem..." && cd "$TRAVIS_BUILD_DIR"/wcm && make all -B; fi
   - if [ "$BUILDMODE" = "cmake" ]; then echo "===> Building with cmake..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake .. && make; fi
-  - if [ "$BUILDMODE" = "cmake-mingw32" ]; then echo "===> Building with cmake+mingw32..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake .. && make; fi
+  - if [ "$BUILDMODE" = "cmake-mingw32" ]; then echo "===> Building with cmake+mingw32..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake -DCMAKE_SYSTEM_NAME=Windows .. && make; fi
