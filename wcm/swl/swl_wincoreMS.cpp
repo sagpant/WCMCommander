@@ -160,7 +160,7 @@ namespace wal
 
 
 // надо с исключениями порешать
-	static LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+	LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 	{
 		try
 		{
