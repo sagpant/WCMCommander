@@ -5,7 +5,7 @@
  */
 
 #ifdef _WIN32
-#	include <Winsock2.h>
+#	include <winsock2.h>
 #	include "resource.h"
 #	include "w32util.h"
 #endif
