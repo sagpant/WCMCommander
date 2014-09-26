@@ -199,8 +199,12 @@ SET(wcm_HEADERS
 	wcm-config.h
 )
 
+SET(wcm_RESOURCES
+	wcm.rc
+)
+
 # targets
-ADD_EXECUTABLE(wcm ${wcm_COMMON_SOURCES} ${wcm_PLATFORM_SOURCES} ${wcm_HEADERS})
+ADD_EXECUTABLE(wcm ${wcm_COMMON_SOURCES} ${wcm_PLATFORM_SOURCES} ${wcm_HEADERS} ${wcm_RESOURCES})
 TARGET_LINK_LIBRARIES(wcm ${wcm_LIBS})
 
 # install
