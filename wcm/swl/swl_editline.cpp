@@ -107,11 +107,11 @@ namespace wal
 		{
 			int PrevCursor = cursor;
 
-			int group = cursor < count ? GetCharGroup( data[cursor] ) : -1;
+			int group = cursor < count ? EditBuf::GetCharGroup( data[cursor] ) : -1;
 
 			int CharsToDelete = 0;
 
-			while ( cursor < count && GetCharGroup( data[cursor] ) == group )
+			while ( cursor < count && EditBuf::GetCharGroup( data[cursor] ) == group )
 			{
 				cursor++;
 				CharsToDelete++;
@@ -141,9 +141,9 @@ namespace wal
 
 			if ( cursor > 0 ) { cursor--; }
 
-			int group = cursor < count ? GetCharGroup( data[cursor] ) : -1;
+			int group = cursor < count ? EditBuf::GetCharGroup( data[cursor] ) : -1;
 
-			while ( cursor > 0 && GetCharGroup( data[cursor - 1] ) == group )
+			while ( cursor > 0 && EditBuf::GetCharGroup( data[cursor - 1] ) == group )
 			{
 				cursor--;
 			}
@@ -175,9 +175,9 @@ namespace wal
 	{
 		if ( cursor > 0 ) { cursor--; }
 
-		int group = cursor < count ? GetCharGroup( data[cursor] ) : -1;
+		int group = cursor < count ? EditBuf::GetCharGroup( data[cursor] ) : -1;
 
-		while ( cursor > 0 && GetCharGroup( data[cursor - 1] ) == group )
+		while ( cursor > 0 && EditBuf::GetCharGroup( data[cursor - 1] ) == group )
 		{
 			cursor--;
 		}
@@ -187,13 +187,13 @@ namespace wal
 
 	void EditBuf::CtrlRight ( bool mark )
 	{
-		int group = cursor < count ? GetCharGroup( data[cursor] ) : -1;
+		int group = cursor < count ? EditBuf::GetCharGroup( data[cursor] ) : -1;
 
 //	if (cursor < count) cursor++;
 
 		while ( cursor < count )
 		{
-			int nextGroup = cursor + 1 < count ? GetCharGroup( data[cursor + 1] ) : -1;
+			int nextGroup = cursor + 1 < count ? EditBuf::GetCharGroup( data[cursor + 1] ) : -1;
 			cursor++;
 
 			if ( nextGroup != group ) { break; }
@@ -235,6 +235,7 @@ namespace wal
 			case '@':
 			case '[':
 			case '\\':
+			case '/':
 			case ']':
 			case '^':
 

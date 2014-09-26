@@ -56,6 +56,11 @@ namespace wal
 		}
 	}
 
+	int MenuBar::GetSelect() const
+	{
+		return select;
+	}
+
 	void MenuBar::SetSelect( int n )
 	{
 		if ( select == n ) { return; }

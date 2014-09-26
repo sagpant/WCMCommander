@@ -400,10 +400,10 @@ void EditWin::CursorCtrlLeft( bool mark )
 
 	if ( !StepLeft( &p, &c ) ) { return; }
 
-	int group = GetCharGroup( c );
+	int group = EditBuf::GetCharGroup( c );
 	cursor = p;
 
-	while ( StepLeft( &p, &c ) && GetCharGroup( c ) == group )
+	while ( StepLeft( &p, &c ) && EditBuf::GetCharGroup( c ) == group )
 	{
 		cursor = p;
 	}
@@ -428,13 +428,13 @@ void EditWin::CursorCtrlRight( bool mark )
 	EditString& str = text.Get( p.line );
 	unicode_t c = str.Len() > 0 ? charset->GetChar( str.Get() + p.pos, str.Get() + str.Len() ) : ' ';
 
-	int group = GetCharGroup( c );
+	int group = EditBuf::GetCharGroup( c );
 
 	while ( StepRight( &p, &c ) )
 	{
 		cursor = p;
 
-		if ( GetCharGroup( c ) != group ) { break; }
+		if ( EditBuf::GetCharGroup( c ) != group ) { break; }
 	}
 
 	recomendedCursorCol = -1;
@@ -1101,13 +1101,13 @@ void EditWin::Del( bool DeleteWord ) //!Undo
 				EditString& str = text.Get( p.line );
 				unicode_t c = str.Len() > 0 ? charset->GetChar( str.Get() + p.pos, str.Get() + str.Len() ) : ' ';
 
-				int group = GetCharGroup( c );
+				int group = EditBuf::GetCharGroup( c );
 
 				while ( StepRight( &p, &c ) )
 				{
 					cursor = p;
 
-					if ( GetCharGroup( c ) != group ) { break; }
+					if ( EditBuf::GetCharGroup( c ) != group ) { break; }
 				}
 
 				totalDelCount = cursor.pos - oldcursor.pos;
@@ -1195,10 +1195,10 @@ void EditWin::Backspace( bool DeleteWord ) //!Undo
 
 				if ( !StepLeft( &p, &c ) ) { return; }
 
-				int group = GetCharGroup( c );
+				int group = EditBuf::GetCharGroup( c );
 				cursor = p;
 
-				while ( StepLeft( &p, &c ) && GetCharGroup( c ) == group )
+				while ( StepLeft( &p, &c ) && EditBuf::GetCharGroup( c ) == group )
 				{
 					if ( cursor.line == p.line )
 					{
