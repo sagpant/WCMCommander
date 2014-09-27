@@ -13,7 +13,7 @@ using namespace wal;
 How the color scheme works:
 
 Colors are defined by a set of the statements in the rules text:
-CONTROL_CLASSID@ITEMID:CONDITION[: {COLOR_NAME: 0xRRGGBB; ...}
+CONTROL_CLASSID@ITEMID:CONDITION[:CONDITION2...] {COLOR_NAME: 0xBBGGRR; ...}
 
 ITEMID and CONDITION are optional, and can be omitted. To define default colorset for all classes
 that are not explicitly defined in the rules use '*' for CONTROL_CLASSID
