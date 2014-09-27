@@ -496,9 +496,9 @@ namespace FTU
 
 		for ( int i = 0; i < count; i++, text++ )
 		{
-			auto i = ciHash.find( *text );
+			auto iter = ciHash.find( *text );
 
-			CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &(i->second);
+			CharInfo* pInfo = ( iter == ciHash.end() ) ? nullptr : &(iter->second);
 
 			if ( pInfo )
 			{
@@ -511,7 +511,7 @@ namespace FTU
 				pInfo = &( ciHash[c] = info );
 			}
 
-			w += i->second->pxWidth;
+			w += iter->second.pxWidth;
 		};
 
 		return cpoint( w, PxHeight() );

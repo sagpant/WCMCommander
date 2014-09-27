@@ -1347,6 +1347,9 @@ int FSSys::Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info )
 	return 0;
 }
 
+static std::unordered_map<int, std::vector<unicode_t> > userList;
+static std::unordered_map<int, std::vector<unicode_t> > groupList;
+
 FSString FSSys::Uri( FSPath& path )
 {
 	return FSString( path.GetUnicode() );
