@@ -496,9 +496,11 @@ namespace FTU
 
 		for ( int i = 0; i < count; i++, text++ )
 		{
-			CharInfo* pInfo = ciHash.exist( *text );
+			auto i = ciHash.find( *text );
 
-			if ( !pInfo )
+			CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &(i->second);
+
+			if ( pInfo )
 			{
 				unicode_t c = *text;
 				FT_GlyphSlot  slot = GetSlot( face, &c );
@@ -509,7 +511,7 @@ namespace FTU
 				pInfo = &( ciHash[c] = info );
 			}
 
-			w += pInfo->pxWidth;
+			w += i->second->pxWidth;
 		};
 
 		return cpoint( w, PxHeight() );
@@ -520,8 +522,9 @@ namespace FTU
 		int bg = gc.FillRgb();
 		int fg = gc.TextRgb();
 
+		auto i = ciHash.find( c );
 
-		CharInfo* pInfo = ciHash.exist( c );
+		CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &(i->second);
 
 		if ( pInfo )
 		{
@@ -567,7 +570,9 @@ namespace FTU
 		int x = *px;
 		int y = *py;
 
-		CharInfo* pInfo = ciHash.exist( c );
+		auto i = ciHash.find( c );
+
+		CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &(i->second);
 
 		if ( !pInfo )
 		{
