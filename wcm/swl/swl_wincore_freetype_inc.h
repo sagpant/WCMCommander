@@ -1,5 +1,7 @@
 #ifdef USEFREETYPE
 
+#include <unordered_map>
+
 namespace FTU
 {
 
@@ -115,7 +117,8 @@ namespace FTU
 		int pxHeight;
 		int _size;
 
-		cinthash<unicode_t, CharInfo> ciHash;
+		std::unordered_map<unicode_t, CharInfo> ciHash;
+
 		void Clear() { if ( face )  { FT_Done_Face( face ); face = 0; imCache.Clear(); ciHash.clear(); } }
 
 		int SetSize( int size, int xRes, int yRes );

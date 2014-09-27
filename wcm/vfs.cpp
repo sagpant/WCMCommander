@@ -14,6 +14,8 @@
 #	include <sys/mount.h>
 #endif
 
+#include <unordered_map>
+
 ///////////////////////////////////////////////////  FS /////////////////////////////
 int FS::OpenRead  ( FSPath& path, int flags, int* err, FSCInfo* info ) { SetError( err, 0 ); return -1; }
 int FS::OpenCreate   ( FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info ) { SetError( err, 0 ); return -1; }
@@ -681,8 +683,8 @@ FSString FSSys::Uri( FSPath& path )
 	return FSString( carray_cat<unicode_t>( pref, path.GetUnicode() ).data() );
 }
 
-static cinthash<int, std::vector<unicode_t> > userList;
-static cinthash<int, std::vector<unicode_t> > groupList;
+static std::unordered_map<int, std::vector<unicode_t> > userList;
+static std::unordered_map<int, std::vector<unicode_t> > groupList;
 
 static unicode_t c0 = 0;
 
@@ -1350,15 +1352,11 @@ FSString FSSys::Uri( FSPath& path )
 	return FSString( path.GetUnicode() );
 }
 
-
-static cinthash<int, std::vector<unicode_t> > userList;
-static cinthash<int, std::vector<unicode_t> > groupList;
-
 static std::vector<unicode_t> GetOSUserName( int id )
 {
-	std::vector<unicode_t>* u = userList.exist( id );
+	auto i = userList.find( id );
 
-	if ( u ) { return *u; }
+	if ( i != userList.end() ) return i->second;
 
 	setpwent();
 	struct passwd* p = getpwuid( id );
@@ -1375,9 +1373,9 @@ static std::vector<unicode_t> GetOSUserName( int id )
 
 static std::vector<unicode_t> GetOSGroupName( int id )
 {
-	std::vector<unicode_t>* g = groupList.exist( id );
+	auto i = groupList.find( id );
 
-	if ( g ) { return *g; }
+	if ( i != groupList.end() ) return i->second;
 
 	setgrent();
 	struct group* p = getgrgid( id );

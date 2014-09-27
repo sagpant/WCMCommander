@@ -272,9 +272,6 @@ namespace wal
 	};
 
 
-
-	template <class IT, class T, class P = FloatTableParam<> > class cinthash;
-
 	/*
 	   LT
 	   const KT& key()
@@ -313,8 +310,6 @@ namespace wal
 		void foreach( void f( LT*, void* ), void* data ); //nt
 		void clear();
 		hash_iterator<LT> first();
-
-		void statistic( cinthash<int, int>* result );
 
 		~internal_hash();
 	private:
@@ -676,156 +671,9 @@ namespace wal
 			return ret;
 		}
 
-		void statistic( cinthash<int, int>* result )
-		{
-			hash.statistic( result );
-		}
-
 		void clear() { hash.clear();}
 		~chash() {}
 	};
-
-
-	/*
-	таблица, где индексом является целое число (IT)
-	IT - целое число, или тип, приводимый к unsigned (), копируется и сравнивается на ==	
-	*/
-
-	template < class IT, class T, class P/* = FloatTableParam<>*/ > class cinthash
-	{
-		struct Node
-		{
-			IT k;
-			T m_data;
-			Node( const T& d, const IT& n ): k( n ), m_data( d ) {}
-			Node( const Node& a ): m_data( a.m_data ), k( a.k ) {}
-			const IT& key() const { return k; }
-			unsigned intKey() const { return ( unsigned )k; }
-
-			Node* next;
-		private:
-			Node() {}
-		};
-
-		internal_hash<Node, IT, false, P> hash;
-		T defaultValue;
-	public:
-		cinthash() {}
-		cinthash( const T& def ): defaultValue( def ) { }
-
-		cinthash( const cinthash& a )
-			: hash( a.hash ),
-			  defaultValue( a.defaultValue )
-		{
-		}
-
-		void setdefault( const T& dv ) { defaultValue = dv; }
-		HashIndex count() const { return hash.count(); };
-
-		T* exist( const IT& k )
-		{
-			Node* p = hash.find( unsigned( k ), k );
-			return p ? &( p->m_data ) : NULL;
-		}
-
-		T& get( const IT& k )
-		{
-			Node* p = hash.find( unsigned( k ), k );
-
-			if ( !p )
-			{
-				p = new Node( defaultValue, k );
-				hash.append( unsigned( k ), p );
-			}
-
-			return p->m_data;
-		}
-
-		T& operator []( const IT& k ) { return get( k ); }
-		cinthash& operator = ( const cinthash& a )
-		{
-			if ( this != &a )
-			{
-				hash = a.hash;
-				defaultValue = a.defaultValue;
-			}
-
-			return *this;
-		}
-
-		T* put( IT k, const T& data )
-		{
-			Node* p = hash.find( unsigned( k ), data.key() );
-
-			if ( !p )
-			{
-				p = hash.append( unsigned( k ), Node( data, k ) );
-			}
-			else
-			{
-				p->m_data = data;
-			}
-
-			return &( p->m_data );
-		}
-
-		bool del( const IT& k, bool shrink = true )
-		{
-			return hash.del( unsigned( k ), k, shrink );
-		}
-
-		void foreach( void ( *f )( const IT& key, T*, void* ), void* parm )
-		{
-			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next() )
-			{
-				f( i.get()->k, &( i.get()->m_data ), parm );
-			}
-		}
-
-		std::vector<IT> keys()
-		{
-			int n = hash.count();
-			std::vector<IT> ret( n );
-			int j = 0;
-
-			for ( hash_iterator<Node> i = hash.first(); i.valid(); i.next(), j++ )
-			{
-				ASSERT( j < n );
-				ret[j] = i.get()->intKey();
-			}
-
-			ASSERT( j == hash.count() );
-			return ret;
-		}
-
-		void statistic( cinthash<int, int>* result )
-		{
-			hash.statistic( result );
-		}
-
-		void clear() { hash.clear();}
-		~cinthash() {}
-	};
-
-	template <class LT, class KT, bool IC, class P>
-	void internal_hash<LT, KT, IC, P>::statistic( cinthash<int, int>* result )
-	{
-		result->clear();
-		result->setdefault( 0 );
-
-		for ( HashIndex i = 0; i < tableSize; i++ )
-		{
-			LT* p = table[i];
-			int j;
-
-			for ( j = 0; p; p = p->next, j++ )
-			{
-				NULL;
-			}
-
-			result->get( j )++;
-		}
-	}
 
 	template <class T> class chstring
 	{
@@ -1050,11 +898,6 @@ namespace wal
 
 			ASSERT( j == hash.count() );
 			return ret;
-		}
-
-		void statistic( cinthash<int, int>* result )
-		{
-			hash.statistic( result );
 		}
 
 		void clear() { hash.clear();}

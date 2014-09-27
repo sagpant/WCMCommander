@@ -15,7 +15,7 @@ using namespace wal;
 #include <dirent.h>
 #include <sys/time.h>
 
-
+#unclude <unordered_map>
 
 //alias надо применить
 
@@ -86,7 +86,7 @@ class MimeSubclasses
 {
 	std::vector<char> fileName;
 	time_t mtime;
-	cinthash< int, ccollect<int> > hash;
+	std::unordered_map< int, ccollect<int> > hash;
 public:
 	MimeSubclasses( const char* fn ): fileName( new_char_str( fn ) ), mtime( 0 ) { }
 	int GetParentList( int mime, ccollect<int>& list );
@@ -98,15 +98,15 @@ class MimeAliases
 {
 	std::vector<char> fileName;
 	time_t mtime;
-	cinthash<int, int> data;
+	std::unordered_map<int, int> data;
 public:
 	MimeAliases( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
 	void Refresh();
 
 	int Check( int mime )
 	{
-		int* pn = data.exist( mime );
-		return pn ? *pn : mime;
+		auto i = data.find( mime );
+		return i != data.end() ? i->second : mime;
 	}
 	~MimeAliases();
 };
@@ -116,7 +116,7 @@ class MimeDB: public iIntrusiveCounter
 	MimeGlobs globs;
 	MimeSubclasses subclasses;
 	MimeAliases aliases;
-	void AddParentsRecursive( int mime, ccollect<int>* pList, cinthash<int, bool>* pHash );
+	void AddParentsRecursive( int mime, ccollect<int>* pList, std::unordered_map<int, bool>* pHash );
 public:
 	MimeDB( const char* location );
 	void Refresh();
@@ -129,7 +129,7 @@ class AppDefListFile: public iIntrusiveCounter
 {
 	std::vector<char> fileName;
 	time_t mtime;
-	cinthash<int, ccollect<int, 1> > hash;
+	std::unordered_map<int, ccollect<int, 1> > hash;
 public:
 	AppDefListFile( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
 	void Refresh();
@@ -150,8 +150,8 @@ struct AppNode: public iIntrusiveCounter
 class AppDB: public iIntrusiveCounter
 {
 	std::vector<char> appDefsPrefix;
-	cinthash<int, clPtr<AppNode> > apps;
-	cinthash<int, ccollect<int> > mimeMapHash;
+	std::unordered_map<int, clPtr<AppNode> > apps;
+	std::unordered_map<int, ccollect<int> > mimeMapHash;
 
 	bool ReadAppDesctopFile( const char* fName );
 
@@ -274,11 +274,11 @@ bool ExeFileExist( const char* name )
 #define MIMEDEBUG
 
 #ifdef MIMEDEBUG
-static cinthash<int, std::vector<char> > mimeIdToNameHash;
+static std::unordered_map<int, std::vector<char> > mimeIdToNameHash;
 const char* GetMimeName( int n )
 {
-	std::vector<char>* p = mimeIdToNameHash.exist( n );
-	return p ? p->data() : "";
+	auto i = mimeIdToNameHash.find( n );
+	return i != mimeIdToNameHash.end() ? i->second.data() : "";
 }
 #endif
 
@@ -300,7 +300,7 @@ static int GetMimeID( const char* mimeName )
 	return id;
 }
 
-static cinthash<int, std::vector<char> > appIdToNameHash;
+static std::unordered_map<int, std::vector<char> > appIdToNameHash;
 
 static int GetAppID( const char* appName )
 {
@@ -663,7 +663,7 @@ MimeDB::MimeDB( const char* location )
 }
 
 
-void MimeDB::AddParentsRecursive( int mime, ccollect<int>* pList, cinthash<int, bool>* pHash )
+void MimeDB::AddParentsRecursive( int mime, ccollect<int>* pList, std::unordered_map<int, bool>* pHash )
 {
 	ccollect<int> parentList;
 
@@ -699,7 +699,7 @@ int MimeDB::GetMimeList( const unicode_t* fileName, ccollect<int>& outList )
 	if ( globs.GetMimeList( fileName, temp1 ) > 0 )
 	{
 
-		cinthash<int, bool> hash;
+		std::unordered_map<int, bool> hash;
 		int i;
 
 		for ( i = 0; i < temp1.count(); i++ )
@@ -1160,7 +1160,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 	if ( mimeDb->GetMimeList( fileName, mimeList ) )
 	{
 		int i;
-		cinthash<int, bool> hash;
+		std::unordered_map<int, bool> hash;
 
 		for ( i = 0; i < mimeList.count(); i++ )
 		{
