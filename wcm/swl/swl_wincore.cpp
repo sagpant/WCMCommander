@@ -7,6 +7,8 @@
 #include "swl_wincore_internal.h"
 #include <string>
 
+#include <unordered_map>
+
 namespace wal
 {
 
@@ -1436,7 +1438,7 @@ namespace wal
 	static Mutex iconCopyMutex( true );
 	static Mutex iconListMutex( true );
 
-	static cinthash< int, ccollect< clPtr< cicon > > > cmdIconList;
+	static std::unordered_map< int, ccollect< clPtr< cicon > > > cmdIconList;
 
 	void cicon::SetCmdIcon( int cmd, const Image32& image, int w, int h )
 	{
@@ -1472,7 +1474,7 @@ namespace wal
 	void cicon::ClearCmdIcons( int cmd )
 	{
 		MutexLock lock( &iconListMutex );
-		cmdIconList.del( cmd, false );
+		cmdIconList.erase( cmd );
 	}
 
 	inline int IconDist( const cicon& a, int w, int h )
@@ -1495,7 +1497,11 @@ namespace wal
 
 		MutexLock lock( &iconListMutex );
 
-		ccollect< clPtr<cicon> >* p = cmdIconList.exist( cmd );
+		auto i = cmdIconList.find( cmd );
+
+		if ( i == cmdIconList.end() ) return;
+
+		ccollect< clPtr<cicon> >* p = &(i->second);
 
 		if ( !p ) { return; }
 
@@ -2345,9 +2351,13 @@ begin:
 
 	UiValue* UiCache::Get( int id, int item, int* condList )
 	{
-		ccollect<Node>* ids = hash.exist( id );
+		auto i = hash.find( id );
 
-		if ( !ids ) { return 0; }
+		if ( i == hash.end() ) return nullptr;
+		
+		ccollect<Node>* ids = &(i->second);
+
+		if ( !ids ) { return nullptr; }
 
 		Node* p = ids->ptr();
 		int count = ids->count();

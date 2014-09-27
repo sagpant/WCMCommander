@@ -21,6 +21,7 @@ typedef Window WinID;
 #endif
 
 #include <stdarg.h>
+#include <unordered_map>
 
 namespace wal
 {
@@ -872,7 +873,7 @@ namespace wal
 			Node( UiSelector* _s, UiValue* _v ): s( _s ), v( _v ) {}
 		};
 
-		cinthash<int, ccollect<Node> > hash;
+		std::unordered_map<int, ccollect<Node> > hash;
 	public:
 		struct ObjNode
 		{
