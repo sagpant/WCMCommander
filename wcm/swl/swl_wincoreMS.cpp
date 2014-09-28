@@ -46,13 +46,15 @@ namespace wal
 			WinID wId = GetIDByWin( w );
 			WinID mId = GetIDByWin( mouseWindow );
 
-			w->Event( &cevent( EV_ENTER ) );
+			cevent ev_enter( EV_ENTER );
+			w->Event( &ev_enter );
 
 			mouseWindow = GetWinByID( mId );
 
 			if ( mouseWindow )
 			{
-				mouseWindow->Event( &cevent( EV_LEAVE ) );
+				cevent ev_leave( EV_LEAVE );
+				mouseWindow->Event( &ev_leave );
 			}
 
 			mouseWindow = GetWinByID( wId );
@@ -104,7 +106,8 @@ namespace wal
 
 			if ( w != mouseWindow->GetID() && w != ::GetCapture() )
 			{
-				mouseWindow->Event( &cevent( EV_LEAVE ) );
+				cevent ev_leave(EV_LEAVE);
+				mouseWindow->Event( &ev_leave );
 			}
 
 			mouseWindow = 0;
@@ -160,7 +163,7 @@ namespace wal
 
 
 // надо с исключениями порешать
-	static LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+	LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 	{
 		try
 		{
@@ -223,6 +226,7 @@ namespace wal
 				}
 
 				case WM_SETFOCUS:
+				{
 					if ( win->blockedBy )
 					{
 						::SetFocus( win->blockedBy );
@@ -233,21 +237,32 @@ namespace wal
 
 					if ( win->parent ) { win->parent->lastFocusChild = hWnd; }
 
-					win->Event( &cevent( EV_SETFOCUS ) );
+					cevent cev( EV_SETFOCUS );
+					win->Event( &cev );
 					return 0;
+				}
 
 				case WM_KILLFOCUS:
+				{
 					Win::focusWinId = 0;
 					// win->ClearState(Win::S_FOCUS);
-					win->Event( &cevent( EV_KILLFOCUS ) );
+					cevent cev( EV_KILLFOCUS );
+					win->Event( &cev );
 					return 0;
+				}
 
 				case WM_SHOWWINDOW:
-					win->Event( &cevent_show( wParam != FALSE ) );
+				{
+					cevent_show cevs( wParam != FALSE );
+					win->Event( &cevs );
 					return 0;
+				}
 
 				case WM_CLOSE:
-					return ( win->Event( &cevent( EV_CLOSE ) ) ) ? DefWindowProc( hWnd, message, wParam, lParam ) : 0;
+				{
+					cevent cev( EV_CLOSE );
+					return ( win->Event( &cev ) ) ? DefWindowProc( hWnd, message, wParam, lParam ) : 0;
+				}
 
 				case WM_ACTIVATE:
 					if ( wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE )
@@ -379,10 +394,16 @@ namespace wal
 					break;
 
 				case WM_SIZE:
-					return win->Event( &cevent_size( cpoint ( lParam & 0xFFFF, ( lParam >> 16 ) & 0xFFFF ) ) );
+				{
+					cevent_size cevs( cpoint ( lParam & 0xFFFF, ( lParam >> 16 ) & 0xFFFF ) );
+					return win->Event( &cevs );
+				}
 
 				case WM_MOVE:
-					return win->Event( &cevent_move( cpoint ( lParam & 0xFFFF, ( lParam >> 16 ) & 0xFFFF ) ) );
+				{
+					cevent_move cevm( cpoint ( lParam & 0xFFFF, ( lParam >> 16 ) & 0xFFFF ) );
+					return win->Event( &cevm );
+				}
 
 			};
 
