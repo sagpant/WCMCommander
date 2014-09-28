@@ -11,6 +11,8 @@
 #include "ltext.h"
 #include "unicode_lc.h"
 
+#include <unordered_map>
+
 SearchAndReplaceParams searchParams;
 
 struct SearchItemNode
@@ -387,7 +389,7 @@ OperSearchThread::~OperSearchThread() {}
 
 class SearchListWin: public VListWin
 {
-	cinthash<int, clPtr<SearchDirNode> > m_DirHash;
+	std::unordered_map<int, clPtr<SearchDirNode> > m_DirHash;
 	std::vector<SearchItemNode> m_ItemList;
 	int fontW;
 	int fontH;
@@ -456,11 +458,15 @@ public:
 
 		SearchItemNode* t = &( m_ItemList[GetCurrent()] );
 
-		clPtr<SearchDirNode>* d = m_DirHash.exist( t->dirId );
+		auto i = m_DirHash.find( t->dirId );
 
-		if ( !d ) { return false; }
+		if ( i == m_DirHash.end() ) return false;
 
-		FSPath path = d[0]->path;
+		clPtr<SearchDirNode> d = i->second;
+
+		if ( !d ) return false;
+
+		FSPath path = d->path;
 
 		if ( t->fsNode.ptr() )
 		{
@@ -540,9 +546,14 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 			crect r( rect );
 			r.bottom = r.top + 1;
 			gc.FillRect( r );
-			clPtr<SearchDirNode>* d = m_DirHash.exist( m_ItemList[n].dirId );
 
-			if ( d ) { txt = d[0]->path.GetUnicode(); }
+			auto i = m_DirHash.find( m_ItemList[n].dirId );
+
+			if ( i != m_DirHash.end() )
+			{
+				clPtr<SearchDirNode> d = i->second;
+				if ( d ) { txt = d->path.GetUnicode( ); }
+			}
 
 			const int FolderIconMargin = 10;
 

@@ -2663,6 +2663,96 @@ bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 	return true;
 }
 
+bool LookAhead( const unicode_t* p, unicode_t* OutNextChar )
+{
+	if ( !p ) return false;
+	if ( !*p ) return false;
+	if ( OutNextChar ) *OutNextChar = *(p+1);
+	return true;
+}
+
+void PopLastNull( std::vector<unicode_t>* S )
+{
+	if ( S && !S->empty() && S->back() == 0 ) S->pop_back();
+}
+
+bool LastCharEquals( const std::vector<unicode_t>& S, unicode_t Ch )
+{
+	if ( S.empty() ) return false;
+
+	return S.back() == Ch;
+}
+
+bool IsPathSeparator( const unicode_t Ch )
+{
+	return ( Ch == '\\' ) || ( Ch == '/' );
+}
+
+// handle the "cd" command, convert its argument to a valid path, expand ~ and env variables
+std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
+{
+	std::vector<unicode_t> Out;
+
+	std::vector<unicode_t> Temp;
+
+	while ( p && *p )
+	{
+		unicode_t Ch = 0;
+
+		if ( *p == '~' )
+		{
+			if ( LookAhead( p, &Ch ) )
+			{
+				if ( ( IsPathSeparator(Ch) || Ch == 0 ) && ApplyEnvVariable( "HOME", &Temp ) )
+				{
+					// replace ~ with the HOME path
+					Out.insert( Out.end(), Temp.begin(), Temp.end() );
+					PopLastNull( &Out );
+				}
+			}
+		}
+		else if ( *p == '$' )
+		{
+			// skip `$`
+			std::vector<char> EnvVarName = unicode_to_utf8( p+1 );
+			for ( auto i = EnvVarName.begin(); i != EnvVarName.end(); i++ )
+			{
+				if ( IsPathSeparator( *i ) )
+				{
+					*i = 0;
+					break;
+				}
+			}
+
+			if ( ApplyEnvVariable( EnvVarName.data( ), &Temp ) )
+			{
+				// replace the var name with its value
+				Out.insert( Out.end(), Temp.begin(), Temp.end() );
+				PopLastNull( &Out );
+				// skip var name
+				p += strlen( EnvVarName.data() );
+			}
+		}
+		else if ( IsPathSeparator(*p) )
+		{
+			if ( !LastCharEquals( Out, '/' ) && !LastCharEquals( Out, '\\' ) ) Out.push_back( DIR_SPLITTER );
+		}
+		else
+		{
+			Out.push_back( *p );
+		}
+		p++;
+	}
+
+	Out.push_back( 0 );
+
+// debug
+//	std::vector<char> U = unicode_to_utf8( Out.data() );
+//	const char* UTF = U.data();
+	
+	return Out;
+}
+
 bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal )
 {
 	const unicode_t* p = cmd.data();
@@ -2688,24 +2778,9 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 			SkipSpaces( p );
 
-			std::vector<unicode_t> uHome;
+			std::vector<unicode_t> Path = ConvertCDArgToPath( p );
 
-			const unicode_t HomeSymbol[] = { '~', 0 };
-
-			if ( *p == '$' )
-			{
-				// skip `$`
-				p++;
-
-				std::vector<char> EnvVarName = unicode_to_utf8( p );
-
-				if ( ApplyEnvVariable( EnvVarName.data( ), &uHome ) ) p = uHome.data();
-			}
-			
-			if ( !*p || unicode_is_equal( p, HomeSymbol ) )
-			{
-				if ( ApplyEnvVariable( "HOME", &uHome ) ) p = uHome.data( );
-			}
+			p = Path.data();
 
 			unicode_t* lastNoSpace = 0;
 

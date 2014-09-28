@@ -4,6 +4,8 @@ INSTALL_TREE = cp -R
 BIN_DIR=$(DESTDIR)/usr/bin
 TARGET_DIR=$(DESTDIR)/usr/
 
+WCM_VERSION=$(shell ./get_wcm_version.sh)
+
 CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
 #CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -O1 -fno-inline -I wal -I swl -pthread $(CFLAGS_FREETYPE)
 
@@ -344,7 +346,6 @@ $(OBJDIR)/swl_wincore.o: $(HW) $(HS) swl/swl_wincore.cpp
 
 $(OBJDIR)/swl_wincoreUX.o: $(HW) $(HS) swl/swl_wincoreUX.cpp swl/swl_wincore_freetype_inc.h
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincoreUX.cpp -o $(OBJDIR)/swl_wincoreUX.o
-
 
 $(OBJDIR)/nc.o: $(HW) $(HS) $(HN) nc.cpp intarnal_icons.inc
 	$(CC) $(COPTS) -c $(CFLAGS) nc.cpp -o $(OBJDIR)/nc.o

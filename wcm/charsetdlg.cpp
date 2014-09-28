@@ -16,6 +16,8 @@
 #	include <windows.h>
 #endif
 
+#include <unordered_map>
+
 static const char charsetSection[] = "charset";
 
 static ccollect<charset_struct*> csList;
@@ -106,17 +108,23 @@ static int  GetOtherCharsetList( charset_struct** list, int size )
 	charset_struct* tempList[128];
 	int retCount = charset_table.GetList( tempList, 128 );
 	int i;
-	cinthash<int, bool> hash;
+	std::unordered_map<int, bool> hash;
 
-	for ( i = 0; i < csList.count(); i++ ) { hash[csList[i]->id] = true; }
+	for ( i = 0; i < csList.count(); i++ )
+	{
+		hash[csList[i]->id] = true;
+	}
 
 	int n = 0;
 
 	for ( i = 0; i < retCount; i++ )
-		if ( !hash.exist( tempList[i]->id ) && n < size )
+	{
+		bool Exists = hash.find( tempList[i]->id ) != hash.end();
+		if ( !Exists && n < size )
 		{
 			list[n++] = tempList[i];
 		}
+	}
 
 	return n;
 }

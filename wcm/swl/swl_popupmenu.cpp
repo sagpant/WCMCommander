@@ -6,18 +6,23 @@
 // XXX: refactor to move the header to .
 #include "../unicode_lc.h" 
 
+#include <unordered_map>
+
 namespace wal
 {
 
 	MenuData::MenuData() {}
 
 // временная штука
-	wal::cinthash<int, clPtr<cicon> > iconList;
+	std::unordered_map<int, clPtr<cicon> > iconList;
+
 	cicon* GetCmdIcon( int cmd )
 	{
-		clPtr<cicon>* p = iconList.exist( cmd );
+		{
+			auto i = iconList.find( cmd );
 
-		if ( p ) { return p->ptr(); }
+			if ( i != iconList.end() ) return i->second.ptr();
+		}
 
 		clPtr<cicon> pic = new cicon( cmd, 16, 16 );
 		cicon* t = pic.ptr();
