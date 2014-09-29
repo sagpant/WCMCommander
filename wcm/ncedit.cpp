@@ -432,7 +432,16 @@ void EditWin::CursorCtrlRight( bool mark )
 
 	while ( StepRight( &p, &c ) )
 	{
-		cursor = p;
+		if ( p.line > cursor.line )
+		{
+			cursor = p;
+			cursor.pos = 0;
+			break;
+		}
+		else
+		{
+			cursor = p;
+		}
 
 		if ( EditBuf::GetCharGroup( c ) != group ) { break; }
 	}
