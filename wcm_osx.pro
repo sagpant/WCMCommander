@@ -27,6 +27,7 @@ SOURCES += wcm/nc.cpp \
     wcm/charsetdlg.cpp \
     wcm/color-style.cpp \
     wcm/dircalc.cpp \
+    wcm/globals.cpp \
     wcm/eloadsave.cpp \
     wcm/ext-app-ux.cpp \
     wcm/ext-app.cpp \
