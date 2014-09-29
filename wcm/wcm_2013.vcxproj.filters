@@ -82,6 +82,9 @@
     <ClCompile Include="dircalc.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>
+    <ClCompile Include="globals.cpp">
+      <Filter>%2a.cpp</Filter>
+    </ClCompile>
     <ClCompile Include="eloadsave.cpp">
       <Filter>%2a.cpp</Filter>
     </ClCompile>

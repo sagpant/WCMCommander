@@ -248,7 +248,7 @@ void SCListWin::DrawItem( wal::GC& gc, int n, crect rect )
 		unsigned fcColor = UiGetColor( uiFcColor, uiItem, &ucl, 0xFFFF );
 
 		/*
-		unsigned bg = ::wcmConfig.whiteStyle ? 0xFFFFFF : 0xB0B000;
+		unsigned bg = ::g_WcmConfig.whiteStyle ? 0xFFFFFF : 0xB0B000;
 		unsigned fg =  0;
 
 		unsigned sBg = InFocus() ? 0x800000 : 0x808080;

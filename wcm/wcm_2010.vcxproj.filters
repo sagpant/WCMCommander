@@ -21,6 +21,9 @@
     <ClCompile Include="color-style.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="dircalc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

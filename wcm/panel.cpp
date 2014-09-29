@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+#include "globals.h"
 #include "wcm-config.h"
 #include "ncfonts.h"
 #include "ncwin.h"
@@ -83,7 +84,7 @@ void PanelSearchWin::Paint( wal::GC& gc, const crect& paintRect )
 
 cfont* PanelSearchWin::GetChildFont( Win* w, int fontId )
 {
-	return dialogFont.ptr();
+	return g_DialogFont.ptr();
 }
 
 bool PanelSearchWin::Command( int id, int subId, Win* win, void* data )
@@ -535,7 +536,7 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	_viewMode( CheckMode( mode ) ), //MEDIUM),
 	_inOperState( false ),
 	_operData( ( NCDialogParent* )parent ),
-	_list( ::wcmConfig.panelShowHiddenFiles, ::wcmConfig.panelCaseSensitive )
+	_list( g_WcmConfig.panelShowHiddenFiles, g_WcmConfig.panelCaseSensitive )
 {
 	_lo.SetLineGrowth( 3 );
 	_lo.SetColGrowth( 1 );
@@ -671,8 +672,8 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 
 		if ( node ) { s.Copy( node->Name() ); }
 
-		bool a = _list.SetShowHidden( wcmConfig.panelShowHiddenFiles );
-		bool b = _list.SetCase( wcmConfig.panelCaseSensitive );
+		bool a = _list.SetShowHidden( g_WcmConfig.panelShowHiddenFiles );
+		bool b = _list.SetCase( g_WcmConfig.panelCaseSensitive );
 
 //		if (a || b)
 //		{
@@ -903,7 +904,7 @@ int PanelWin::GetXMargin() const
 {
 	int x = 0;
 
-	if ( wcmConfig.panelShowFolderIcons || wcmConfig.panelShowExecutableIcons )
+	if ( g_WcmConfig.panelShowFolderIcons || g_WcmConfig.panelShowExecutableIcons )
 	{
 		x += PANEL_ICON_SIZE;
 	}
@@ -993,7 +994,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( isDir )
 	{
-		if ( wcmConfig.panelShowFolderIcons )
+		if ( g_WcmConfig.panelShowFolderIcons )
 		{
 			switch ( p->extType )
 			{
@@ -1024,7 +1025,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	}
 	else if ( isExe )
 	{
-		if ( wcmConfig.panelShowExecutableIcons )
+		if ( g_WcmConfig.panelShowExecutableIcons )
 		{
 			executableIcon.DrawF( gc, x, y );
 		}
@@ -1364,7 +1365,7 @@ void PanelWin::DrawFooter( wal::GC& gc )
 		if ( selectedCn.count > 0 ) { ucl.Set( uiHaveSelected, true ); }
 
 		PanelCounter selectedCn = _list.SelectedCounter();
-		PanelCounter filesCn = _list.FilesCounter( wcmConfig.panelSelectFolders );
+		PanelCounter filesCn = _list.FilesCounter( g_WcmConfig.panelSelectFolders );
 		int hiddenCount = _list.HiddenCounter().count;
 
 		char b1[64];
@@ -1881,7 +1882,7 @@ bool PanelWin::EventMouse( cevent_mouse* pEvent )
 
 bool PanelWin::HideDotsInDir() const
 {
-	bool HideDots = !wcmConfig.panelShowDotsInRoot;
+	bool HideDots = !g_WcmConfig.panelShowDotsInRoot;
 
 	if ( _place.IsEmpty() ) { return HideDots; }
 
