@@ -65,6 +65,7 @@ SET(wcm_SOURCES
 	color-style.cpp
 	dircalc.cpp
 	eloadsave.cpp
+	globals.cpp
 	ext-app-ux.cpp
 	fileassociations.cpp
 	fileopers.cpp
@@ -135,6 +136,7 @@ SET(wcm_HEADERS
 	dircalc.h
 	eloadsave.h
 	ext-app.h
+	globals.h
 	fileopers.h
 	filesearch.h
 	fontdlg.h
