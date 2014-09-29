@@ -6,6 +6,7 @@
 
 #include "panel_list.h"
 #include "wcm-config.h"
+#include "globals.h"
 
 using namespace wal;
 
@@ -218,7 +219,7 @@ void PanelList::InvertSelection()
 		}
 		else
 		{
-			if ( !wcmConfig.panelSelectFolders && p->IsDir() ) { continue; }
+			if ( !g_WcmConfig.panelSelectFolders && p->IsDir() ) { continue; }
 
 			p->SetSelected();
 			selectedCn.AddOne( p->st.size );

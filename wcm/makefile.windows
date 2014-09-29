@@ -21,12 +21,37 @@ CC = gcc
 OBJDIR = obj
 
 OBJS = \
-	$(OBJDIR)/wal_tmpls.o \
-	$(OBJDIR)/wal.o\
-	$(OBJDIR)/wal_sys_api.o\
-	$(OBJDIR)/wal_charset.o\
-	$(OBJDIR)/wal_exceptions.o\
-	$(OBJDIR)/wal_files.o\
+	$(OBJDIR)/charsetdlg.o \
+	$(OBJDIR)/color-style.o\
+	$(OBJDIR)/dircalc.o \
+	$(OBJDIR)/eloadsave.o \
+	$(OBJDIR)/ext-app.o \
+	$(OBJDIR)/fileassociations.o \
+	$(OBJDIR)/fileopers.o \
+	$(OBJDIR)/filesearch.o\
+	$(OBJDIR)/ftplogon.o \
+	$(OBJDIR)/globals.o \
+	$(OBJDIR)/help.o\
+	$(OBJDIR)/helpres.o\
+	$(OBJDIR)/ltext.o \
+	$(OBJDIR)/ncdialogs.o \
+	$(OBJDIR)/ncedit.o \
+	$(OBJDIR)/ncfonts.o \
+	$(OBJDIR)/nchistory.o \
+	$(OBJDIR)/ncview.o \
+	$(OBJDIR)/ncwin.o \
+	$(OBJDIR)/operthread.o \
+	$(OBJDIR)/operwin.o \
+	$(OBJDIR)/panel.o \
+	$(OBJDIR)/panel_list.o \
+	$(OBJDIR)/search-dlg.o \
+	$(OBJDIR)/search-tools.o \
+	$(OBJDIR)/sftpdlg.o \
+	$(OBJDIR)/shell-tools.o \
+	$(OBJDIR)/shl.o \
+	$(OBJDIR)/shortcuts.o \
+	$(OBJDIR)/smblogon.o \
+	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/swl_button.o \
 	$(OBJDIR)/swl_editline.o  \
 	$(OBJDIR)/swl_layout.o    \
@@ -41,51 +66,27 @@ OBJS = \
 	$(OBJDIR)/swl_winbase.o     \
 	$(OBJDIR)/swl_wincore.o     \
 	$(OBJDIR)/swl_wincoreMS.o \
-	$(OBJDIR)/operthread.o \
-	$(OBJDIR)/operwin.o \
+	$(OBJDIR)/t-emulator.o \
+	$(OBJDIR)/tcp_sock.o \
+	$(OBJDIR)/termwin.o \
+	$(OBJDIR)/toolbar.o \
+	$(OBJDIR)/unicode_lc.o \
+	$(OBJDIR)/ux_util.o\
+	$(OBJDIR)/vfs-ftp.o \
+	$(OBJDIR)/vfs-sftp2.o \
+	$(OBJDIR)/vfs-smb.o \
+	$(OBJDIR)/vfs-uri.o \
 	$(OBJDIR)/vfs.o \
 	$(OBJDIR)/vfspath.o \
-	$(OBJDIR)/vfs-smb.o \
-	$(OBJDIR)/tcp_sock.o \
-	$(OBJDIR)/vfs-ftp.o \
-	$(OBJDIR)/vfs-uri.o \
-	$(OBJDIR)/termwin.o \
-	$(OBJDIR)/ncdialogs.o \
 	$(OBJDIR)/w32cons.o \
 	$(OBJDIR)/w32util.o \
-	$(OBJDIR)/unicode_lc.o \
-	$(OBJDIR)/nchistory.o \
-	$(OBJDIR)/panel_list.o \
-	$(OBJDIR)/panel.o \
-	$(OBJDIR)/ncwin.o \
-	$(OBJDIR)/ncedit.o \
-	$(OBJDIR)/ncview.o \
-	$(OBJDIR)/fileopers.o \
-	$(OBJDIR)/eloadsave.o \
-	$(OBJDIR)/ext-app.o \
-	$(OBJDIR)/smblogon.o \
+	$(OBJDIR)/wal.o\
+	$(OBJDIR)/wal_charset.o\
+	$(OBJDIR)/wal_exceptions.o\
+	$(OBJDIR)/wal_files.o\
+	$(OBJDIR)/wal_sys_api.o\
+	$(OBJDIR)/wal_tmpls.o \
 	$(OBJDIR)/wcm-config.o \
-	$(OBJDIR)/ftplogon.o \
-	$(OBJDIR)/charsetdlg.o \
-	$(OBJDIR)/vfs-sftp2.o \
-	$(OBJDIR)/sftpdlg.o \
-	$(OBJDIR)/color-style.o\
-	$(OBJDIR)/filesearch.o\
-	$(OBJDIR)/help.o\
-	$(OBJDIR)/helpres.o\
-	$(OBJDIR)/ux_util.o\
-	$(OBJDIR)/strconfig.o \
-	$(OBJDIR)/shortcuts.o \
-	$(OBJDIR)/fileassociations.o \
-	$(OBJDIR)/shl.o \
-	$(OBJDIR)/ncfonts.o \
-	$(OBJDIR)/toolbar.o \
-	$(OBJDIR)/search-dlg.o \
-	$(OBJDIR)/search-tools.o \
-	$(OBJDIR)/shell-tools.o \
-	$(OBJDIR)/t-emulator.o \
-	$(OBJDIR)/dircalc.o \
-	$(OBJDIR)/ltext.o \
 	$(OBJDIR)/wcm.res
 
 all:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
@@ -96,10 +97,10 @@ $(OBJDIR)/wcm.res: $(HW) $(HS) $(HN) wcm.rc
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
-	
+
 $(OBJDIR)/ncvfs.o: $(HW) $(HS) $(HN) ncvfs.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) ncvfs.cpp -o $(OBJDIR)/ncvfs.o
-	
+
 $(OBJDIR)/eloadsave.o: $(HW) $(HS) $(HN) eloadsave.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) eloadsave.cpp -o $(OBJDIR)/eloadsave.o
 

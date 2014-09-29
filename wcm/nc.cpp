@@ -155,9 +155,9 @@ int main( int argc, char** argv )
 		try
 		{
 			InitConfigPath();
-			wcmConfig.Load( NULL );
+			g_WcmConfig.Load( NULL );
 
-			const char* langId = wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+";
+			const char* langId = g_WcmConfig.systemLang.data() ? g_WcmConfig.systemLang.data() : "+";
 #ifdef _WIN32
 			InitLocale( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "lang" ).data() ).data(), langId );
 #else
@@ -170,8 +170,8 @@ int main( int argc, char** argv )
 #endif
 
 
-//			SetEditorColorStyle(wcmConfig.editColorMode);
-//			SetViewerColorStyle(wcmConfig.viewColorMode);
+//			SetEditorColorStyle(g_WcmConfig.editColorMode);
+//			SetViewerColorStyle(g_WcmConfig.viewColorMode);
 		}
 		catch ( cexception* ex )
 		{
@@ -183,7 +183,7 @@ int main( int argc, char** argv )
 
 		AppInit();
 
-		SetColorStyle( wcmConfig.styleColorMode );
+		SetColorStyle( g_WcmConfig.styleColorMode );
 
 		OldSysGetFont = SysGetFont;
 		SysGetFont = MSysGetFont;
@@ -204,7 +204,7 @@ int main( int argc, char** argv )
 		NCWin ncWin;
 
 		// reload config with a valid NCWin
-		wcmConfig.Load( &ncWin );
+		g_WcmConfig.Load( &ncWin );
 
 		ncWin.Enable();
 		ncWin.Show();

@@ -1387,7 +1387,7 @@ void HelpFile::Load()
 
 	loaded = true;
 
-	const char* langId = wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+";
+	const char* langId = g_WcmConfig.systemLang.data() ? g_WcmConfig.systemLang.data() : "+";
 
 	if ( langId[0] == '-' ) { return; }
 

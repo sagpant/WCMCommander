@@ -6,15 +6,23 @@
 
 #pragma once
 
-//unix
-#define UNIX_PREFIX "/usr" //or "/usr/local"
-#define UNIX_APP_NAME "wcm" //for   UNIX_PREFIX "/" UNIX_APP_NAME    and "~/." UNIX_APP_NAME
+#include "swl/swl.h"
+#include "wcm-config.h"
 
-
-//windows
+// Windows
 #define WIN_REGISTRY_FIRM  "Wal" //firm name in windows registry
 #define WIN_REGISTRY_APP   "Wal commander" //app name in windows registry
 
+// Unix
+#define UNIX_CONFIG_DIR_PATH  "/usr/share/wcm"
 
-////////////////////////////////
-#define UNIX_CONFIG_DIR_PATH  UNIX_PREFIX "/share" "/" UNIX_APP_NAME
+extern WcmConfig g_WcmConfig;
+
+extern clPtr<cfont> panelFont;
+extern clPtr<cfont> viewerFont;
+extern clPtr<cfont> editorFont;
+extern clPtr<cfont> dialogFont;
+extern clPtr<cfont> terminalFont;
+extern clPtr<cfont> helpTextFont;
+extern clPtr<cfont> helpBoldFont;
+extern clPtr<cfont> helpHeadFont;
