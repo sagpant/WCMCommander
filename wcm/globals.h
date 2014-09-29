@@ -18,11 +18,11 @@
 
 extern WcmConfig g_WcmConfig;
 
-extern clPtr<cfont> panelFont;
-extern clPtr<cfont> viewerFont;
-extern clPtr<cfont> editorFont;
-extern clPtr<cfont> dialogFont;
-extern clPtr<cfont> terminalFont;
-extern clPtr<cfont> helpTextFont;
-extern clPtr<cfont> helpBoldFont;
-extern clPtr<cfont> helpHeadFont;
+extern clPtr<cfont> g_PanelFont;
+extern clPtr<cfont> g_ViewerFont;
+extern clPtr<cfont> g_EditorFont;
+extern clPtr<cfont> g_DialogFont;
+extern clPtr<cfont> g_TerminalFont;
+extern clPtr<cfont> g_HelpTextFont;
+extern clPtr<cfont> g_HelpBoldFont;
+extern clPtr<cfont> g_HelpHeadFont;

@@ -33,45 +33,46 @@ clPtr<wal::GC> defaultGC;
 const char* appName = "Wal Commander GitHub Edition";
 
 cfont* ( *OldSysGetFont )( Win* w, int id ) = 0;
+
 cfont* MSysGetFont( Win* w, int id )
 {
 	if ( w )
 	{
 		if ( w->UiGetClassId() ==  uiClassPanel )
 		{
-			return panelFont.ptr();
+			return g_PanelFont.ptr();
 		}
 
 		if ( w->UiGetClassId() == uiClassVListWin )
 		{
-			return  panelFont.ptr();
+			return g_PanelFont.ptr();
 		}
 
 		if ( w->UiGetClassId() == uiClassTerminal )
 		{
-			return  terminalFont.ptr();
+			return g_TerminalFont.ptr();
 		}
 
 		if ( w->UiGetClassId() == uiClassEditor )
 		{
-			return  editorFont.ptr();
+			return g_EditorFont.ptr();
 		}
 
 		if ( w->UiGetClassId() == uiClassViewer )
 		{
-			return  viewerFont.ptr();
+			return g_ViewerFont.ptr();
 		}
 
-		if (  w->UiGetClassId() ==  uiClassMenuBar ||
-		      w->UiGetClassId() ==  uiClassPopupMenu ||
-		      w->UiGetClassId() ==  uiClassToolTip ||
+		if (  w->UiGetClassId() == uiClassMenuBar ||
+		      w->UiGetClassId() == uiClassPopupMenu ||
+		      w->UiGetClassId() == uiClassToolTip ||
 		      w->Parent() && w->UiGetClassId() == uiClassButton )
 		{
-			return dialogFont.ptr();
+			return g_DialogFont.ptr();
 		}
 	}
 
-	return editorFont.ptr();
+	return g_EditorFont.ptr();
 }
 
 

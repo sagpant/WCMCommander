@@ -41,7 +41,7 @@ void NCDialog::CloseDialog( int cmd )
 
 cfont* NCDialog::GetChildFont( Win* w, int fontId )
 {
-	return dialogFont.ptr();
+	return g_DialogFont.ptr();
 }
 
 bool NCDialog::Command( int id, int subId, Win* win, void* data )

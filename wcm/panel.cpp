@@ -84,7 +84,7 @@ void PanelSearchWin::Paint( wal::GC& gc, const crect& paintRect )
 
 cfont* PanelSearchWin::GetChildFont( Win* w, int fontId )
 {
-	return dialogFont.ptr();
+	return g_DialogFont.ptr();
 }
 
 bool PanelSearchWin::Command( int id, int subId, Win* win, void* data )

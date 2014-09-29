@@ -8,11 +8,11 @@
 
 WcmConfig g_WcmConfig;
 
-clPtr<cfont> panelFont;
-clPtr<cfont> viewerFont;
-clPtr<cfont> editorFont;
-clPtr<cfont> dialogFont;
-clPtr<cfont> terminalFont;
-clPtr<cfont> helpTextFont;
-clPtr<cfont> helpBoldFont;
-clPtr<cfont> helpHeadFont;
+clPtr<cfont> g_PanelFont;
+clPtr<cfont> g_ViewerFont;
+clPtr<cfont> g_EditorFont;
+clPtr<cfont> g_DialogFont;
+clPtr<cfont> g_TerminalFont;
+clPtr<cfont> g_HelpTextFont;
+clPtr<cfont> g_HelpBoldFont;
+clPtr<cfont> g_HelpHeadFont;

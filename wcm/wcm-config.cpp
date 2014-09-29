@@ -727,14 +727,14 @@ WcmConfig::WcmConfig()
 
 void WcmConfig::ImpCurrentFonts()
 {
-	panelFontUri = new_char_str( panelFont.ptr() ? panelFont->uri() : "" );
-	viewerFontUri = new_char_str( viewerFont.ptr() ? viewerFont->uri() : "" );
-	editorFontUri = new_char_str( editorFont.ptr() ? editorFont->uri() : "" );
-	dialogFontUri  = new_char_str( dialogFont.ptr() ? dialogFont->uri() : "" );
-	terminalFontUri  = new_char_str( terminalFont.ptr() ? terminalFont->uri() : "" );
-	helpTextFontUri  = new_char_str( helpTextFont.ptr() ? helpTextFont->uri() : "" );
-	helpBoldFontUri  = new_char_str( helpBoldFont.ptr() ? helpBoldFont->uri() : "" );
-	helpHeadFontUri  = new_char_str( helpHeadFont.ptr() ? helpHeadFont->uri() : "" );
+	panelFontUri = new_char_str( g_PanelFont.ptr() ? g_PanelFont->uri() : "" );
+	viewerFontUri = new_char_str( g_ViewerFont.ptr() ? g_ViewerFont->uri() : "" );
+	editorFontUri = new_char_str( g_EditorFont.ptr() ? g_EditorFont->uri() : "" );
+	dialogFontUri  = new_char_str( g_DialogFont.ptr() ? g_DialogFont->uri() : "" );
+	terminalFontUri  = new_char_str( g_TerminalFont.ptr() ? g_TerminalFont->uri() : "" );
+	helpTextFontUri  = new_char_str( g_HelpTextFont.ptr() ? g_HelpTextFont->uri() : "" );
+	helpBoldFontUri  = new_char_str( g_HelpBoldFont.ptr() ? g_HelpBoldFont->uri() : "" );
+	helpHeadFontUri  = new_char_str( g_HelpHeadFont.ptr() ? g_HelpHeadFont->uri() : "" );
 }
 
 void WcmConfig::MapInt( const char* Section, const char* Name, int* pInt, int def )
@@ -1762,14 +1762,14 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 {
 	g_WcmConfig.ImpCurrentFonts();
 	ccollect<StyleOptDialog::Node> list;
-	list.append( StyleOptDialog::Node(  _LT( "Panel" ) ,  false,   panelFont.ptr(), &g_WcmConfig.panelFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Dialog" ),  false,   dialogFont.ptr(), &g_WcmConfig.dialogFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Viewer" ),  true,    viewerFont.ptr(), &g_WcmConfig.viewerFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Editor" ),  true,    editorFont.ptr(), &g_WcmConfig.editorFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Terminal" ),   true, terminalFont.ptr(), &g_WcmConfig.terminalFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Help text" ),  false,   helpTextFont.ptr(), &g_WcmConfig.helpTextFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Help bold text" ),   false,   helpBoldFont.ptr(), &g_WcmConfig.helpBoldFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Help header text" ), false,   helpHeadFont.ptr(), &g_WcmConfig.helpHeadFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Panel" ) ,  false,   g_PanelFont.ptr(), &g_WcmConfig.panelFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Dialog" ),  false,   g_DialogFont.ptr(), &g_WcmConfig.dialogFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Viewer" ),  true,    g_ViewerFont.ptr(), &g_WcmConfig.viewerFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Editor" ),  true,    g_EditorFont.ptr(), &g_WcmConfig.editorFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Terminal" ),   true, g_TerminalFont.ptr(), &g_WcmConfig.terminalFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Help text" ),  false,   g_HelpTextFont.ptr(), &g_WcmConfig.helpTextFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Help bold text" ),   false,   g_HelpBoldFont.ptr(), &g_WcmConfig.helpBoldFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Help header text" ), false,   g_HelpHeadFont.ptr(), &g_WcmConfig.helpHeadFontUri ) );
 
 	StyleOptDialog dlg( parent, &list );
 

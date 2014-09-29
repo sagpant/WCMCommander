@@ -4067,7 +4067,7 @@ void ButtonWin::OnChangeStyles()
 	}
 
 	wal::GC gc( ( Win* )0 );
-	gc.Set( dialogFont.ptr() );
+	gc.Set( g_DialogFont.ptr() );
 	cpoint maxW( 1, 1 );
 
 	for ( i = 0; i < 10 && BWNums[i]; i++ )
@@ -4148,7 +4148,7 @@ void ButtonWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.FillRect( r );
 	gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 ) );
 
-	gc.Set( dialogFont.ptr() );
+	gc.Set( g_DialogFont.ptr() );
 
 	for ( int i = 0; i < 10; i++ )
 	{
@@ -4235,7 +4235,7 @@ static void _DrawUnicode( wal::GC& gc, const crect& rect, const unicode_t* s, in
 void EditorHeadWin::OnChangeStyles()
 {
 	wal::GC gc( this );
-	gc.Set( dialogFont.ptr() ); //GetFont());
+	gc.Set( g_DialogFont.ptr() ); //GetFont());
 	cpoint p = gc.GetTextExtents( ABCString );
 	chW = p.x /= ABCStringLen;
 	chH = p.y;
@@ -4359,7 +4359,7 @@ bool EditorHeadWin::Broadcast( int id, int subId, Win* win, void* data )
 	if ( win == _edit )
 	{
 		wal::GC gc( this );
-		gc.Set( dialogFont.ptr() );
+		gc.Set( g_DialogFont.ptr() );
 
 		if ( UpdateSym() ) { DrawSym( gc ); }
 
@@ -4399,7 +4399,7 @@ void EditorHeadWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.SetFillColor( bgColor );
 	gc.FillRect( r );
 	Draw3DButtonW2( gc, r, bgColor, true );
-	gc.Set( dialogFont.ptr() ); //GetFont());
+	gc.Set( g_DialogFont.ptr() ); //GetFont());
 
 	r.Dec();
 	r.Dec();
@@ -4458,7 +4458,7 @@ EditorHeadWin::~EditorHeadWin() {}
 void ViewerHeadWin::OnChangeStyles()
 {
 	wal::GC gc( this );
-	gc.Set( dialogFont.ptr() ); //GetFont());
+	gc.Set( g_DialogFont.ptr() ); //GetFont());
 	cpoint p = gc.GetTextExtents( ABCString );
 	chW = p.x /= ABCStringLen;
 	chH = p.y;
@@ -4584,7 +4584,7 @@ bool ViewerHeadWin::Broadcast( int id, int subId, Win* win, void* data )
 	if ( win == _view )
 	{
 		wal::GC gc( this );
-		gc.Set( dialogFont.ptr() );
+		gc.Set( g_DialogFont.ptr() );
 
 		if ( UpdateCol() ) { DrawCol( gc ); }
 
@@ -4623,7 +4623,7 @@ void ViewerHeadWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.SetFillColor( bgColor );
 	gc.FillRect( r );
 	Draw3DButtonW2( gc, r, bgColor, true );
-	gc.Set( dialogFont.ptr() ); //GetFont());
+	gc.Set( g_DialogFont.ptr() ); //GetFont());
 
 	r.Dec();
 	r.Dec();
