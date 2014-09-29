@@ -405,7 +405,14 @@ void EditWin::CursorCtrlLeft( bool mark )
 
 	while ( StepLeft( &p, &c ) && EditBuf::GetCharGroup( c ) == group )
 	{
-		cursor = p;
+		if ( cursor.pos > 0 )
+		{
+			cursor = p;
+		}
+		else
+		{
+			cursor.pos = 0;
+		}
 	}
 
 	recomendedCursorCol = -1;
