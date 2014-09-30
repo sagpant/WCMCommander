@@ -93,8 +93,8 @@ EditWin::EditWin( Win* parent )
 	    vscroll( 0, this, true, false ),
 	    charH( 1 ),
 	    charW( 1 ),
-	    autoIdent( wcmConfig.editAutoIdent ),
-	    tabSize( wcmConfig.editTabSize ),
+	    autoIdent( g_WcmConfig.editAutoIdent ),
+	    tabSize( g_WcmConfig.editTabSize ),
 	    firstLine( 0 ),
 	    colOffset( 0 ),
 	    recomendedCursorCol( -1 ),
@@ -400,12 +400,19 @@ void EditWin::CursorCtrlLeft( bool mark )
 
 	if ( !StepLeft( &p, &c ) ) { return; }
 
-	int group = GetCharGroup( c );
+	int group = EditBuf::GetCharGroup( c );
 	cursor = p;
 
-	while ( StepLeft( &p, &c ) && GetCharGroup( c ) == group )
+	while ( StepLeft( &p, &c ) && EditBuf::GetCharGroup( c ) == group )
 	{
-		cursor = p;
+		if ( cursor.pos > 0 )
+		{
+			cursor = p;
+		}
+		else
+		{
+			cursor.pos = 0;
+		}
 	}
 
 	recomendedCursorCol = -1;
@@ -428,13 +435,22 @@ void EditWin::CursorCtrlRight( bool mark )
 	EditString& str = text.Get( p.line );
 	unicode_t c = str.Len() > 0 ? charset->GetChar( str.Get() + p.pos, str.Get() + str.Len() ) : ' ';
 
-	int group = GetCharGroup( c );
+	int group = EditBuf::GetCharGroup( c );
 
 	while ( StepRight( &p, &c ) )
 	{
-		cursor = p;
+		if ( p.line > cursor.line )
+		{
+			cursor = p;
+			cursor.pos = 0;
+			break;
+		}
+		else
+		{
+			cursor = p;
+		}
 
-		if ( GetCharGroup( c ) != group ) { break; }
+		if ( EditBuf::GetCharGroup( c ) != group ) { break; }
 	}
 
 	recomendedCursorCol = -1;
@@ -1101,13 +1117,13 @@ void EditWin::Del( bool DeleteWord ) //!Undo
 				EditString& str = text.Get( p.line );
 				unicode_t c = str.Len() > 0 ? charset->GetChar( str.Get() + p.pos, str.Get() + str.Len() ) : ' ';
 
-				int group = GetCharGroup( c );
+				int group = EditBuf::GetCharGroup( c );
 
 				while ( StepRight( &p, &c ) )
 				{
 					cursor = p;
 
-					if ( GetCharGroup( c ) != group ) { break; }
+					if ( EditBuf::GetCharGroup( c ) != group ) { break; }
 				}
 
 				totalDelCount = cursor.pos - oldcursor.pos;
@@ -1195,10 +1211,10 @@ void EditWin::Backspace( bool DeleteWord ) //!Undo
 
 				if ( !StepLeft( &p, &c ) ) { return; }
 
-				int group = GetCharGroup( c );
+				int group = EditBuf::GetCharGroup( c );
 				cursor = p;
 
-				while ( StepLeft( &p, &c ) && GetCharGroup( c ) == group )
+				while ( StepLeft( &p, &c ) && EditBuf::GetCharGroup( c ) == group )
 				{
 					if ( cursor.line == p.line )
 					{
@@ -1320,7 +1336,7 @@ void EditWin::SetCharset( charset_struct* cs )
 	CursorLeft( false );
 	SendChanges();
 	marker = cursor;
-	EnableShl( wcmConfig.editShl );
+	EnableShl( g_WcmConfig.editShl );
 	Refresh();
 }
 
@@ -1541,8 +1557,8 @@ bool EditWin::Broadcast( int id, int subId, Win* win, void* data )
 {
 	if ( id == ID_CHANGED_CONFIG_BROADCAST )
 	{
-		autoIdent = wcmConfig.editAutoIdent;
-		tabSize = wcmConfig.editTabSize;
+		autoIdent = g_WcmConfig.editAutoIdent;
+		tabSize = g_WcmConfig.editTabSize;
 
 		if ( IsVisible() ) { Invalidate(); }
 
@@ -1687,7 +1703,7 @@ void EditWin::Load( clPtr<FS> fs, FSPath& path, MemFile& f )
 
 	_changed = false;
 
-	EnableShl( wcmConfig.editShl );
+	EnableShl( g_WcmConfig.editShl );
 }
 
 void EditWin::Clear()

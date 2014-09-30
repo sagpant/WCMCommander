@@ -9,6 +9,7 @@
 #include "terminal.h"
 #include <termios.h>
 #include "wcm-config.h"
+#include "globals.h"
 #include <sys/ioctl.h>
 
 #ifdef _WIN32
@@ -391,7 +392,7 @@ void Terminal::Key( unsigned key, unsigned ch )
 			return;
 
 		case VK_BACK:
-			Output( wcmConfig.terminalBackspaceKey ? 8 : 127 );
+			Output( g_WcmConfig.terminalBackspaceKey ? 8 : 127 );
 			return; //херово конечно без блокировок обращаться, но во время работы терминала конфиг не меняется
 
 		case VK_DELETE:

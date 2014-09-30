@@ -101,6 +101,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>..\libssh2\static32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -178,6 +179,7 @@
     <ClCompile Include="dircalc.cpp" />
     <ClCompile Include="eloadsave.cpp" />
     <ClCompile Include="ext-app.cpp" />
+    <ClCompile Include="globals.cpp" />
     <ClCompile Include="fileassociations.cpp" />
     <ClCompile Include="fileopers.cpp" />
     <ClCompile Include="filesearch.cpp" />

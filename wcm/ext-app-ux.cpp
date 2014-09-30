@@ -15,7 +15,7 @@ using namespace wal;
 #include <dirent.h>
 #include <sys/time.h>
 
-
+#include <unordered_map>
 
 //alias надо применить
 
@@ -86,7 +86,7 @@ class MimeSubclasses
 {
 	std::vector<char> fileName;
 	time_t mtime;
-	cinthash< int, ccollect<int> > hash;
+	std::unordered_map< int, ccollect<int> > hash;
 public:
 	MimeSubclasses( const char* fn ): fileName( new_char_str( fn ) ), mtime( 0 ) { }
 	int GetParentList( int mime, ccollect<int>& list );
@@ -98,15 +98,15 @@ class MimeAliases
 {
 	std::vector<char> fileName;
 	time_t mtime;
-	cinthash<int, int> data;
+	std::unordered_map<int, int> data;
 public:
 	MimeAliases( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
 	void Refresh();
 
 	int Check( int mime )
 	{
-		int* pn = data.exist( mime );
-		return pn ? *pn : mime;
+		auto i = data.find( mime );
+		return i != data.end() ? i->second : mime;
 	}
 	~MimeAliases();
 };
@@ -116,7 +116,7 @@ class MimeDB: public iIntrusiveCounter
 	MimeGlobs globs;
 	MimeSubclasses subclasses;
 	MimeAliases aliases;
-	void AddParentsRecursive( int mime, ccollect<int>* pList, cinthash<int, bool>* pHash );
+	void AddParentsRecursive( int mime, ccollect<int>* pList, std::unordered_map<int, bool>* pHash );
 public:
 	MimeDB( const char* location );
 	void Refresh();
@@ -129,7 +129,7 @@ class AppDefListFile: public iIntrusiveCounter
 {
 	std::vector<char> fileName;
 	time_t mtime;
-	cinthash<int, ccollect<int, 1> > hash;
+	std::unordered_map<int, ccollect<int, 1> > hash;
 public:
 	AppDefListFile( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
 	void Refresh();
@@ -150,8 +150,8 @@ struct AppNode: public iIntrusiveCounter
 class AppDB: public iIntrusiveCounter
 {
 	std::vector<char> appDefsPrefix;
-	cinthash<int, clPtr<AppNode> > apps;
-	cinthash<int, ccollect<int> > mimeMapHash;
+	std::unordered_map<int, clPtr<AppNode> > apps;
+	std::unordered_map<int, ccollect<int> > mimeMapHash;
 
 	bool ReadAppDesctopFile( const char* fName );
 
@@ -274,11 +274,11 @@ bool ExeFileExist( const char* name )
 #define MIMEDEBUG
 
 #ifdef MIMEDEBUG
-static cinthash<int, std::vector<char> > mimeIdToNameHash;
+static std::unordered_map<int, std::vector<char> > mimeIdToNameHash;
 const char* GetMimeName( int n )
 {
-	std::vector<char>* p = mimeIdToNameHash.exist( n );
-	return p ? p->data() : "";
+	auto i = mimeIdToNameHash.find( n );
+	return i != mimeIdToNameHash.end() ? i->second.data() : "";
 }
 #endif
 
@@ -300,7 +300,7 @@ static int GetMimeID( const char* mimeName )
 	return id;
 }
 
-static cinthash<int, std::vector<char> > appIdToNameHash;
+static std::unordered_map<int, std::vector<char> > appIdToNameHash;
 
 static int GetAppID( const char* appName )
 {
@@ -320,8 +320,9 @@ static int GetAppID( const char* appName )
 
 static const char* GetAppName( int id )
 {
-	std::vector<char>* p = appIdToNameHash.exist( id );
-	return p ? p->data() : "";
+	auto i = appIdToNameHash.find( id );
+
+	return ( i == appIdToNameHash.end() ) ? "" : i->second.data();
 }
 
 
@@ -592,7 +593,9 @@ void MimeSubclasses::Refresh()
 
 int MimeSubclasses::GetParentList( int mime, ccollect<int>& list )
 {
-	ccollect<int>* p = hash.exist( mime );
+	auto i = hash.find( mime );
+
+	ccollect<int>* p = ( i == hash.end() ) ? nullptr : &(i->second);
 
 	if ( p )
 	{
@@ -663,7 +666,7 @@ MimeDB::MimeDB( const char* location )
 }
 
 
-void MimeDB::AddParentsRecursive( int mime, ccollect<int>* pList, cinthash<int, bool>* pHash )
+void MimeDB::AddParentsRecursive( int mime, ccollect<int>* pList, std::unordered_map<int, bool>* pHash )
 {
 	ccollect<int> parentList;
 
@@ -672,14 +675,16 @@ void MimeDB::AddParentsRecursive( int mime, ccollect<int>* pList, cinthash<int, 
 		int i;
 
 		for ( i = 0; i < parentList.count(); i++ )
-			if ( !pHash->exist( parentList[i] ) )
+		{
+			bool Exists = pHash->find( parentList[i] ) != pHash->end();
+			if ( !Exists )
 			{
 				pList->append( parentList[i] );
-				pHash->get( parentList[i] ) = true;
+				(*pHash)[ parentList[i] ] = true;
 
 				AddParentsRecursive( parentList[i], pList, pHash );
 			}
-
+		}
 //		for (i=0; i<parentList.count(); i++)
 //			AddParentsRecursive(parentList[i], pList, pHash);
 	}
@@ -699,18 +704,21 @@ int MimeDB::GetMimeList( const unicode_t* fileName, ccollect<int>& outList )
 	if ( globs.GetMimeList( fileName, temp1 ) > 0 )
 	{
 
-		cinthash<int, bool> hash;
+		std::unordered_map<int, bool> hash;
 		int i;
 
 		for ( i = 0; i < temp1.count(); i++ )
-			if ( !hash.exist( temp1[i] ) )
+		{
+			bool Exists = hash.find( temp1[i] ) != hash.end(); 
+
+			if ( !Exists )
 			{
 				outList.append( temp1[i] );
-				hash[temp1[i]] = true;
+				hash[ temp1[i] ] = true;
 
 				AddParentsRecursive( temp1[i], &outList, &hash );
 			}
-
+		}
 //		for (i=0; i<temp1.count(); i++)
 //			AddParentsRecursive(temp1[i], &outList, &hash);
 	}
@@ -729,7 +737,9 @@ AppDefListFile::~AppDefListFile() {}
 
 int AppDefListFile::GetAppList( int mime, ccollect<int>& appList )
 {
-	ccollect<int, 1>* p = hash.exist( mime );
+	auto i = hash.find( mime );
+
+	ccollect<int, 1>* p = ( i == hash.end() ) ? nullptr : &(i->second);
 
 	if ( p )
 	{
@@ -905,13 +915,17 @@ err:
 
 AppNode* AppDB::GetApp( int id )
 {
-	clPtr<AppNode>* p = apps.exist( id );
+	auto i = apps.find( id );
+
+	clPtr<AppNode>* p = ( i == apps.end() ) ? nullptr : &(i->second);
 
 	if ( !p )
 	{
 		if ( !ReadAppDesctopFile( GetAppName( id ) ) ) { return 0; }
 
-		p = apps.exist( id );
+		i = apps.find( id );
+
+		p = ( i == apps.end() ) ? nullptr : &(i->second);
 	}
 
 	return p ? p->ptr() : 0;
@@ -920,7 +934,10 @@ AppNode* AppDB::GetApp( int id )
 int AppDB::GetAppList( int mime, ccollect<int>& appList )
 {
 	defList.GetAppList( mime, appList );
-	ccollect<int>* p = mimeMapHash.exist( mime );
+
+	auto i = mimeMapHash.find( mime );
+
+	ccollect<int>* p = ( i == mimeMapHash.end() ) ? nullptr : &(i->second);
 
 	if ( p )
 	{
@@ -940,7 +957,7 @@ bool AppDB::ReadAppDesctopFile( const char* name )
 {
 	int id = GetAppID( name );
 
-	if ( apps.exist( id ) ) { return true; }
+	if ( apps.find( id ) != apps.end() ) { return true; }
 
 	clPtr<AppNode> app = new AppNode();
 
@@ -1160,7 +1177,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 	if ( mimeDb->GetMimeList( fileName, mimeList ) )
 	{
 		int i;
-		cinthash<int, bool> hash;
+		std::unordered_map<int, bool> hash;
 
 		for ( i = 0; i < mimeList.count(); i++ )
 		{
@@ -1174,7 +1191,9 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 			appDb->GetAppList( mimeList[i], appList );
 
 			for ( int j = 0; j < appList.count(); j++ )
-				if ( !hash.exist( appList[j] ) )
+			{
+				bool Exists = hash.find( appList[j] ) != hash.end();
+				if ( !Exists )
 				{
 					hash[appList[j]] = true;
 
@@ -1185,6 +1204,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 						list.append( p );
 					}
 				}
+			}
 		}
 	}
 

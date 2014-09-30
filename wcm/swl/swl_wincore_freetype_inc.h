@@ -1,5 +1,7 @@
 #ifdef USEFREETYPE
 
+#include <unordered_map>
+
 namespace FTU
 {
 
@@ -115,7 +117,8 @@ namespace FTU
 		int pxHeight;
 		int _size;
 
-		cinthash<unicode_t, CharInfo> ciHash;
+		std::unordered_map<unicode_t, CharInfo> ciHash;
+
 		void Clear() { if ( face )  { FT_Done_Face( face ); face = 0; imCache.Clear(); ciHash.clear(); } }
 
 		int SetSize( int size, int xRes, int yRes );
@@ -493,7 +496,9 @@ namespace FTU
 
 		for ( int i = 0; i < count; i++, text++ )
 		{
-			CharInfo* pInfo = ciHash.exist( *text );
+			auto iter = ciHash.find( *text );
+
+			CharInfo* pInfo = ( iter == ciHash.end() ) ? nullptr : &(iter->second);
 
 			if ( !pInfo )
 			{
@@ -503,7 +508,8 @@ namespace FTU
 				if ( !slot ) { continue; }
 
 				CharInfo info( slot );
-				pInfo = &( ciHash[c] = info );
+				ciHash[c] = info;
+				pInfo = &( ciHash[c] );
 			}
 
 			w += pInfo->pxWidth;
@@ -517,8 +523,9 @@ namespace FTU
 		int bg = gc.FillRgb();
 		int fg = gc.TextRgb();
 
+		auto i = ciHash.find( c );
 
-		CharInfo* pInfo = ciHash.exist( c );
+		CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &(i->second);
 
 		if ( pInfo )
 		{
@@ -564,7 +571,9 @@ namespace FTU
 		int x = *px;
 		int y = *py;
 
-		CharInfo* pInfo = ciHash.exist( c );
+		auto i = ciHash.find( c );
+
+		CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &(i->second);
 
 		if ( !pInfo )
 		{

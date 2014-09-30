@@ -57,8 +57,8 @@ using namespace wal;
 #	endif
 #endif
 
-
-static char verString[] = "Wal Commander v 0.17.0 GitHub Edition (" __DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
+#include "wcm-version.h"
+static char verString[] = "Wal Commander v " WCM_VERSION " GitHub Edition (" __DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
 
 struct HelpStyle
 {
@@ -1387,7 +1387,7 @@ void HelpFile::Load()
 
 	loaded = true;
 
-	const char* langId = wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+";
+	const char* langId = g_WcmConfig.systemLang.data() ? g_WcmConfig.systemLang.data() : "+";
 
 	if ( langId[0] == '-' ) { return; }
 
@@ -1526,10 +1526,10 @@ HelpWin::HelpWin( const char* theme, Win* parent, crect* rect )
 	   vScroll( 0, this, true, true ),
 	   hScroll( 0, this, false ),
 	   layout( 4, 4 ),
-	   style_head( helpHeadFont.ptr(), UiGetColor( uiColor, uiStyleHead, 0, 0 ), UiGetColor( uiBackground, uiStyleHead, 0, 0xFFFFFF ) ),
-	   style_def ( helpTextFont.ptr(), UiGetColor( uiColor, uiStyleDef, 0, 0 ), UiGetColor( uiBackground, uiStyleDef, 0, 0xFFFFFF ) ),
-	   style_red ( helpTextFont.ptr(), UiGetColor( uiColor, uiStyleRed, 0, 0 ), UiGetColor( uiBackground, uiStyleRed, 0, 0xFFFFFF ) ),
-	   style_bold( helpBoldFont.ptr(), UiGetColor( uiColor, uiStyleBold, 0, 0 ), UiGetColor( uiBackground, uiStyleBold, 0, 0xFFFFFF ) )
+	   style_head( g_HelpHeadFont.ptr(), UiGetColor( uiColor, uiStyleHead, 0, 0 ), UiGetColor( uiBackground, uiStyleHead, 0, 0xFFFFFF ) ),
+	   style_def ( g_HelpTextFont.ptr(), UiGetColor( uiColor, uiStyleDef, 0, 0 ), UiGetColor( uiBackground, uiStyleDef, 0, 0xFFFFFF ) ),
+	   style_red ( g_HelpTextFont.ptr(), UiGetColor( uiColor, uiStyleRed, 0, 0 ), UiGetColor( uiBackground, uiStyleRed, 0, 0xFFFFFF ) ),
+	   style_bold( g_HelpBoldFont.ptr(), UiGetColor( uiColor, uiStyleBold, 0, 0 ), UiGetColor( uiBackground, uiStyleBold, 0, 0xFFFFFF ) )
 {
 	styles["def"] = style_def;
 	styles["red"] = style_red;

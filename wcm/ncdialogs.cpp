@@ -4,6 +4,7 @@
  * walcommander@linderdaum.com
  */
 
+#include "globals.h"
 #include "nc.h"
 #include "ncfonts.h"
 #include "ncdialogs.h"
@@ -25,7 +26,7 @@ NCShadowWin::NCShadowWin( Win* parent )
 void NCShadowWin::Paint( wal::GC& gc, const crect& paintRect )
 {
 	crect cr = ClientRect();
-	gc.SetFillColor( 0 ); //::wcmConfig.whiteStyle ? 0x404040 : 0x01);
+	gc.SetFillColor( 0 ); //::g_WcmConfig.whiteStyle ? 0x404040 : 0x01);
 	gc.FillRect( cr );
 }
 
@@ -40,7 +41,7 @@ void NCDialog::CloseDialog( int cmd )
 
 cfont* NCDialog::GetChildFont( Win* w, int fontId )
 {
-	return dialogFont.ptr();
+	return g_DialogFont.ptr();
 }
 
 bool NCDialog::Command( int id, int subId, Win* win, void* data )
@@ -1094,7 +1095,7 @@ int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, DlgMenuData
 {
 	if ( !data || data->Count() <= 0 ) { return CMD_CANCEL; }
 
-	NCDialog dlg( true, nUi, parent, utf8_to_unicode( header ).data(), 0 ); //, ::wcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000, 0xFFFFFF);
+	NCDialog dlg( true, nUi, parent, utf8_to_unicode( header ).data(), 0 ); //, ::g_WcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000, 0xFFFFFF);
 	DlgMenu mtable( &dlg, data );
 	mtable.Show();
 	mtable.Enable();

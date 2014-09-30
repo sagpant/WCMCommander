@@ -1,12 +1,10 @@
-# Commands
 INSTALL_DIR = install -d
 INSTALL_PROGRAM = install -c -m 755
-INSTALL_DATA = install -c -m 644
-# INSTALL = cp
-# INSTALL_DATA = cp
+INSTALL_TREE = cp -R
 BIN_DIR=$(DESTDIR)/usr/bin
-SHARE_DIR=$(DESTDIR)/usr/share
+TARGET_DIR=$(DESTDIR)/usr/
 
+WCM_VERSION=$(shell ./get_wcm_version.sh)
 
 CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
 #CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -O1 -fno-inline -I wal -I swl -pthread $(CFLAGS_FREETYPE)
@@ -47,12 +45,39 @@ CC ?= gcc
 OBJDIR = obj
 
 OBJS = \
-	$(OBJDIR)/wal_tmpls.o \
-	$(OBJDIR)/wal.o\
-	$(OBJDIR)/wal_sys_api.o\
-	$(OBJDIR)/wal_charset.o\
-	$(OBJDIR)/wal_exceptions.o\
-	$(OBJDIR)/wal_files.o\
+	$(OBJDIR)/charsetdlg.o \
+	$(OBJDIR)/color-style.o\
+	$(OBJDIR)/dircalc.o \
+	$(OBJDIR)/eloadsave.o \
+	$(OBJDIR)/ext-app-ux.o \
+	$(OBJDIR)/fileassociations.o \
+	$(OBJDIR)/fileopers.o \
+	$(OBJDIR)/filesearch.o\
+	$(OBJDIR)/fontdlg.o \
+	$(OBJDIR)/ftplogon.o \
+	$(OBJDIR)/globals.o \
+	$(OBJDIR)/help.o\
+	$(OBJDIR)/helpres.o\
+	$(OBJDIR)/ltext.o \
+	$(OBJDIR)/ncdialogs.o \
+	$(OBJDIR)/ncedit.o \
+	$(OBJDIR)/ncfonts.o \
+	$(OBJDIR)/nchistory.o \
+	$(OBJDIR)/ncview.o \
+	$(OBJDIR)/ncwin.o \
+	$(OBJDIR)/operthread.o \
+	$(OBJDIR)/operwin.o \
+	$(OBJDIR)/panel.o \
+	$(OBJDIR)/panel_list.o \
+	$(OBJDIR)/search-dlg.o \
+	$(OBJDIR)/search-tools.o \
+	$(OBJDIR)/sftpdlg.o \
+	$(OBJDIR)/shell-tools.o \
+	$(OBJDIR)/shell.o \
+	$(OBJDIR)/shl.o \
+	$(OBJDIR)/shortcuts.o \
+	$(OBJDIR)/smblogon.o \
+	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/swl_button.o \
 	$(OBJDIR)/swl_editline.o  \
 	$(OBJDIR)/swl_layout.o    \
@@ -67,52 +92,26 @@ OBJS = \
 	$(OBJDIR)/swl_winbase.o     \
 	$(OBJDIR)/swl_wincore.o     \
 	$(OBJDIR)/swl_wincoreUX.o \
-	$(OBJDIR)/operthread.o \
-	$(OBJDIR)/operwin.o \
+	$(OBJDIR)/t-emulator.o \
+	$(OBJDIR)/tcp_sock.o \
+	$(OBJDIR)/terminal.o \
+	$(OBJDIR)/termwin.o \
+	$(OBJDIR)/toolbar.o \
+	$(OBJDIR)/unicode_lc.o \
+	$(OBJDIR)/ux_util.o\
+	$(OBJDIR)/vfs-ftp.o \
+	$(OBJDIR)/vfs-sftp2.o \
+	$(OBJDIR)/vfs-smb.o \
+	$(OBJDIR)/vfs-uri.o \
 	$(OBJDIR)/vfs.o \
 	$(OBJDIR)/vfspath.o \
-	$(OBJDIR)/vfs-smb.o \
-	$(OBJDIR)/tcp_sock.o \
-	$(OBJDIR)/vfs-ftp.o \
-	$(OBJDIR)/vfs-uri.o \
-	$(OBJDIR)/termwin.o \
-	$(OBJDIR)/ncdialogs.o \
-	$(OBJDIR)/terminal.o \
-	$(OBJDIR)/unicode_lc.o \
-	$(OBJDIR)/nchistory.o \
-	$(OBJDIR)/shell.o \
-	$(OBJDIR)/panel_list.o \
-	$(OBJDIR)/panel.o \
-	$(OBJDIR)/ncwin.o \
-	$(OBJDIR)/ncedit.o \
-	$(OBJDIR)/ncview.o \
-	$(OBJDIR)/fileopers.o \
-	$(OBJDIR)/eloadsave.o \
-	$(OBJDIR)/smblogon.o \
-	$(OBJDIR)/ext-app-ux.o \
-	$(OBJDIR)/wcm-config.o \
-	$(OBJDIR)/ftplogon.o \
-	$(OBJDIR)/charsetdlg.o \
-	$(OBJDIR)/vfs-sftp2.o \
-	$(OBJDIR)/sftpdlg.o \
-	$(OBJDIR)/color-style.o\
-	$(OBJDIR)/filesearch.o\
-	$(OBJDIR)/help.o\
-	$(OBJDIR)/helpres.o\
-	$(OBJDIR)/ux_util.o\
-	$(OBJDIR)/strconfig.o \
-	$(OBJDIR)/shortcuts.o \
-	$(OBJDIR)/fileassociations.o \
-	$(OBJDIR)/fontdlg.o \
-	$(OBJDIR)/shl.o \
-	$(OBJDIR)/ncfonts.o \
-	$(OBJDIR)/toolbar.o \
-	$(OBJDIR)/search-dlg.o \
-	$(OBJDIR)/search-tools.o \
-	$(OBJDIR)/shell-tools.o \
-	$(OBJDIR)/t-emulator.o \
-	$(OBJDIR)/dircalc.o \
-	$(OBJDIR)/ltext.o
+	$(OBJDIR)/wal.o\
+	$(OBJDIR)/wal_charset.o\
+	$(OBJDIR)/wal_exceptions.o\
+	$(OBJDIR)/wal_files.o\
+	$(OBJDIR)/wal_sys_api.o\
+	$(OBJDIR)/wal_tmpls.o \
+	$(OBJDIR)/wcm-config.o
 
 ifeq ($(UNAME_S),Darwin)
 all: wcm
@@ -122,11 +121,6 @@ all: libconf_ux.h wcm
 endif
 
 build: all
-
-build-arch: build
-
-build-indep: build
-
 
 libconf_ux.h: libtester/libconf.create
 	cd libtester &&	. ./libconf.create
@@ -139,7 +133,10 @@ wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
-	
+
+$(OBJDIR)/globals.o: $(HW) $(HS) $(HN) globals.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) globals.cpp -o $(OBJDIR)/globals.o
+
 $(OBJDIR)/ncvfs.o: $(HW) $(HS) $(HN) ncvfs.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) ncvfs.cpp -o $(OBJDIR)/ncvfs.o
 	
@@ -350,7 +347,6 @@ $(OBJDIR)/swl_wincore.o: $(HW) $(HS) swl/swl_wincore.cpp
 $(OBJDIR)/swl_wincoreUX.o: $(HW) $(HS) swl/swl_wincoreUX.cpp swl/swl_wincore_freetype_inc.h
 	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincoreUX.cpp -o $(OBJDIR)/swl_wincoreUX.o
 
-
 $(OBJDIR)/nc.o: $(HW) $(HS) $(HN) nc.cpp intarnal_icons.inc
 	$(CC) $(COPTS) -c $(CFLAGS) nc.cpp -o $(OBJDIR)/nc.o
 
@@ -369,54 +365,8 @@ clean:
 	rm -f info.txt
 	rm -f makelib.mk
 
-debclean:
-	rm -rf debian/wcm
-	rm debian/wcm.debhelper.log
-	rm debian/files
-	rm -f ../wcm_0.17.0*
-
-build-deb-package: clean debclean
-	cd ..;	tar czf wcm_0.17.0.orig.tar.gz wcm ; cd wcm
-	dpkg-buildpackage -us -uc
-
 install: wcm
 	$(INSTALL_DIR)	$(BIN_DIR)
-	$(INSTALL_DIR)	$(SHARE_DIR)/applications
-	$(INSTALL_DIR)	$(SHARE_DIR)/wcm/fonts/
-	$(INSTALL_DIR)	$(SHARE_DIR)/wcm/icon/
-	$(INSTALL_DIR)	$(SHARE_DIR)/wcm/shl/
-	$(INSTALL_DIR)	$(SHARE_DIR)/wcm/lang/
+	$(INSTALL_DIR)	$(TARGET_DIR)
 	$(INSTALL_PROGRAM) wcm $(BIN_DIR)
-	$(INSTALL_DATA) install-files/share/applications/wcm.desktop                 $(SHARE_DIR)/applications/wcm.desktop
-	$(INSTALL_DATA) install-files/share/wcm/config.default                       $(SHARE_DIR)/wcm/config.default                     
-	$(INSTALL_DATA) install-files/share/wcm/fonts/DejaVuSerif-Bold.ttf           $(SHARE_DIR)/wcm/fonts/DejaVuSerif-Bold.ttf         
-	$(INSTALL_DATA) install-files/share/wcm/fonts/DejaVuSansMono.ttf             $(SHARE_DIR)/wcm/fonts/DejaVuSansMono.ttf           
-	$(INSTALL_DATA) install-files/share/wcm/fonts/DejaVuSerifCondensed.ttf       $(SHARE_DIR)/wcm/fonts/DejaVuSerifCondensed.ttf     
-	$(INSTALL_DATA) install-files/share/wcm/fonts/LiberationMono-Regular.ttf     $(SHARE_DIR)/wcm/fonts/LiberationMono-Regular.ttf   
-	$(INSTALL_DATA) install-files/share/wcm/fonts/DejaVuSerif.ttf                $(SHARE_DIR)/wcm/fonts/DejaVuSerif.ttf              
-	$(INSTALL_DATA) install-files/share/wcm/fonts/DejaVuSansMono-Bold.ttf        $(SHARE_DIR)/wcm/fonts/DejaVuSansMono-Bold.ttf      
-	$(INSTALL_DATA) install-files/share/wcm/fonts/DejaVuSans-Bold.ttf            $(SHARE_DIR)/wcm/fonts/DejaVuSans-Bold.ttf          
-	$(INSTALL_DATA) install-files/share/wcm/fonts/DejaVuSans.ttf                 $(SHARE_DIR)/wcm/fonts/DejaVuSans.ttf               
-	$(INSTALL_DATA) install-files/share/wcm/fonts/DejaVuSerifCondensed-Bold.ttf  $(SHARE_DIR)/wcm/fonts/DejaVuSerifCondensed-Bold.ttf
-	$(INSTALL_DATA) install-files/share/wcm/icon/wcm.png                         $(SHARE_DIR)/wcm/icon/wcm.png                       
-	$(INSTALL_DATA) install-files/share/wcm/shl/shl.shl                          $(SHARE_DIR)/wcm/shl/shl.shl                        
-	$(INSTALL_DATA) install-files/share/wcm/shl/config.shl                       $(SHARE_DIR)/wcm/shl/config.shl                     
-	$(INSTALL_DATA) install-files/share/wcm/shl/java.shl                         $(SHARE_DIR)/wcm/shl/java.shl                       
-	$(INSTALL_DATA) install-files/share/wcm/shl/sh.shl                           $(SHARE_DIR)/wcm/shl/sh.shl                         
-	$(INSTALL_DATA) install-files/share/wcm/shl/shlconfig.shl                    $(SHARE_DIR)/wcm/shl/shlconfig.shl                  
-	$(INSTALL_DATA) install-files/share/wcm/shl/latex.shl                        $(SHARE_DIR)/wcm/shl/latex.shl                      
-	$(INSTALL_DATA) install-files/share/wcm/shl/perl.shl                         $(SHARE_DIR)/wcm/shl/perl.shl                       
-	$(INSTALL_DATA) install-files/share/wcm/shl/python.shl                       $(SHARE_DIR)/wcm/shl/python.shl                     
-	$(INSTALL_DATA) install-files/share/wcm/shl/pas.shl                          $(SHARE_DIR)/wcm/shl/pas.shl                        
-	$(INSTALL_DATA) install-files/share/wcm/shl/glsl.shl                         $(SHARE_DIR)/wcm/shl/glsl.shl                       
-	$(INSTALL_DATA) install-files/share/wcm/shl/xml.shl                          $(SHARE_DIR)/wcm/shl/xml.shl                        
-	$(INSTALL_DATA) install-files/share/wcm/shl/c.shl                            $(SHARE_DIR)/wcm/shl/c.shl                          
-	$(INSTALL_DATA) install-files/share/wcm/shl/cpp.shl                          $(SHARE_DIR)/wcm/shl/cpp.shl                        
-	$(INSTALL_DATA) install-files/share/wcm/shl/php.shl                          $(SHARE_DIR)/wcm/shl/php.shl                        
-	$(INSTALL_DATA) install-files/share/wcm/shl/config.cfg                       $(SHARE_DIR)/wcm/shl/config.cfg                     
-	$(INSTALL_DATA) install-files/share/wcm/shl/undef.shl                        $(SHARE_DIR)/wcm/shl/undef.shl                      
-	$(INSTALL_DATA) install-files/share/wcm/shl/sql.shl                          $(SHARE_DIR)/wcm/shl/sql.shl                        
-	$(INSTALL_DATA) install-files/share/wcm/shl/shlconfig_v2.shl                 $(SHARE_DIR)/wcm/shl/shlconfig_v2.shl               
-	$(INSTALL_DATA) install-files/share/wcm/lang/ltext.ru                        $(SHARE_DIR)/wcm/lang/ltext.ru                      
-	$(INSTALL_DATA) install-files/share/wcm/lang/help.ru                         $(SHARE_DIR)/wcm/lang/help.ru                       
-	$(INSTALL_DATA) install-files/share/wcm/lang/list                            $(SHARE_DIR)/wcm/lang/list                          
+	$(INSTALL_TREE) install-files/* $(TARGET_DIR)

@@ -27,6 +27,7 @@ SOURCES += wcm/nc.cpp \
     wcm/charsetdlg.cpp \
     wcm/color-style.cpp \
     wcm/dircalc.cpp \
+    wcm/globals.cpp \
     wcm/eloadsave.cpp \
     wcm/ext-app-ux.cpp \
     wcm/ext-app.cpp \
@@ -73,7 +74,8 @@ SOURCES += wcm/nc.cpp \
     wcm/vfs.cpp \
     wcm/vfspath.cpp \
     wcm/w32util.cpp \
-    wcm/wcm-config.cpp
+    wcm/wcm-config.cpp \
+    wcm/swl/swl_staticlabel.cpp
 
 HEADERS += \
     wcm/swl/swl.h \
@@ -161,6 +163,9 @@ QMAKE_CXXFLAGS_WARN_ON += -Wno-overloaded-virtual
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-const-variable
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-function
 QMAKE_CXXFLAGS_WARN_ON += -Wno-sign-compare
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-variable
+QMAKE_CXXFLAGS_WARN_ON += -Wno-logical-op-parentheses
+QMAKE_CXXFLAGS_WARN_ON += -Wno-bitwise-op-parentheses
 QMAKE_CFLAGS += -std=c99
 QMAKE_MAC_SDK = macosx10.9
 CONFIG += c++11

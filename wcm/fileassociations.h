@@ -34,7 +34,7 @@ public:
 	const std::vector<unicode_t>& GetViewCommandSecondary() const { return m_ViewCommandSecondary; }
 	const std::vector<unicode_t>& GetEditCommand() const { return m_EditCommand; }
 	const std::vector<unicode_t>& GetEditCommandSecondary() const { return m_EditCommandSecondary; }
-	const bool GetHasTerminal() const { return m_HasTerminal; }
+	bool GetHasTerminal() const { return m_HasTerminal; }
 
 	const std::vector<unicode_t>& Get( eFileAssociation Mode ) const
 	{
