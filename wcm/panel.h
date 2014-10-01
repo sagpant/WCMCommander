@@ -236,7 +236,7 @@ public:
 
 	void SetCurrent( int n );
 	bool SetCurrent( FSString& a );
-	void SetCurrent( int n, bool shift, int* selectType ); //selectType 0-disable selection, 1-enable, -1 - not defined
+	void SetCurrent( int n, bool shift, LPanelSelectionType* SelectType, bool SelectLastItem );
 
 	int ViewMode() { return *_viewMode; }
 	void SetViewMode( int m ) { *_viewMode = m; Check(); SetScroll(); Invalidate(); }
@@ -257,14 +257,14 @@ public:
 //	void KeyLeft() { SetCurrent(_current-_rows);  }
 //	void KeyRight() { SetCurrent(_current+_rows); }
 
-	void KeyUp  ( bool shift, int* selectType ) { SetCurrent( _current - 1,   shift, selectType ); };
-	void KeyDown   ( bool shift, int* selectType ) { SetCurrent( _current + 1,   shift, selectType ); };
-	void KeyEnd( bool shift, int* selectType ) { SetCurrent( _list.Count( HideDotsInDir() ) - 1, shift, selectType ); }
-	void KeyHome   ( bool shift, int* selectType ) { SetCurrent( 0,   shift, selectType ); }
-	void KeyPrior  ( bool shift, int* selectType ) { SetCurrent( _current - _rows * _cols + 1,   shift, selectType ); }
-	void KeyNext   ( bool shift, int* selectType ) { SetCurrent( _current + _rows * _cols - 1,   shift, selectType ); }
-	void KeyLeft   ( bool shift, int* selectType ) { SetCurrent( _current - _rows,  shift, selectType );  }
-	void KeyRight  ( bool shift, int* selectType ) { SetCurrent( _current + _rows,  shift, selectType ); }
+	void KeyUp( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _current - 1, shift, selectType, false ); };
+	void KeyDown( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _current + 1, shift, selectType, false ); };
+	void KeyEnd( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _list.Count( HideDotsInDir( ) ) - 1, shift, selectType, true ); }
+	void KeyHome( bool shift, LPanelSelectionType* selectType ) { SetCurrent( 0, shift, selectType, true ); }
+	void KeyPrior( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _current - _rows * _cols + 1, shift, selectType, false ); }
+	void KeyNext( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _current + _rows * _cols - 1, shift, selectType, false ); }
+	void KeyLeft( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _current - _rows, shift, selectType, true ); }
+	void KeyRight( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _current + _rows, shift, selectType, true ); }
 
 	void KeyIns() { _list.InvertSelection( _current, HideDotsInDir() ); SetCurrent( _current + 1 ); }
 

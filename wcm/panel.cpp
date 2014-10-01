@@ -1158,29 +1158,39 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 void PanelWin::SetCurrent( int n )
 {
-	SetCurrent( n, false, 0 );
+	SetCurrent( n, false, 0, false );
 }
 
-void PanelWin::SetCurrent( int n, bool shift, int* selectType )
+void PanelWin::SetCurrent( int n, bool Shift, LPanelSelectionType* SelectType, bool SelectLastItem )
 {
 	if ( !this ) { return; }
 
-	if ( n >= _list.Count( HideDotsInDir() ) ) { n = _list.Count( HideDotsInDir() ) - 1; }
+	bool SelectLast = SelectLastItem;
 
-	if ( n < 0 ) { n = 0; }
+	if ( n >= _list.Count( HideDotsInDir() ) )
+	{
+		n = _list.Count( HideDotsInDir() ) - 1;
+		// this is similar to Far Manager
+		SelectLast = true;
+	}
 
-//	if (n == _current) return;
+	if ( n < 0 )
+	{
+		n = 0;
+		// this is similar to Far Manager
+		SelectLast = true;
+	}
 
 	int old = _current;
 	_current = n;
 
 	bool fullRedraw = false;
 
-	if ( shift && selectType )
+	if ( Shift && SelectType )
 	{
 		if ( old == _current )
 		{
-			_list.ShiftSelection( _current, selectType, HideDotsInDir() );
+			_list.ShiftSelection( _current, SelectType, HideDotsInDir() );
 		}
 		else
 		{
@@ -1188,18 +1198,25 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 
 			if ( old < _current )
 			{
-				count = _current - old + 1;
+				count = _current - old;
 				delta = 1;
 			}
 			else
 			{
-				count = old - _current + 1;
+				count = old - _current;
 				delta = -1;
 			}
 
-			for ( int i = old; count > 0; count--, i += delta )
+			for ( int i = old; count >= 0; count--, i += delta )
 			{
-				_list.ShiftSelection( i, selectType, HideDotsInDir() );
+				LPanelSelectionType* SType = SelectType;
+				// the last line should be selected only in specific cases
+				if ( count == 0 )
+				{
+					LPanelSelectionType LastSelection = LPanelSelectionType_Disable;
+					SType = SelectLast ? SelectType : &LastSelection;
+				}
+				_list.ShiftSelection( i, SType, HideDotsInDir() );
 			}
 		}
 

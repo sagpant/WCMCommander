@@ -416,7 +416,7 @@ NCWin::NCWin()
 	   _editor( this ),
 	   _ehWin( this, &_editor ),
 	   _execId( -1 ),
-	   _shiftSelectType( -1 ),
+		_shiftSelectType( LPanelSelectionType_NotDefined ),
 		m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
 {
 	m_BackgroundActivity = eBackgroundActivity_None;
@@ -2865,7 +2865,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
 
-	if ( !shift ) { _shiftSelectType = -1; }
+	if ( !shift ) { _shiftSelectType = LPanelSelectionType_NotDefined; }
 
 	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
 	bool alt = ( pEvent->Mod() & KM_ALT ) != 0;

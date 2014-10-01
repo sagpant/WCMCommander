@@ -246,7 +246,7 @@ private:
 	/// currently active file associations
 	std::vector<clNCFileAssociation> m_FileAssociations;
 
-	int _shiftSelectType;
+	LPanelSelectionType _shiftSelectType;
 
 	void SetMode( MODE m );
 	void ShowPanels( bool show )
