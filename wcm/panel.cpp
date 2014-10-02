@@ -6,7 +6,7 @@
 
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
-#if _MSC_VER >= 1700
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
 #	include <inttypes.h>
 #endif
 #include "globals.h"
