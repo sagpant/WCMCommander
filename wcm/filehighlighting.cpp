@@ -22,6 +22,10 @@ public:
 	 , m_MaskEdit( 0, this, 0, 0, 16 )
 	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description of the file highlighting")).data(), &m_DescriptionEdit)
 	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
+	 , m_SizeMinText(0, this, utf8_to_unicode(_LT("Size >= (bytes)")).data(), &m_SizeMinEdit)
+	 , m_SizeMinEdit( 0, this, 0, 0, 16 )
+	 , m_SizeMaxText(0, this, utf8_to_unicode(_LT("Size <= (bytes)")).data(), &m_SizeMaxEdit)
+	 , m_SizeMaxEdit( 0, this, 0, 0, 16 )
 	 , m_HasMaskButton( 0, this, utf8_to_unicode( _LT( "Mask" ) ).data(), 0, true )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
@@ -48,6 +52,13 @@ public:
 
 		m_Layout.AddWinAndEnable( &m_DescriptionText, 3, 0 );
 		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 4, 0 );
+
+		m_Layout.AddWinAndEnable( &m_SizeMinText, 5, 0 );
+		m_Layout.AddWinAndEnable( &m_SizeMinEdit, 6, 0 );
+
+		m_Layout.AddWinAndEnable( &m_SizeMaxText, 7, 0 );
+		m_Layout.AddWinAndEnable( &m_SizeMaxEdit, 8, 0 );
+
 /*
 		m_Layout.AddWinAndEnable( &m_HasTerminalButton, 4, 0 );
 		m_Layout.AddWinAndEnable( &m_ExecuteCommandText, 5, 0 );
@@ -68,6 +79,8 @@ public:
 		order.append( &m_MaskEdit );
 		order.append( &m_HasMaskButton );
 		order.append( &m_DescriptionEdit );
+		order.append( &m_SizeMinEdit );
+		order.append( &m_SizeMaxEdit );
 /*
 		order.append( &m_HasTerminalButton );
 		order.append( &m_ExecuteCommandEdit );
@@ -115,6 +128,12 @@ public:
 
 	StaticLabel m_DescriptionText;
 	EditLine   m_DescriptionEdit;
+
+	StaticLabel m_SizeMinText;
+	EditLine   m_SizeMinEdit;
+
+	StaticLabel m_SizeMaxText;
+	EditLine   m_SizeMaxEdit;
 
 	SButton m_HasMaskButton;
 
