@@ -6,8 +6,9 @@
 
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
-#include <inttypes.h>
-
+#if _MSC_VER >= 1700
+#	include <inttypes.h>
+#endif
 #include "globals.h"
 #include "wcm-config.h"
 #include "ncfonts.h"
@@ -1356,7 +1357,11 @@ void PanelWin::DrawFooter( wal::GC& gc )
 		if ( FreeSpace >= 0 )
 		{
 			char Num[128];
+#if defined( _MSC_VER ) && ( _MSC_VER < 1700 )
+			_ui64toa_s( (uint64_t)FreeSpace, Num, sizeof( Num ) - 1, 10 );
+#else
 			sprintf( Num, _LT( "%" PRId64 ), FreeSpace );
+#endif
 
 			char SplitNum[128];
 			SplitNumber_3( Num, SplitNum );

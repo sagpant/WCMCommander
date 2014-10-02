@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
@@ -210,193 +206,193 @@
     <ClCompile Include="wcm-config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wal\IntrusivePtr.h">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="swl\swl_menutextinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="swl\swl_staticlabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fileassociations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="t-emulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ux_util.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="swl\swl_wincore_freetype_inc.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fileassociations.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="charsetdlg.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="color-style.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="dircalc.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="eloadsave.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ext-app.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="fileopers.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="filesearch.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ftplogon.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="globals.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="help.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="libconf.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="libconf_win32.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ltext.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="mfile.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="nc.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ncdialogs.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ncedit.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ncfonts.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="nchistory.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ncview.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ncwin.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="operthread.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="operwin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="panel-style.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="panel.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="panel_list.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="panel-style.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="search-dlg.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="search-tools.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="sftpdlg.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="shell-tools.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shell.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="shl.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="shortcuts.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="smblogon.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="strconfig.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="string-util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_internal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_layout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_winbase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_wincore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_wincore_internal.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="tcp_sock.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="terminal.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="t-emulator.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="termwin.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="toolbar.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="vfs-ftp.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="types.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="vfs-sftp.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="unicode_lc.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="vfs-smb.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vfs-uri.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ux_util.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="vfs.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vfs-ftp.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="vfspath.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vfs-sftp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vfs-smb.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vfs-uri.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="w32cons.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="w32util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wal\wal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wal\wal_sys_api.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wal\wal_tmpls.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="wcm-config.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wcm-version.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -410,6 +406,24 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="ReadMe.txt" />
+    <None Include="ClassDiagram.cd">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="CMakeLists.txt">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="intarnal_icons.inc">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="makefile">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="makefile.linux">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="makefile.windows">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="wcm.rc">
