@@ -98,6 +98,9 @@ $(OBJDIR)/wcm.res: $(HW) $(HS) $(HN) wcm.rc
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
 
+$(OBJDIR)/globals.o: $(HW) $(HS) $(HN) globals.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) globals.cpp -o $(OBJDIR)/globals.o
+
 $(OBJDIR)/ncvfs.o: $(HW) $(HS) $(HN) ncvfs.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) ncvfs.cpp -o $(OBJDIR)/ncvfs.o
 
