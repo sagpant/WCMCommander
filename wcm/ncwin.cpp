@@ -18,6 +18,7 @@
 #  include <sys/wait.h>
 #endif
 
+#include "globals.h"
 #include "ncwin.h"
 #include "wcm-config.h"
 #include "ncfonts.h"
@@ -334,7 +335,7 @@ void NCWin::HideAutoComplete()
 
 void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 {
-	if ( CurrentCommand.empty() || CurrentCommand[0] == 0 || !wcmConfig.systemAutoComplete )
+	if ( CurrentCommand.empty() || CurrentCommand[0] == 0 || !g_WcmConfig.systemAutoComplete )
 	{
 		HideAutoComplete();
 		return;
@@ -399,8 +400,8 @@ NCWin::NCWin()
 	   _ledit( 1, 2 ),
 	   _buttonWin( this ),
 
-	   _leftPanel( this, &wcmConfig.panelModeLeft ),
-	   _rightPanel( this, &wcmConfig.panelModeRight ),
+	   _leftPanel( this, &g_WcmConfig.panelModeLeft ),
+	   _rightPanel( this, &g_WcmConfig.panelModeRight ),
 
 	   _edit( uiCommandLine, this, 0, 0, 10, false ),
 	   _editPref( this ),
@@ -415,7 +416,7 @@ NCWin::NCWin()
 	   _editor( this ),
 	   _ehWin( this, &_editor ),
 	   _execId( -1 ),
-	   _shiftSelectType( -1 ),
+		_shiftSelectType( LPanelSelectionType_NotDefined ),
 		m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
 {
 	m_BackgroundActivity = eBackgroundActivity_None;
@@ -437,7 +438,7 @@ NCWin::NCWin()
 	_activityNotification.Enable();
 	_activityNotification.OnTop();
 
-	if ( wcmConfig.styleShowButtonBar )
+	if ( g_WcmConfig.styleShowButtonBar )
 	{
 		_buttonWin.Show();
 	}
@@ -458,7 +459,7 @@ NCWin::NCWin()
 	SetToolbarPanel();
 	_toolBar.Enable();
 
-	if ( wcmConfig.styleShowToolBar )
+	if ( g_WcmConfig.styleShowToolBar )
 	{
 		_toolBar.Show();
 	}
@@ -579,18 +580,18 @@ NCWin::NCWin()
 
 	cpoint ScreenSize = GetScreenSize();
 
-	// Upon fresh start all wcmConfig.* are zeros. In this case set window width and heigh to 3/4 of the screen size
-	if (wcmConfig.windowWidth == 0)
+	// Upon fresh start all g_WcmConfig.* are zeros. In this case set window width and heigh to 3/4 of the screen size
+	if (g_WcmConfig.windowWidth == 0)
 	{
-		wcmConfig.windowWidth = ScreenSize.x * 3 / 4;
+		g_WcmConfig.windowWidth = ScreenSize.x * 3 / 4;
 	}
 
-	if (wcmConfig.windowHeight == 0)
+	if (g_WcmConfig.windowHeight == 0)
 	{
-		wcmConfig.windowHeight = ScreenSize.y * 3 / 4;
+		g_WcmConfig.windowHeight = ScreenSize.y * 3 / 4;
 	}
 
-	wal::crect Rect(wcmConfig.windowX, wcmConfig.windowY, wcmConfig.windowX + wcmConfig.windowWidth, wcmConfig.windowY + wcmConfig.windowHeight);
+	wal::crect Rect(g_WcmConfig.windowX, g_WcmConfig.windowY, g_WcmConfig.windowX + g_WcmConfig.windowWidth, g_WcmConfig.windowY + g_WcmConfig.windowHeight);
 
 	// enforce main window Rect restrictions:
 	// size is least minW x minH (#3), and screensize at most (#4)
@@ -613,16 +614,16 @@ NCWin::NCWin()
 	NCDialogParent::Move( Rect, true );
 
 	// apply saved panel paths
-//	printf( "Left = %s\n", wcmConfig.leftPanelPath.data() );
-//	printf( "Right = %s\n", wcmConfig.rightPanelPath.data() );
+//	printf( "Left = %s\n", g_WcmConfig.leftPanelPath.data() );
+//	printf( "Right = %s\n", g_WcmConfig.rightPanelPath.data() );
 
-	_leftPanel.LoadPathStringSafe( wcmConfig.leftPanelPath.data() );
-	_rightPanel.LoadPathStringSafe( wcmConfig.rightPanelPath.data() );
+	_leftPanel.LoadPathStringSafe( g_WcmConfig.leftPanelPath.data() );
+	_rightPanel.LoadPathStringSafe( g_WcmConfig.rightPanelPath.data() );
 }
 
 bool NCWin::EventClose()
 {
-	wcmConfig.Save( this );
+	g_WcmConfig.Save( this );
 
 	switch ( _mode )
 	{
@@ -664,7 +665,7 @@ void NCWin::SetMode( MODE m )
 			else
 			{ _leftPanel.Hide(); _rightPanel.Hide(); _terminal.Show();}
 
-			if ( wcmConfig.styleShowButtonBar ) { _buttonWin.Show( ); }
+			if ( g_WcmConfig.styleShowButtonBar ) { _buttonWin.Show( ); }
 
 			_edit.Show();
 			//_terminal.Show();
@@ -672,7 +673,7 @@ void NCWin::SetMode( MODE m )
 			_menu.Show();
 			SetToolbarPanel();
 
-			if ( wcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
+			if ( g_WcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
 
 			_edit.SetFocus();
 			_buttonWin.Set( panelNormalButtons ); //!!!
@@ -705,7 +706,7 @@ void NCWin::SetMode( MODE m )
 			_leftPanel.Hide();
 			_rightPanel.Hide();
 
-			if ( wcmConfig.styleShowButtonBar ) { _buttonWin.Show( ); }
+			if ( g_WcmConfig.styleShowButtonBar ) { _buttonWin.Show( ); }
 
 			_edit.Hide();
 			_terminal.Hide();
@@ -713,7 +714,7 @@ void NCWin::SetMode( MODE m )
 			_menu.Hide();
 			SetToolbarView();
 
-			if ( wcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
+			if ( g_WcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
 
 			_buttonWin.Set( viewNormalButtons ); //!!!
 			break;
@@ -725,7 +726,7 @@ void NCWin::SetMode( MODE m )
 			_leftPanel.Hide();
 			_rightPanel.Hide();
 
-			if ( wcmConfig.styleShowButtonBar )
+			if ( g_WcmConfig.styleShowButtonBar )
 			{
 				_buttonWin.Show();
 			}
@@ -736,7 +737,7 @@ void NCWin::SetMode( MODE m )
 			_menu.Hide();
 			SetToolbarEdit();
 
-			if ( wcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
+			if ( g_WcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
 
 			_editor.Show();
 			_editor.SetFocus();
@@ -832,7 +833,7 @@ void NCWin::PanelEnter()
 
 	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) return;
 
-	if ( wcmConfig.systemAskOpenExec )
+	if ( g_WcmConfig.systemAskOpenExec )
 	{
 		cmd = GetOpenCommand( _panel->UriOfCurrent().GetUnicode(), &terminal, &pAppName );
 		cmdChecked = true;
@@ -842,7 +843,7 @@ void NCWin::PanelEnter()
 	{
 #ifndef _WIN32
 
-		if ( wcmConfig.systemAskOpenExec && cmd.data() )
+		if ( g_WcmConfig.systemAskOpenExec && cmd.data() )
 		{
 
 			ButtonDataNode bListOpenExec[] = { {"Open", CMD_OPEN_FILE}, {"Execute", CMD_EXEC_FILE}, {"Cancel", CMD_CANCEL}, {0, 0}};
@@ -1578,7 +1579,7 @@ void NCWin::QuitQuestion()
 {
 	if ( NCMessageBox( this, _LT( "Quit" ), _LT( "Do you want to quit?" ), false, bListOkCancel ) == CMD_OK )
 	{
-		wcmConfig.Save( this );
+		g_WcmConfig.Save( this );
 		AppExit();
 	}
 }
@@ -1668,7 +1669,7 @@ void NCWin::View( bool Secondary )
 
 		_viewer.SetFile( fs, path, p->Size() );
 
-		if ( wcmConfig.editSavePos )
+		if ( g_WcmConfig.editSavePos )
 		{
 			std::vector<unicode_t> Name = new_unicode_str( fs->Uri( path ).GetUnicode() );
 			auto i = g_ViewPosHash.find( Name );
@@ -1688,7 +1689,7 @@ void NCWin::ViewExit()
 
 	if ( _mode != VIEW ) { return; }
 
-	if ( wcmConfig.editSavePos )
+	if ( g_WcmConfig.editSavePos )
 	{
 		g_ViewPosHash[ new_unicode_str( _viewer.Uri().GetUnicode() ) ] = _viewer.GetCol();
 	}
@@ -1756,7 +1757,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 		_editor.Load( fs, path, *file.ptr() );
 
 
-		if ( wcmConfig.editSavePos )
+		if ( g_WcmConfig.editSavePos )
 		{
 			std::vector<unicode_t> Name = new_unicode_str( fs->Uri( path ).GetUnicode() );
 			auto i = g_EditPosHash.find( Name );
@@ -2065,8 +2066,8 @@ void NCWin::Mark( bool enable )
 
 void NCWin::OnOffShl()
 {
-	wcmConfig.editShl = !wcmConfig.editShl;
-	_editor.EnableShl( wcmConfig.editShl );
+	g_WcmConfig.editShl = !g_WcmConfig.editShl;
+	_editor.EnableShl( g_WcmConfig.editShl );
 }
 
 void NCWin::PanelEqual()
@@ -2091,7 +2092,7 @@ void NCWin::SaveSetup()
 {
 	try
 	{
-		wcmConfig.Save( this );
+		g_WcmConfig.Save( this );
 	}
 	catch ( cexception* ex )
 	{
@@ -2269,7 +2270,7 @@ void NCWin::EditExit()
 
 	clPtr<FS> fs = _editor.GetFS();
 
-	if ( !fs.IsNull() && wcmConfig.editSavePos )
+	if ( !fs.IsNull() && g_WcmConfig.editSavePos )
 	{
 		FSPath path;
 		_editor.GetPath( path );
@@ -2407,7 +2408,7 @@ void NCWin::NotifyCurrentPathInfo()
 {
 	std::vector<unicode_t> Info;
 
-	if ( wcmConfig.systemShowHostName )
+	if ( g_WcmConfig.systemShowHostName )
 	{
 		char hostName[0x100] = "";
 
@@ -2875,7 +2876,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
 
-	if ( !shift ) { _shiftSelectType = -1; }
+	if ( !shift ) { _shiftSelectType = LPanelSelectionType_NotDefined; }
 
 	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
 	bool alt = ( pEvent->Mod() & KM_ALT ) != 0;
@@ -3075,7 +3076,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 
 				case FC( VK_H, KM_CTRL ):
-					wcmConfig.panelShowHiddenFiles = !wcmConfig.panelShowHiddenFiles;
+					g_WcmConfig.panelShowHiddenFiles = !g_WcmConfig.panelShowHiddenFiles;
 					SendConfigChanged();
 					return true;
 
@@ -3159,14 +3160,14 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				{
 					HideAutoComplete();
 				}
-				else if ( wcmConfig.systemEscPanel )
+				else if ( g_WcmConfig.systemEscPanel )
 				{
 					if ( _edit.IsVisible() && !_edit.IsEmpty() )
 					{
 						// if the command line is not empty - clear it
 						_edit.Clear();
 					}
-					else if ( wcmConfig.systemEscPanel )
+					else if ( g_WcmConfig.systemEscPanel )
 					{
 						ShowPanels( !_panelVisible );
 						break;
@@ -3404,7 +3405,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case VK_BACK:
-				if ( wcmConfig.systemBackSpaceUpDir )
+				if ( g_WcmConfig.systemBackSpaceUpDir )
 				{
 					if ( !_edit.IsVisible() || _edit.IsEmpty() )
 					{
@@ -3878,7 +3879,7 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 			case ID_CONFIG_STYLE:
 				if ( DoStyleConfigDialog( this ) )
 				{
-					if ( wcmConfig.styleShowToolBar )
+					if ( g_WcmConfig.styleShowToolBar )
 					{
 						_toolBar.Show( SHOW_INACTIVE );
 					}
@@ -3887,7 +3888,7 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 						_toolBar.Hide();
 					}
 
-					if ( wcmConfig.styleShowButtonBar )
+					if ( g_WcmConfig.styleShowButtonBar )
 					{
 						_buttonWin.Show( SHOW_INACTIVE );
 					}
@@ -4081,7 +4082,7 @@ void ButtonWin::OnChangeStyles()
 	}
 
 	wal::GC gc( ( Win* )0 );
-	gc.Set( dialogFont.ptr() );
+	gc.Set( g_DialogFont.ptr() );
 	cpoint maxW( 1, 1 );
 
 	for ( i = 0; i < 10 && BWNums[i]; i++ )
@@ -4162,7 +4163,7 @@ void ButtonWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.FillRect( r );
 	gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 ) );
 
-	gc.Set( dialogFont.ptr() );
+	gc.Set( g_DialogFont.ptr() );
 
 	for ( int i = 0; i < 10; i++ )
 	{
@@ -4249,7 +4250,7 @@ static void _DrawUnicode( wal::GC& gc, const crect& rect, const unicode_t* s, in
 void EditorHeadWin::OnChangeStyles()
 {
 	wal::GC gc( this );
-	gc.Set( dialogFont.ptr() ); //GetFont());
+	gc.Set( g_DialogFont.ptr() ); //GetFont());
 	cpoint p = gc.GetTextExtents( ABCString );
 	chW = p.x /= ABCStringLen;
 	chH = p.y;
@@ -4373,7 +4374,7 @@ bool EditorHeadWin::Broadcast( int id, int subId, Win* win, void* data )
 	if ( win == _edit )
 	{
 		wal::GC gc( this );
-		gc.Set( dialogFont.ptr() );
+		gc.Set( g_DialogFont.ptr() );
 
 		if ( UpdateSym() ) { DrawSym( gc ); }
 
@@ -4413,7 +4414,7 @@ void EditorHeadWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.SetFillColor( bgColor );
 	gc.FillRect( r );
 	Draw3DButtonW2( gc, r, bgColor, true );
-	gc.Set( dialogFont.ptr() ); //GetFont());
+	gc.Set( g_DialogFont.ptr() ); //GetFont());
 
 	r.Dec();
 	r.Dec();
@@ -4472,7 +4473,7 @@ EditorHeadWin::~EditorHeadWin() {}
 void ViewerHeadWin::OnChangeStyles()
 {
 	wal::GC gc( this );
-	gc.Set( dialogFont.ptr() ); //GetFont());
+	gc.Set( g_DialogFont.ptr() ); //GetFont());
 	cpoint p = gc.GetTextExtents( ABCString );
 	chW = p.x /= ABCStringLen;
 	chH = p.y;
@@ -4598,7 +4599,7 @@ bool ViewerHeadWin::Broadcast( int id, int subId, Win* win, void* data )
 	if ( win == _view )
 	{
 		wal::GC gc( this );
-		gc.Set( dialogFont.ptr() );
+		gc.Set( g_DialogFont.ptr() );
 
 		if ( UpdateCol() ) { DrawCol( gc ); }
 
@@ -4637,7 +4638,7 @@ void ViewerHeadWin::Paint( wal::GC& gc, const crect& paintRect )
 	gc.SetFillColor( bgColor );
 	gc.FillRect( r );
 	Draw3DButtonW2( gc, r, bgColor, true );
-	gc.Set( dialogFont.ptr() ); //GetFont());
+	gc.Set( g_DialogFont.ptr() ); //GetFont());
 
 	r.Dec();
 	r.Dec();

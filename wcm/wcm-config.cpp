@@ -727,14 +727,14 @@ WcmConfig::WcmConfig()
 
 void WcmConfig::ImpCurrentFonts()
 {
-	panelFontUri = new_char_str( panelFont.ptr() ? panelFont->uri() : "" );
-	viewerFontUri = new_char_str( viewerFont.ptr() ? viewerFont->uri() : "" );
-	editorFontUri = new_char_str( editorFont.ptr() ? editorFont->uri() : "" );
-	dialogFontUri  = new_char_str( dialogFont.ptr() ? dialogFont->uri() : "" );
-	terminalFontUri  = new_char_str( terminalFont.ptr() ? terminalFont->uri() : "" );
-	helpTextFontUri  = new_char_str( helpTextFont.ptr() ? helpTextFont->uri() : "" );
-	helpBoldFontUri  = new_char_str( helpBoldFont.ptr() ? helpBoldFont->uri() : "" );
-	helpHeadFontUri  = new_char_str( helpHeadFont.ptr() ? helpHeadFont->uri() : "" );
+	panelFontUri = new_char_str( g_PanelFont.ptr() ? g_PanelFont->uri() : "" );
+	viewerFontUri = new_char_str( g_ViewerFont.ptr() ? g_ViewerFont->uri() : "" );
+	editorFontUri = new_char_str( g_EditorFont.ptr() ? g_EditorFont->uri() : "" );
+	dialogFontUri  = new_char_str( g_DialogFont.ptr() ? g_DialogFont->uri() : "" );
+	terminalFontUri  = new_char_str( g_TerminalFont.ptr() ? g_TerminalFont->uri() : "" );
+	helpTextFontUri  = new_char_str( g_HelpTextFont.ptr() ? g_HelpTextFont->uri() : "" );
+	helpBoldFontUri  = new_char_str( g_HelpBoldFont.ptr() ? g_HelpBoldFont->uri() : "" );
+	helpHeadFontUri  = new_char_str( g_HelpHeadFont.ptr() ? g_HelpHeadFont->uri() : "" );
 }
 
 void WcmConfig::MapInt( const char* Section, const char* Name, int* pInt, int def )
@@ -1312,12 +1312,12 @@ PanelOptDialog::~PanelOptDialog() {}
 PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
  :  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel )
  , iL( 16, 3 )
- , showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show &hidden files" ) ).data(), 0, wcmConfig.panelShowHiddenFiles )
- , caseSensitive( 0, this, utf8_to_unicode( _LT( "&Case sensitive sort" ) ).data(), 0, wcmConfig.panelCaseSensitive )
- , selectFolders( 0, this, utf8_to_unicode( _LT( "Select &folders" ) ).data(), 0, wcmConfig.panelSelectFolders )
- , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the &root folder" ) ).data(), 0, wcmConfig.panelShowDotsInRoot )
- , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, wcmConfig.panelShowFolderIcons )
- , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, wcmConfig.panelShowExecutableIcons )
+ , showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show &hidden files" ) ).data(), 0, g_WcmConfig.panelShowHiddenFiles )
+ , caseSensitive( 0, this, utf8_to_unicode( _LT( "&Case sensitive sort" ) ).data(), 0, g_WcmConfig.panelCaseSensitive )
+ , selectFolders( 0, this, utf8_to_unicode( _LT( "Select &folders" ) ).data(), 0, g_WcmConfig.panelSelectFolders )
+ , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the &root folder" ) ).data(), 0, g_WcmConfig.panelShowDotsInRoot )
+ , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, g_WcmConfig.panelShowFolderIcons )
+ , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, g_WcmConfig.panelShowExecutableIcons )
 {
 	iL.AddWinAndEnable( &showHiddenButton,  0, 0 );
 	showHiddenButton.SetFocus();
@@ -1347,12 +1347,12 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		wcmConfig.panelShowHiddenFiles = dlg.showHiddenButton.IsSet();
-		wcmConfig.panelCaseSensitive = dlg.caseSensitive.IsSet();
-		wcmConfig.panelSelectFolders = dlg.selectFolders.IsSet();
-		wcmConfig.panelShowDotsInRoot = dlg.showDotsInRoot.IsSet();
-		wcmConfig.panelShowFolderIcons  = dlg.showFolderIcons.IsSet();
-		wcmConfig.panelShowExecutableIcons  = dlg.showExecutableIcons.IsSet();
+		g_WcmConfig.panelShowHiddenFiles = dlg.showHiddenButton.IsSet();
+		g_WcmConfig.panelCaseSensitive = dlg.caseSensitive.IsSet();
+		g_WcmConfig.panelSelectFolders = dlg.selectFolders.IsSet();
+		g_WcmConfig.panelShowDotsInRoot = dlg.showDotsInRoot.IsSet();
+		g_WcmConfig.panelShowFolderIcons  = dlg.showFolderIcons.IsSet();
+		g_WcmConfig.panelShowExecutableIcons  = dlg.showExecutableIcons.IsSet();
 		return true;
 	}
 
@@ -1386,14 +1386,14 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Editor" ) ).data(), bListOkCancel ),
 	   iL( 16, 2 ),
 
-	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file &position" ) ).data(), 0, wcmConfig.editSavePos ),
-	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto &indent" ) ).data(), 0, wcmConfig.editAutoIdent ),
-	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax &highlighting" ) ).data(), 0, wcmConfig.editShl ),
+	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file &position" ) ).data(), 0, g_WcmConfig.editSavePos ),
+	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto &indent" ) ).data(), 0, g_WcmConfig.editAutoIdent ),
+	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax &highlighting" ) ).data(), 0, g_WcmConfig.editShl ),
 	   tabText(0, this, utf8_to_unicode(_LT("&Tab size:")).data(), &tabEdit),
 	   tabEdit( 0, this, 0, 0, 16 )
 {
 	char buf[0x100];
-	snprintf( buf, sizeof( buf ) - 1, "%i", wcmConfig.editTabSize );
+	snprintf( buf, sizeof( buf ) - 1, "%i", g_WcmConfig.editTabSize );
 	tabEdit.SetText( utf8_to_unicode( buf ).data(), true );
 
 	iL.AddWin( &saveFilePosButton, 0, 0, 0, 1 );
@@ -1430,18 +1430,18 @@ bool DoEditConfigDialog( NCDialogParent* parent )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		wcmConfig.editSavePos = dlg.saveFilePosButton.IsSet();
-		wcmConfig.editAutoIdent = dlg.autoIdentButton.IsSet();
-		wcmConfig.editShl = dlg.shlButton.IsSet();
+		g_WcmConfig.editSavePos = dlg.saveFilePosButton.IsSet();
+		g_WcmConfig.editAutoIdent = dlg.autoIdentButton.IsSet();
+		g_WcmConfig.editShl = dlg.shlButton.IsSet();
 
 		int tabSize = atoi( unicode_to_utf8( dlg.tabEdit.GetText().data() ).data() );
 
 		if ( tabSize > 0 && tabSize <= 64 )
 		{
-			wcmConfig.editTabSize = tabSize;
+			g_WcmConfig.editTabSize = tabSize;
 		}
 
-		if ( !wcmConfig.editSavePos )
+		if ( !g_WcmConfig.editSavePos )
 		{
 			g_EditPosHash.clear();
 			g_ViewPosHash.clear();
@@ -1531,13 +1531,13 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   iL( 16, 3 ),
 	   pList( p ),
 	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
-	   styleDefButton( 0, this, utf8_to_unicode( _LT( "&Default colors" ) ).data(), 1, wcmConfig.styleColorMode != 1 && wcmConfig.styleColorMode != 2 ),
-	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "&Black" ) ).data(), 1, wcmConfig.styleColorMode == 1 ),
-	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "&White" ) ).data(), 1, wcmConfig.styleColorMode == 2 ),
+	   styleDefButton( 0, this, utf8_to_unicode( _LT( "&Default colors" ) ).data(), 1, g_WcmConfig.styleColorMode != 1 && g_WcmConfig.styleColorMode != 2 ),
+	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "&Black" ) ).data(), 1, g_WcmConfig.styleColorMode == 1 ),
+	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "&White" ) ).data(), 1, g_WcmConfig.styleColorMode == 2 ),
 
 	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
-	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, wcmConfig.styleShowToolBar ),
-	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar" ) ).data(), 0, wcmConfig.styleShowButtonBar ),
+	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, g_WcmConfig.styleShowToolBar ),
+	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar" ) ).data(), 0, g_WcmConfig.styleShowButtonBar ),
 
 	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
 	   fontList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
@@ -1760,16 +1760,16 @@ bool StyleOptDialog::EventChildKey( Win* child, cevent_key* pEvent )
 
 bool DoStyleConfigDialog( NCDialogParent* parent )
 {
-	wcmConfig.ImpCurrentFonts();
+	g_WcmConfig.ImpCurrentFonts();
 	ccollect<StyleOptDialog::Node> list;
-	list.append( StyleOptDialog::Node(  _LT( "Panel" ) ,  false,   panelFont.ptr(), &wcmConfig.panelFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Dialog" ),  false,   dialogFont.ptr(), &wcmConfig.dialogFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Viewer" ),  true,    viewerFont.ptr(), &wcmConfig.viewerFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Editor" ),  true,    editorFont.ptr(), &wcmConfig.editorFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Terminal" ),   true, terminalFont.ptr(), &wcmConfig.terminalFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Help text" ),  false,   helpTextFont.ptr(), &wcmConfig.helpTextFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Help bold text" ),   false,   helpBoldFont.ptr(), &wcmConfig.helpBoldFontUri ) );
-	list.append( StyleOptDialog::Node(  _LT( "Help header text" ), false,   helpHeadFont.ptr(), &wcmConfig.helpHeadFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Panel" ) ,  false,   g_PanelFont.ptr(), &g_WcmConfig.panelFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Dialog" ),  false,   g_DialogFont.ptr(), &g_WcmConfig.dialogFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Viewer" ),  true,    g_ViewerFont.ptr(), &g_WcmConfig.viewerFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Editor" ),  true,    g_EditorFont.ptr(), &g_WcmConfig.editorFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Terminal" ),   true, g_TerminalFont.ptr(), &g_WcmConfig.terminalFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Help text" ),  false,   g_HelpTextFont.ptr(), &g_WcmConfig.helpTextFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Help bold text" ),   false,   g_HelpBoldFont.ptr(), &g_WcmConfig.helpBoldFontUri ) );
+	list.append( StyleOptDialog::Node(  _LT( "Help header text" ), false,   g_HelpHeadFont.ptr(), &g_WcmConfig.helpHeadFontUri ) );
 
 	StyleOptDialog dlg( parent, &list );
 
@@ -1777,21 +1777,21 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 	{
 		if ( dlg.styleBlackButton.IsSet() )
 		{
-			wcmConfig.styleColorMode = 1;
+			g_WcmConfig.styleColorMode = 1;
 		}
 		else if ( dlg.styleWhiteButton.IsSet() )
 		{
-			wcmConfig.styleColorMode = 2;
+			g_WcmConfig.styleColorMode = 2;
 		}
 		else
 		{
-			wcmConfig.styleColorMode = 0;
+			g_WcmConfig.styleColorMode = 0;
 		}
 
-		SetColorStyle( wcmConfig.styleColorMode );
+		SetColorStyle( g_WcmConfig.styleColorMode );
 
-		wcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );
-		wcmConfig.styleShowButtonBar = dlg.showButtonbarButton.IsSet( );
+		g_WcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );
+		g_WcmConfig.styleShowButtonBar = dlg.showButtonbarButton.IsSet( );
 
 		for ( int i = 0; i < list.count(); i++ )
 			if ( list[i].newFont.ptr() && list[i].newFont->uri()[0] && list[i].pUri )
@@ -2019,11 +2019,11 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "System settings" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 )
 
-	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, wcmConfig.systemAskOpenExec )
-	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
-	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
-	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, wcmConfig.systemAutoComplete )
-	   , showHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, wcmConfig.systemShowHostName )
+	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, g_WcmConfig.systemAskOpenExec )
+	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, g_WcmConfig.systemEscPanel )
+	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, g_WcmConfig.systemBackSpaceUpDir )
+	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, g_WcmConfig.systemAutoComplete )
+	   , showHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, g_WcmConfig.systemShowHostName )
 	   , langStatic(0, this, utf8_to_unicode(_LT("&Language:")).data(), &langButton)
 	   , langVal( 0, this, utf8_to_unicode( "______________________" ).data() )
 	   , langButton( 0, this, utf8_to_unicode( ">" ).data(), 1000 )
@@ -2069,7 +2069,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 
 #endif
 
-	SetCurLang( wcmConfig.systemLang.data() ? wcmConfig.systemLang.data() : "+" );
+	SetCurLang( g_WcmConfig.systemLang.data() ? g_WcmConfig.systemLang.data() : "+" );
 }
 
 bool SysOptDialog::Command( int id, int subId, Win* win, void* data )
@@ -2110,17 +2110,17 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		wcmConfig.systemAskOpenExec = dlg.askOpenExecButton.IsSet();
-		wcmConfig.systemEscPanel = dlg.escPanelButton.IsSet();
-		wcmConfig.systemBackSpaceUpDir = dlg.backUpDirButton.IsSet();
-		wcmConfig.systemAutoComplete = dlg.autoCompleteButton.IsSet();
-		wcmConfig.systemShowHostName = dlg.showHostNameButton.IsSet();
-		const char* s = wcmConfig.systemLang.data();
+		g_WcmConfig.systemAskOpenExec = dlg.askOpenExecButton.IsSet();
+		g_WcmConfig.systemEscPanel = dlg.escPanelButton.IsSet();
+		g_WcmConfig.systemBackSpaceUpDir = dlg.backUpDirButton.IsSet();
+		g_WcmConfig.systemAutoComplete = dlg.autoCompleteButton.IsSet();
+		g_WcmConfig.systemShowHostName = dlg.showHostNameButton.IsSet();
+		const char* s = g_WcmConfig.systemLang.data();
 
 		if ( !s ) { s = "+"; }
 
 		bool langChanged = strcmp( dlg.curLangId.data(), s ) != 0;
-		wcmConfig.systemLang = new_char_str( dlg.curLangId.data() );
+		g_WcmConfig.systemLang = new_char_str( dlg.curLangId.data() );
 
 		if ( langChanged )
 		{
@@ -2156,8 +2156,8 @@ TerminalOptDialog::TerminalOptDialog( NCDialogParent* parent )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Terminal options" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   backspaceKeyStatic( 0, this, utf8_to_unicode( _LT( "Backspace key:" ) ).data() ),
-	   backspaceAsciiButton( 0, this, utf8_to_unicode( "ASCII DEL" ).data(), 1, wcmConfig.terminalBackspaceKey == 0 ),
-	   backspaceCtrlHButton( 0, this,  utf8_to_unicode( "Ctrl H" ).data(), 1, wcmConfig.terminalBackspaceKey == 1 )
+	   backspaceAsciiButton( 0, this, utf8_to_unicode( "ASCII DEL" ).data(), 1, g_WcmConfig.terminalBackspaceKey == 0 ),
+	   backspaceCtrlHButton( 0, this,  utf8_to_unicode( "Ctrl H" ).data(), 1, g_WcmConfig.terminalBackspaceKey == 1 )
 {
 	iL.AddWin( &backspaceKeyStatic,   0, 0, 0, 1 );
 	backspaceKeyStatic.Enable();
@@ -2191,7 +2191,7 @@ bool DoTerminalConfigDialog( NCDialogParent* parent )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		wcmConfig.terminalBackspaceKey = dlg.backspaceCtrlHButton.IsSet() ? 1 : 0;
+		g_WcmConfig.terminalBackspaceKey = dlg.backspaceCtrlHButton.IsSet() ? 1 : 0;
 		return true;
 	}
 

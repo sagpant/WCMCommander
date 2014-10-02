@@ -500,7 +500,7 @@ namespace FTU
 
 			CharInfo* pInfo = ( iter == ciHash.end() ) ? nullptr : &(iter->second);
 
-			if ( pInfo )
+			if ( !pInfo )
 			{
 				unicode_t c = *text;
 				FT_GlyphSlot  slot = GetSlot( face, &c );
@@ -508,10 +508,11 @@ namespace FTU
 				if ( !slot ) { continue; }
 
 				CharInfo info( slot );
-				pInfo = &( ciHash[c] = info );
+				ciHash[c] = info;
+				pInfo = &( ciHash[c] );
 			}
 
-			w += iter->second.pxWidth;
+			w += pInfo->pxWidth;
 		};
 
 		return cpoint( w, PxHeight() );

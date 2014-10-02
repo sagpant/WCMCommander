@@ -4,16 +4,8 @@
  * walcommander@linderdaum.com
  */
 
+#include "globals.h"
 #include "wcm-config.h"
-
-clPtr<cfont> panelFont;
-clPtr<cfont> viewerFont;
-clPtr<cfont> editorFont;
-clPtr<cfont> dialogFont;
-clPtr<cfont> terminalFont;
-clPtr<cfont> helpTextFont;
-clPtr<cfont> helpBoldFont;
-clPtr<cfont> helpHeadFont;
 
 inline void IFE( clPtr<cfont>* p, const char* fontUri )
 {
@@ -25,71 +17,71 @@ inline void IFE( clPtr<cfont>* p, const char* fontUri )
 
 void InitFonts()
 {
-	panelFont = 0;
-	viewerFont = 0;
-	editorFont = 0;
-	dialogFont = 0;
-	terminalFont = 0;
-	helpTextFont = 0;
-	helpBoldFont = 0;
-	helpHeadFont = 0;
+	g_PanelFont = nullptr;
+	g_ViewerFont = nullptr;
+	g_EditorFont = nullptr;
+	g_DialogFont = nullptr;
+	g_TerminalFont = nullptr;
+	g_HelpTextFont = nullptr;
+	g_HelpBoldFont = nullptr;
+	g_HelpHeadFont = nullptr;
 
-	IFE( &panelFont,   wcmConfig.panelFontUri.data() );
+	IFE( &g_PanelFont,   g_WcmConfig.panelFontUri.data() );
 #ifdef _WIN32
-	IFE( &panelFont, "-100:Arial:B" );
+	IFE( &g_PanelFont, "-100:Arial:B" );
 #else
-	IFE( &panelFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
+	IFE( &g_PanelFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &dialogFont, wcmConfig.dialogFontUri.data() );
+	IFE( &g_DialogFont, g_WcmConfig.dialogFontUri.data() );
 #ifdef _WIN32
-	IFE( &dialogFont, "-80:MS Sans Serif:B" );
+	IFE( &g_DialogFont, "-80:MS Sans Serif:B" );
 #else
-	IFE( &dialogFont, "-*-fixed-bold-r-*-*-*-120-*-*-*-*-iso10646-*" );
-#endif
-
-
-	IFE( &viewerFont, wcmConfig.viewerFontUri.data() );
-#ifdef _WIN32
-	IFE( &viewerFont, "-120:Lucida Console:FN" );
-#else
-	IFE( &viewerFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
+	IFE( &g_DialogFont, "-*-fixed-bold-r-*-*-*-120-*-*-*-*-iso10646-*" );
 #endif
 
 
-	IFE( &editorFont, wcmConfig.editorFontUri.data() );
+	IFE( &g_ViewerFont, g_WcmConfig.viewerFontUri.data() );
 #ifdef _WIN32
-	IFE( &editorFont, "-120:Lucida Console:FN" );
+	IFE( &g_ViewerFont, "-120:Lucida Console:FN" );
 #else
-	IFE( &editorFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
+	IFE( &g_ViewerFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &terminalFont, wcmConfig.terminalFontUri.data() );
+
+	IFE( &g_EditorFont, g_WcmConfig.editorFontUri.data() );
 #ifdef _WIN32
-	IFE( &terminalFont, "-100:Lucida Console:FN" );
+	IFE( &g_EditorFont, "-120:Lucida Console:FN" );
 #else
-	IFE( &terminalFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
+	IFE( &g_EditorFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &helpTextFont, wcmConfig.helpTextFontUri.data() );
+	IFE( &g_TerminalFont, g_WcmConfig.terminalFontUri.data() );
 #ifdef _WIN32
-	IFE( &helpTextFont, "-100:Arial:N" );
+	IFE( &g_TerminalFont, "-100:Lucida Console:FN" );
 #else
-	IFE( &helpTextFont, "-*-fixed-medium-r-*-*-*-120-*-*-*-*-iso10646-*" );
+	IFE( &g_TerminalFont, "-*-fixed-medium-r-*-*-*-140-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &helpBoldFont, wcmConfig.helpBoldFontUri.data() );
+	IFE( &g_HelpTextFont, g_WcmConfig.helpTextFontUri.data() );
 #ifdef _WIN32
-	IFE( &helpBoldFont, "-90:Arial:B" );
+	IFE( &g_HelpTextFont, "-100:Arial:N" );
 #else
-	IFE( &helpBoldFont, "-*-fixed-bold-r-*-*-*-120-*-*-*-*-iso10646-*" );
+	IFE( &g_HelpTextFont, "-*-fixed-medium-r-*-*-*-120-*-*-*-*-iso10646-*" );
 #endif
 
-	IFE( &helpHeadFont, wcmConfig.helpHeadFontUri.data() );
+	IFE( &g_HelpBoldFont, g_WcmConfig.helpBoldFontUri.data() );
 #ifdef _WIN32
-	IFE( &helpHeadFont, "-110:Arial:B" );
+	IFE( &g_HelpBoldFont, "-90:Arial:B" );
 #else
-	IFE( &helpHeadFont, "-*-fixed-medium-r-*-*-*-120-*-*-*-*-iso10646-*" );
+	IFE( &g_HelpBoldFont, "-*-fixed-bold-r-*-*-*-120-*-*-*-*-iso10646-*" );
+#endif
+
+	IFE( &g_HelpHeadFont, g_WcmConfig.helpHeadFontUri.data() );
+#ifdef _WIN32
+	IFE( &g_HelpHeadFont, "-110:Arial:B" );
+#else
+	IFE( &g_HelpHeadFont, "-*-fixed-medium-r-*-*-*-120-*-*-*-*-iso10646-*" );
 #endif
 }
 

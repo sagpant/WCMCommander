@@ -4,6 +4,7 @@
  * walcommander@linderdaum.com
  */
 
+#include "globals.h"
 #include "ncview.h"
 #include "wcm-config.h"
 #include "color-style.h"
@@ -2406,7 +2407,7 @@ void ViewWin::CalcScroll()
 void ViewWin::SetFile( clPtr<FS> fsp, FSPath& path, seek_t size )
 {
 	ClearFile();
-	VFilePtr vf = new VFile( fsp, path, size, wcmConfig.editTabSize );
+	VFilePtr vf = new VFile( fsp, path, size, g_WcmConfig.editTabSize );
 	threadData =  new ViewerThreadData( vf );
 	threadData->inMode.charset = charset;
 	threadData->inMode.wrap = wrap;

@@ -6,8 +6,10 @@
 
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
-#include <inttypes.h>
-
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
+#	include <inttypes.h>
+#endif
+#include "globals.h"
 #include "wcm-config.h"
 #include "ncfonts.h"
 #include "ncwin.h"
@@ -83,7 +85,7 @@ void PanelSearchWin::Paint( wal::GC& gc, const crect& paintRect )
 
 cfont* PanelSearchWin::GetChildFont( Win* w, int fontId )
 {
-	return dialogFont.ptr();
+	return g_DialogFont.ptr();
 }
 
 bool PanelSearchWin::Command( int id, int subId, Win* win, void* data )
@@ -535,7 +537,7 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	_viewMode( CheckMode( mode ) ), //MEDIUM),
 	_inOperState( false ),
 	_operData( ( NCDialogParent* )parent ),
-	_list( ::wcmConfig.panelShowHiddenFiles, ::wcmConfig.panelCaseSensitive )
+	_list( g_WcmConfig.panelShowHiddenFiles, g_WcmConfig.panelCaseSensitive )
 {
 	_lo.SetLineGrowth( 3 );
 	_lo.SetColGrowth( 1 );
@@ -671,8 +673,8 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 
 		if ( node ) { s.Copy( node->Name() ); }
 
-		bool a = _list.SetShowHidden( wcmConfig.panelShowHiddenFiles );
-		bool b = _list.SetCase( wcmConfig.panelCaseSensitive );
+		bool a = _list.SetShowHidden( g_WcmConfig.panelShowHiddenFiles );
+		bool b = _list.SetCase( g_WcmConfig.panelCaseSensitive );
 
 //		if (a || b)
 //		{
@@ -903,7 +905,7 @@ int PanelWin::GetXMargin() const
 {
 	int x = 0;
 
-	if ( wcmConfig.panelShowFolderIcons || wcmConfig.panelShowExecutableIcons )
+	if ( g_WcmConfig.panelShowFolderIcons || g_WcmConfig.panelShowExecutableIcons )
 	{
 		x += PANEL_ICON_SIZE;
 	}
@@ -993,7 +995,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( isDir )
 	{
-		if ( wcmConfig.panelShowFolderIcons )
+		if ( g_WcmConfig.panelShowFolderIcons )
 		{
 			switch ( p->extType )
 			{
@@ -1024,7 +1026,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	}
 	else if ( isExe )
 	{
-		if ( wcmConfig.panelShowExecutableIcons )
+		if ( g_WcmConfig.panelShowExecutableIcons )
 		{
 			executableIcon.DrawF( gc, x, y );
 		}
@@ -1157,29 +1159,39 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 void PanelWin::SetCurrent( int n )
 {
-	SetCurrent( n, false, 0 );
+	SetCurrent( n, false, 0, false );
 }
 
-void PanelWin::SetCurrent( int n, bool shift, int* selectType )
+void PanelWin::SetCurrent( int n, bool Shift, LPanelSelectionType* SelectType, bool SelectLastItem )
 {
 	if ( !this ) { return; }
 
-	if ( n >= _list.Count( HideDotsInDir() ) ) { n = _list.Count( HideDotsInDir() ) - 1; }
+	bool SelectLast = SelectLastItem;
 
-	if ( n < 0 ) { n = 0; }
+	if ( n >= _list.Count( HideDotsInDir() ) )
+	{
+		n = _list.Count( HideDotsInDir() ) - 1;
+		// this is similar to Far Manager
+		SelectLast = true;
+	}
 
-//	if (n == _current) return;
+	if ( n < 0 )
+	{
+		n = 0;
+		// this is similar to Far Manager
+		SelectLast = true;
+	}
 
 	int old = _current;
 	_current = n;
 
 	bool fullRedraw = false;
 
-	if ( shift && selectType )
+	if ( Shift && SelectType )
 	{
 		if ( old == _current )
 		{
-			_list.ShiftSelection( _current, selectType, HideDotsInDir() );
+			_list.ShiftSelection( _current, SelectType, HideDotsInDir() );
 		}
 		else
 		{
@@ -1187,18 +1199,25 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 
 			if ( old < _current )
 			{
-				count = _current - old + 1;
+				count = _current - old;
 				delta = 1;
 			}
 			else
 			{
-				count = old - _current + 1;
+				count = old - _current;
 				delta = -1;
 			}
 
-			for ( int i = old; count > 0; count--, i += delta )
+			for ( int i = old; count >= 0; count--, i += delta )
 			{
-				_list.ShiftSelection( i, selectType, HideDotsInDir() );
+				LPanelSelectionType* SType = SelectType;
+				// the last line should be selected only in specific cases
+				if ( count == 0 )
+				{
+					LPanelSelectionType LastSelection = LPanelSelectionType_Disable;
+					SType = SelectLast ? SelectType : &LastSelection;
+				}
+				_list.ShiftSelection( i, SType, HideDotsInDir() );
 			}
 		}
 
@@ -1338,7 +1357,11 @@ void PanelWin::DrawFooter( wal::GC& gc )
 		if ( FreeSpace >= 0 )
 		{
 			char Num[128];
+#if defined( _MSC_VER ) && ( _MSC_VER < 1700 )
+			_ui64toa_s( (uint64_t)FreeSpace, Num, sizeof( Num ) - 1, 10 );
+#else
 			sprintf( Num, _LT( "%" PRId64 ), FreeSpace );
+#endif
 
 			char SplitNum[128];
 			SplitNumber_3( Num, SplitNum );
@@ -1364,7 +1387,7 @@ void PanelWin::DrawFooter( wal::GC& gc )
 		if ( selectedCn.count > 0 ) { ucl.Set( uiHaveSelected, true ); }
 
 		PanelCounter selectedCn = _list.SelectedCounter();
-		PanelCounter filesCn = _list.FilesCounter( wcmConfig.panelSelectFolders );
+		PanelCounter filesCn = _list.FilesCounter( g_WcmConfig.panelSelectFolders );
 		int hiddenCount = _list.HiddenCounter().count;
 
 		char b1[64];
@@ -1881,7 +1904,7 @@ bool PanelWin::EventMouse( cevent_mouse* pEvent )
 
 bool PanelWin::HideDotsInDir() const
 {
-	bool HideDots = !wcmConfig.panelShowDotsInRoot;
+	bool HideDots = !g_WcmConfig.panelShowDotsInRoot;
 
 	if ( _place.IsEmpty() ) { return HideDots; }
 

@@ -93,8 +93,8 @@ EditWin::EditWin( Win* parent )
 	    vscroll( 0, this, true, false ),
 	    charH( 1 ),
 	    charW( 1 ),
-	    autoIdent( wcmConfig.editAutoIdent ),
-	    tabSize( wcmConfig.editTabSize ),
+	    autoIdent( g_WcmConfig.editAutoIdent ),
+	    tabSize( g_WcmConfig.editTabSize ),
 	    firstLine( 0 ),
 	    colOffset( 0 ),
 	    recomendedCursorCol( -1 ),
@@ -405,7 +405,14 @@ void EditWin::CursorCtrlLeft( bool mark )
 
 	while ( StepLeft( &p, &c ) && EditBuf::GetCharGroup( c ) == group )
 	{
-		cursor = p;
+		if ( cursor.pos > 0 )
+		{
+			cursor = p;
+		}
+		else
+		{
+			cursor.pos = 0;
+		}
 	}
 
 	recomendedCursorCol = -1;
@@ -432,7 +439,16 @@ void EditWin::CursorCtrlRight( bool mark )
 
 	while ( StepRight( &p, &c ) )
 	{
-		cursor = p;
+		if ( p.line > cursor.line )
+		{
+			cursor = p;
+			cursor.pos = 0;
+			break;
+		}
+		else
+		{
+			cursor = p;
+		}
 
 		if ( EditBuf::GetCharGroup( c ) != group ) { break; }
 	}
@@ -1320,7 +1336,7 @@ void EditWin::SetCharset( charset_struct* cs )
 	CursorLeft( false );
 	SendChanges();
 	marker = cursor;
-	EnableShl( wcmConfig.editShl );
+	EnableShl( g_WcmConfig.editShl );
 	Refresh();
 }
 
@@ -1541,8 +1557,8 @@ bool EditWin::Broadcast( int id, int subId, Win* win, void* data )
 {
 	if ( id == ID_CHANGED_CONFIG_BROADCAST )
 	{
-		autoIdent = wcmConfig.editAutoIdent;
-		tabSize = wcmConfig.editTabSize;
+		autoIdent = g_WcmConfig.editAutoIdent;
+		tabSize = g_WcmConfig.editTabSize;
 
 		if ( IsVisible() ) { Invalidate(); }
 
@@ -1687,7 +1703,7 @@ void EditWin::Load( clPtr<FS> fs, FSPath& path, MemFile& f )
 
 	_changed = false;
 
-	EnableShl( wcmConfig.editShl );
+	EnableShl( g_WcmConfig.editShl );
 }
 
 void EditWin::Clear()

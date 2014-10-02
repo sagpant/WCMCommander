@@ -6,6 +6,7 @@
 
 #include "panel_list.h"
 #include "wcm-config.h"
+#include "globals.h"
 
 using namespace wal;
 
@@ -165,7 +166,7 @@ void PanelList::Mark( const unicode_t* mask, bool enable )
 	selectedCn = counter;
 }
 
-void PanelList::ShiftSelection( int n, int* selectType, bool RootDir )
+void PanelList::ShiftSelection( int n, LPanelSelectionType* selectType, bool RootDir )
 {
 	FSNode* p = NULL;
 
@@ -184,7 +185,7 @@ void PanelList::ShiftSelection( int n, int* selectType, bool RootDir )
 
 	if ( *selectType < 0 ) //not defined
 	{
-		*selectType = p->IsSelected() ? 0 : 1;
+		*selectType = p->IsSelected( ) ? LPanelSelectionType_Disable : LPanelSelectionType_Enable;
 	}
 
 	bool sel = ( *selectType > 0 );
@@ -218,7 +219,7 @@ void PanelList::InvertSelection()
 		}
 		else
 		{
-			if ( !wcmConfig.panelSelectFolders && p->IsDir() ) { continue; }
+			if ( !g_WcmConfig.panelSelectFolders && p->IsDir() ) { continue; }
 
 			p->SetSelected();
 			selectedCn.AddOne( p->st.size );

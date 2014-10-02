@@ -12,6 +12,13 @@
 
 using namespace wal;
 
+enum LPanelSelectionType
+{
+	LPanelSelectionType_Disable = 0,
+	LPanelSelectionType_Enable = 1,
+	LPanelSelectionType_NotDefined = -1
+};
+
 struct PanelCounter
 {
 	int count;
@@ -241,7 +248,7 @@ public:
 
 	}
 
-	void ShiftSelection( int n, int* selectType, bool RootDir );
+	void ShiftSelection( int n, LPanelSelectionType* selectType, bool RootDir );
 
 
 	void InvertSelection();

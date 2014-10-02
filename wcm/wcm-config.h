@@ -160,8 +160,6 @@ private:
 	std::vector<sNode> m_MapList;
 };
 
-extern WcmConfig wcmConfig;
-
 void InitConfigPath();
 
 bool DoPanelConfigDialog( NCDialogParent* parent );

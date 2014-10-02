@@ -250,7 +250,7 @@ private:
 	/// currently active file highlighting rules
 	std::vector<clNCFileHighlightingRule> m_FileHighlightingRules;
 
-	int _shiftSelectType;
+	LPanelSelectionType _shiftSelectType;
 
 	void SetMode( MODE m );
 	void ShowPanels( bool show )

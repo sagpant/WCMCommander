@@ -2452,6 +2452,18 @@ Nah:
 				XSetWMHints( display, handle, &wm_hints );
 			}
 		};
+
+		XClassHint* Hint = XAllocClassHint();
+
+		if ( Hint )
+		{
+			std::vector<char> ResName  = new_char_str( "Wal Commander GitHub Edition" );
+			std::vector<char> ResClass = new_char_str( "WalCommander" );
+			Hint->res_name = ResName.data();
+			Hint->res_class = ResClass.data();
+			XSetClassHint( display, handle, Hint );
+			XFree(Hint);
+		}
 	}
 
 
