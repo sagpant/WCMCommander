@@ -222,4 +222,44 @@ namespace wal
 
 	void File::Throw() { Throw( 0 ); }
 
+	bool LookAhead( const unicode_t* p, unicode_t* OutNextChar )
+	{
+		if ( !p ) return false;
+		if ( !*p ) return false;
+		if ( OutNextChar ) *OutNextChar = *(p+1);
+		return true;
+	}
+
+	void PopLastNull( std::vector<unicode_t>* S )
+	{
+		if ( S && !S->empty() && S->back() == 0 ) S->pop_back();
+	}
+
+	bool LastCharEquals( const std::vector<unicode_t>& S, unicode_t Ch )
+	{
+		if ( S.empty() ) return false;
+
+		return S.back() == Ch;
+	}
+
+	bool LastCharEquals( const unicode_t* S, unicode_t Ch )
+	{
+		if ( !S ) return false;
+
+		unicode_t PrevCh = *S;
+
+		while ( *S )
+		{
+			PrevCh = *S;
+			S++;
+		}
+
+		return PrevCh == Ch;
+	}
+
+	bool IsPathSeparator( const unicode_t Ch )
+	{
+		return ( Ch == '\\' ) || ( Ch == '/' );
+	}
+
 }; //namespace wal
