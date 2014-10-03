@@ -1043,6 +1043,27 @@ private:
 	size_t m_CurrentPos;
 };
 
+bool accmultimask( const unicode_t* FileName, const std::vector<unicode_t>& MultiMask )
+{
+	clMultimaskSplitter Splitter( MultiMask );
+
+	while ( Splitter.HasNextMask() )
+	{
+		if (
+#if defined( _WIN32 ) || defined( __APPLE__ )
+			accmask_nocase_begin
+#else
+			accmask
+#endif
+			( FileName, Splitter.GetNextMask().data() ) )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
 {
 	for ( auto i = m_FileAssociations.begin(); i != m_FileAssociations.end(); i++ )
@@ -1053,16 +1074,7 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 
 		while ( Splitter.HasNextMask() )
 		{
-			if (
-#if defined( _WIN32 ) || defined( __APPLE__ )
-				accmask_nocase_begin
-#else
-				accmask
-#endif
-				( FileName, Splitter.GetNextMask().data() ) )
-			{
-				return &(*i);
-			}
+			if ( accmultimask( FileName, Splitter.GetNextMask() ) ) return &(*i);
 		}
 	}
 

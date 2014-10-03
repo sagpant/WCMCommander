@@ -453,8 +453,12 @@ clFileHighlightingWin::~clFileHighlightingWin()
 {
 }
 
+bool accmultimask( const unicode_t* FileName, const std::vector<unicode_t>& MultiMask );
+
 bool clNCFileHighlightingRule::IsRulePassed( const std::vector<unicode_t>& FileName, uint64_t FileSize, uint64_t Attributes ) const
 {
+	if ( accmultimask( FileName.data(), m_Mask ) ) return true;
+
 	return false;
 }
 
