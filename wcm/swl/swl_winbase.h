@@ -184,6 +184,7 @@ namespace wal
 		int _chars;
 		bool cursorVisible;
 		bool passwordMode;
+		bool showSpaces;
 		// quick search line accepts alt keys. Edit controls do not: alt is used for hotkeys in dialogs
 		bool doAcceptAltKeys;
 		int first;
@@ -214,6 +215,7 @@ namespace wal
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
 		std::vector<unicode_t> GetText() const;
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
+		void SetShowSpaces( bool enable = true ) { showSpaces = enable; Invalidate(); }
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();
 		virtual ~EditLine();

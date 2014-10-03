@@ -650,6 +650,7 @@ WcmConfig::WcmConfig()
 		panelShowDotsInRoot( false ),
 		panelShowFolderIcons( true ),
 		panelShowExecutableIcons( true ),
+		panelShowSpacesMode( ePanelSpacesMode_Trailing ),
 		panelModeLeft( 0 ),
 	   panelModeRight( 0 ),
 
@@ -691,6 +692,7 @@ WcmConfig::WcmConfig()
 	MapBool( sectionPanel, "show_dots",     &panelShowDotsInRoot, panelShowDotsInRoot );
 	MapBool( sectionPanel, "show_foldericons",     &panelShowFolderIcons, panelShowFolderIcons );
 	MapBool( sectionPanel, "show_executableicons",     &panelShowExecutableIcons, panelShowExecutableIcons );
+	MapInt( sectionPanel,  "show_spaces_mode",     (int*)&panelShowSpacesMode, panelShowSpacesMode );
 	MapInt( sectionPanel,  "mode_left",     &panelModeLeft, panelModeLeft );
 	MapInt( sectionPanel,  "mode_right",    &panelModeRight, panelModeRight );
 
@@ -1303,6 +1305,11 @@ public:
 	SButton  showFolderIcons;
 	SButton  showExecutableIcons;
 
+	StaticLine showSpacesStatic;
+	SButton  showSpacesNoneButton;
+	SButton  showSpacesAllButton;
+	SButton  showSpacesTrailingButton;
+
 	PanelOptDialog( NCDialogParent* parent );
 	virtual ~PanelOptDialog();
 };
@@ -1318,6 +1325,10 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
  , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the &root folder" ) ).data(), 0, g_WcmConfig.panelShowDotsInRoot )
  , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, g_WcmConfig.panelShowFolderIcons )
  , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, g_WcmConfig.panelShowExecutableIcons )
+ , showSpacesStatic( 0, this, utf8_to_unicode( _LT( "Show spaces as · in names:" ) ).data() )
+ , showSpacesNoneButton( 0, this, utf8_to_unicode( _LT( "No" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode != 1 && g_WcmConfig.panelShowSpacesMode != 2 )
+ , showSpacesAllButton( 0, this,  utf8_to_unicode( _LT( "All" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 1 )
+ , showSpacesTrailingButton( 0, this, utf8_to_unicode( _LT( "Trailing only" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 2 )
 {
 	iL.AddWinAndEnable( &showHiddenButton,  0, 0 );
 	showHiddenButton.SetFocus();
@@ -1326,6 +1337,10 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	iL.AddWinAndEnable( &showDotsInRoot, 3, 0 );
 	iL.AddWinAndEnable( &showFolderIcons, 4, 0 );
 	iL.AddWinAndEnable( &showExecutableIcons, 5, 0 );
+	iL.AddWinAndEnable( &showSpacesStatic, 7, 0 );
+	iL.AddWinAndEnable( &showSpacesNoneButton, 8, 0 );
+	iL.AddWinAndEnable( &showSpacesAllButton, 9, 0 );
+	iL.AddWinAndEnable( &showSpacesTrailingButton, 10, 0 );
 
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
@@ -1338,6 +1353,9 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	order.append( &showDotsInRoot );
 	order.append( &showFolderIcons );
 	order.append( &showExecutableIcons );
+	order.append( &showSpacesNoneButton );
+	order.append( &showSpacesAllButton );
+	order.append( &showSpacesTrailingButton );
 	SetPosition();
 }
 
@@ -1353,6 +1371,18 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.panelShowDotsInRoot = dlg.showDotsInRoot.IsSet();
 		g_WcmConfig.panelShowFolderIcons  = dlg.showFolderIcons.IsSet();
 		g_WcmConfig.panelShowExecutableIcons  = dlg.showExecutableIcons.IsSet();
+		if ( dlg.showSpacesTrailingButton.IsSet() )
+		{
+			g_WcmConfig.panelShowSpacesMode = ePanelSpacesMode_Trailing;
+		}
+		else if ( dlg.showSpacesAllButton.IsSet() )
+		{
+			g_WcmConfig.panelShowSpacesMode = ePanelSpacesMode_All;
+		}
+		else
+		{
+			g_WcmConfig.panelShowSpacesMode = ePanelSpacesMode_None;
+		}
 		return true;
 	}
 
