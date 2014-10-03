@@ -445,6 +445,7 @@ NCWin::NCWin()
 
 	_buttonWin.Enable();
 
+	m_Edit.SetShowSpaces( false );
 	m_Edit.Show();
 	m_Edit.Enable();
 	_terminal.Show();

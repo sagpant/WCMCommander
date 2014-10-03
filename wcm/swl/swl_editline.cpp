@@ -290,6 +290,7 @@ namespace wal
 		   first( 0 ),
 		   frame3d( frame ),
 		   passwordMode( false ),
+			showSpaces( true ),
 		   doAcceptAltKeys(false)
 	{
 		text.End();
@@ -537,11 +538,14 @@ namespace wal
 				std::vector<unicode_t> VisibleText = new_unicode_str( passwordMode ? pwText : ( text.Ptr() + i ) );
 
 				// https://github.com/corporateshark/WalCommander/issues/187
-				for ( auto j = 0; j != VisibleText.size(); j++ )
+				if ( showSpaces )
 				{
-					if ( VisibleText[j] == 32 || VisibleText[j] == 9 )
+					for ( auto j = 0; j != VisibleText.size(); j++ )
 					{
-						VisibleText[j] = 0x00B7;
+						if ( VisibleText[j] == 32 || VisibleText[j] == 9 )
+						{
+							VisibleText[j] = 0x00B7;
+						}
 					}
 				}
 
