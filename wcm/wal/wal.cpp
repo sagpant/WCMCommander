@@ -262,4 +262,39 @@ namespace wal
 		return ( Ch == '\\' ) || ( Ch == '/' );
 	}
 
+	void ReplaceSpaces( std::vector<unicode_t>* S )
+	{
+		if ( !S ) return;
+
+		for ( auto i = 0; i != S->size(); i++ )
+		{
+			unicode_t Ch = S->at(i);
+			if ( Ch == 32 || Ch == 9 )
+			{
+				S->at(i) = 0x00B7;
+			}
+		}
+	}
+
+	void ReplaceTrailingSpaces( std::vector<unicode_t>* S )
+	{
+		if ( !S ) return;
+
+		for ( auto i = S->size(); i --> 0; )
+		{
+			unicode_t Ch = S->at(i);
+
+			if ( !Ch ) continue;
+
+			if ( Ch == 32 || Ch == 9 )
+			{
+				S->at(i) = 0x00B7;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
 }; //namespace wal

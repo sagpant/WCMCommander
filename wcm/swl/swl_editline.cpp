@@ -540,13 +540,7 @@ namespace wal
 				// https://github.com/corporateshark/WalCommander/issues/187
 				if ( showSpaces )
 				{
-					for ( auto j = 0; j != VisibleText.size(); j++ )
-					{
-						if ( VisibleText[j] == 32 || VisibleText[j] == 9 )
-						{
-							VisibleText[j] = 0x00B7;
-						}
-					}
+					ReplaceSpaces( &VisibleText );
 				}
 
 				gc.TextOutF( x, y, VisibleText.data(), n );

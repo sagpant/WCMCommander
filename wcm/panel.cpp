@@ -1146,15 +1146,18 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	}
 
+	std::vector<unicode_t> Name = new_unicode_str( _list.GetFileName( n, HideDotsInDir() ) );
 
-	if ( active )
+	if ( g_WcmConfig.panelShowSpacesMode == ePanelSpacesMode_All )
 	{
-		gc.TextOut( x, y, _list.GetFileName( n, HideDotsInDir() ) );
+		ReplaceSpaces( &Name );
 	}
-	else
+	else if ( g_WcmConfig.panelShowSpacesMode == ePanelSpacesMode_Trailing )
 	{
-		gc.TextOutF( x, y, _list.GetFileName( n, HideDotsInDir() ) );
+		ReplaceTrailingSpaces( &Name );
 	}
+
+	gc.TextOut( x, y, Name.data() );
 }
 
 void PanelWin::SetCurrent( int n )
