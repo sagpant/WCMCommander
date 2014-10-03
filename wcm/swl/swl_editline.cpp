@@ -534,7 +534,18 @@ namespace wal
 				gc.FillRect( crect( x, cr.top, x + size.x, cr.bottom ) );
 				gc.SetTextColor( mark ? mark_color : color ); //GetColor(InFocus() &&  mark ? IC_EDIT_STEXT : (IsEnabled() ? IC_EDIT_TEXT : IC_GRAY_TEXT)));
 
-				gc.TextOutF( x, y, passwordMode ? pwText : ( text.Ptr() + i ), n );
+				std::vector<unicode_t> VisibleText = new_unicode_str( passwordMode ? pwText : ( text.Ptr() + i ) );
+
+				// https://github.com/corporateshark/WalCommander/issues/187
+				for ( auto j = 0; j != VisibleText.size(); j++ )
+				{
+					if ( VisibleText[j] == 32 || VisibleText[j] == 9 )
+					{
+						VisibleText[j] = 0x00B7;
+					}
+				}
+
+				gc.TextOutF( x, y, VisibleText.data(), n );
 				cnt -= n;
 				x += size.x;
 				i += n;
