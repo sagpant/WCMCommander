@@ -1,0 +1,77 @@
+OBJS_COMMON=\
+	wal_tmpls.o \
+	wal.o\
+	wal_sys_api.o\
+	wal_charset.o\
+	wal_exceptions.o\
+	wal_files.o\
+	swl_button.o \
+	swl_editline.o  \
+	swl_layout.o    \
+	swl_menubox.o    \
+	swl_menutextinfo.o \
+	swl_popupmenu.o   \
+	swl_sbutton.o     \
+	swl_scrollbar.o   \
+	swl_staticlabel.o   \
+	swl_textlist.o    \
+	swl_vlist.o       \
+	swl_winbase.o     \
+	swl_wincore.o     \
+	operthread.o \
+	operwin.o \
+	vfs.o \
+	vfspath.o \
+	vfs-smb.o \
+	tcp_sock.o \
+	vfs-ftp.o \
+	vfs-uri.o \
+	termwin.o \
+	ncdialogs.o \
+	unicode_lc.o \
+	nchistory.o \
+	panel_list.o \
+	panel.o \
+	nc.o \
+	ncwin.o \
+	ncedit.o \
+	ncview.o \
+	fileopers.o \
+	eloadsave.o \
+	smblogon.o \
+	wcm-config.o \
+	ftplogon.o \
+	charsetdlg.o \
+	vfs-sftp2.o \
+	sftpdlg.o \
+	color-style.o\
+	filesearch.o\
+	help.o\
+	helpres.o\
+	strconfig.o \
+	shortcuts.o \
+	fileassociations.o \
+	shl.o \
+	ncfonts.o \
+	toolbar.o \
+	search-dlg.o \
+	search-tools.o \
+	shell-tools.o \
+	t-emulator.o \
+	dircalc.o \
+	ltext.o 
+
+OBJS_WIN=\
+	swl_wincoreMS.o \
+	w32cons.o \
+	w32util.o \
+	ext-app.o \
+	wcm.o
+
+OBJS_UX=\
+	swl_wincoreUX.o \
+	ext-app-ux.o \
+	ux_util.o\
+	fontdlg.o \
+	shell.o \
+	terminal.o 

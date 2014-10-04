@@ -1,0 +1,64 @@
+How to build code under mingw
+
+Disclamer: These instrustions worked for me at one time.
+
+1. Install mingw with mingw-get-setup.exe to C:\MinGW 
+- Install compiler/binutils from "MinGW Installation Manager".
+- Install mingw32-libz. 
+- DO NOT install msys-libopenssl. The library is built against
+cygwin libc, which makes it incompatible with mingw standard libraries.
+
+2. Post-install steps for build environment
+- Download mintty-1.1.3-msys.zip , and put mintty.exe from the archive
+to C:\MinGW\bin
+- Add the line 
+-------
+C:\MinGW   /mingw
+-------
+to C:\MinGW\msys\1.0\etc\fstab 
+- Add the lines
+-------
+export CFLAGS="-I/mingw/include -I/usr/include"
+export LDFLAGS="-L/mingw/lib -L/usr/lib"
+export CC=gcc
+export CPP=g++
+--------
+to the end of C:\MinGW\msys\1.0\etc\profile 
+(Actually, I have added CC, and CPP lines after building libraries
+at steps 3, an 4. It can make a difference for the 3, and 4)
+
+If the enviroment is all set,  running:
+
+C:\MinGW\msys\1.0\msys.bat --mintty
+gives mintty command line  with 
+gcc, make, perl (TBD: check what else is needed)
+
+3. Build/install openssl
+- Download the file openssl-1.0.1i.tar.gz, extract its content, and cd to the
+directory, where it is extracted to in the mintty environment.
+- From the environemnt run the commands:
+-----------
+./Configure -DHAVE_STRUCT_TIMESPEC -L/mingw/lib -lz -lws2_32 --prefix=/mingw zlib mingw
+make
+make install
+----------
+Ensure there are no errors at the screen. Check that file C:\MinGW\lib\libssl.a 
+appears after 'make install' command.
+
+4. Build/install libssh2.
+- Download libssh2-1.4.3.tar.gz, extract it, and cd to the and cd to the
+directory, where it is extracted to in the mintty environment.
+- From the environemnt run the commands:
+--------------
+./configure --prefix=/mingw --with-libz --with-openssl --disable-examples-build
+make
+make install
+--------------
+Ensure there are no errors on the screen. Check that file C:\MinGW\lib\libssh2.a
+appears after 'make install' command.
+
+Now you should be GTG to build Wal Commander with SSH support 
+by runnung 'make' in wcm directory
+
+--
+Oleg
