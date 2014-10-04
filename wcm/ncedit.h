@@ -358,7 +358,6 @@ struct UndoBlock: public iIntrusiveCounter
 		clPtr<UndoRec> p = new UndoRec( UndoRec::ATTR, line );
 		p->prevAttr = prevAttr;
 		p->attr = attr;
-		p->attr = attr;
 		Append( p.ptr() );
 		p.drop();
 	}

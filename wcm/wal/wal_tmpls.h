@@ -604,6 +604,7 @@ namespace wal
 
 			Node( const T& d, unsigned k ) : hashKey( k ), m_data( d ) {}
 			Node( const Node& a ): m_data( a.m_data ), hashKey( a.hashKey ) {}
+			Node& operator=(const Node& a) = delete;
 			const KT& key() { return m_data.key(); }
 			unsigned intKey() { return hashKey; }
 			Node* next;

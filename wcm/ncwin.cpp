@@ -2273,7 +2273,7 @@ void NCWin::EditExit()
 	{
 		int ret = NCMessageBox( this, _LT( "Edit" ), _LT( "File has changes\nsave it?" ), true, bListYesNoCancel );
 
-		if ( ret == CMD_NO || ret == CMD_YES && EditSave( false ) )
+		if ( ret == CMD_NO || (ret == CMD_YES && EditSave( false )) )
 		{
 			_leftPanel.Reread();
 			_rightPanel.Reread();

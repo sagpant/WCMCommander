@@ -52,6 +52,16 @@ namespace wal
 		void* ret;
 	};
 
+	unsigned thread_info_hash_code(_thread_info* ti)
+	{
+		unsigned char* pthis = (unsigned char*)ti;
+		unsigned char* pend = pthis + sizeof(_thread_info);
+		unsigned hash = 0;
+		for (; pthis < pend; pthis++)
+			hash = 31 * hash + *pthis;
+		return hash;
+	}
+
 	static DWORD tlsId = TLS_OUT_OF_INDEXES;
 
 

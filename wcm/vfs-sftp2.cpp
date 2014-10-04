@@ -352,7 +352,7 @@ void FSSftp::CloseSession()
 	sshSession = 0;
 	sftpSession = 0;
 
-	if ( _sock.Id() >= 0 ) { _sock.Close( false ); }
+	if ( _sock.isValid() ) { _sock.Close( false ); }
 }
 
 

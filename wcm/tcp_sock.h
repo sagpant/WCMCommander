@@ -76,7 +76,8 @@ protected:
 public:
 	TCPSock(): sock( INVALID_SOCKET ) {}
 	SOCKET Id() { return sock; }
-	void Create()           { ASSERT( sock == INVALID_SOCKET ); if ( ( sock = socket( AF_INET, SOCK_STREAM, 0 ) ) == INVALID_SOCKET ) { throw int( SysErr() ); } }
+	bool isValid(){ return sock != INVALID_SOCKET;}
+	void Create()           { ASSERT(sock == INVALID_SOCKET); if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) { throw int(SysErr()); } }
 	void Bind( unsigned i = INADDR_ANY, int p = 0 ) {  Sin sin( i, p );    if ( bind( sock, sin.SockAddr(), sin.Size() ) ) { throw int( SysErr() ); } }
 
 	bool SelectRead( int timeoutSec = -1 )   { return __Select( true, timeoutSec ); }
