@@ -660,7 +660,11 @@ namespace wal
 
 	inline unsigned th_key( thread_t th )
 	{
-		return thread_info_hash_code(th);
+		unsigned key = 0;
+
+		for ( auto i = 0; i < sizeof( th ); i++ ) key += (( unsigned char* )&th )[i];
+
+		return key;
 	}
 
 	inline unsigned win_key( Win* w )

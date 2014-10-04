@@ -52,8 +52,8 @@ namespace wal
 		explicit MenuTextInfo(const unicode_t* inStr);
 		MenuTextInfo() :strBeforeHk(0), strHk(0), strAfterHk(0), strFull(0), hotkeyUpperCase(0){}
 		MenuTextInfo(const MenuTextInfo& src) { Init(src); }
-		MenuTextInfo& operator=(const MenuTextInfo& src){ Clear(); Init(src); };
-		~MenuTextInfo()	{Clear();}
+		MenuTextInfo& operator=(const MenuTextInfo& src){ Clear(); Init(src); return *this; };
+		~MenuTextInfo() { Clear(); }
 
 		void SetText(const unicode_t* inStr);
 		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;

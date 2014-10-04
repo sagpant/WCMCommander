@@ -463,8 +463,6 @@ namespace wal
 
 	struct _thread_info;
 	typedef _thread_info* thread_t;
-	unsigned thread_info_hash_code(_thread_info* ti);
-
 
 	typedef CRITICAL_SECTION mutex_t;
 
@@ -528,7 +526,6 @@ namespace wal
 	const char* sys_locale_lang();
 	const char* sys_locale_ter();
 	const char* sys_locale_lang_ter();
-
 
 }; //namespace wal
 
