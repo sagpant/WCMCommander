@@ -438,7 +438,7 @@ static std::vector<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *
 }
 */
 
-static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t* cat )
+static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wchar_t* cat )
 {
 	int lcat = Utf16Chars( cat );
 
@@ -613,7 +613,7 @@ int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 
 	int d = Drive();
 
-	char RootPath[] = { d + 'A', ':', '\\', 0 };
+	char RootPath[] = { char(d + 'A'), ':', '\\', 0 };
 
 	if ( GetDiskFreeSpace( RootPath, &SectorsPerCluster, &BytesPerSector, &NumberOfFreeClusters, &TotalNumberOfClusters ) != TRUE ) { return -1; }
 

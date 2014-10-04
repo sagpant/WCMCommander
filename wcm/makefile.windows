@@ -11,7 +11,7 @@ HN = libconf.h nc.h ncwin.h panel.h ncdialogs.h  w32cons.h termwin.h ncedit.h nc
  wcm-config.h panel_list.h tcp_sock.h vfs-ftp.h ftplogon.h charsetdlg.h vfs-sftp.h sftpdlg.h color-style.h filesearch.h help.h ux_util.h \
  strconfig.h shortcuts.h ncfonts.h shl.h toolbar.h ncview.h search-dlg.h search-tools.h shell-tools.h t-emulator.h dircalc.h ltext.h
 
-COPTS += -I swl -fpermissive -std=c++11 $(WINDOWS_TARGET)
+COPTS += -I swl -std=c++11 $(WINDOWS_TARGET)
 
 CC = gcc
 
