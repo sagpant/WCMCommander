@@ -498,7 +498,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 		if ( iter == g_LastFileInfo.end() ) continue;
 
-		const FileInfoNode& Info = i->second;
+		const FileInfoNode& Info = iter->second;
 
 		if ( fixed && !( Info.info->flags & cfont::FTInfo::FIXED_WIDTH ) ) { continue; }
 
