@@ -27,10 +27,13 @@ void InitOperCharsets()
 	csList.clear();
 	charset_struct* list[128];
 	int count = charset_table.GetList( list, 128 );
-	cstrhash<charset_struct*> hash;
+	std::unordered_map< std::string, charset_struct* > hash;
 	int i;
 
-	for ( i = 0; i < count; i++ ) { hash[list[i]->name] = list[i]; }
+	for ( i = 0; i < count; i++ )
+	{
+		hash[list[i]->name] = list[i];
+	}
 
 	ccollect< std::vector<char> > stringList;
 
@@ -38,9 +41,9 @@ void InitOperCharsets()
 	{
 		for ( i = 0; i < stringList.count(); i++ )
 		{
-			charset_struct** p = hash.exist( stringList[i].data() );
+			auto iter = hash.find( stringList[i].data() );
 
-			if ( p ) { csList.append( *p ); }
+			if ( iter != hash.end( ) ) { csList.append( iter->second ); }
 		}
 	}
 

@@ -34,7 +34,7 @@
 namespace wal
 {
 
-	typedef int unicode_t;
+	typedef wchar_t unicode_t;
 	typedef unsigned long long unsigned64;
 	typedef long long int64;
 	typedef unsigned unsigned32;
