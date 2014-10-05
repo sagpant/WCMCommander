@@ -993,7 +993,7 @@ namespace wal
 
 	void Image32::alloc( int w, int h )
 	{
-		std::vector<unsigned32> d( w * h );
+		std::vector<uint32_t> d( w * h );
 
 		_data = d;
 		_width = w;
@@ -1016,8 +1016,8 @@ namespace wal
 
 		for ( int i = top; i < bottom; i++ )
 		{
-			unsigned32* p = &_data[i*_width];
-			unsigned32* end = p + right;
+			uint32_t* p = &_data[i*_width];
+			uint32_t* end = p + right;
 			p += left;
 
 			for ( ; p < end; p++ ) { *p = c; }
@@ -1030,7 +1030,7 @@ namespace wal
 
 		if ( _width > 0 && _height > 0 )
 		{
-			memcpy( _data.data(), a._data.data(), _width * _height * sizeof( unsigned32 ) );
+			memcpy( _data.data(), a._data.data(), _width * _height * sizeof( uint32_t ) );
 		}
 	}
 
@@ -1084,12 +1084,12 @@ namespace wal
 		for ( y = 0; y < h; y++ )
 		{
 
-			unsigned32* line =  &_data[y*_width];
+			uint32_t* line =  &_data[y*_width];
 			int hN2 = hN / 2;
 
 			if ( !hN )
 			{
-				const unsigned32* a_line =  &a._data[ ( ( y * a._height ) / h ) * a._width ];
+				const uint32_t* a_line =  &a._data[ ( ( y * a._height ) / h ) * a._width ];
 
 				if ( !wN )
 					for ( x = 0; x < w; x++ ) { line[x] = a_line[p[x].first]; }
@@ -1129,7 +1129,7 @@ namespace wal
 
 					for ( int iy = t1; iy < t2; iy++ )
 					{
-						const unsigned32* a_line =  &a._data[ iy * a._width ];
+						const uint32_t* a_line =  &a._data[ iy * a._width ];
 
 						for ( int i = n1; i < n2; i++ ) { FROM_RGBA32_PLUS( a_line[i], R, G, B, A ); }
 					}
@@ -1620,7 +1620,7 @@ namespace wal
 
 		if ( n <= 0 ) { return; }
 
-		unsigned32* p = dest->line( 0 );
+		uint32_t* p = dest->line( 0 );
 
 		for ( ; n > 0; n--, p++ )
 		{
@@ -1740,7 +1740,7 @@ namespace wal
 		int NextChar();
 		void SS() { while ( _cc >= 0 && _cc <= ' ' ) { NextChar(); } }
 		UiParzerBuf _buf;
-		int64 _i;
+		int64_t _i;
 		int _cline;
 	public:
 		enum TOKENS
@@ -1754,7 +1754,7 @@ namespace wal
 		void Syntax( const char* s = "" );
 		UiParzer( UiStream* stream );
 		int Tok() const { return _tok; }
-		int64 Int() const { return _i; }
+		int64_t Int() const { return _i; }
 		const char* Str() { return _buf.data.data(); }
 		int Next();
 		void Skip( int tok );
@@ -1899,7 +1899,7 @@ begin:
 
 		if ( IsDigit( _cc ) )
 		{
-			int64 n = 0;
+			int64_t n = 0;
 
 			if ( _cc == '0' )
 			{
@@ -1961,13 +1961,13 @@ begin:
 		return _tok;
 	}
 
-	int64 UiValueNode::Int()
+	int64_t UiValueNode::Int()
 	{
 		if ( !( flags & INT ) )
 		{
 			if ( !( flags & STR ) ) { return 0; }
 
-			int64 n = 0;
+			int64_t n = 0;
 			char* t = s.data();
 
 			if ( !t || !*t ) { return 0; }
@@ -1998,7 +1998,7 @@ begin:
 			if ( !( flags & INT ) ) { return ""; }
 
 			char buf[64];
-			int_to_char<int64>( i, buf );
+			int_to_char<int64_t>( i, buf );
 			s = new_char_str( buf );
 			flags |= STR;
 		}

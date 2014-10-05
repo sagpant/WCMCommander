@@ -336,7 +336,7 @@ namespace FTU
 
 		if ( top >= h || bottom <= 0 || left >= w || right <= 0 )
 		{
-			unsigned32* p = im.line( 0 );
+			uint32_t* p = im.line( 0 );
 
 			for ( int cnt = w * h; cnt > 0; cnt--, p++ )
 			{
@@ -361,7 +361,7 @@ namespace FTU
 
 		for ( int i = 0; i < h; i++ )
 		{
-			unsigned32* dest = im.line( i );
+			uint32_t* dest = im.line( i );
 
 			if ( i < top || i >= bottom )
 			{

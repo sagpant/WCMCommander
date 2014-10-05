@@ -119,7 +119,7 @@ struct FSStat
 	DWORD dwFileAttributes;
 #endif
 	int mode;
-	int64 size;
+	int64_t size;
 	FSTime mtime;
 	int uid;
 	int gid;
@@ -198,7 +198,7 @@ struct FSNode: public iIntrusiveCounter
 	{ isSelected = a.isSelected; extType = a.extType; st = a.st; next = 0; name.Copy( a.name ); originNode = a.originNode; return *this;}
 
 	FSString& Name() { return name; }
-	int64 Size() const { return st.size; }
+	int64_t Size() const { return st.size; }
 	bool IsDir() const { return st.IsDir(); }
 	bool IsLnk() const { return st.IsLnk(); }
 	bool IsReg() const { return st.IsReg(); }
@@ -508,7 +508,7 @@ public:
 	virtual int Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
-	virtual int64 GetFileSystemFreeSpace( FSPath& path, int* err );
+	virtual int64_t GetFileSystemFreeSpace( FSPath& path, int* err );
 
 	virtual FSString Uri( FSPath& path )                    = 0;
 
@@ -605,7 +605,7 @@ public:
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
 	virtual FSString Uri( FSPath& path );
-	virtual int64 GetFileSystemFreeSpace( FSPath& path, int* err );
+	virtual int64_t GetFileSystemFreeSpace( FSPath& path, int* err );
 
 	virtual unicode_t* GetUserName( int user, unicode_t buf[64] );
 	virtual unicode_t* GetGroupName( int group, unicode_t buf[64] );

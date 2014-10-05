@@ -1524,7 +1524,7 @@ namespace wal
 
 		for ( int y = 0; y < h; y++ )
 		{
-			unsigned32* t = image.line( y );
+			uint32_t* t = image.line( y );
 			char* m = ( masked ) ? mask.data() + y * w : 0;
 
 			for ( i = 0; i < w; i++ )

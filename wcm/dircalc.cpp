@@ -19,9 +19,9 @@ public:
 	/////////////////////////
 	Mutex resMutex; // {
 	int badDirs;
-	int64 fileCount;
-	int64 folderCount;
-	int64 sumSize;
+	int64_t fileCount;
+	int64_t folderCount;
+	int64_t sumSize;
 	FSPath currentPath;
 	// } (resMutex)
 
@@ -46,11 +46,11 @@ public:
 	void Calc();
 	virtual ~OperDirCalcThread();
 private:
-	int64 CalcDir( FS* fs, FSPath path );
+	int64_t CalcDir( FS* fs, FSPath path );
 };
 
 
-int64 OperDirCalcThread::CalcDir( FS* fs, FSPath path )
+int64_t OperDirCalcThread::CalcDir( FS* fs, FSPath path )
 {
 	if ( Info()->Stopped() ) { return -1; }
 
@@ -91,11 +91,11 @@ int64 OperDirCalcThread::CalcDir( FS* fs, FSPath path )
 
 	FSPath filePath = path;
 
-	int64 fileCount = 0;
+	int64_t fileCount = 0;
 
-	int64 folderCount = 0;
+	int64_t folderCount = 0;
 
-	int64 sumSize = 0;
+	int64_t sumSize = 0;
 
 	int i;
 
@@ -174,7 +174,7 @@ void OperDirCalcThread::Calc()
 
 		if ( IsDir )
 		{
-			int64 Size = CalcDir( fs.Ptr(), path );
+			int64_t Size = CalcDir( fs.Ptr(), path );
 
 			if ( Size >= 0 && node && node->originNode ) { node->originNode->st.size = Size; }
 		}
@@ -307,7 +307,7 @@ public:
 };
 
 /*
-static unicode_t* PrintableSizeStr(unicode_t buf[64], int64 size)
+static unicode_t* PrintableSizeStr(unicode_t buf[64], int64_t size)
 {
    unicode_t str[10];
    str[0] = 0;
@@ -364,7 +364,7 @@ static unicode_t* PrintableSizeStr(unicode_t buf[64], int64 size)
 }
 */
 
-static unicode_t* PrintableSizeStr( unicode_t buf[64], int64 size )
+static unicode_t* PrintableSizeStr( unicode_t buf[64], int64_t size )
 {
 	seek_t num = size;
 
@@ -387,10 +387,10 @@ static unicode_t* PrintableSizeStr( unicode_t buf[64], int64 size )
 }
 
 
-static void SetStaticLineInt64( StaticLine& a, int64 n )
+static void SetStaticLineInt64( StaticLine& a, int64_t n )
 {
 	char buf[64];
-	int_to_char<int64>( n, buf );
+	int_to_char<int64_t>( n, buf );
 	unicode_t ubuf[64];
 
 	for ( int i = 0; i < 64; i++ )
