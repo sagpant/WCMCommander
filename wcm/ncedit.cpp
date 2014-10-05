@@ -612,7 +612,7 @@ int EditWin::GetCursorCol()
 	return GetColFromPos( cursor.line, cursor.pos );
 }
 
-int32 EditWin::GetCursorSymbol()
+int32_t EditWin::GetCursorSymbol()
 {
 	if ( cursor.line >= text.Count() ) { return -1; }
 

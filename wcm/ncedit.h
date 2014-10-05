@@ -663,7 +663,7 @@ public:
 	int GetCursorCol();
 	int GetCursorLine() { return cursor.line; }
 	int GetLinesCount() { return text.Count(); };
-	int32 GetCursorSymbol();
+	int32_t GetCursorSymbol();
 
 	int GetCharsetId();
 	const char* GetCharsetName() { return charset->name; }

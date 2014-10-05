@@ -4312,7 +4312,7 @@ bool EditorHeadWin::UpdatePos()
 bool EditorHeadWin::UpdateSym()
 {
 	char cBuf[64] = "";
-	int32 sym = _edit->GetCursorSymbol();
+	int32_t sym = _edit->GetCursorSymbol();
 
 	if ( sym >= 0 )
 	{

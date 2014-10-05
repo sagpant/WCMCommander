@@ -2899,7 +2899,7 @@ stopped:
 			v.foreground = 1;
 			XChangeGC( display, gc, GCForeground, &v );
 
-			unsigned32* p = i32.line( 0 );
+			uint32_t* p = i32.line( 0 );
 
 			for ( int y = 0; y < h; y++ )
 			{
@@ -3144,7 +3144,7 @@ stopped:
 			MakeDisabledImage32( &im, _image );
 		}
 
-		unsigned32* p = im.line( 0 );
+		uint32_t* p = im.line( 0 );
 		int count = w * h;
 
 		bool masked = false;
@@ -3173,7 +3173,7 @@ stopped:
 
 		if ( masked )
 		{
-			unsigned32* p = _image.line( 0 );
+			uint32_t* p = _image.line( 0 );
 			int count = im.width() * im.height();
 
 			node->mask.resize( count );
@@ -3356,7 +3356,7 @@ stopped:
 
 			for ( int y = 0; y < h; y++ )
 			{
-				unsigned32* t = image.line( y );
+				uint32_t* t = image.line( y );
 				char* m = ( masked ) ? mask.data() + y * w : 0;
 
 				for ( i = 0; i < w; i++ )
@@ -3383,15 +3383,15 @@ stopped:
 
 
 
-		unsigned32* p = ( unsigned32* )data.data();
-		unsigned32* t = image.line( 0 );
+		uint32_t* p = ( uint32_t* )data.data();
+		uint32_t* t = image.line( 0 );
 
-		unsigned32 lastPixVal = 0;
-		unsigned32 lastColor = CreateColor(lastPixVal);
+		uint32_t lastPixVal = 0;
+		uint32_t lastColor = CreateColor(lastPixVal);
 		int n;
 		for ( n = w * h; n > 0; n--, p++, t++ )
 		{
-			unsigned32 pixVal = *t;
+			uint32_t pixVal = *t;
 
 			if ( lastPixVal >= 0x80000000 )
 			{
@@ -3419,7 +3419,7 @@ haveMask:
 
 		for ( ; n > 0; n--, p++, t++, m++ )
 		{
-			unsigned32 pixVal = *t;
+			uint32_t pixVal = *t;
 
 			if ( pixVal >= 0x80000000 )
 			{

@@ -31,16 +31,13 @@
 
 #include <errno.h>
 
+#include "types.h"
+
 namespace wal
 {
-
 	typedef wchar_t unicode_t;
-	typedef unsigned long long unsigned64;
-	typedef long long int64;
-	typedef unsigned unsigned32;
-	typedef int int32;
-	typedef unsigned short unsigned16;
-	typedef short int16;
+
+	typedef int64_t seek_t;
 
 #ifdef _WIN32
 	//typedef unsigned short sys_char_t;
@@ -49,23 +46,24 @@ namespace wal
 	inline int sys_strlen( const sys_char_t* s ) { return wcslen( s ); }
 
 	typedef HANDLE file_t;
-	typedef __int64 seek_t;
-	//enum {FILE_NULL = INVALID_HANDLE_VALUE };
-#define FILE_NULL INVALID_HANDLE_VALUE
+
+#	define FILE_NULL INVALID_HANDLE_VALUE
+
 	inline bool valid_file( file_t fd ) { return fd != FILE_NULL; }
 
-#define DIR_SPLITTER '\\'
+#	define DIR_SPLITTER '\\'
 
 #else
 	typedef char sys_char_t;
 	inline int sys_strlen( const sys_char_t* s ) { return strlen( s ); }
 
 	typedef int file_t;
-	typedef long long seek_t;
+
 	enum {FILE_NULL = -1 };
+
 	inline bool valid_file( file_t fd ) { return fd >= 0; }
 
-#define DIR_SPLITTER '/'
+#	define DIR_SPLITTER '/'
 
 	typedef pthread_t thread_t;
 	typedef pthread_mutex_t mutex_t;
