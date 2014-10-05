@@ -82,62 +82,70 @@ struct OperThreadParam: public iIntrusiveCounter
 {
 	OperThreadFunc func;
 	OperThreadNode* node;
+	void RunFunc() const
+	{
+		if ( this->func )
+		{
+			this->func( this->node );
+		}
+	}
 };
 
 void* __123___OperThread( void* param )
 {
-	OperThreadParam* pTp = ( OperThreadParam* )param;
-	OperThreadParam tp = *pTp;
-	delete pTp;
+	if ( !param ) return nullptr;
+
+	clPtr<OperThreadParam> pTp( ( OperThreadParam* )param );
+
+	// release the reference added before thread start
+	pTp->DecRefCount();
 
 	try
 	{
-		if ( tp.func )
-		{
-			tp.func( tp.node );
-		}
+		pTp->RunFunc();
 	}
 	catch ( ... )
 	{
-		fprintf( stderr, "!!!exception in OperThread!!!\n" );
+		fprintf( stderr, "__123___OperThread(): exception in OperThread!!!\n" );
 	}
 
-
 	MutexLock lock( &operMutex );
-	MutexLock lockNode( &tp.node->mutex );
+	MutexLock lockNode( &pTp->node->mutex );
 
-	if ( tp.node->stopped )
+	if ( pTp->node->stopped )
 	{
-		if ( tp.node->prev )
+		if ( pTp->node->prev )
 		{
-			tp.node->prev->next = tp.node->next;
+			pTp->node->prev->next = pTp->node->next;
 		}
 		else
 		{
-			operStopList = tp.node->next;
+			operStopList = pTp->node->next;
 		}
 
-		if ( tp.node->next )
+		if ( pTp->node->next )
 		{
-			tp.node->next->prev = tp.node->prev;
+			pTp->node->next->prev = pTp->node->prev;
 		}
 	}
 	else
 	{
-		ASSERT( tp.node->win );
-		tp.node->win->tNode = 0; //!!!
+		ASSERT( pTp->node->win );
+		pTp->node->win->tNode = 0; //!!!
 	}
 
-	tp.node->stopped = true; //!!!
+	pTp->node->stopped = true; //!!!
 	lockNode.Unlock(); //!!!
 
 #ifdef _DEBUG
-	printf( "stop: %s\n", tp.node->threadInfo.data() );
+	printf( "stop: %s\n", pTp->node->threadInfo.data( ) );
 #endif
 
-	delete tp.node;
+	delete( pTp->node );
 
-	return 0;
+	pTp->node = nullptr;
+
+	return nullptr;
 }
 
 
@@ -158,6 +166,7 @@ void OperThreadWin::RunNewThread( const char* info, OperThreadFunc f, void* data
 	{
 		int n = NewThreadID();
 //printf("TN=%i\n", n);
+		param->IncRefCount();
 		ThreadCreate( n, __123___OperThread, param.ptr() );
 		threadId = n;
 		param.drop(); //!!!

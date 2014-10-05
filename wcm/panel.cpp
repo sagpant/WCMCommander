@@ -124,7 +124,7 @@ void PanelSearchWin::EndSearch( cevent_key* pEvent )
 
 	if ( pEvent )
 	{
-		ret_key = new cevent_key( *pEvent );
+		ret_key = pEvent;
 	}
 }
 
@@ -237,7 +237,7 @@ clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 	_search->DoModal();
 
 	clPtr<cevent_key> ret = _search->ret_key;
-	_search = 0;
+	_search = nullptr;
 
 	return ret;
 }

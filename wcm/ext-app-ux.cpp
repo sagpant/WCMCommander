@@ -60,7 +60,7 @@ class MimeGlobs
 	std::vector<char> fileName;
 	time_t mtime;
 
-	cstrhash< ccollect<int, 1>, unicode_t> extMimeHash;
+	std::unordered_map< std::wstring, std::vector<int> > m_ExtMimeHash;
 
 	void AddExt( const char* s, int m );
 
@@ -360,6 +360,7 @@ inline char* SNotC( char* s, int c ) { while ( *s && *s != c ) { s++; } return s
 inline void MimeGlobs::AddExt( const char* s, int m )
 {
 	unicode_t buf[100];
+
 	int len = 0;
 
 	for ( ; *s && len < 100 - 1; s++, len++ )
@@ -368,7 +369,8 @@ inline void MimeGlobs::AddExt( const char* s, int m )
 	}
 
 	buf[len] = 0;
-	extMimeHash[buf].append( m );
+
+	m_ExtMimeHash[ std::wstring(buf) ].push_back( m );
 }
 
 
@@ -396,7 +398,7 @@ void MimeGlobs::Refresh()
 	if ( tim == mtime ) { return; }
 
 	mtime = tim;
-	extMimeHash.clear();
+	m_ExtMimeHash.clear();
 	ClearMaskList();
 
 	try
@@ -506,13 +508,15 @@ int MimeGlobs::GetMimeList( const unicode_t* fileName, ccollect<int>& list )
 
 	if ( ext.data() )
 	{
-		ccollect<int, 1>* p = extMimeHash.exist( ext.data() );
+		auto iter = m_ExtMimeHash.find( ext.data() );
 
-		if ( p )
+		if ( iter != m_ExtMimeHash.end() )
 		{
-			for ( int i = 0, cnt = p->count(); i < cnt; i++ )
+			const std::vector<int>& p = iter->second;
+
+			for ( size_t i = 0, cnt = p.size(); i < cnt; i++ )
 			{
-				list.append( p->get( i ) );
+				list.append( p[ i ] );
 			}
 		}
 	}
