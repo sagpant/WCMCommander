@@ -12,6 +12,8 @@
 #include "vfspath.h"
 #include "strconfig.h"
 
+#include <sys/stat.h>
+
 #ifdef _WIN32
 class FSTime
 {
@@ -38,29 +40,75 @@ typedef time_t FSTime;
 #endif
 
 #ifdef _WIN32
-#define S_IFMT 0170000  //bitmask for the file type bitfields
-#define S_IFSOCK  0140000  //socket
-#define S_IFLNK   0120000  //symbolic link
-#define S_IFREG   0100000  //regular file
-#define S_IFBLK   0060000  //block device
-#define S_IFDIR   0040000  //directory
-#define S_IFCHR   0020000  //character device
-#define S_IFIFO   0010000  //fifo
-#define S_ISUID   0004000  //set UID bit
-#define S_ISGID   0002000  //set GID bit (see below)
-#define S_ISVTX   0001000  //sticky bit (see below)
-#define S_IRWXU    00700   //mask for file owner permissions
-#define S_IRUSR   00400 //owner has read permission
-#define S_IWUSR   00200 //owner has write permission
-#define S_IXUSR   00100 //owner has execute permission
-#define S_IRWXG   00070 //mask for group permissions
-#define S_IRGRP   00040 //group has read permission
-#define S_IWGRP   00020 //group has write permission
-#define S_IXGRP   00010 //group has execute permission
-#define S_IRWXO   00007 //mask for permissions for others (not in group)
-#define S_IROTH   00004 //others have read permission
-#define S_IWOTH   00002 //others have write permisson
-#define S_IXOTH   00001 //others have execute permission
+#	if !defined( S_IFMT )
+#		define S_IFMT 0170000  //bitmask for the file type bitfields
+#	endif
+#	if !defined( S_IFSOCK )
+#		define S_IFSOCK  0140000  //socket
+#	endif
+#	if !defined( S_IFLNK )
+#		define S_IFLNK   0120000  //symbolic link
+#	endif
+#	if !defined( S_IFREG )
+#		define S_IFREG   0100000  //regular file
+#	endif
+#	if !defined( S_IFBLK )
+#		define S_IFBLK   0060000  //block device
+#	endif
+#	if !defined( S_IFDIR )
+#		define S_IFDIR   0040000  //directory
+#	endif
+#	if !defined( S_IFCHR )
+#		define S_IFCHR   0020000  //character device
+#	endif
+#	if !defined( S_IFIFO )
+#		define S_IFIFO   0010000  //fifo
+#	endif
+#	if !defined( S_ISUID )
+#		define S_ISUID   0004000  //set UID bit
+#	endif
+#	if !defined( S_ISGID )
+#		define S_ISGID   0002000  //set GID bit (see below)
+#	endif
+#	if !defined( S_ISVTX )
+#		define S_ISVTX   0001000  //sticky bit (see below)
+#	endif
+#	if !defined( S_IRWXU )
+#		define S_IRWXU    00700   //mask for file owner permissions
+#	endif
+#	if !defined( S_IRUSR )
+#		define S_IRUSR   00400 //owner has read permission
+#	endif
+#	if !defined( S_IWUSR )
+#		define S_IWUSR   00200 //owner has write permission
+#	endif
+#	if !defined( S_IXUSR )
+#		define S_IXUSR   00100 //owner has execute permission
+#	endif
+#	if !defined( S_IRWXG )
+#		define S_IRWXG   00070 //mask for group permissions
+#	endif
+#	if !defined( S_IRGRP )
+#		define S_IRGRP   00040 //group has read permission
+#	endif
+#	if !defined( S_IWGRP )
+#		define S_IWGRP   00020 //group has write permission
+#	endif
+#	if !defined( S_IXGRP )
+#		define S_IXGRP   00010 //group has execute permission
+#	endif
+#	if !defined( S_IRWXO )
+#		define S_IRWXO   00007 //mask for permissions for others (not in group)
+#	endif
+#	if !defined( S_IROTH )
+#		define S_IROTH   00004 //others have read permission
+#	endif
+#	if !defined( S_IWOTH )
+#		define S_IWOTH   00002 //others have write permisson
+#	endif
+#	if !defined( S_IXOTH )
+#		define S_IXOTH   00001 //others have execute permission
+#	endif
 #endif
 
 struct FSStat

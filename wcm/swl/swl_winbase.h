@@ -274,9 +274,9 @@ namespace wal
 
 	struct ScrollInfo
 	{
-		int size, pageSize, pos;
+		seek_t size, pageSize, pos;
 		ScrollInfo(): size( 0 ), pageSize( 0 ), pos( 0 ) {}
-		ScrollInfo( int _size, int _pageSize, int _pos )
+		ScrollInfo( seek_t _size, seek_t _pageSize, seek_t _pos )
 			: size( _size ), pageSize( _pageSize ), pos( _pos ) {}
 	};
 

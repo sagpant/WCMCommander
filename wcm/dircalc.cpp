@@ -214,10 +214,10 @@ class DirCalcThreadWin: public NCDialog
 
 	OperFileNameWin cPathWin;
 
-	int curFileCount;
-	int curFolderCount;
-	int64 curSumSize;
-	int curBadDirs;
+	int64_t curFileCount;
+	int64_t curFolderCount;
+	int64_t curSumSize;
+	int64_t curBadDirs;
 
 	StaticLine dirString;
 
@@ -406,10 +406,10 @@ static void SetStaticLineInt64( StaticLine& a, int64 n )
 void DirCalcThreadWin::RefreshCounters()
 {
 
-	int   count = 0;
-	int   folderCount = 0;
-	int64 size = 0;
-	int   bad = 0;
+	int64_t count = 0;
+	int64_t folderCount = 0;
+	int64_t size = 0;
+	int64_t bad = 0;
 
 	{
 		MutexLock lock( &pData->resMutex );
@@ -419,9 +419,17 @@ void DirCalcThreadWin::RefreshCounters()
 		bad   = pData->badDirs;
 	}
 
-	if ( curFileCount != count ) { SetStaticLineInt64( fileCountNum, count ); curFileCount = count; }
+	if ( curFileCount != count )
+	{
+		SetStaticLineInt64( fileCountNum, count );
+		curFileCount = count;
+	}
 
-	if ( curFolderCount != folderCount ) { SetStaticLineInt64( folderCountNum, folderCount ); curFolderCount = folderCount; }
+	if ( curFolderCount != folderCount )
+	{
+		SetStaticLineInt64( folderCountNum, folderCount );
+		curFolderCount = folderCount;
+	}
 
 	if ( curSumSize != size )
 	{
