@@ -1639,12 +1639,12 @@ namespace wal
 
 	int GetUiID( const char* name )
 	{
-		static cstrhash<int> hash;
+		static std::unordered_map< std::string, int> hash;
 		static int id = 0;
 
-		int* pn = hash.exist( name );
+		auto i = hash.find( name );
 
-		if ( pn ) { return *pn; }
+		if ( i != hash.end() ) return i->second;	
 
 		id++;
 		hash[name] = id;

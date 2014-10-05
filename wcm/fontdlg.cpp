@@ -391,7 +391,7 @@ struct FileInfoNode
 	time_t mtime;
 };
 
-static cstrhash< FileInfoNode > lastFileInfo;
+static std::unordered_map< std::string, FileInfoNode > g_LastFileInfo;
 
 
 
@@ -492,16 +492,18 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 	for ( i = 0; i < fileList->count(); i++ )
 	{
-		char* fileName = fileList->get( i ).path.data();
+		const char* fileName = fileList->get( i ).path.data();
 
-		FileInfoNode* pfInfo = lastFileInfo.exist( fileName );
+		auto iter = g_LastFileInfo.find( fileName );
 
-		if ( !pfInfo ) { continue; }
+		if ( iter == g_LastFileInfo.end() ) continue;
 
-		if ( fixed && !( pfInfo->info->flags & cfont::FTInfo::FIXED_WIDTH ) ) { continue; }
+		const FileInfoNode& Info = i->second;
+
+		if ( fixed && !( Info.info->flags & cfont::FTInfo::FIXED_WIDTH ) ) { continue; }
 
 		char buffer[0x100];
-		snprintf( buffer, sizeof( buffer ), "%s-%s", pfInfo->info->name.data(), pfInfo->info->styleName.data() );
+		snprintf( buffer, sizeof( buffer ), "%s-%s", Info.info->name.data(), Info.info->styleName.data() );
 
 		if ( fontNameHash.exist( buffer ) ) { continue; }
 
@@ -520,7 +522,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 		{
 			Node node;
 			node.fileName = fileName;
-			node.info = pfInfo->info.ptr();
+			node.info = Info.info.ptr();
 			list.append( node );
 		}
 	}
@@ -720,11 +722,13 @@ clPtr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* curre
 
 	for ( int i = 0; i < list.count(); i++ )
 	{
-		FileInfoNode* pfInfo = lastFileInfo.exist( list[i].path.data() );
+		auto iter = g_LastFileInfo.find( list[i].path.data() );
 
-		if ( pfInfo && pfInfo->mtime == list[i].mtime )
+		bool Exist = ( iter !== g_LastFileInfo.end() );
+
+		if ( Exist )
 		{
-			continue;
+			if ( iter->second.mtime == list[i].mtime ) continue;
 		}
 
 		FileInfoNode node;
@@ -732,7 +736,7 @@ clPtr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* curre
 		node.info = cfont::GetFTFileInfo( list[i].path.data() );
 		node.mtime = list[i].mtime;
 
-		lastFileInfo[list[i].path.data()] = node;
+		g_LastFileInfo[list[i].path.data()] = node;
 	};
 
 	FontDialogFT dlg( parent, fixed, &list, currentUri );
