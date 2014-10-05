@@ -184,109 +184,118 @@ FSPath::~FSPath() {}
 
 
 ////////////////////////////////// cs_string /////////////////////////////////////////
-inline cs_string::Node* new_node( int size, int cs )
+inline clPtr<cs_string::Node> new_node( int size, int cs )
 {
-	cs_string::Node* p = ( cs_string::Node* ) new char[sizeof( cs_string::Node ) + size];
-	p->size = size;
-	p->cs = cs;
+	clPtr<cs_string::Node> p = new cs_string::Node();
+	
+	p->m_Encoding = cs;
+	p->m_ByteBuffer.resize( size );
+
 	return p;
 }
 
-inline char* new_node( int cs, const char* s )
+inline clPtr<cs_string::Node> new_node( int cs, const std::vector<char>& ByteBuffer )
 {
-	if ( !s || s[0] == 0 ) { return 0; }
+	clPtr<cs_string::Node> p = new cs_string::Node();
+
+	p->m_Encoding = cs;
+	p->m_ByteBuffer = ByteBuffer;
+
+	return p;
+}
+
+inline clPtr<cs_string::Node> new_node( int cs, const char* s )
+{
+	if ( !s || s[0] == 0 ) { return nullptr; }
 
 	int l = strlen( s );
 	int size = l + 1;
-	cs_string::Node* p = new_node( size, cs );
-	memcpy( p->data, s, size );
-	return ( char* ) p;
+	clPtr<cs_string::Node> p = new_node( size, cs );
+	memcpy( p->m_ByteBuffer.data(), s, size );
+	return p;
 }
 
-inline char* new_node( int cs, const char* s, int len )
+inline clPtr<cs_string::Node> new_node( int cs, const char* s, int len )
 {
-	if ( len <= 0 ) { return 0; }
+	if ( len <= 0 ) { return nullptr; }
 
 	int size = len + 1;
-	cs_string::Node* p  = new_node( size, cs );
-	memcpy( p->data, s, len );
-	p->data[len] = 0;
-	return ( char* ) p;
+	clPtr<cs_string::Node> p  = new_node( size, cs );
+	memcpy( p->m_ByteBuffer.data(), s, len );
+	p->m_ByteBuffer.data()[len] = 0;
+	return p;
 }
 
-char* new_node( const unicode_t* s )
+clPtr<cs_string::Node> new_node( const unicode_t* s )
 {
 	if ( !s || s[0] == 0 ) { return 0; }
 
-	const unicode_t* t;
+	const unicode_t* t = s;
 
-	for ( t = s; *t; ) { t++; }
+	while ( *t ) { t++; }
 
 	int len = t - s;
 
 	int size = ( len + 1 ) * sizeof( unicode_t );
-	cs_string::Node* p = new_node( size, CS_UNICODE );
-	memcpy( p->data, s, size );
-	return ( char* ) p;
+	clPtr<cs_string::Node> p = new_node( size, CS_UNICODE );
+	memcpy( p->m_ByteBuffer.data(), s, size );
+	return p;
 }
 
-inline char* new_node( const unicode_t* s, int len )
+inline clPtr<cs_string::Node> new_node( const unicode_t* s, int len )
 {
 	if ( len <= 0 ) { return 0; }
 
 	int size = ( len + 1 ) * sizeof( unicode_t );
-	cs_string::Node* p = new_node( size, CS_UNICODE );
-	memcpy( p->data, s, len * sizeof( unicode_t ) );
-	( ( unicode_t* )p->data )[len] = 0;
-	return ( char* ) p;
+	clPtr<cs_string::Node> p = new_node( size, CS_UNICODE );
+	memcpy( p->m_ByteBuffer.data(), s, len * sizeof( unicode_t ) );
+	( ( unicode_t* )p->m_ByteBuffer.data() )[len] = 0;
+	return p;
 }
 
-cs_string::cs_string( const unicode_t* s ): data( new_node( s ) ) {}
-cs_string::cs_string( const char* utf8Str ): data( new_node( CS_UTF8, utf8Str ) ) {}
+cs_string::cs_string( const unicode_t* s )
+ : m_Data( new_node( s ) )
+{
+}
+
+cs_string::cs_string( const char* utf8Str )
+ : m_Data( new_node( CS_UTF8, utf8Str ) )
+{
+}
 
 void cs_string::copy( const cs_string& a )
 {
 	clear();
 
-	if ( a.data )
+	if ( a.m_Data )
 	{
-		int dataSize = sizeof( Node ) + ( ( Node* )a.data )->size;
-		data = new char[dataSize];
-		memcpy( data, a.data, dataSize );
+		m_Data = new_node( a.m_Data->m_Encoding, a.m_Data->m_ByteBuffer );
 	}
 }
 
 void cs_string::set( const unicode_t* s )
 {
-	char* p = new_node( s );
-
-	if ( data ) { free_data(); }
-
-	data = p;
+	m_Data = new_node( s );
 }
 
 void cs_string::set( int cs, const void* s )
 {
-	char* p = ( cs == CS_UNICODE ) ? new_node( ( const unicode_t* )s ) : new_node( cs, ( const char* )s ) ;
-
-	if ( data ) { free_data(); }
-
-	data = p;
+	m_Data = ( cs == CS_UNICODE ) ?
+					new_node( ( const unicode_t* )s ) :
+					new_node( cs, ( const char* )s );
 }
 
 void cs_string::set( int cs, const void* s, int len )
 {
-	char* p = ( cs == CS_UNICODE ) ? new_node( ( const unicode_t* )s, len ) : new_node( cs, ( const char* )s, len ) ;
-
-	if ( data ) { free_data(); }
-
-	data = p;
+	m_Data = ( cs == CS_UNICODE ) ?
+					new_node( ( const unicode_t* )s, len ) :
+					new_node( cs, ( const char* )s, len );
 }
 
 
 void cs_string::copy( const cs_string& a, int cs_id )
 {
-	if ( !a.data ) { clear(); return; }
+	if ( !a.m_Data ) { clear(); return; }
 
 	int acs = a.cs();
 
@@ -295,7 +304,6 @@ void cs_string::copy( const cs_string& a, int cs_id )
 		fprintf( stderr, "BUG 1 cs_string::copy acs=%i, cs_id=%i\n", acs, cs_id );
 		return;
 	}
-
 
 	if ( cs_id == acs )
 	{
@@ -314,12 +322,12 @@ void cs_string::copy( const cs_string& a, int cs_id )
 
 			if ( acs == CS_UNICODE )
 			{
-				u = ( unicode_t* )( ( Node* )a.data )->data;
+				u = ( unicode_t* )( a.m_Data->m_ByteBuffer.data() );
 			}
 			else
 			{
 				charset_struct* old_charset = charset_table[acs];
-				int sym_count = old_charset->symbol_count( ( char* )( ( Node* )a.data )->data, -1 );
+				int sym_count = old_charset->symbol_count( a.m_Data->m_ByteBuffer.data(), -1 );
 
 				if ( sym_count >= 0x100 )
 				{
@@ -331,22 +339,21 @@ void cs_string::copy( const cs_string& a, int cs_id )
 					u = buf;
 				}
 
-				unicode_t* CHK = old_charset->cs_to_unicode( u, ( char* )( ( Node* )a.data )->data, -1, 0 );
+				const unicode_t* CHK = old_charset->cs_to_unicode( u, a.m_Data->m_ByteBuffer.data(), -1, 0 );
 				u[sym_count] = 0;
 			}
 
 			if ( cs_id == CS_UNICODE )
 			{
-				data = new_node( u );
+				m_Data = new_node( u );
 			}
 			else
 			{
 				charset_struct* new_charset = charset_table[cs_id];
 
 				int len = new_charset->string_buffer_len( u, -1 );
-				data = ( char* )new_node( len + 1, cs_id ); //!!! параметры были переставлены :( фатально
-				new_charset->unicode_to_cs( ( char* )( ( ( Node* )data )->data ), u, -1, 0 );
-//ASSERT(len == strlen((char*)(((Node*)data)->data)));
+				m_Data = new_node( len + 1, cs_id ); //!!! параметры были переставлены :( фатально
+				new_charset->unicode_to_cs( m_Data->m_ByteBuffer.data(), u, -1, 0 );
 			}
 
 			if ( ptr )
