@@ -30,42 +30,36 @@ template <class T> inline int CmpStr( T* a, T* b )
 
 #define CS_UNICODE (-1)
 
-// эффект cptr !!!
-
 class cs_string
 {
 public:
-	struct Node
+	struct Node: public iIntrusiveCounter
 	{
-		char cs;
-		int size;
-		char data[];
+		char m_Encoding;
+		std::vector<char> m_ByteBuffer;
 	};
 private:
-	char* data;
-	void free_data() { delete [] data; }
+	clPtr<Node> m_Data;
+
 public:
-	cs_string(): data( 0 ) {}
-	cs_string( const cs_string& a ): data( a.data ) { ( ( cs_string* )( &a ) )->data = 0; }
-	cs_string( const unicode_t* );
-	cs_string( const char* utf8Str );
+	cs_string(): m_Data() {}
+	explicit cs_string( const unicode_t* );
+	explicit cs_string( const char* utf8Str );
 
 	void set( const unicode_t* s );
 	void set( int cs, const void* );
 	void set( int cs, const void*, int len );
 
-	cs_string& operator = ( const cs_string& a ) { if ( data ) { free_data(); } data = a.data; ( ( cs_string* )( &a ) )->data = 0; return *this; }
 	cs_string& operator = ( const unicode_t* );
 	cs_string& operator = ( const char* utf8Str ) { set( CS_UTF8, utf8Str ); return *this; }
 
 	void copy( const cs_string& a );
 	void copy( const cs_string&, int cs );
 
-	int cs() const { return data ? ( ( Node* )data )->cs : 0; }
-	const void* str() const { return data ? ( ( Node* )data )->data : 0; }
-	void clear() { if ( data ) { free_data(); data = 0; } }
-	bool is_null() const { return data == 0; }
-	~cs_string() { if ( data ) { free_data(); } }
+	int cs() const { return m_Data ? m_Data->m_Encoding	 : 0; }
+	const void* str() const { return m_Data ? m_Data->m_ByteBuffer.data() : nullptr; }
+	void clear() { m_Data = nullptr; }
+	bool is_null() const { return m_Data.IsNull(); }
 };
 
 
