@@ -724,7 +724,7 @@ clPtr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* curre
 	{
 		auto iter = g_LastFileInfo.find( list[i].path.data() );
 
-		bool Exist = ( iter !== g_LastFileInfo.end() );
+		bool Exist = ( iter != g_LastFileInfo.end() );
 
 		if ( Exist )
 		{
