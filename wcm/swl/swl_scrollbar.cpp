@@ -234,7 +234,7 @@ namespace wal
 
 		if ( si.pageSize <= 0 || si.pageSize >= si.size ) { return; }
 
-		bsize = ( int64_t( len ) * si.pageSize ) / si.size;
+		bsize = int( ( int64_t( len ) * si.pageSize ) / si.size );
 
 		if ( bsize < 5 ) { bsize = 5; }
 
@@ -242,7 +242,7 @@ namespace wal
 
 		int space = ( len - bsize );
 
-		bpos = ( int64_t( space ) * si.pos ) / ( si.size - si.pageSize );
+		bpos = int( ( int64_t( space ) * si.pos ) / ( si.size - si.pageSize ) );
 
 		if ( bpos > space ) { bpos = space; }
 
@@ -308,7 +308,7 @@ namespace wal
 					//if (p>=n) p = n-1;
 					//if (p<0) p = 0;
 
-					int n1 = si.size - si.pageSize;
+					int n1 = int( si.size - si.pageSize );
 					int x = ( int64_t( p ) * n1 ) / n;
 
 					if ( x >= n1 ) { x = n1; }

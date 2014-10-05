@@ -868,7 +868,7 @@ class NCProgressWin: public Win
 {
 	int64_t _from, _to;
 	int64_t _num;
-	int _lastWidth, _lastPos;
+	int64_t _lastWidth, _lastPos;
 public:
 	NCProgressWin( Win* parent )
 		:  Win( Win::WT_CHILD, 0, parent, 0 ), _from( 0 ), _to( 0 ), _num( 0 ), _lastWidth( 0 ), _lastPos( 0 )
@@ -895,7 +895,7 @@ public:
 		if ( _num < _from || _to <= _from ) { return; }
 
 		int64_t size = _to - _from;
-		int n = ( _lastWidth * _num ) / size;
+		int64_t n = ( _lastWidth * _num ) / size;
 
 		if ( diapazonChanged || _lastPos != n )
 		{
@@ -948,7 +948,7 @@ void NCProgressWin::Paint( wal::GC& gc, const crect& paintRect )
 	if ( !( _num < _from || _to <= _from || w <= 0 ) )
 	{
 		int64_t size = _to - _from;
-		int n = ( w * _num ) / size;
+		int n = int( ( w * _num ) / size );
 
 		crect r = rect;
 		r.right = n;

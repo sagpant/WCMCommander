@@ -7,10 +7,8 @@
 #define WAL_SYS_API_H
 
 #if defined(_MSC_VER)
-#  pragma warning(disable : 4200)      // nonstandard extension used : zero-sized array in struct/union
-#  pragma warning(disable : 4244)      // conversion from 'int' to 'char', possible loss of data
+//#  pragma warning(disable : 4200)      // nonstandard extension used : zero-sized array in struct/union
 #  pragma warning(disable : 4996)      // '_snprintf': This function or variable may be unsafe
-#  pragma warning(disable : 4005)      // macro redefinition
 #  pragma warning(disable : 4101)      // unreferenced local variable
 #endif
 

@@ -2515,7 +2515,7 @@ begin:
 		UiValue* v = uiCache.Get( id, itemId, buf );
 //printf("4 %p\n", v);
 //if (v) printf("5 %i\n", v->Int());
-		return v ? v->Int() : def;
+		return v ? unsigned( v->Int() ): def;
 	};
 
 	int Win::UiGetClassId()
