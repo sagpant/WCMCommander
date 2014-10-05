@@ -851,13 +851,13 @@ struct ViewerEvent
 	};
 
 	int type;
-	int64 track;
-	int64 e;
+	int64_t track;
+	int64_t e;
 
 	ViewerEvent(): type( 0 ), track( 0 ), e( 0 ) {}
 	ViewerEvent( int t ): type( t ), track( 0 ), e( 0 ) {}
-	ViewerEvent( int t, int64 tr ): type( t ), track( tr ), e( 0 ) {}
-	ViewerEvent( int t, int64 tr, int64 n1 ): type( t ), track( tr ), e( n1 ) {}
+	ViewerEvent( int t, int64_t tr ): type( t ), track( tr ), e( 0 ) {}
+	ViewerEvent( int t, int64_t tr, int64_t n1 ): type( t ), track( tr ), e( n1 ) {}
 	void Clear() { type = NO; }
 };
 
@@ -887,7 +887,7 @@ public:
 	VSData ret;
 	VFPos pos;
 	std::vector<char> error;
-	int64 loadStartTime;
+	int64_t loadStartTime;
 
 	int Id() const {return tid; }
 
@@ -1038,7 +1038,7 @@ void* ViewerThread( void* param )
 					switch ( event.type )
 					{
 						case ViewerEvent::SET:
-							pos.begin = std::max( (int64)0, event.track );
+							pos.begin = std::max( (int64_t)0, event.track );
 							break;
 
 						case ViewerEvent::HOME:
@@ -1103,7 +1103,7 @@ void* ViewerThread( void* param )
 					switch ( event.type )
 					{
 						case ViewerEvent::SET:
-							pos.begin = std::max( (int64)0, event.track );
+							pos.begin = std::max( (int64_t)0, event.track );
 							pos.col = 0;
 							break;
 
@@ -1773,7 +1773,7 @@ void ViewWin::EventTimer( int tid )
 		threadData->inFlags |= ViewerThreadData::FTIMER;
 		threadData->cond.Signal();
 
-		int64 tim = time( 0 );
+		int64_t tim = time( 0 );
 
 		if ( threadData->loadStartTime && tim != threadData->loadStartTime && !drawLoading )
 		{

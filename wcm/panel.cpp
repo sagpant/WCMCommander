@@ -1355,7 +1355,7 @@ void PanelWin::DrawFooter( wal::GC& gc )
 	if ( pFs )
 	{
 		int Err;
-		int64 FreeSpace = pFs->GetFileSystemFreeSpace( GetPath(), &Err );
+		int64_t FreeSpace = pFs->GetFileSystemFreeSpace( GetPath(), &Err );
 
 		if ( FreeSpace >= 0 )
 		{
