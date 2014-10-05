@@ -123,8 +123,8 @@ namespace FTU
 
 		int SetSize( int size, int xRes, int yRes );
 		bool MkImage( Image32& im, FT_GlyphSlot slot );
-		void OutChar( wal::GC& gc, int* px, int* py, int c );
-		void OutCharF( wal::GC& gc, int* px, int* py, int c );
+		void OutChar( wal::GC& gc, int* px, int* py, unicode_t c );
+		void OutCharF( wal::GC& gc, int* px, int* py, unicode_t c );
 
 	public:
 		FFace();
@@ -459,7 +459,7 @@ namespace FTU
 		}
 	}
 
-	inline FT_GlyphSlot GetSlot( FT_Face face, int* pc )
+	inline FT_GlyphSlot GetSlot( FT_Face face, unicode_t* pc )
 	{
 		if ( !face ) { return 0; }
 
@@ -518,7 +518,7 @@ namespace FTU
 		return cpoint( w, PxHeight() );
 	}
 
-	void FFace::OutCharF( wal::GC& gc, int* px, int* py, int c )
+	void FFace::OutCharF( wal::GC& gc, int* px, int* py, unicode_t c )
 	{
 		int bg = gc.FillRgb();
 		int fg = gc.TextRgb();
@@ -562,7 +562,7 @@ namespace FTU
 	}
 
 
-	void FFace::OutChar( wal::GC& gc, int* px, int* py, int c )
+	void FFace::OutChar( wal::GC& gc, int* px, int* py, unicode_t c )
 	{
 		FT_GlyphSlot  slot = GetSlot( face, &c );
 
