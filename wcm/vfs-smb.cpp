@@ -571,15 +571,6 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 		smbc_closedir( d );
 
 		return 0;
-
-err:
-		SetError( err, errno );
-
-		smbc_closedir( d );
-
-		return -1;
-
-
 	}
 	catch ( ... )
 	{
