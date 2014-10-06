@@ -32,7 +32,7 @@ int FS::ReadDir   ( FSList* list, FSPath& path,  int* err, FSCInfo* info )    { 
 int FS::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )         { SetError( err, 0 ); return -1; }
 int FS::FStat( int fd, FSStat* st, int* err, FSCInfo* info )     { SetError( err, 0 ); return -1; }
 int FS::Symlink   ( FSPath& path, FSString& str, int* err, FSCInfo* info )      { SetError( err, 0 ); return -1; }
-int64 FS::GetFileSystemFreeSpace( FSPath& path, int* err ) { SetError( err, 0 ); return -1; }
+int64_t FS::GetFileSystemFreeSpace( FSPath& path, int* err ) { SetError( err, 0 ); return -1; }
 
 unicode_t* FS::GetUserName( int user, unicode_t buf[64] ) { buf[0] = 0; return buf; };
 unicode_t* FS::GetGroupName( int group, unicode_t buf[64] ) { buf[0] = 0; return buf; };
@@ -438,7 +438,7 @@ static std::vector<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *
 }
 */
 
-static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t* cat )
+static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wchar_t* cat )
 {
 	int lcat = Utf16Chars( cat );
 
@@ -604,7 +604,7 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	return -1;
 }
 
-int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
+int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 {
 	DWORD SectorsPerCluster;
 	DWORD BytesPerSector;
@@ -613,11 +613,11 @@ int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 
 	int d = Drive();
 
-	char RootPath[] = { d + 'A', ':', '\\', 0 };
+	char RootPath[] = { char(d + 'A'), ':', '\\', 0 };
 
 	if ( GetDiskFreeSpace( RootPath, &SectorsPerCluster, &BytesPerSector, &NumberOfFreeClusters, &TotalNumberOfClusters ) != TRUE ) { return -1; }
 
-	return ( int64 )SectorsPerCluster * ( int64 )BytesPerSector * ( int64 )NumberOfFreeClusters;
+	return ( int64_t )SectorsPerCluster * ( int64_t )BytesPerSector * ( int64_t )NumberOfFreeClusters;
 }
 
 int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
@@ -1226,7 +1226,7 @@ err:
 	}
 }
 
-int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
+int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 {
 #if defined( __linux__ ) && !defined( __APPLE__ ) 
 	struct statfs64 s;
@@ -1247,7 +1247,7 @@ int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 	}
 #endif
 
-	return ( int64 )( s.f_bfree ) * ( int64 )( s.f_bsize );
+	return ( int64_t )( s.f_bfree ) * ( int64_t )( s.f_bsize );
 }
 
 int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )

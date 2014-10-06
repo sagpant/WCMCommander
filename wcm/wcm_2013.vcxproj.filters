@@ -1,401 +1,139 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="swl\swl_button.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_editline.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_layout.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_menubox.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_popupmenu.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_sbutton.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_scrollbar.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_textlist.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_vlist.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_winbase.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_wincore.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_wincoreMS.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="wal\wal_charset.cpp">
-      <Filter>wal</Filter>
-    </ClCompile>
-    <ClCompile Include="wal\wal_exceptions.cpp">
-      <Filter>wal</Filter>
-    </ClCompile>
-    <ClCompile Include="wal\wal_files.cpp">
-      <Filter>wal</Filter>
-    </ClCompile>
-    <ClCompile Include="wal\wal_sys_api.cpp">
-      <Filter>wal</Filter>
-    </ClCompile>
-    <ClCompile Include="wal\wal_tmpls.cpp">
-      <Filter>wal</Filter>
-    </ClCompile>
-    <ClCompile Include="vfs.cpp">
-      <Filter>vfs</Filter>
-    </ClCompile>
-    <ClCompile Include="vfs-ftp.cpp">
-      <Filter>vfs</Filter>
-    </ClCompile>
-    <ClCompile Include="vfspath.cpp">
-      <Filter>vfs</Filter>
-    </ClCompile>
-    <ClCompile Include="vfs-sftp.cpp">
-      <Filter>vfs</Filter>
-    </ClCompile>
-    <ClCompile Include="vfs-sftp2.cpp">
-      <Filter>vfs</Filter>
-    </ClCompile>
-    <ClCompile Include="vfs-smb.cpp">
-      <Filter>vfs</Filter>
-    </ClCompile>
-    <ClCompile Include="vfs-uri.cpp">
-      <Filter>vfs</Filter>
-    </ClCompile>
-    <ClCompile Include="charsetdlg.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="color-style.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="dircalc.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="globals.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="eloadsave.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="ext-app.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="fileopers.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="filesearch.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="ftplogon.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="help.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="helpres.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="ltext.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="nc.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="ncdialogs.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="ncedit.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="ncfonts.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="nchistory.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="ncview.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="ncwin.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="operthread.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="operwin.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="panel.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="panel_list.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="panel-style.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="search-dlg.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="search-tools.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="sftpdlg.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="shell-tools.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="shl.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="shortcuts.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="smblogon.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="strconfig.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="tcp_sock.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="termwin.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="toolbar.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="unicode_lc.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="w32cons.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="w32util.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="wal\wal.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="wcm-config.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_menutextinfo.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
-    <ClCompile Include="wal\IntrusivePtr.h">
-      <Filter>%2a.h</Filter>
-    </ClCompile>
-    <ClCompile Include="fileassociations.cpp">
-      <Filter>%2a.cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="swl\swl_staticlabel.cpp">
-      <Filter>swl</Filter>
-    </ClCompile>
+    <ClCompile Include="charsetdlg.cpp" />
+    <ClCompile Include="color-style.cpp" />
+    <ClCompile Include="dircalc.cpp" />
+    <ClCompile Include="eloadsave.cpp" />
+    <ClCompile Include="ext-app.cpp" />
+    <ClCompile Include="globals.cpp" />
+    <ClCompile Include="fileassociations.cpp" />
+    <ClCompile Include="fileopers.cpp" />
+    <ClCompile Include="filesearch.cpp" />
+    <ClCompile Include="ftplogon.cpp" />
+    <ClCompile Include="help.cpp" />
+    <ClCompile Include="helpres.cpp" />
+    <ClCompile Include="ltext.cpp" />
+    <ClCompile Include="nc.cpp" />
+    <ClCompile Include="ncdialogs.cpp" />
+    <ClCompile Include="ncedit.cpp" />
+    <ClCompile Include="ncfonts.cpp" />
+    <ClCompile Include="nchistory.cpp" />
+    <ClCompile Include="ncview.cpp" />
+    <ClCompile Include="ncwin.cpp" />
+    <ClCompile Include="operthread.cpp" />
+    <ClCompile Include="operwin.cpp" />
+    <ClCompile Include="panel-style.cpp" />
+    <ClCompile Include="panel.cpp" />
+    <ClCompile Include="panel_list.cpp" />
+    <ClCompile Include="search-dlg.cpp" />
+    <ClCompile Include="search-tools.cpp" />
+    <ClCompile Include="sftpdlg.cpp" />
+    <ClCompile Include="shell-tools.cpp" />
+    <ClCompile Include="shl.cpp" />
+    <ClCompile Include="shortcuts.cpp" />
+    <ClCompile Include="smblogon.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="strconfig.cpp" />
+    <ClCompile Include="swl\swl_button.cpp" />
+    <ClCompile Include="swl\swl_editline.cpp" />
+    <ClCompile Include="swl\swl_layout.cpp" />
+    <ClCompile Include="swl\swl_menubox.cpp" />
+    <ClCompile Include="swl\swl_menutextinfo.cpp" />
+    <ClCompile Include="swl\swl_popupmenu.cpp" />
+    <ClCompile Include="swl\swl_sbutton.cpp" />
+    <ClCompile Include="swl\swl_scrollbar.cpp" />
+    <ClCompile Include="swl\swl_staticlabel.cpp" />
+    <ClCompile Include="swl\swl_textlist.cpp" />
+    <ClCompile Include="swl\swl_vlist.cpp" />
+    <ClCompile Include="swl\swl_winbase.cpp" />
+    <ClCompile Include="swl\swl_wincore.cpp" />
+    <ClCompile Include="swl\swl_wincoreMS.cpp" />
+    <ClCompile Include="tcp_sock.cpp" />
+    <ClCompile Include="termwin.cpp" />
+    <ClCompile Include="toolbar.cpp" />
+    <ClCompile Include="unicode_lc.cpp" />
+    <ClCompile Include="vfs-ftp.cpp" />
+    <ClCompile Include="vfs-sftp.cpp" />
+    <ClCompile Include="vfs-sftp2.cpp" />
+    <ClCompile Include="vfs-smb.cpp" />
+    <ClCompile Include="vfs-uri.cpp" />
+    <ClCompile Include="vfs.cpp" />
+    <ClCompile Include="vfspath.cpp" />
+    <ClCompile Include="w32cons.cpp" />
+    <ClCompile Include="w32util.cpp" />
+    <ClCompile Include="wal\wal.cpp" />
+    <ClCompile Include="wal\wal_charset.cpp" />
+    <ClCompile Include="wal\wal_exceptions.cpp" />
+    <ClCompile Include="wal\wal_files.cpp" />
+    <ClCompile Include="wal\wal_sys_api.cpp" />
+    <ClCompile Include="wal\wal_tmpls.cpp" />
+    <ClCompile Include="wcm-config.cpp" />
+    <ClCompile Include="wal\IntrusivePtr.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h">
-      <Filter>swl</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl.h">
-      <Filter>swl</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_internal.h">
-      <Filter>swl</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_layout.h">
-      <Filter>swl</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_winbase.h">
-      <Filter>swl</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_wincore.h">
-      <Filter>swl</Filter>
-    </ClInclude>
-    <ClInclude Include="swl\swl_wincore_internal.h">
-      <Filter>swl</Filter>
-    </ClInclude>
-    <ClInclude Include="wal\wal.h">
-      <Filter>wal</Filter>
-    </ClInclude>
-    <ClInclude Include="wal\wal_sys_api.h">
-      <Filter>wal</Filter>
-    </ClInclude>
-    <ClInclude Include="wal\wal_tmpls.h">
-      <Filter>wal</Filter>
-    </ClInclude>
-    <ClInclude Include="charsetdlg.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="color-style.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="dircalc.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="eloadsave.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="ext-app.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="fileopers.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="filesearch.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="ftplogon.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="globals.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="help.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="libconf.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="libconf_win32.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="ltext.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="mfile.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="nc.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="ncdialogs.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="ncedit.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="ncfonts.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="nchistory.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="ncview.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="ncwin.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="operthread.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="operwin.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="panel.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="panel_list.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="panel-style.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="vfs-uri.h">
-      <Filter>vfs</Filter>
-    </ClInclude>
-    <ClInclude Include="vfs.h">
-      <Filter>vfs</Filter>
-    </ClInclude>
-    <ClInclude Include="vfs-ftp.h">
-      <Filter>vfs</Filter>
-    </ClInclude>
-    <ClInclude Include="vfspath.h">
-      <Filter>vfs</Filter>
-    </ClInclude>
-    <ClInclude Include="vfs-sftp.h">
-      <Filter>vfs</Filter>
-    </ClInclude>
-    <ClInclude Include="vfs-smb.h">
-      <Filter>vfs</Filter>
-    </ClInclude>
-    <ClInclude Include="wcm-config.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="w32cons.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="toolbar.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="termwin.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="terminal.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="tcp_sock.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="string-util.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="strconfig.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="smblogon.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="shortcuts.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="shl.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="shell-tools.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="shell.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="sftpdlg.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="search-tools.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="search-dlg.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="w32util.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
-    <ClInclude Include="fileassociations.h">
-      <Filter>%2a.h</Filter>
-    </ClInclude>
+    <ClInclude Include="charsetdlg.h" />
+    <ClInclude Include="color-style.h" />
+    <ClInclude Include="dircalc.h" />
+    <ClInclude Include="eloadsave.h" />
+    <ClInclude Include="ext-app.h" />
+    <ClInclude Include="fileassociations.h" />
+    <ClInclude Include="fileopers.h" />
+    <ClInclude Include="filesearch.h" />
+    <ClInclude Include="ftplogon.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="help.h" />
+    <ClInclude Include="libconf.h" />
+    <ClInclude Include="libconf_win32.h" />
+    <ClInclude Include="ltext.h" />
+    <ClInclude Include="mfile.h" />
+    <ClInclude Include="nc.h" />
+    <ClInclude Include="ncdialogs.h" />
+    <ClInclude Include="ncedit.h" />
+    <ClInclude Include="ncfonts.h" />
+    <ClInclude Include="nchistory.h" />
+    <ClInclude Include="ncview.h" />
+    <ClInclude Include="ncwin.h" />
+    <ClInclude Include="operthread.h" />
+    <ClInclude Include="operwin.h" />
+    <ClInclude Include="panel-style.h" />
+    <ClInclude Include="panel.h" />
+    <ClInclude Include="panel_list.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="search-dlg.h" />
+    <ClInclude Include="search-tools.h" />
+    <ClInclude Include="sftpdlg.h" />
+    <ClInclude Include="shell-tools.h" />
+    <ClInclude Include="shell.h" />
+    <ClInclude Include="shl.h" />
+    <ClInclude Include="shortcuts.h" />
+    <ClInclude Include="smblogon.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="strconfig.h" />
+    <ClInclude Include="string-util.h" />
+    <ClInclude Include="swl\swl.h" />
+    <ClInclude Include="swl\swl_internal.h" />
+    <ClInclude Include="swl\swl_layout.h" />
+    <ClInclude Include="swl\swl_winbase.h" />
+    <ClInclude Include="swl\swl_wincore.h" />
+    <ClInclude Include="swl\swl_wincore_internal.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="tcp_sock.h" />
+    <ClInclude Include="terminal.h" />
+    <ClInclude Include="termwin.h" />
+    <ClInclude Include="toolbar.h" />
+    <ClInclude Include="vfs-ftp.h" />
+    <ClInclude Include="vfs-sftp.h" />
+    <ClInclude Include="vfs-smb.h" />
+    <ClInclude Include="vfs-uri.h" />
+    <ClInclude Include="vfs.h" />
+    <ClInclude Include="vfspath.h" />
+    <ClInclude Include="w32cons.h" />
+    <ClInclude Include="w32util.h" />
+    <ClInclude Include="wal\wal.h" />
+    <ClInclude Include="wal\wal_sys_api.h" />
+    <ClInclude Include="wal\wal_tmpls.h" />
+    <ClInclude Include="wcm-config.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="icon1.ico">
@@ -412,27 +150,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="swl">
-      <UniqueIdentifier>{cff65559-1f0e-4700-a68e-e4b584e02a80}</UniqueIdentifier>
-      <Extensions>swl/*.*</Extensions>
-    </Filter>
-    <Filter Include="%2a.h">
-      <UniqueIdentifier>{8dc54ee7-3e4a-409e-b927-6312a7169d20}</UniqueIdentifier>
-      <Extensions>*.h</Extensions>
-    </Filter>
-    <Filter Include="wal">
-      <UniqueIdentifier>{f73d80a2-6970-4684-bff9-0752a33a6783}</UniqueIdentifier>
-      <Extensions>wal/*.*</Extensions>
-    </Filter>
-    <Filter Include="vfs">
-      <UniqueIdentifier>{36254a80-25c1-4f7a-87aa-684e10595051}</UniqueIdentifier>
-    </Filter>
     <Filter Include="resources">
       <UniqueIdentifier>{e712221f-268e-434b-97ec-0a524a3e4c9d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="%2a.cpp">
-      <UniqueIdentifier>{dca056ba-6afa-40ce-bf9d-f2d237d3a457}</UniqueIdentifier>
-      <Extensions>*.cpp</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>

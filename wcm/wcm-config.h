@@ -10,6 +10,13 @@
 
 class NCWin;
 
+enum ePanelSpacesMode
+{
+	ePanelSpacesMode_None = 0,
+	ePanelSpacesMode_All = 1,
+	ePanelSpacesMode_Trailing = 2
+};
+
 struct WcmConfig
 {
 private:
@@ -100,6 +107,7 @@ public:
 	bool panelShowDotsInRoot;
 	bool panelShowFolderIcons;
 	bool panelShowExecutableIcons;
+	ePanelSpacesMode panelShowSpacesMode;
 	int panelModeLeft;
 	int panelModeRight;
 #pragma endregion

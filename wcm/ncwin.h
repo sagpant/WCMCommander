@@ -207,7 +207,7 @@ private:
 
 	void UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand );
 
-	NCCommandLine _edit;
+	NCCommandLine m_Edit;
 #ifdef _WIN32
 	W32Cons
 #else
@@ -246,7 +246,7 @@ private:
 	/// currently active file associations
 	std::vector<clNCFileAssociation> m_FileAssociations;
 
-	int _shiftSelectType;
+	LPanelSelectionType _shiftSelectType;
 
 	void SetMode( MODE m );
 	void ShowPanels( bool show )
@@ -312,11 +312,11 @@ private:
 	void SetToolbarEdit();
 	void SetToolbarView();
 
-	void PastePanelPath( PanelWin* p );
-	void PastePanelCurrentFileURI( PanelWin* p );
+	void PastePanelPath( PanelWin* p, bool AddTrailingSpace );
+	void PastePanelCurrentFileURI( PanelWin* p, bool AddTrailingSpace );
 
 	/// paste file or folder name to the command line, add quotes if the name contains spaces
-	void PasteFileNameToCommandLine( const unicode_t* path );
+	void PasteFileNameToCommandLine( const unicode_t* Path, bool AddTrailingSpace, bool AddPathSeparator );
 
 	void CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks );
 

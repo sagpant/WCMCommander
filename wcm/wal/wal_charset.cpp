@@ -130,7 +130,7 @@ namespace wal
 			}
 			else
 			{
-				*s = *buf;
+				*s = char( *buf & 0xFF );
 			}
 		}
 
@@ -152,7 +152,7 @@ namespace wal
 			return 0;
 		}
 
-		buf[0] = ch;
+		buf[0] = char( ch & 0xFF );
 		return 1;
 	}
 
@@ -551,7 +551,7 @@ namespace wal
 		{
 			if ( c < 0x80 )
 			{
-				*( s++ ) = c;
+				*( s++ ) = char( c & 0xFF );
 			}
 			else
 			{
@@ -591,7 +591,7 @@ namespace wal
 
 #define CP8_DEF(CPNAME) \
    CP8 cp8_##CPNAME(cp8_data_##CPNAME);   \
-unicode_t* CPNAME##_to_unicode(unicode_t *buf, const char *s, int size, int *badCount) \
+unicode_t* CPNAME##_to_unicode(unicode_t* buf, const char* s, int size, int* badCount) \
 {\
    if (size<0) size = strlen(s);\
    for ( ;size > 0; size--, buf++, s++) *buf = cp8_##CPNAME.ToUnicode(*s);\
@@ -603,15 +603,15 @@ unicode_t* CPNAME##_to_unicode(unicode_t *buf, const char *s, int size, int *bad
 char* unicode_to_##CPNAME(char *s, const unicode_t *buf, int usize, int *badCount)\
 {\
    if (usize<0) usize = unicode_strlen(buf);\
-        int bad = 0;\
+   int bad = 0;\
    for (;usize>0; usize--, buf++, s++) \
    {\
       unicode_t t = cp8_##CPNAME.FromUnicode(*buf);\
       if (t) \
-         *s = t; \
+         *s = char( t & 0xFF ); \
       else {\
          bad++;\
-         *s = cp8_##CPNAME.FromUnicode('?');\
+         *s = char( cp8_##CPNAME.FromUnicode('?') & 0xFF );\
       }\
    }\
    *s = 0;\

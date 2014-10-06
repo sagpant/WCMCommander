@@ -316,7 +316,7 @@ void NCWin::EventSize( cevent_size* pEvent )
 
 void NCWin::NotifyAutoComplete()
 {
-	std::vector<unicode_t> Text = _edit.GetText();
+	std::vector<unicode_t> Text = m_Edit.GetText();
 
 	this->UpdateAutoComplete( Text );
 }
@@ -324,7 +324,7 @@ void NCWin::NotifyAutoComplete()
 void NCWin::NotifyAutoCompleteChange()
 {
 	const unicode_t* p = m_AutoCompleteList.GetCurrentString();
-	if ( p && *p ) _edit.SetText( p, false );
+	if ( p && *p ) m_Edit.SetText( p, false );
 }
 
 void NCWin::HideAutoComplete()
@@ -403,7 +403,7 @@ NCWin::NCWin()
 	   _leftPanel( this, &g_WcmConfig.panelModeLeft ),
 	   _rightPanel( this, &g_WcmConfig.panelModeRight ),
 
-	   _edit( uiCommandLine, this, 0, 0, 10, false ),
+	   m_Edit( uiCommandLine, this, 0, 0, 10, false ),
 	   _editPref( this ),
 		_activityNotification( this ),
 	   _panel( &_leftPanel ),
@@ -416,7 +416,7 @@ NCWin::NCWin()
 	   _editor( this ),
 	   _ehWin( this, &_editor ),
 	   _execId( -1 ),
-	   _shiftSelectType( -1 ),
+		_shiftSelectType( LPanelSelectionType_NotDefined ),
 		m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
 {
 	m_BackgroundActivity = eBackgroundActivity_None;
@@ -445,8 +445,9 @@ NCWin::NCWin()
 
 	_buttonWin.Enable();
 
-	_edit.Show();
-	_edit.Enable();
+	m_Edit.SetShowSpaces( false );
+	m_Edit.Show();
+	m_Edit.Enable();
 	_terminal.Show();
 	_terminal.Enable();
 	_leftPanel.Show();
@@ -471,7 +472,7 @@ NCWin::NCWin()
 	_ehWin.Enable();
 
 	_ledit.AddWin( &_editPref, 0, 0 );
-	_ledit.AddWin( &_edit, 0, 1 );
+	_ledit.AddWin( &m_Edit, 0, 1 );
 
 	_lo.AddWin( &_menu, 0, 0 );
 	_lo.AddWin( &_ehWin, 0, 0 );
@@ -568,7 +569,7 @@ NCWin::NCWin()
 	_mdCommands.AddCmd( ID_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl D" );
 	_mdCommands.AddCmd( ID_FILEASSOCIATIONS, _LT( "File &associations" ) );
 
-	_edit.SetFocus();
+	m_Edit.SetFocus();
 
 	SetName( appName );
 
@@ -665,7 +666,7 @@ void NCWin::SetMode( MODE m )
 
 			if ( g_WcmConfig.styleShowButtonBar ) { _buttonWin.Show( ); }
 
-			_edit.Show();
+			m_Edit.Show();
 			//_terminal.Show();
 			_editPref.Show();
 			_menu.Show();
@@ -673,7 +674,7 @@ void NCWin::SetMode( MODE m )
 
 			if ( g_WcmConfig.styleShowToolBar ) { _toolBar.Show( ); }
 
-			_edit.SetFocus();
+			m_Edit.SetFocus();
 			_buttonWin.Set( panelNormalButtons ); //!!!
 		}
 		break;
@@ -687,7 +688,7 @@ void NCWin::SetMode( MODE m )
 			_leftPanel.Hide();
 			_rightPanel.Hide();
 			_buttonWin.Hide();
-			_edit.Hide();
+			m_Edit.Hide();
 			_terminal.Show();
 			_editPref.Hide();
 			_menu.Hide();
@@ -706,7 +707,7 @@ void NCWin::SetMode( MODE m )
 
 			if ( g_WcmConfig.styleShowButtonBar ) { _buttonWin.Show( ); }
 
-			_edit.Hide();
+			m_Edit.Hide();
 			_terminal.Hide();
 			_editPref.Hide();
 			_menu.Hide();
@@ -729,7 +730,7 @@ void NCWin::SetMode( MODE m )
 				_buttonWin.Show();
 			}
 
-			_edit.Hide();
+			m_Edit.Hide();
 			_terminal.Hide();
 			_editPref.Hide();
 			_menu.Hide();
@@ -968,7 +969,7 @@ void NCWin::RightButtonPressed( cpoint point )
 
 	int ret = DoPopupMenu( 0, this, md, point.x, point.y );
 
-	_edit.SetFocus();
+	m_Edit.SetFocus();
 
 	if ( ret == CMD_RC_RUN )
 	{
@@ -1325,7 +1326,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 #endif
 
 	int res = RunDldMenu( uiDriveDlg, p, "Drive", &mData );
-	_edit.SetFocus();
+	m_Edit.SetFocus();
 
 	if ( res == ID_DEV_OTHER_PANEL )
 	{
@@ -1802,25 +1803,27 @@ const unicode_t* NCWin::GetCurrentFileName() const
 	return NULL;
 }
 
-void  NCWin::PasteFileNameToCommandLine( const unicode_t* path )
+void  NCWin::PasteFileNameToCommandLine( const unicode_t* Path, bool AddTrailingSpace, bool AddPathSeparator )
 {
-	if ( path )
+	if ( Path )
 	{
-		bool spaces = StrHaveSpace( path );
+		bool Spaces = StrHaveSpace( Path );
 
-		if ( spaces ) { _edit.Insert( '"' ); }
+		if ( Spaces ) { m_Edit.Insert( '"' ); }
 
-		_edit.Insert( path );
+		m_Edit.Insert( Path );
 
-		if ( spaces ) { _edit.Insert( '"' ); }
+		if ( Spaces ) { m_Edit.Insert( '"' ); }
 
-		_edit.Insert( ' ' );
+		if ( AddPathSeparator && !wal::LastCharEquals( Path, DIR_SPLITTER ) ) m_Edit.Insert( DIR_SPLITTER );
+
+		if ( AddTrailingSpace ) m_Edit.Insert( ' ' );
 
 		NotifyAutoComplete();
 	}
 }
 
-void NCWin::PastePanelCurrentFileURI( PanelWin* p )
+void NCWin::PastePanelCurrentFileURI( PanelWin* p, bool AddTrailingSpace )
 {
 	if ( !p || _mode != PANEL ) { return; }
 
@@ -1828,11 +1831,11 @@ void NCWin::PastePanelCurrentFileURI( PanelWin* p )
 	{
 		FSString S = p->UriOfCurrent();
 
-		PasteFileNameToCommandLine( S.GetUnicode() );
+		PasteFileNameToCommandLine( S.GetUnicode(), AddTrailingSpace, false );
 	}
 }
 
-void NCWin::PastePanelPath( PanelWin* p )
+void NCWin::PastePanelPath( PanelWin* p, bool AddTrailingSpace )
 {
 	if ( !p || _mode != PANEL ) { return; }
 
@@ -1840,7 +1843,7 @@ void NCWin::PastePanelPath( PanelWin* p )
 	{
 		FSString S = p->UriOfDir();
 
-		PasteFileNameToCommandLine( S.GetUnicode() );
+		PasteFileNameToCommandLine( S.GetUnicode(), AddTrailingSpace, true );
 	}
 }
 
@@ -1852,15 +1855,15 @@ void NCWin::CtrlEnter()
 	{
 		const unicode_t* p = GetCurrentFileName();
 
-		PasteFileNameToCommandLine( p );
+		PasteFileNameToCommandLine( p, true, false );
 	}
 }
 
 void NCWin::CtrlF()
 {
-	if ( _panel->IsVisible() && _edit.IsVisible() )
+	if ( _panel->IsVisible() && m_Edit.IsVisible() )
 	{
-		PastePanelCurrentFileURI( _panel );
+		PastePanelCurrentFileURI( _panel, true );
 	}
 }
 
@@ -1878,7 +1881,7 @@ void NCWin::HistoryDialog()
 
 	if ( !s ) { return; }
 
-	_edit.SetText( s );
+	m_Edit.SetText( s );
 
 	NotifyAutoComplete( );
 }
@@ -2270,7 +2273,7 @@ void NCWin::EditExit()
 	{
 		int ret = NCMessageBox( this, _LT( "Edit" ), _LT( "File has changes\nsave it?" ), true, bListYesNoCancel );
 
-		if ( ret == CMD_NO || ret == CMD_YES && EditSave( false ) )
+		if ( ret == CMD_NO || (ret == CMD_YES && EditSave( false )) )
 		{
 			_leftPanel.Reread();
 			_rightPanel.Reread();
@@ -2379,14 +2382,14 @@ void NCWin::Tab( bool forceShellTab )
 	}
 	else
 	{
-		int cursor = _edit.GetCursorPos();
-		std::vector<unicode_t> p = ShellTabKey( this,  _panel->GetFSPtr(), _panel->GetPath(), _edit.GetText().data(), &cursor );
+		int cursor = m_Edit.GetCursorPos();
+		std::vector<unicode_t> p = ShellTabKey( this,  _panel->GetFSPtr(), _panel->GetPath(), m_Edit.GetText().data(), &cursor );
 
 		if ( p.data() )
 		{
-			_edit.SetText( p.data() );
-			_edit.SetCursorPos( cursor );
-			_edit.Invalidate();
+			m_Edit.SetText( p.data() );
+			m_Edit.SetCursorPos( cursor );
+			m_Edit.Invalidate();
 		}
 	};
 
@@ -2624,9 +2627,9 @@ bool NCAutocompleteList::EventMouse( cevent_mouse* pEvent )
 
 std::vector<unicode_t> NCWin::FetchAndClearCommandLine()
 {
-	std::vector<unicode_t> txt = _edit.GetText();
+	std::vector<unicode_t> txt = m_Edit.GetText();
 
-	_edit.Clear();
+	m_Edit.Clear();
 
 	return txt;
 }
@@ -2651,31 +2654,6 @@ bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 	*Out = utf8_to_unicode( home );
 	
 	return true;
-}
-
-bool LookAhead( const unicode_t* p, unicode_t* OutNextChar )
-{
-	if ( !p ) return false;
-	if ( !*p ) return false;
-	if ( OutNextChar ) *OutNextChar = *(p+1);
-	return true;
-}
-
-void PopLastNull( std::vector<unicode_t>* S )
-{
-	if ( S && !S->empty() && S->back() == 0 ) S->pop_back();
-}
-
-bool LastCharEquals( const std::vector<unicode_t>& S, unicode_t Ch )
-{
-	if ( S.empty() ) return false;
-
-	return S.back() == Ch;
-}
-
-bool IsPathSeparator( const unicode_t Ch )
-{
-	return ( Ch == '\\' ) || ( Ch == '/' );
 }
 
 // handle the "cd" command, convert its argument to a valid path, expand ~ and env variables
@@ -2865,7 +2843,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
 
-	if ( !shift ) { _shiftSelectType = -1; }
+	if ( !shift ) { _shiftSelectType = LPanelSelectionType_NotDefined; }
 
 	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
 	bool alt = ( pEvent->Mod() & KM_ALT ) != 0;
@@ -2873,7 +2851,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 	CheckKM( ctrl, alt, shift, pressed, pEvent->Key() );
 
 	if ( pressed && ctrl &&
-	     ( ( _mode == PANEL && _edit.InFocus() && !_panelVisible ) ||
+	     ( ( _mode == PANEL && m_Edit.InFocus() && !_panelVisible ) ||
 	       ( _mode == TERMINAL ) ) )
 	{
 		if ( _terminal.Marked() )
@@ -2891,7 +2869,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 //printf("Key='%X'\n",pEvent->Key());
 
-	if ( _mode == PANEL && _edit.InFocus() )
+	if ( _mode == PANEL && m_Edit.InFocus() )
 	{
 		if ( !pressed ) { return false; }
 
@@ -2925,7 +2903,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			if ( c && c >= 0x20 )
 			{
 				clPtr<cevent_key> key = _panel->QuickSearch( pEvent );
-				_edit.SetFocus();
+				m_Edit.SetFocus();
 
 				if ( key.ptr() ) { OnKeyDown( this, key.ptr(), key->Type() == EV_KEYDOWN ); }
 
@@ -3092,7 +3070,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					m_AutoCompleteList.EventKey( pEvent );
 					break;
 				}
-				_edit.SetText( _history.Next() );
+				m_Edit.SetText( _history.Next() );
 				break;
 
 			case FC( VK_E, KM_CTRL ):
@@ -3102,7 +3080,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					m_AutoCompleteList.EventKey( pEvent );
 					break;
 				}
-				_edit.SetText( _history.Prev() );
+				m_Edit.SetText( _history.Prev() );
 				break;
 
 			case VK_INSERT:
@@ -3113,10 +3091,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			{
 				ClipboardText ct;
 
-				if ( _edit.IsVisible() && !_edit.IsEmpty() )
+				if ( m_Edit.IsVisible() && !m_Edit.IsEmpty() )
 				{
 					// command line is not empty - copy it to clipboard
-					std::vector<unicode_t> txt = _edit.GetText();
+					std::vector<unicode_t> txt = m_Edit.GetText();
 					const unicode_t* p = txt.data();
 
 					if ( p )
@@ -3151,10 +3129,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				}
 				else if ( g_WcmConfig.systemEscPanel )
 				{
-					if ( _edit.IsVisible() && !_edit.IsEmpty() )
+					if ( m_Edit.IsVisible() && !m_Edit.IsEmpty() )
 					{
 						// if the command line is not empty - clear it
-						_edit.Clear();
+						m_Edit.Clear();
 					}
 					else if ( g_WcmConfig.systemEscPanel )
 					{
@@ -3169,12 +3147,12 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case FC( VK_ESCAPE, KM_ALT ):
 				HideAutoComplete();
 
-				if ( !_edit.InFocus() )
+				if ( !m_Edit.InFocus() )
 				{
 					return false;
 				}
 
-				_edit.Clear();
+				m_Edit.Clear();
 				break;
 
 			case FC( VK_D, KM_CTRL ):
@@ -3201,7 +3179,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case FC( VK_S, KM_CTRL ):
 			{
 				clPtr<cevent_key> key = _panel->QuickSearch( 0 );
-				_edit.SetFocus();
+				m_Edit.SetFocus();
 
 				if ( key.ptr() ) { OnKeyDown( this, key.ptr(), key->Type() == EV_KEYDOWN ); }
 			}
@@ -3224,7 +3202,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case FC( VK_NUMPAD_RETURN, KM_CTRL ):
 			case FC( VK_RETURN, KM_CTRL ):
-				if ( _edit.IsVisible() )
+				if ( m_Edit.IsVisible() )
 				{
 					CtrlEnter();
 				}
@@ -3233,9 +3211,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case FC( VK_BRACKETLEFT, KM_CTRL ):
 			{
-				if ( _edit.IsVisible() )
+				if ( m_Edit.IsVisible() )
 				{
-					PastePanelPath( &_leftPanel );
+					PastePanelPath( &_leftPanel, false );
 				}
 
 				break;
@@ -3243,9 +3221,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case FC( VK_BRACKETRIGHT, KM_CTRL ):
 			{
-				if ( _edit.IsVisible() )
+				if ( m_Edit.IsVisible() )
 				{
-					PastePanelPath( &_rightPanel );
+					PastePanelPath( &_rightPanel, false );
 				}
 
 				break;
@@ -3267,7 +3245,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case FC( VK_RETURN, KM_SHIFT ):
 			{
 				HideAutoComplete();
-				if ( _edit.IsVisible() )
+				if ( m_Edit.IsVisible() )
 				{
 					if ( StartCommand( FetchAndClearCommandLine(), true ) ) break;
 				}
@@ -3278,7 +3256,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case VK_RETURN:
 			{
 				HideAutoComplete();
-				if ( _edit.IsVisible() )
+				if ( m_Edit.IsVisible() )
 				{
 					if ( StartCommand( FetchAndClearCommandLine(), false ) ) break;
 				}
@@ -3376,7 +3354,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 				}
 
-				if ( !_edit.IsVisible() || _edit.IsEmpty() )
+				if ( !m_Edit.IsVisible() || m_Edit.IsEmpty() )
 				{
 					Delete();
 					return true;
@@ -3396,7 +3374,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case VK_BACK:
 				if ( g_WcmConfig.systemBackSpaceUpDir )
 				{
-					if ( !_edit.IsVisible() || _edit.IsEmpty() )
+					if ( !m_Edit.IsVisible() || m_Edit.IsEmpty() )
 					{
 						_panel->DirUp();
 						return true;
@@ -3632,7 +3610,7 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 
 	if ( _mode == PANEL )
 	{
-		_edit.SetFocus();
+		m_Edit.SetFocus();
 
 		switch ( id )
 		{
@@ -4334,7 +4312,7 @@ bool EditorHeadWin::UpdatePos()
 bool EditorHeadWin::UpdateSym()
 {
 	char cBuf[64] = "";
-	int32 sym = _edit->GetCursorSymbol();
+	int32_t sym = _edit->GetCursorSymbol();
 
 	if ( sym >= 0 )
 	{

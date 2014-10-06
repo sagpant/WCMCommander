@@ -6,8 +6,9 @@
 
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
-#include <inttypes.h>
-
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
+#	include <inttypes.h>
+#endif
 #include "globals.h"
 #include "wcm-config.h"
 #include "ncfonts.h"
@@ -123,7 +124,7 @@ void PanelSearchWin::EndSearch( cevent_key* pEvent )
 
 	if ( pEvent )
 	{
-		ret_key = new cevent_key( *pEvent );
+		ret_key = pEvent;
 	}
 }
 
@@ -236,7 +237,7 @@ clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 	_search->DoModal();
 
 	clPtr<cevent_key> ret = _search->ret_key;
-	_search = 0;
+	_search = nullptr;
 
 	return ret;
 }
@@ -1145,42 +1146,55 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	}
 
+	std::vector<unicode_t> Name = new_unicode_str( _list.GetFileName( n, HideDotsInDir() ) );
 
-	if ( active )
+	if ( g_WcmConfig.panelShowSpacesMode == ePanelSpacesMode_All )
 	{
-		gc.TextOut( x, y, _list.GetFileName( n, HideDotsInDir() ) );
+		ReplaceSpaces( &Name );
 	}
-	else
+	else if ( g_WcmConfig.panelShowSpacesMode == ePanelSpacesMode_Trailing )
 	{
-		gc.TextOutF( x, y, _list.GetFileName( n, HideDotsInDir() ) );
+		ReplaceTrailingSpaces( &Name );
 	}
+
+	gc.TextOut( x, y, Name.data() );
 }
 
 void PanelWin::SetCurrent( int n )
 {
-	SetCurrent( n, false, 0 );
+	SetCurrent( n, false, 0, false );
 }
 
-void PanelWin::SetCurrent( int n, bool shift, int* selectType )
+void PanelWin::SetCurrent( int n, bool Shift, LPanelSelectionType* SelectType, bool SelectLastItem )
 {
 	if ( !this ) { return; }
 
-	if ( n >= _list.Count( HideDotsInDir() ) ) { n = _list.Count( HideDotsInDir() ) - 1; }
+	bool SelectLast = SelectLastItem;
 
-	if ( n < 0 ) { n = 0; }
+	if ( n >= _list.Count( HideDotsInDir() ) )
+	{
+		n = _list.Count( HideDotsInDir() ) - 1;
+		// this is similar to Far Manager
+		SelectLast = true;
+	}
 
-//	if (n == _current) return;
+	if ( n < 0 )
+	{
+		n = 0;
+		// this is similar to Far Manager
+		SelectLast = true;
+	}
 
 	int old = _current;
 	_current = n;
 
 	bool fullRedraw = false;
 
-	if ( shift && selectType )
+	if ( Shift && SelectType )
 	{
 		if ( old == _current )
 		{
-			_list.ShiftSelection( _current, selectType, HideDotsInDir() );
+			_list.ShiftSelection( _current, SelectType, HideDotsInDir() );
 		}
 		else
 		{
@@ -1188,18 +1202,25 @@ void PanelWin::SetCurrent( int n, bool shift, int* selectType )
 
 			if ( old < _current )
 			{
-				count = _current - old + 1;
+				count = _current - old;
 				delta = 1;
 			}
 			else
 			{
-				count = old - _current + 1;
+				count = old - _current;
 				delta = -1;
 			}
 
-			for ( int i = old; count > 0; count--, i += delta )
+			for ( int i = old; count >= 0; count--, i += delta )
 			{
-				_list.ShiftSelection( i, selectType, HideDotsInDir() );
+				LPanelSelectionType* SType = SelectType;
+				// the last line should be selected only in specific cases
+				if ( count == 0 )
+				{
+					LPanelSelectionType LastSelection = LPanelSelectionType_Disable;
+					SType = SelectLast ? SelectType : &LastSelection;
+				}
+				_list.ShiftSelection( i, SType, HideDotsInDir() );
 			}
 		}
 
@@ -1334,12 +1355,16 @@ void PanelWin::DrawFooter( wal::GC& gc )
 	if ( pFs )
 	{
 		int Err;
-		int64 FreeSpace = pFs->GetFileSystemFreeSpace( GetPath(), &Err );
+		int64_t FreeSpace = pFs->GetFileSystemFreeSpace( GetPath(), &Err );
 
 		if ( FreeSpace >= 0 )
 		{
 			char Num[128];
+#if defined( _MSC_VER ) && ( _MSC_VER < 1700 )
+			_ui64toa_s( (uint64_t)FreeSpace, Num, sizeof( Num ) - 1, 10 );
+#else
 			sprintf( Num, _LT( "%" PRId64 ), FreeSpace );
+#endif
 
 			char SplitNum[128];
 			SplitNumber_3( Num, SplitNum );

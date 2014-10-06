@@ -66,7 +66,7 @@ cfont* MSysGetFont( Win* w, int id )
 		if (  w->UiGetClassId() == uiClassMenuBar ||
 		      w->UiGetClassId() == uiClassPopupMenu ||
 		      w->UiGetClassId() == uiClassToolTip ||
-		      w->Parent() && w->UiGetClassId() == uiClassButton )
+		      ( w->Parent() && w->UiGetClassId() == uiClassButton ) )
 		{
 			return g_DialogFont.ptr();
 		}

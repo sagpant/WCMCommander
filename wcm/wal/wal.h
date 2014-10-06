@@ -434,6 +434,15 @@ namespace wal
 		return sys_to_utf8( sys_error_str( err, buf, sizeof( buf ) / sizeof( sys_char_t ) ) );
 	}
 
+	bool LookAhead( const unicode_t* p, unicode_t* OutNextChar );
+	void PopLastNull( std::vector<unicode_t>* S );
+	bool LastCharEquals( const std::vector<unicode_t>& S, unicode_t Ch );
+	bool LastCharEquals( const unicode_t* S, unicode_t Ch );
+	bool IsPathSeparator( const unicode_t Ch );
+	/// replace all tabs and spaces with the U+00B7 character
+	void ReplaceSpaces( std::vector<unicode_t>* S );
+	/// replace trailing tabs and spaces with the U+00B7 character
+	void ReplaceTrailingSpaces( std::vector<unicode_t>* S );
 }; //namespace wal
 
 #endif

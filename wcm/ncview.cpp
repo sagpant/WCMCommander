@@ -243,11 +243,11 @@ seek_t VFile::Align( seek_t x, charset_struct* charset, FSCInfo* info )
 	int a = 16;
 	int b = 16;
 
-	if ( a > x ) { a = x; }
+	if ( a > x ) { a = int(x); }
 
 	if ( x + b > _size )
 	{
-		b = _size - x;
+		b = int( _size - x );
 	}
 
 	char buf[64];
@@ -513,7 +513,7 @@ seek_t VFile::GetPrevLine( seek_t filePos,  int* pCols, charset_struct* charset,
 	if ( nlFound ) { *nlFound = false; }
 
 	char buf[0x100];
-	int n = filePos > sizeof( buf ) ? sizeof( buf ) : filePos;
+	int n = int( filePos > sizeof( buf ) ? sizeof( buf ) : filePos );
 	filePos -= n;
 	int count = ReadBlock( filePos, buf, n, info );
 
@@ -557,7 +557,7 @@ seek_t VFile::GetPrevLine( seek_t filePos,  int* pCols, charset_struct* charset,
 			int m = s - buf;
 			int n  = sizeof( buf ) - m;
 
-			if ( n > filePos ) { n = filePos; }
+			if ( n > filePos ) { n = int( filePos ); }
 
 			if ( m > 0 ) { memmove( buf + n, buf, m ); }
 
@@ -631,13 +631,13 @@ seek_t VFile::GetPrevLine( seek_t filePos,  int* pCols, charset_struct* charset,
 
 int VFile::ReadBlock( seek_t offset, char* s, int count, FSCInfo* info )
 {
-	int bn = offset / CACHE_BLOCK_SIZE;
-	int pos = offset % CACHE_BLOCK_SIZE;
+	int bn = int( offset / CACHE_BLOCK_SIZE );
+	int pos = int( offset % CACHE_BLOCK_SIZE );
 	VDataPtr ptr = Get( bn, info );
 
 	if ( offset > _size ) { return 0; }
 
-	if ( count + offset > _size ) { count = _size - offset; }
+	if ( count + offset > _size ) { count = int( _size - offset ); }
 
 	int ret = count;
 
@@ -851,13 +851,13 @@ struct ViewerEvent
 	};
 
 	int type;
-	int64 track;
-	int64 e;
+	int64_t track;
+	int64_t e;
 
 	ViewerEvent(): type( 0 ), track( 0 ), e( 0 ) {}
 	ViewerEvent( int t ): type( t ), track( 0 ), e( 0 ) {}
-	ViewerEvent( int t, int64 tr ): type( t ), track( tr ), e( 0 ) {}
-	ViewerEvent( int t, int64 tr, int64 n1 ): type( t ), track( tr ), e( n1 ) {}
+	ViewerEvent( int t, int64_t tr ): type( t ), track( tr ), e( 0 ) {}
+	ViewerEvent( int t, int64_t tr, int64_t n1 ): type( t ), track( tr ), e( n1 ) {}
 	void Clear() { type = NO; }
 };
 
@@ -887,7 +887,7 @@ public:
 	VSData ret;
 	VFPos pos;
 	std::vector<char> error;
-	int64 loadStartTime;
+	int64_t loadStartTime;
 
 	int Id() const {return tid; }
 
@@ -1038,7 +1038,7 @@ void* ViewerThread( void* param )
 					switch ( event.type )
 					{
 						case ViewerEvent::SET:
-							pos.begin = std::max( (int64)0, event.track );
+							pos.begin = std::max( (int64_t)0, event.track );
 							break;
 
 						case ViewerEvent::HOME:
@@ -1103,7 +1103,7 @@ void* ViewerThread( void* param )
 					switch ( event.type )
 					{
 						case ViewerEvent::SET:
-							pos.begin = std::max( (int64)0, event.track );
+							pos.begin = std::max( (int64_t)0, event.track );
 							pos.col = 0;
 							break;
 
@@ -1192,7 +1192,7 @@ void* ViewerThread( void* param )
 
 						case ViewerEvent::VTRACK:
 						{
-							int n = event.track;
+							seek_t n = event.track;
 
 							if ( n < 0 ) { n = 0; }
 
@@ -1420,19 +1420,19 @@ void* ViewerThread( void* param )
 
 						case ViewerEvent::HTRACK:
 						{
-							int n = event.track;
+							seek_t n = event.track;
 
 							if ( n > pos.maxLine - size.cols ) { n = pos.maxLine - size.cols; }
 
 							if ( n < 0 ) { n = 0; }
 
-							pos.col = n;
+							pos.col = (int)n;
 						}
 						break;
 
 						case ViewerEvent::VTRACK:
 						{
-							int n = event.track;
+							seek_t n = event.track;
 
 							if ( n < 0 ) { n = 0; }
 
@@ -1773,7 +1773,7 @@ void ViewWin::EventTimer( int tid )
 		threadData->inFlags |= ViewerThreadData::FTIMER;
 		threadData->cond.Signal();
 
-		int64 tim = time( 0 );
+		int64_t tim = time( 0 );
 
 		if ( threadData->loadStartTime && tim != threadData->loadStartTime && !drawLoading )
 		{
@@ -2087,7 +2087,7 @@ static void ViewPreparHexModeText( unicode_t* inStr, char* inAttr, unicode_t* u,
 	std::vector<char> str( count );
 	int i;
 
-	for ( i = 0; i < count; i++ ) { str[i] = inStr[i]; }
+	for ( i = 0; i < count; i++ ) { str[i] = char( inStr[i] & 0xFF ); }
 
 	char* e = str.data() + count;
 	char* s = str.data();
@@ -2388,7 +2388,7 @@ void ViewWin::CalcScroll()
 		hscroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_HCHANGE, this, &hsi );
 
 		ScrollInfo vsi;
-		vsi.pageSize = threadData->pos.end - threadData->pos.begin;
+		vsi.pageSize = int( threadData->pos.end - threadData->pos.begin );
 		vsi.size = threadData->pos.size;
 		vsi.pos = threadData->pos.begin;
 		bool vVisible = vscroll.IsVisible();
@@ -2498,14 +2498,14 @@ void ViewWin::ClearFile()
 int ViewWin::GetPercent()
 {
 	VFPos pos = lastPos;
-	return ( pos.size > 0 ) ? ( pos.end * 100 ) / pos.size : 100;
+	return ( pos.size > 0 ) ? int( ( pos.end * 100 ) / pos.size ) : 100;
 }
 
 int ViewWin::GetCol()
 {
 	if ( threadData )
 	{
-		return threadData->pos.begin;
+		return int(threadData->pos.begin);
 	}
 
 	return -1;
@@ -2559,9 +2559,8 @@ struct VSTData
 	seek_t end;
 
 	VSTData( VFilePtr f, const unicode_t* s, bool sens, charset_struct* cs, bool h, seek_t offset )
-		: file( f ), str( new_unicode_str( s ) ), charset( cs ), sensitive( sens ), hex( h ), from( offset ),
-		  winClosed( false ),
-		  threadStopped( false )
+		: mutex(), file( f ), str( new_unicode_str( s ) ), charset( cs ), sensitive( sens ), info(), hex( h ), from( offset ),
+		  winClosed( false ), threadStopped( false ), err(), begin( 0 ), end( 0 )
 	{}
 };
 
@@ -2570,7 +2569,8 @@ void* VSThreadFunc( void* ptr )
 {
 	VSTData* data = ( VSTData* )ptr;
 
-	seek_t begin = 0, end = 0;
+	seek_t begin = 0;
+	seek_t end = 0;
 
 	{
 		//lock
@@ -2594,7 +2594,7 @@ void* VSThreadFunc( void* ptr )
 
 		seek_t nrSize = data->file->Size() - offset;
 
-		int n = bufSize > nrSize ? nrSize : bufSize;
+		int n = bufSize > nrSize ? int(nrSize) : bufSize;
 		int bytes = data->file->ReadBlock( offset, buf.data(), n, &data->info );
 
 		if ( bytes > 0 )
@@ -2632,7 +2632,7 @@ void* VSThreadFunc( void* ptr )
 
 				int n = bufSize - count;
 
-				if ( n > nrSize ) { n = nrSize; }
+				if ( n > nrSize ) { n = int(nrSize); }
 
 				int bytes = data->file->ReadBlock( offset + count, buf.data() + count, n, &data->info );
 

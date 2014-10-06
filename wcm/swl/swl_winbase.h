@@ -45,12 +45,16 @@ namespace wal
 		unicode_t* strAfterHk;
 		unicode_t* strFull; // required to calculate text extents quickly
 		unicode_t hotkeyUpperCase;
-		void Clear();
 		void ParseHkText(const unicode_t* inStr);
+		void Clear();
+		void Init(const MenuTextInfo& src);
 	public:
 		explicit MenuTextInfo(const unicode_t* inStr);
-		MenuTextInfo(const MenuTextInfo& src);
-		~MenuTextInfo();
+		MenuTextInfo() :strBeforeHk(0), strHk(0), strAfterHk(0), strFull(0), hotkeyUpperCase(0){}
+		MenuTextInfo(const MenuTextInfo& src) { Init(src); }
+		MenuTextInfo& operator=(const MenuTextInfo& src){ Clear(); Init(src); return *this; };
+		~MenuTextInfo() { Clear(); }
+
 		void SetText(const unicode_t* inStr);
 		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
 		cpoint GetTextExtents(GC& gc, cfont* font = 0) const
@@ -184,6 +188,7 @@ namespace wal
 		int _chars;
 		bool cursorVisible;
 		bool passwordMode;
+		bool showSpaces;
 		// quick search line accepts alt keys. Edit controls do not: alt is used for hotkeys in dialogs
 		bool doAcceptAltKeys;
 		int first;
@@ -214,6 +219,7 @@ namespace wal
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
 		std::vector<unicode_t> GetText() const;
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
+		void SetShowSpaces( bool enable = true ) { showSpaces = enable; Invalidate(); }
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();
 		virtual ~EditLine();
@@ -268,9 +274,9 @@ namespace wal
 
 	struct ScrollInfo
 	{
-		int size, pageSize, pos;
+		seek_t size, pageSize, pos;
 		ScrollInfo(): size( 0 ), pageSize( 0 ), pos( 0 ) {}
-		ScrollInfo( int _size, int _pageSize, int _pos )
+		ScrollInfo( seek_t _size, seek_t _pageSize, seek_t _pos )
 			: size( _size ), pageSize( _pageSize ), pos( _pos ) {}
 	};
 

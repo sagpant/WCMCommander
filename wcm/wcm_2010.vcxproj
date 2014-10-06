@@ -27,7 +27,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -37,7 +37,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -96,6 +96,7 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>..\libssh2\static32</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -175,6 +176,7 @@
     <ClCompile Include="dircalc.cpp" />
     <ClCompile Include="eloadsave.cpp" />
     <ClCompile Include="ext-app.cpp" />
+    <ClCompile Include="fileassociations.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="fileopers.cpp" />
     <ClCompile Include="filesearch.cpp" />
@@ -212,18 +214,24 @@
     <ClCompile Include="swl\swl_editline.cpp" />
     <ClCompile Include="swl\swl_layout.cpp" />
     <ClCompile Include="swl\swl_menubox.cpp" />
+    <ClCompile Include="swl\swl_menutextinfo.cpp" />
     <ClCompile Include="swl\swl_popupmenu.cpp" />
     <ClCompile Include="swl\swl_sbutton.cpp" />
     <ClCompile Include="swl\swl_scrollbar.cpp" />
+    <ClCompile Include="swl\swl_staticlabel.cpp" />
     <ClCompile Include="swl\swl_textlist.cpp" />
     <ClCompile Include="swl\swl_vlist.cpp" />
     <ClCompile Include="swl\swl_winbase.cpp" />
     <ClCompile Include="swl\swl_wincore.cpp" />
-    <ClCompile Include="swl\swl_wincoreMS.cpp" />
+    <ClCompile Include="swl\swl_wincoreMS.cpp">
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <ClCompile Include="t-emulator.cpp" />
     <ClCompile Include="tcp_sock.cpp" />
     <ClCompile Include="termwin.cpp" />
     <ClCompile Include="toolbar.cpp" />
     <ClCompile Include="unicode_lc.cpp" />
+    <ClCompile Include="ux_util.cpp" />
     <ClCompile Include="vfs-ftp.cpp" />
     <ClCompile Include="vfs-sftp.cpp" />
     <ClCompile Include="vfs-sftp2.cpp" />
@@ -247,6 +255,7 @@
     <ClInclude Include="dircalc.h" />
     <ClInclude Include="eloadsave.h" />
     <ClInclude Include="ext-app.h" />
+    <ClInclude Include="fileassociations.h" />
     <ClInclude Include="fileopers.h" />
     <ClInclude Include="filesearch.h" />
     <ClInclude Include="ftplogon.h" />
@@ -268,29 +277,26 @@
     <ClInclude Include="panel-style.h" />
     <ClInclude Include="panel.h" />
     <ClInclude Include="panel_list.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="search-dlg.h" />
     <ClInclude Include="search-tools.h" />
     <ClInclude Include="sftpdlg.h" />
     <ClInclude Include="shell-tools.h" />
-    <ClInclude Include="shell.h" />
     <ClInclude Include="shl.h" />
     <ClInclude Include="shortcuts.h" />
     <ClInclude Include="smblogon.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="strconfig.h" />
     <ClInclude Include="string-util.h" />
-    <ClInclude Include="swl\swl.h" />
-    <ClInclude Include="swl\swl_internal.h" />
-    <ClInclude Include="swl\swl_layout.h" />
-    <ClInclude Include="swl\swl_winbase.h" />
-    <ClInclude Include="swl\swl_wincore.h" />
-    <ClInclude Include="swl\swl_wincore_internal.h" />
+    <ClInclude Include="swl\swl_wincore_freetype_inc.h" />
+    <ClInclude Include="t-emulator.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tcp_sock.h" />
-    <ClInclude Include="terminal.h" />
     <ClInclude Include="termwin.h" />
     <ClInclude Include="toolbar.h" />
+    <ClInclude Include="types.h" />
+    <ClInclude Include="unicode_lc.h" />
+    <ClInclude Include="ux_util.h" />
     <ClInclude Include="vfs-ftp.h" />
     <ClInclude Include="vfs-sftp.h" />
     <ClInclude Include="vfs-smb.h" />
@@ -299,14 +305,17 @@
     <ClInclude Include="vfspath.h" />
     <ClInclude Include="w32cons.h" />
     <ClInclude Include="w32util.h" />
-    <ClCompile Include="wal\IntrusivePtr.h" />
-    <ClInclude Include="wal\wal.h" />
-    <ClInclude Include="wal\wal_sys_api.h" />
-    <ClInclude Include="wal\wal_tmpls.h" />
     <ClInclude Include="wcm-config.h" />
+    <ClInclude Include="wcm-version.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="CMakeLists.txt" />
     <None Include="icon1.ico" />
+    <None Include="intarnal_icons.inc" />
+    <None Include="makefile" />
+    <None Include="makefile.linux" />
+    <None Include="makefile.windows" />
     <None Include="small.ico" />
     <None Include="wcm.ico" />
     <None Include="ReadMe.txt" />
