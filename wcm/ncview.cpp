@@ -2559,9 +2559,8 @@ struct VSTData
 	seek_t end;
 
 	VSTData( VFilePtr f, const unicode_t* s, bool sens, charset_struct* cs, bool h, seek_t offset )
-		: file( f ), str( new_unicode_str( s ) ), charset( cs ), sensitive( sens ), hex( h ), from( offset ),
-		  winClosed( false ),
-		  threadStopped( false )
+		: mutex(), file( f ), str( new_unicode_str( s ) ), charset( cs ), sensitive( sens ), info(), hex( h ), from( offset ),
+		  winClosed( false ), threadStopped( false ), err(), begin( 0 ), end( 0 )
 	{}
 };
 
@@ -2570,7 +2569,8 @@ void* VSThreadFunc( void* ptr )
 {
 	VSTData* data = ( VSTData* )ptr;
 
-	seek_t begin = 0, end = 0;
+	seek_t begin = 0;
+	seek_t end = 0;
 
 	{
 		//lock
