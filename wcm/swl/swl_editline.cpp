@@ -283,15 +283,17 @@ namespace wal
 	}
 
 	EditLine::EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars, bool frame )
-		:  Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId ),
-		   text( txt ),
-		   _chars( chars > 0 ? chars : 10 ),
-		   cursorVisible( false ),
-		   first( 0 ),
-		   frame3d( frame ),
-		   passwordMode( false ),
-			showSpaces( true ),
-		   doAcceptAltKeys(false)
+	 : Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId )
+	 , text( txt )
+	 , _chars( chars > 0 ? chars : 10 )
+	 , cursorVisible( false )
+	 , first( 0 )
+	 , frame3d( frame )
+	 , charH( 0 )
+	 , charW( 0 )
+	 , passwordMode( false )
+	 , showSpaces( true )
+	 , doAcceptAltKeys( false )
 	{
 		text.End();
 
