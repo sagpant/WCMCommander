@@ -17,8 +17,6 @@
 
 static unicode_t rootPathStr[] = {'/', 0};
 
-//clPtr<FS> systemclPtr<FS> = new FSSys();
-
 inline const unicode_t* FindFirstChar( const unicode_t* s, unicode_t c )
 {
 	for ( ; *s; s++ ) if ( *s == c ) { return s; }
@@ -26,14 +24,14 @@ inline const unicode_t* FindFirstChar( const unicode_t* s, unicode_t c )
 	return s;
 }
 
+#ifdef LIBSMBCLIENT_EXIST
+
 static void SetString( char* dest, int len, const char* src )
 {
 	for ( ; *src && len > 1; dest++, src++, len-- ) { *dest = *src; }
 
 	if ( len > 0 ) { *dest = 0; }
 }
-
-#ifdef LIBSMBCLIENT_EXIST
 
 clPtr<FS> ParzeSmbURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
 {
