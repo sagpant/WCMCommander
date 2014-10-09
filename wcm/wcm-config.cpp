@@ -31,13 +31,22 @@ class TextInStream
 {
 	int bufSize;
 	std::vector<char> buffer;
-	int pos, count;
+	int pos;
+	int count;
 	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.data(), bufSize ); pos = 0; return count > 0; }
 public:
-	TextInStream( int _bSize = 1024 ): bufSize( _bSize > 0 ? _bSize : 1024 ), count( 1 ), pos( 1 ) { buffer.resize( bufSize ); }
+	TextInStream( int _bSize = 1024 )
+	 : bufSize( _bSize > 0 ? _bSize : 1024 )
+	 , pos( 1 )
+	 , count( 1 )
+	{
+		buffer.resize( bufSize );
+	}
+	~TextInStream() {}
+
 	int GetC() { FillBuffer(); return pos < count ? buffer[pos++] : EOF; }
 	bool GetLine( char* s, int size );
-	~TextInStream() {}
+
 protected:
 	virtual int Read( char* buf, int size ) = 0; //can throw
 };
@@ -637,38 +646,38 @@ const char* sectionTerminal = "terminal";
 const char* sectionFonts = "fonts";
 
 WcmConfig::WcmConfig()
-	:  systemAskOpenExec( true ),
-	   systemEscPanel( true ),
-	   systemBackSpaceUpDir( false ),
-		systemAutoComplete( true ),
-		systemShowHostName( false ),
-	   systemLang( new_char_str( "+" ) ),
+ : systemAskOpenExec( true )
+ , systemEscPanel( true )
+ , systemBackSpaceUpDir( false )
+ , systemAutoComplete( true )
+ , systemShowHostName( false )
+ , systemLang( new_char_str( "+" ) )
 
-	   panelShowHiddenFiles( true ),
-	   panelCaseSensitive( false ),
-	   panelSelectFolders( false ),
-		panelShowDotsInRoot( false ),
-		panelShowFolderIcons( true ),
-		panelShowExecutableIcons( true ),
-		panelShowSpacesMode( ePanelSpacesMode_Trailing ),
-		panelModeLeft( 0 ),
-	   panelModeRight( 0 ),
+ , panelShowHiddenFiles( true )
+ , panelCaseSensitive( false )
+ , panelSelectFolders( false )
+ , panelShowDotsInRoot( false )
+ , panelShowFolderIcons( true )
+ , panelShowExecutableIcons( true )
+ , panelShowSpacesMode( ePanelSpacesMode_Trailing )
+ , panelModeLeft( 0 )
+ , panelModeRight( 0 )
 
-	   editSavePos( true ),
-	   editAutoIdent( false ),
-	   editTabSize( 3 ),
-	   editShl( true ),
+ , editSavePos( true )
+ , editAutoIdent( false )
+ , editTabSize( 3 )
+ , editShl( true )
 
-	   terminalBackspaceKey( 0 ),
+ , terminalBackspaceKey( 0 )
 
-		styleShowToolBar( true ),
-		styleShowButtonBar( true ),
-		styleColorMode( 0 ),
+ , styleColorMode( 0 )
+ , styleShowToolBar( true )
+ , styleShowButtonBar( true )
 
-	   windowX(0),
-		windowY(0),
-		windowWidth(0),
-		windowHeight(0)
+ , windowX(0)
+ , windowY(0)
+ , windowWidth(0)
+ , windowHeight(0)
 {
 	leftPanelPath = new_char_str( "" );
 	rightPanelPath = new_char_str( "" );
@@ -1500,7 +1509,12 @@ public:
 		clPtr<cfont> newFont;
 		bool fixed;
 		Node(): oldFont( 0 ) {}
-		Node( const char* n, bool fix,  cfont* old, std::vector<char>* uri ): name( new_char_str( n ) ), fixed( fix ), oldFont( old ), pUri( uri ) {}
+		Node( const char* n, bool fix,  cfont* old, std::vector<char>* uri )
+		 : name( new_char_str( n ) )
+		 , oldFont( old )
+		 , pUri( uri )
+		 , fixed( fix )
+		{}
 	};
 
 	ccollect<Node>* pList;

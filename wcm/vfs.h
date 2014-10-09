@@ -339,13 +339,17 @@ struct FSFtpParam
 	UFString<> pass;
 	volatile bool passive;
 	volatile bool isSet;
+
 	FSFtpParam(): port( 21 ),
 #ifdef _WIN32
 		charset( CS_UTF8 ),
 #else
 		charset( sys_charset_id ),
 #endif
-		anonymous( true ), isSet( false ), passive( true ) {}
+	anonymous( true ),
+	passive( true ),
+	isSet( false )
+	{}
 
 	void GetConf( StrConfig& conf )
 	{

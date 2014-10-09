@@ -791,7 +791,7 @@ namespace wal
 			chstring<CT> string;
 
 			Node( const T& d, const CT* s, unsigned h )
-				: m_data( d ), string( s ), hashKey( h )
+				: m_data( d ), hashKey( h ), string( s )
 			{
 			}
 

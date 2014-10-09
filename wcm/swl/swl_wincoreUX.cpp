@@ -2329,8 +2329,8 @@ Nah:
 		layout( 0 ),
 		uiNameId( uiNId ),
 
-		exposeRect( 0, 0, 0, 0 ),
-		reparent( 0 )
+		reparent( 0 ),
+		exposeRect( 0, 0, 0, 0 )
 	{
 		crect r = ( rect ? *rect : crect( 0, 0, 1, 1 ) );
 

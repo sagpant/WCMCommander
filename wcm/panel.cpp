@@ -529,6 +529,7 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	NCDialogParent( WT_CHILD, 0, 0, parent ),
 	_lo( 7, 4 ),
 	_scroll( 0, this, true ), //, false), //bug with autohide and layouts
+	_list( g_WcmConfig.panelShowHiddenFiles, g_WcmConfig.panelCaseSensitive ),
 	_itemHeight( 1 ),
 	_rows( 0 ),
 	_cols( 0 ),
@@ -536,8 +537,7 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	_current( 0 ),
 	_viewMode( CheckMode( mode ) ), //MEDIUM),
 	_inOperState( false ),
-	_operData( ( NCDialogParent* )parent ),
-	_list( g_WcmConfig.panelShowHiddenFiles, g_WcmConfig.panelCaseSensitive )
+	_operData( ( NCDialogParent* )parent )
 {
 	_lo.SetLineGrowth( 3 );
 	_lo.SetColGrowth( 1 );

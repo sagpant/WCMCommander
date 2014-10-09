@@ -21,11 +21,13 @@ struct SearchItemNode
 	int dirId;
 	charset_struct* cs;
 	clPtr<FSNode> fsNode; //если пусто, то это просто директорий в котором лежат файлы следующие в списке за ним
+
 	SearchItemNode( )
 	: m_Added(false), dirId( -1 ), cs( 0 )
 	{}
+
 	SearchItemNode( int di, FSNode* pNode, charset_struct* _c )
-	: m_Added(false), dirId( di ), fsNode( pNode ? new FSNode( *pNode ) : ( ( FSNode* )0 ) ), cs( _c )
+	: m_Added(false), dirId( di ), cs( _c ), fsNode( pNode ? new FSNode( *pNode ) : ( ( FSNode* )0 ) )
 	{}
 };
 

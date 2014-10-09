@@ -281,8 +281,8 @@ class clFileAssociationsWin: public NCDialog
 public:
 	clFileAssociationsWin( NCDialogParent* parent, std::vector<clNCFileAssociation>* Associations )
 	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel )
-	 , m_Layout( 10, 10 )
 	 , m_ListWin( this, Associations )
+	 , m_Layout( 10, 10 )
 	 , m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
 	 , m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
 	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )

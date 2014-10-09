@@ -32,8 +32,9 @@ struct TScreen
 	EmulatorScreenPoint cursor;
 	ScreenMarker marker;
 
-	int bufSize;
 	std::vector<TermChar> buf;
+	int bufSize;
+
 	TScreen(): rows( 1 ), cols( 1 ), buf( 1 ), bufSize( 1 ) {}
 
 	void SetSize( int r, int c )
@@ -60,19 +61,22 @@ struct TScreen
 class TerminalWin : public Win
 {
 	friend void* RunProcessThreadFunc( void* data );
-	int _currentRows;
 
 #ifdef _WIN32
 
 #else
 	Terminal _terminal;
 #endif
+
 	Layout _lo;
 	ScrollBar _scroll;
 	TScreen screen; //это ТОЛЬКО видимая область экрана
-	int cH, cW;
+	int cH;
+	int cW;
 	crect _rect;
 	int _firstRow;
+	int _currentRows;
+
 	void Reread();
 	void DrawRow( wal::GC& gc, int r, int first, int last );
 	void DrawChar( wal::GC& gc, int r, int c, TermChar ch );

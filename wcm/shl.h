@@ -95,7 +95,7 @@ namespace SHL
 		State* _nextState;
 		Rule*  _next;
 	public:
-		Rule(): _color( -1 ), _nextState( 0 ), _words( 0 ), _ns_words( 0 ), _next( 0 ) {}
+		Rule(): _color( -1 ), _words( 0 ), _ns_words( 0 ), _nextState( 0 ), _next( 0 ) {}
 
 		ColorId Color() const { return _color; }
 		bool Valid()      { for ( int i = 0; i < _list.count(); i++ ) if ( _list[i].Count() == '1' || _list[i].Count() == '+' ) { return true; } return false; }

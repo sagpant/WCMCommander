@@ -198,8 +198,8 @@ VFile::VFile()
 VFile::VFile( clPtr<FS> _fs, FSPath _path, seek_t size, int tabSize )
 	:  useCount( 0 ),
 	   fs( _fs ),
-	   fd( -1 ),
 	   path( _path ),
+	   fd( -1 ),
 	   blockCount( 0 ), _offset( 0 ), _size( size ),
 	   _tabSize( tabSize ),
 	   _lastMTime( 0 )
@@ -1726,9 +1726,9 @@ void* ViewerThread( void* param )
 ViewWin::ViewWin( Win* parent )
 	:   Win( WT_CHILD, 0, parent, 0, 0 ),
 	    _lo( 5, 5 ),
+	    threadData( 0 ),
 	    vscroll( 0, this, true, false ),
 	    hscroll( 0, this, false, true ),
-	    threadData( 0 ),
 	    charset( charset_table[GetFirstOperCharsetId()] ),
 	    wrap( true ),
 	    hex( false ),
