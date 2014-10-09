@@ -27,7 +27,7 @@ namespace wal
 		char s[1024];
 		va_list ap;
 		va_start( ap, format );
-		vsprintf( s, format, ap );
+		Lvsnprintf( s, sizeof(s), format, ap );
 		va_end( ap );
 #ifdef _WIN32
 		OutputDebugString(s);
@@ -294,7 +294,11 @@ namespace wal
 		        NULL
 		     ) < 2 )
 		{
+#if defined( _MSC_VER )
+			_snwprintf_s( buf, size, _TRUNCATE, L"Error code: %i", int( err ) );
+#else
 			_snwprintf( buf, size, L"Error code: %i", int( err ) );
+#endif
 		}
 
 		if ( size > 0 ) { buf[size - 1] = 0; }

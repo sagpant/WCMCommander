@@ -1110,7 +1110,7 @@ void NCWin::Home( PanelWin* p )
 		{
 			char buf[4096];
 			FSString name = homeUri.data();
-			snprintf( buf, sizeof( buf ), "bad home path: %s\n", name.GetUtf8() );
+			Lsnprintf( buf, sizeof( buf ), "bad home path: %s\n", name.GetUtf8() );
 			NCMessageBox( this, "Home", buf, true );
 		}
 		else
@@ -1227,7 +1227,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 		if ( drv & mask )
 		{
 			char buf[0x100];
-			snprintf( buf, sizeof( buf ), "%c:", i + 'A' );
+			Lsnprintf( buf, sizeof( buf ), "%c:", i + 'A' );
 			UINT driveType = GetDriveType( buf );
 			const char* typeStr = "";
 
@@ -1549,8 +1549,7 @@ void NCWin::CreateDirectory()
 		{
 			char buf[4096];
 			FSString name = dir.data();
-			snprintf( buf, sizeof( buf ), _LT( "can`t create directory:%s\n" ),
-			          name.GetUtf8() );
+			Lsnprintf( buf, sizeof( buf ), _LT( "can`t create directory:%s\n" ), name.GetUtf8() );
 			NCMessageBox( this, "CD", buf, true );
 			return;
 		}
@@ -1915,7 +1914,7 @@ void NCWin::Delete()
 	else
 	{
 		char buf[0x100];
-		sprintf( buf, _LT( "You have %i selected files\nDo you want to delete it?" ), n );
+		Lsnprintf( buf, sizeof(buf), _LT( "You have %i selected files\nDo you want to delete it?" ), n );
 
 		if ( NCMessageBox( this, _LT( "Delete" ), buf, false ) != CMD_OK )
 		{
@@ -2644,11 +2643,22 @@ bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 {
 	if ( !Out ) return false;
 
+#if _MSC_VER > 1700
+	char* home;
+	size_t size;
+	_dupenv_s( &home, &size, EnvVarName );
+#else
 	const char* home = getenv( EnvVarName );
+#endif
 
 	if ( !home ) return false;
 
 	*Out = utf8_to_unicode( home );
+
+#if _MSC_VER > 1700
+	// deallocate after _dupenv_s()
+	free( home );
+#endif
 	
 	return true;
 }
@@ -2795,7 +2805,7 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 			{
 				char buf[4096];
 				FSString name = p;
-				snprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
+				Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
 				NCMessageBox( this, "CD", buf, true );
 			}
 			else
@@ -4293,7 +4303,7 @@ bool EditorHeadWin::UpdateCS()
 bool EditorHeadWin::UpdatePos()
 {
 	char cBuf[64];
-	sprintf( cBuf, "%i /%i  %i", _edit->GetCursorLine() + 1, _edit->GetLinesCount(), _edit->GetCursorCol() + 1 );
+	Lsnprintf( cBuf, sizeof(cBuf), "%i /%i  %i", _edit->GetCursorLine() + 1, _edit->GetLinesCount(), _edit->GetCursorCol() + 1 );
 	unicode_t uBuf[64];
 
 	for ( int i = 0; i < 32; i++ ) if ( ( uBuf[i] = cBuf[i] ) == 0 ) { break; }
@@ -4313,7 +4323,7 @@ bool EditorHeadWin::UpdateSym()
 
 	if ( sym >= 0 )
 	{
-		sprintf( cBuf, "%i (%X)", sym, sym );
+		Lsnprintf( cBuf, sizeof(cBuf), "%i (%X)", sym, sym );
 	}
 
 	unicode_t uBuf[64];
@@ -4514,7 +4524,7 @@ bool ViewerHeadWin::UpdatePercent()
 
 	if ( p >= 0 )
 	{
-		sprintf( cBuf, "%i%%", p );
+		Lsnprintf( cBuf, sizeof( cBuf ), "%i%%", p );
 	}
 
 	unicode_t uBuf[64];
@@ -4536,7 +4546,7 @@ bool ViewerHeadWin::UpdateCol()
 
 	if ( col >= 0 )
 	{
-		sprintf( cBuf, "%i", col + 1 );
+		Lsnprintf( cBuf, sizeof( cBuf ), "%i", col + 1 );
 	}
 
 	unicode_t uBuf[64];

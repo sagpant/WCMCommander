@@ -156,7 +156,7 @@ void FTPNode::Passive( unsigned& passiveIp, int& passivePort )
 void FTPNode::Port( unsigned ip, int port )
 {
 	char buf[0x100];
-	sprintf( buf, "PORT %i,%i,%i,%i,%i,%i\r\n",
+	Lsnprintf( buf, sizeof(buf), "PORT %i,%i,%i,%i,%i,%i\r\n",
 	         ( ip >> 24 ) & 0xFF, ( ip >> 16 ) & 0xFF, ( ip >> 8 ) & 0xFF, ip & 0xFF,
 	         ( port >> 8 ) & 0xFF, port & 0xFF );
 
@@ -262,14 +262,14 @@ void FTPNode::Cwd( const char* path )
 void FTPNode::OpenRead( const char* fileName )
 {
 	char buf[4096];
-	snprintf( buf, sizeof( buf ) - 1, "RETR %s\r\n", fileName );
+	Lsnprintf( buf, sizeof( buf ) - 1, "RETR %s\r\n", fileName );
 	OpenData( buf );
 }
 
 void FTPNode::OpenWrite( const char* fileName )
 {
 	char buf[4096];
-	snprintf( buf, sizeof( buf ) - 1, "STOR %s\r\n", fileName );
+	Lsnprintf( buf, sizeof( buf ) - 1, "STOR %s\r\n", fileName );
 	OpenData( buf );
 }
 
@@ -363,7 +363,7 @@ int FSFtp::GetFreeNode( int* err, FSCInfo* info )
 
 			p->pFtpNode->Noop();
 		}
-		catch ( int e )
+		catch ( int )
 		{
 			p->pFtpNode = 0;
 		}
@@ -569,7 +569,7 @@ FSString FSFtp::StrError( int err )
 			break;
 
 		default:
-			sprintf( buf, "Unknown error code in FSFtp:%i", err );
+			Lsnprintf( buf, sizeof(buf), "Unknown error code in FSFtp:%i", err );
 			str = buf;
 	}
 
@@ -1118,20 +1118,17 @@ static time_t GetFtpFTime( const char* p1, const char* p2, const char* p3 )
 	{
 		time_t tim = time( 0 );
 
-#ifdef _WIN32
+#if _MSC_VER > 1700
+		struct tm st;
+		if ( localtime_s( &st, &tim ) == 0 ) { y = st.tm_year; }
+#elif defined( _WIN32 )
 		struct tm* st = localtime( &tim );
-
 		if ( st ) { y = st->tm_year; }
-
 #else
 		struct tm result;
 		struct tm* st = localtime_r( &tim, &result );
-
 		if ( st ) { y = st->tm_year; }
-
 #endif
-
-
 
 		*t = 0;
 		t++;
@@ -1487,7 +1484,7 @@ FSString FSFtp::Uri( FSPath& path )
 	std::vector<char> a;
 
 	char port[0x100];
-	snprintf( port, sizeof( port ), ":%i", _param.port );
+	Lsnprintf( port, sizeof( port ), ":%i", _param.port );
 
 	FSString server( _param.server.Data() );
 

@@ -65,7 +65,7 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	passwordEdit.SetText( params.pass.Data(), true );
 
 	char buf[0x100];
-	snprintf( buf, sizeof( buf ), "%i", params.port );
+	Lsnprintf( buf, sizeof( buf ), "%i", params.port );
 	portEdit.SetText( utf8_to_unicode( buf ).data(), true );
 
 	bool focus = false;

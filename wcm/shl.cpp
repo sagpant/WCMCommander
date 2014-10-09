@@ -413,7 +413,7 @@ namespace SHL
 		if ( _tok != t )
 		{
 			char buf[64];
-			sprintf( buf, "symbol not found '%c'", t );
+			Lsnprintf( buf, sizeof(buf)-1, "symbol not found '%c'", t );
 			Syntax( buf );
 		}
 
@@ -429,7 +429,7 @@ namespace SHL
 		if ( n < mincount )
 		{
 			char buf[64];
-			sprintf( buf, "symbol not found '%c'", t );
+			Lsnprintf( buf, sizeof(buf), "symbol not found '%c'", t );
 			Syntax( buf );
 		}
 	}

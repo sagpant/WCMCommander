@@ -43,9 +43,9 @@ public:
 	~Buf2D() {}
 };
 
-inline bool operator <( const COORD& a, const COORD& b ) { return a.Y < b.Y || a.Y == b.Y && a.X < b.X; }
-inline bool operator <=( const COORD& a, const COORD& b ) { return a.Y < b.Y || a.Y == b.Y && a.X <= b.X; }
-inline bool operator !=( const COORD& a, const COORD& b ) { return a.Y != b.Y ||  a.X != b.X; }
+inline bool operator <( const COORD& a, const COORD& b ) { return a.Y < b.Y || ( a.Y == b.Y && a.X < b.X ); }
+inline bool operator <=( const COORD& a, const COORD& b ) { return a.Y < b.Y || ( a.Y == b.Y && a.X <= b.X ); }
+inline bool operator !=( const COORD& a, const COORD& b ) { return a.Y != b.Y || (  a.X != b.X ); }
 
 struct ConsMarker
 {

@@ -230,7 +230,7 @@ int FSSys::OpenRead  ( FSPath& path, int flags, int* err, FSCInfo* info )
 int FSSys::OpenCreate   ( FSPath& path, bool overwrite, int mode, int flags,  int* err, FSCInfo* info )
 {
 	DWORD diseredAccess = GENERIC_READ | GENERIC_WRITE;
-	DWORD shareMode = 0;
+//	DWORD shareMode = 0;
 	DWORD creationDisposition = ( overwrite ) ? CREATE_ALWAYS  : CREATE_NEW;
 //???
 
@@ -485,9 +485,9 @@ static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wc
 #ifdef _DEBUG
 static void toStr(char* str, const wchar_t* wstr)
 {
-    for(;*wstr;)
+    while (*wstr)
     {
-        *str++=*wstr++;
+        *str++= char( ( *wstr++ ) & 0xFF );
     }
     *str=0;
 }
@@ -577,7 +577,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 
 int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 {
-	if ( _drive >= 0 && path.Count() == 1 || _drive == -1 && path.Count() == 3 )
+	if ( (_drive >= 0 && path.Count() == 1) || (_drive == -1 && path.Count() == 3) )
 	{
 		//pseudo stat
 		fsStat->size = 0;
@@ -769,15 +769,15 @@ void W32NetRes::Set( NETRESOURCEW* p )
 	node.size = size;
 	node.rs = *p;
 	int offset = sizeof( node );
-
-#define QQQ(a, len)\
-if (len>0) { node.rs.a = (wchar_t*)(data + offset); wcscpy(node.rs.a, p->a); }\
-offset += len*sizeof(wchar_t);
-
-	QQQ( lpLocalName, nameLen );
-	QQQ( lpRemoteName, remoteNameLen );
-	QQQ( lpComment, commentLen );
-	QQQ( lpProvider, providerLen );
+#if _MSC_VER > 1700
+#	define QQQ(a, b, len) if (len>0) { a = (wchar_t*)(data + offset); Lwcsncpy(a, len, b, _TRUNCATE); } offset += len*sizeof(wchar_t);
+#else
+#	define QQQ(a, b, len) if (len>0) { a = (wchar_t*)(data + offset); Lwcsncpy(a, b, len); } offset += len*sizeof(wchar_t);
+#endif
+	QQQ( node.rs.lpLocalName, p->lpLocalName, nameLen );
+	QQQ( node.rs.lpRemoteName, p->lpRemoteName, remoteNameLen );
+	QQQ( node.rs.lpComment, p->lpComment, commentLen );
+	QQQ( node.rs.lpProvider, p->lpProvider, providerLen );
 #undef QQQ
 }
 
@@ -1919,7 +1919,7 @@ unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
 
 	if ( !FileTimeToLocalFileTime( &mt, &lt ) || !FileTimeToSystemTime( &lt, &st ) ) { ret[0] = '?'; ret[1] = 0; return ret; }
 
-	sprintf( str, "%02i/%02i/%04i  %02i:%02i:%02i",
+	Lsnprintf( str, sizeof(str), "%02i/%02i/%04i  %02i:%02i:%02i",
 	         int( st.wDay ), int( st.wMonth ), int( st.wYear ),
 	         int( st.wHour ), int( st.wMinute ), int( st.wSecond ) );
 #else
