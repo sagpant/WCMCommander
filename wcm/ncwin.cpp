@@ -1019,6 +1019,8 @@ public:
 
 		m_CurrentPos = Next;
 
+		Result.push_back( 0 );
+
 		return Result;
 	}
 
