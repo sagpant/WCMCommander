@@ -653,6 +653,40 @@ namespace wal
 			case XK_z:
 				ks = XK_Z;
 				break;
+
+			// remap numpad keys: https://github.com/corporateshark/WalCommander/issues/198
+
+			case XK_KP_Left:
+				ks = XK_Left;
+				break;
+
+			case XK_KP_Right:
+				ks = XK_Right;
+				break;
+
+			case XK_KP_Up:
+				ks = XK_Up;
+				break;
+
+			case XK_KP_Down:
+				ks = XK_Down;
+				break;
+
+			case XK_KP_Prior:
+				ks = XK_Prior;
+				break;
+
+			case XK_KP_Next:
+				ks = XK_Next;
+				break;
+
+			case XK_KP_Home:
+				ks = XK_Home;
+				break;
+
+			case XK_KP_End:
+				ks = XK_End;
+				break;
 		}
 
 
