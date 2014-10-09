@@ -244,8 +244,8 @@ struct EditPoint
 	EditPoint( int l, int p ): line( l ), pos( p ) {}
 	void Set( int l, int c ) { line = l; pos = c; }
 
-	bool operator < ( const EditPoint& a ) const { return line < a.line || line == a.line && pos < a.pos; }
-	bool operator <= ( const EditPoint& a ) const { return line < a.line || line == a.line && pos <= a.pos; }
+	bool operator < ( const EditPoint& a ) const { return line < a.line || (line == a.line && pos < a.pos); }
+	bool operator <= ( const EditPoint& a ) const { return line < a.line || (line == a.line && pos <= a.pos); }
 	bool operator != ( const EditPoint& a ) const { return line != a.line || pos != a.pos; }
 	bool operator == ( const EditPoint& a ) const { return line == a.line && pos == a.pos; }
 };
@@ -537,7 +537,7 @@ class EditWin : public Win
 	unsigned ColorById( int id );
 	void RefreshShl( int n );
 
-	bool InMark( const EditPoint& p ) { return cursor <= p && p < marker || marker <= p && p < cursor; }
+	bool InMark( const EditPoint& p ) { return (cursor <= p && p < marker) || (marker <= p && p < cursor); }
 	void SendChanges() { if ( Parent() ) { Parent()->SendBroadcast( CMD_NCEDIT_INFO, CMD_NCEDIT_CHANGES, this, 0, 2 ); } }
 
 	void CalcScroll();

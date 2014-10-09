@@ -27,7 +27,7 @@ int ToolBar::UiGetClassId() { return uiClassToolBar; }
 
 void ToolBar::RecalcItems()
 {
-	crect cr = ClientRect();
+//	crect cr = ClientRect();
 	int x = 2;
 	int y = 2;
 

@@ -261,7 +261,7 @@ extern SearchAndReplaceParams searchParams;
 
 static crect acWinRect( 0, 0, 850, 500 );
 
-static unicode_t panelButtonStr[] = {'*', 0};
+//static unicode_t panelButtonStr[] = {'*', 0};
 
 void NCWin::SetToolbarPanel()
 {
@@ -1078,7 +1078,7 @@ void NCWin::ReturnToDefaultSysDir()
 	}
 
 #else
-	int r = chdir( "/" );
+	int ret = chdir( "/" );
 #endif
 }
 
@@ -1899,7 +1899,7 @@ void NCWin::Delete()
 
 	if ( _mode != PANEL ) { return; }
 
-	int cur = _panel->Current();
+//	int cur = _panel->Current();
 
 	clPtr<FSList> list = _panel->GetSelectedList();
 
@@ -1959,7 +1959,7 @@ void NCWin::Copy( bool shift )
 
 	if ( _mode != PANEL ) { return; }
 
-	int cur = _panel->Current();
+//	int cur = _panel->Current();
 
 	clPtr<FSList> list = _panel->GetSelectedList();
 
@@ -2015,7 +2015,7 @@ void NCWin::Move( bool shift )
 
 	if ( _mode != PANEL ) { return; }
 
-	int cur = _panel->Current();
+//	int cur = _panel->Current();
 
 	clPtr<FSList> list = _panel->GetSelectedList();
 

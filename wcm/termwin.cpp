@@ -268,7 +268,7 @@ void TerminalWin::Execute( Win* w, int tId, const unicode_t* cmd, const sys_char
 void TerminalWin::EventSize( cevent_size* pEvent )
 {
 	RecalcLayouts();
-	cpoint size = pEvent->Size();
+//	cpoint size = pEvent->Size();
 
 	int W = _rect.Width();
 	int H = _rect.Height();
@@ -509,9 +509,8 @@ bool TerminalWin::EventMouse( cevent_mouse* pEvent )
 	bool pointChanged = lastMousePoint != pt;
 	lastMousePoint = pt;
 
-
-	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
-	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
+//	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
+//	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
 
 	switch ( pEvent->Type() )
 	{

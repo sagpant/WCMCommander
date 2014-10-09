@@ -38,8 +38,8 @@ struct EmulatorScreenPoint
 	void Set( int r, int c ) { row = r; col = c; }
 
 	//нумерация строк обратная, поэтому и такая ботва со сравнением колонок
-	bool operator <  ( const EmulatorScreenPoint& a ) const { return row < a.row || row == a.row && col > a.col; }
-	bool operator <= ( const EmulatorScreenPoint& a ) const { return row < a.row || row == a.row && col >= a.col; }
+	bool operator <  ( const EmulatorScreenPoint& a ) const { return row < a.row || (row == a.row && col > a.col); }
+	bool operator <= ( const EmulatorScreenPoint& a ) const { return row < a.row || (row == a.row && col >= a.col); }
 
 	bool operator != ( const EmulatorScreenPoint& a ) const { return row != a.row || col != a.col; }
 	bool operator == ( const EmulatorScreenPoint& a ) const { return row == a.row && col == a.col; }

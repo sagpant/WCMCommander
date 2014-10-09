@@ -1575,20 +1575,20 @@ namespace wal
 
 				if ( c < 0x10000 ) //1110xxxx 10xxxxxx 10xxxxxx
 				{
-					s[2] = 0x80 | c & 0x3F;
+					s[2] = 0x80 | (c & 0x3F);
 					c >>= 6;
-					s[1] = 0x80 | c & 0x3F;
+					s[1] = 0x80 | (c & 0x3F);
 					c >>= 6;
 					s[0] = ( c & 0x0F ) | 0xE0;
 					q->Put( s, 3 );
 				}
 				else     //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 				{
-					s[3] = 0x80 | c & 0x3F;
+					s[3] = 0x80 | (c & 0x3F);
 					c >>= 6;
-					s[2] = 0x80 | c & 0x3F;
+					s[2] = 0x80 | (c & 0x3F);
 					c >>= 6;
-					s[1] = 0x80 | c & 0x3F;
+					s[1] = 0x80 | (c & 0x3F);
 					c >>= 6;
 					s[0] = ( c & 0x7 ) | 0xF0;
 					q->Put( s, 4 );

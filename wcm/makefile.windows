@@ -1,4 +1,4 @@
-CFLAGS_COMMON=-O2 -Wall -Wextra -Wno-unknown-pragmas -D_FILE_OFFSET_BITS=64 -I ../libssh2 -I wal -I swl $(CFLAGS_FREETYPE)
+CFLAGS_COMMON=-O2 -Wall -Wextra -Wno-unknown-pragmas -Wno-unused-parameter -Wno-reorder -Wno-sign-compare -D_FILE_OFFSET_BITS=64 -I ../libssh2 -I wal -I swl $(CFLAGS_FREETYPE)
 CFLAGS64= 
 CFLAGS32=  
 CFLAGS =  $(CFLAGS_COMMON)

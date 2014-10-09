@@ -197,7 +197,7 @@ int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher,
 					count = t;
 				}
 
-				int n = bufSize - count;
+//				int n = bufSize - count;
 				bytes = fs->Read( fd, buf.data(), bufSize, err, info );
 
 				if ( bytes <= 0 ) { break; }
@@ -494,7 +494,7 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 {
 	if ( n >= 0 && n < (int)this->m_ItemList.size() )
 	{
-		bool frame = false;
+//		bool frame = false;
 		UiCondList ucl;
 
 		if ( ( n % 2 ) == 0 ) { ucl.Set( uiOdd, true ); }
@@ -506,13 +506,13 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 		unsigned bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 		unsigned textColor = UiGetColor( uiColor, uiItem, &ucl, 0 );
-		unsigned frameColor = UiGetColor( uiFrameColor, uiItem, &ucl, 0 );;
-
+//		unsigned frameColor = UiGetColor( uiFrameColor, uiItem, &ucl, 0 );;
+/*
 		if ( n == this->GetCurrent() )
 		{
 			frame = true;
 		}
-
+*/
 		gc.SetFillColor( bg );
 		gc.FillRect( rect );
 

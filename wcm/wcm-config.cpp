@@ -158,7 +158,7 @@ void SysTextFileOut::Write( char* buf, int size ) {  f.Write( buf, size ); }
 static FSPath configDirPath( CS_UTF8, "???" );
 
 inline bool IsSpace( int c ) { return c > 0 && c <= 32; }
-inline bool IsLatinChar( int c ) { return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'; }
+inline bool IsLatinChar( int c ) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
 inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
 
 
@@ -1776,10 +1776,10 @@ bool StyleOptDialog::EventChildKey( Win* child, cevent_key* pEvent )
 {
 	if ( pEvent->Type() == EV_KEYDOWN )
 	{
-		if (
-		   pEvent->Key() == VK_RETURN && ( child == &changeButton || child == &changeX11Button ) ||
-		   ( pEvent->Key() == VK_UP || pEvent->Key() == VK_DOWN ) && child == &fontList
-		)
+		bool IsReturn = ( pEvent->Key() == VK_RETURN ) && ( child == &changeButton || child == &changeX11Button );
+		bool IsUpDown = ( pEvent->Key() == VK_UP || pEvent->Key() == VK_DOWN ) && child == &fontList;
+
+		if ( IsReturn || IsUpDown )
 		{
 			return false;
 		}

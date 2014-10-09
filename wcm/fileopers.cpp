@@ -352,7 +352,7 @@ public:
 		srcList.clear();
 
 		pathChanged = false;
-		uint64_t infoCount = 0;
+//		uint64_t infoCount = 0;
 		infoSrcUri.Clear();
 		infoDstUri.Clear();
 		progressChanged = false;
@@ -1753,7 +1753,7 @@ bool OperCFThread::Move( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 			destPath.SetItemStr( destPos, list->First()->Name() );
 		}
 
-		FSNode* node = list->First();
+//		FSNode* node = list->First();
 
 		srcPath.SetItemStr( srcPos, list->First()->Name() );
 

@@ -158,7 +158,7 @@ public:
 		wal::GC gc( this );
 		gc.Set( GetFont() );
 		cpoint ts = gc.GetTextExtents( ABCString );
-		int fontW = ( ts.x / ABCStringLen );
+//		int fontW = ( ts.x / ABCStringLen );
 		int fontH = ts.y + 2;
 
 		this->SetItemSize( ( fontH > 16 ? fontH : 16 ) + 1, 100 );
@@ -435,7 +435,7 @@ bool clFileAssociationsWin::Key( cevent_key* pEvent )
 			return true;
 		}
 
-		unicode_t c = UnicodeLC( pEvent->Char() );
+//		unicode_t c = UnicodeLC( pEvent->Char() );
 	}
 
 	return false;

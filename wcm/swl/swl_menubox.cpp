@@ -65,7 +65,7 @@ namespace wal
 	{
 		if ( select == n ) { return; }
 
-		int t = select;
+//		int t = select;
 		select = n;
 
 		if ( sub.ptr() )

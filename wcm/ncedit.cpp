@@ -964,7 +964,7 @@ void EditWin::ToClipboard()
 			ctx.Append( '\n' );
 		}
 
-		EditString& eLine = text.Get( end.line );
+//		EditString& eLine = text.Get( end.line );
 
 		if ( end.pos > 0 )
 		{
@@ -1782,7 +1782,7 @@ void EditWin::__RefreshScreenData()
 
 	//EditorColors colors = *editorColors;
 
-	int r, c;
+	int r;
 
 	for ( r = 0; r < screen.Rows(); r++ )
 	{
@@ -2346,7 +2346,7 @@ void EditWin::SetCursor( cpoint p, bool mark )
 
 	if ( line < 0 ) { line = 0; }
 
-	EditString& str = text.Get( line );
+//	EditString& str = text.Get( line );
 	int pos = GetPosFromCol( line, c );
 	cursor.Set( line, pos );
 

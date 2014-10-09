@@ -146,7 +146,7 @@ ttt:
 		{
 			std::vector<char> a( res );
 			int n = Read( a.data(), res );
-			ASSERT( n == res );
+			CHECK_RET( n == res, std::vector<char>() );
 			return a;
 		}
 
