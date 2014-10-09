@@ -960,7 +960,7 @@ bool W32Cons::GetMarked( ClipboardText& ct )
 		int x1 = screen.marker.a.X;
 		int x2 = screen.marker.b.X;
 
-		if ( x1 > x1 ) { int t = x1; x1 = x2; x2 = t; }
+		if ( x1 > x2 ) { int t = x1; x1 = x2; x2 = t; }
 
 		CHAR_INFO* s = _temp.Line( 0 );
 

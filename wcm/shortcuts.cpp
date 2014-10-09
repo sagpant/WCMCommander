@@ -89,7 +89,7 @@ public:
 		wal::GC gc( this );
 		gc.Set( GetFont() );
 		cpoint ts = gc.GetTextExtents( ABCString );
-		int fontW = ( ts.x / ABCStringLen );
+//		int fontW = ( ts.x / ABCStringLen );
 		int fontH = ts.y + 2;
 
 		this->SetItemSize( ( fontH > 16 ? fontH : 16 ) + 1, 100 );
@@ -197,7 +197,7 @@ void SCListWin::Next( int ch )
 {
 	unicode_t c = UnicodeLC( ch );
 	int i;
-	int n = 0;
+//	int n = 0;
 	int count = itemList.count();
 	int current = GetCurrent();
 
@@ -391,7 +391,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 	{
 		SCListWin::Node* node = listWin.GetCurrentData();
 
-		if ( !node || !node->name.data() ) { return true; }
+		if ( !node || !node->name.data() ) { return true; } //-V560
 
 		if ( NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Delete item" ),
 		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( node->name.data() ).data() , "' ?" ).data(),
@@ -408,7 +408,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 	{
 		SCListWin::Node* node = listWin.GetCurrentData();
 
-		if ( !node || !node->name.data() ) { return true; }
+		if ( !node || !node->name.data() ) { return true; } //-V560
 
 		std::vector<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Rename item" ) ).data(),
 		                                            node->name.data() );

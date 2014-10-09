@@ -363,7 +363,6 @@ struct big_stat
 static int SMB_STAT( const char* url, struct stat* st )
 {
 	big_stat s;
-	s.st = *st;
 	int r = smbc_stat( url, &s.st );
 	*st = s.st;
 	return r;
@@ -571,15 +570,6 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 		smbc_closedir( d );
 
 		return 0;
-
-err:
-		SetError( err, errno );
-
-		smbc_closedir( d );
-
-		return -1;
-
-
 	}
 	catch ( ... )
 	{

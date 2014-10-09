@@ -261,7 +261,7 @@ extern SearchAndReplaceParams searchParams;
 
 static crect acWinRect( 0, 0, 850, 500 );
 
-static unicode_t panelButtonStr[] = {'*', 0};
+//static unicode_t panelButtonStr[] = {'*', 0};
 
 void NCWin::SetToolbarPanel()
 {
@@ -393,34 +393,31 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 }
 
 NCWin::NCWin()
-	:  NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect ),
-	   _lo( 5, 1 ),
-	   _terminal( 0, this ),
-	   _lpanel( 1, 2 ),
-	   _ledit( 1, 2 ),
-	   _buttonWin( this ),
-
-	   _leftPanel( this, &g_WcmConfig.panelModeLeft ),
-	   _rightPanel( this, &g_WcmConfig.panelModeRight ),
-
-	   m_Edit( uiCommandLine, this, 0, 0, 10, false ),
-	   _editPref( this ),
-		_activityNotification( this ),
-	   _panel( &_leftPanel ),
-	   _menu( 0, this ),
-	   _toolBar( this, 0, 16 ),
-	   _mode( PANEL ),
-	   _panelVisible( true ),
-	   _viewer( this ),
-	   _vhWin( this, &_viewer ),
-	   _editor( this ),
-	   _ehWin( this, &_editor ),
-	   _execId( -1 ),
-		_shiftSelectType( LPanelSelectionType_NotDefined ),
-		m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
+ : NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect )
+ , _lo( 5, 1 )
+ , _lpanel( 1, 2 )
+ , _ledit( 1, 2 )
+ , _buttonWin( this )
+ , _leftPanel( this, &g_WcmConfig.panelModeLeft )
+ , _rightPanel( this, &g_WcmConfig.panelModeRight )
+ , m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
+ , m_Edit( uiCommandLine, this, 0, 0, 10, false )
+ , _terminal( 0, this )
+ , m_BackgroundActivity( eBackgroundActivity_None )
+ , _activityNotification( this )
+ , _editPref( this )
+ , _panel( &_leftPanel )
+ , _menu( 0, this )
+ , _toolBar( this, 0, 16 )
+ , _viewer( this )
+ , _vhWin( this, &_viewer )
+ , _editor( this )
+ , _ehWin( this, &_editor )
+ , _panelVisible( true )
+ , _mode( PANEL )
+ , _shiftSelectType( LPanelSelectionType_NotDefined )
+ ,_execId( -1 )
 {
-	m_BackgroundActivity = eBackgroundActivity_None;
-
 	_execSN[0] = 0;
 
 	_editPref.Show();
@@ -1092,7 +1089,7 @@ void NCWin::ReturnToDefaultSysDir()
 	}
 
 #else
-	int r = chdir( "/" );
+	int ret = chdir( "/" );
 #endif
 }
 
@@ -1913,7 +1910,7 @@ void NCWin::Delete()
 
 	if ( _mode != PANEL ) { return; }
 
-	int cur = _panel->Current();
+//	int cur = _panel->Current();
 
 	clPtr<FSList> list = _panel->GetSelectedList();
 
@@ -1973,7 +1970,7 @@ void NCWin::Copy( bool shift )
 
 	if ( _mode != PANEL ) { return; }
 
-	int cur = _panel->Current();
+//	int cur = _panel->Current();
 
 	clPtr<FSList> list = _panel->GetSelectedList();
 
@@ -2029,7 +2026,7 @@ void NCWin::Move( bool shift )
 
 	if ( _mode != PANEL ) { return; }
 
-	int cur = _panel->Current();
+//	int cur = _panel->Current();
 
 	clPtr<FSList> list = _panel->GetSelectedList();
 
@@ -2296,7 +2293,7 @@ void NCWin::EditExit()
 	{
 		int ret = NCMessageBox( this, _LT( "Edit" ), _LT( "File has changes\nsave it?" ), true, bListYesNoCancel );
 
-		if ( ret == CMD_NO || ret == CMD_YES && EditSave( false ) )
+		if ( ret == CMD_NO || (ret == CMD_YES && EditSave( false )) )
 		{
 			_leftPanel.Reread();
 			_rightPanel.Reread();
@@ -4283,9 +4280,9 @@ int uiClassEditorHeadWin = GetUiID( "EditorHeadWin" );
 int EditorHeadWin::UiGetClassId() { return uiClassEditorHeadWin; };
 
 EditorHeadWin::EditorHeadWin( Win* parent, EditWin* pEdit )
-	:  Win( WT_CHILD, 0, parent, 0 ),
-	   prefixString( utf8_to_unicode( _LT( "Edit:" ) ).data() ),
-	   _edit( pEdit )
+ : Win( WT_CHILD, 0, parent, 0 )
+ , _edit( pEdit )
+ , prefixString( utf8_to_unicode( _LT( "Edit:" ) ).data() )
 {
 	OnChangeStyles();
 	CheckSize();
@@ -4339,7 +4336,7 @@ bool EditorHeadWin::UpdatePos()
 bool EditorHeadWin::UpdateSym()
 {
 	char cBuf[64] = "";
-	int32 sym = _edit->GetCursorSymbol();
+	int32_t sym = _edit->GetCursorSymbol();
 
 	if ( sym >= 0 )
 	{
@@ -4506,9 +4503,9 @@ static int uiClassViewerHeadWin = GetUiID( "ViewerHeadWin" );
 int ViewerHeadWin::UiGetClassId() { return uiClassViewerHeadWin; }
 
 ViewerHeadWin::ViewerHeadWin( Win* parent, ViewWin* pView )
-	:  Win( WT_CHILD, 0, parent, 0 ),
-	   prefixString( utf8_to_unicode( _LT( "View:" ) ).data() ),
-	   _view( pView )
+ : Win( WT_CHILD, 0, parent, 0 )
+ , _view( pView )
+ , prefixString( utf8_to_unicode( _LT( "View:" ) ).data() )
 {
 	OnChangeStyles();
 	CheckSize();

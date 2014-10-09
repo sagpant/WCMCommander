@@ -11,7 +11,7 @@ namespace wal
 	{
 		if ( !msg ) { msg = ""; }
 
-		fprintf( stderr, "THREAD ERROR: %s\n", msg );
+		fprintf( stderr, "THREAD ERROR (%i): %s (%s:%i)\n", err, msg, file, line ? *line : 0 );
 	}
 
 	void ( *thread_error_func )( int err, const char* msg, const char* file, int* line ) = def_thread_error_func;

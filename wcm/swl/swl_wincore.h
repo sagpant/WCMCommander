@@ -530,8 +530,8 @@ namespace wal
 	{
 		int _width;
 		int _height;
-		std::vector<unsigned32> _data;
-//		std::vector<unsigned32*> _lines;
+		std::vector<uint32_t> _data;
+//		std::vector<uint32_t*> _lines;
 
 		Image32( const Image32& ) {}
 		void operator=( const Image32& ) {}
@@ -551,13 +551,13 @@ namespace wal
 
 		void clear();
 
-		unsigned32 get( int x, int y )
+		uint32_t get( int x, int y )
 		{
 			//return ( x >= 0 && x < _width && y >= 0 && y < _height ) ? _lines[y][x] : 0xFF;
 			return ( x >= 0 && x < _width && y >= 0 && y < _height ) ? _data[ y * _width + x ] : 0xFF;
 		}
 
-		unsigned32* line( int y ) { return &_data[ y * _width ]; }
+		uint32_t* line( int y ) { return &_data[ y * _width ]; }
 
 		Image32( int w, int h ) { alloc( w, h ); }
 
@@ -712,7 +712,8 @@ namespace wal
 		};
 	private:
 		GC() {};
-		GC( const GC& ) { exit( 1 ); }
+		GC(const GC&) = delete;
+		GC& operator=(const GC&) = delete;
 #ifdef _WIN32
 		friend LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 		friend class cfont;
@@ -827,13 +828,13 @@ namespace wal
 	{
 		enum {INT = 1, STR = 2};
 		int flags;
-		int64 i;
+		int64_t i;
 		std::vector<char> s;
 
-		UiValueNode( int64 n ): i( n ), flags( INT ) {};
-		UiValueNode( const char* a ): s( new_char_str( a ) ), flags( STR ) {}
+		UiValueNode( int64_t n ): flags( INT ), i( n ) {};
+		UiValueNode( const char* a ): flags( STR ), s( new_char_str( a ) ) {}
 
-		int64 Int();
+		int64_t Int();
 		const char* Str();
 	};
 
@@ -845,14 +846,14 @@ namespace wal
 		ccollect<clPtr<UiValueNode> > list;
 		UiValue* next;
 		UiValue( UiValue* nx ): next( nx ) {};
-		void Append( int64 n ) { clPtr<UiValueNode> v = new UiValueNode( n ); list.append( v ); }
+		void Append( int64_t n ) { clPtr<UiValueNode> v = new UiValueNode( n ); list.append( v ); }
 		void Append( const char* s ) { clPtr<UiValueNode> v = new UiValueNode( s ); list.append( v ); }
 		bool ParzeNode( UiParzer& parzer );
 		void Parze( UiParzer& parzer );
 	public:
 		UiValue();
-		int64 Int( int n ) { return n >= 0 && n < list.count() ? list[n]->Int() : 0 ; }
-		int64 Int() { return Int( 0 ); }
+		int64_t Int( int n ) { return n >= 0 && n < list.count() ? list[n]->Int() : 0 ; }
+		int64_t Int() { return Int( 0 ); }
 		const char* Str( int n ) { return n >= 0 && n < list.count() ? list[n]->Str() : "" ; }
 		const char* Str() { return Str( 0 ); }
 		int Count() { return list.count(); }

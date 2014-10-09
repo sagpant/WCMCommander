@@ -18,7 +18,8 @@ class MemFile: public iIntrusiveCounter
 		Node(): next( 0 ) {}
 	};
 
-	Node* first, *last;
+	Node* first;
+	Node* last;
 	int endOffset;
 	int dataSize;
 
@@ -26,7 +27,7 @@ class MemFile: public iIntrusiveCounter
 	int readOffset;
 	int readSize;
 public:
-	MemFile() : endOffset( BLOCK_SIZE ), first( 0 ), last( 0 ), dataSize( 0 ), readNode( 0 ), readOffset( 0 ), readSize( 0 ) { }
+	MemFile() : first( 0 ), last( 0 ), endOffset( BLOCK_SIZE ), dataSize( 0 ), readNode( 0 ), readOffset( 0 ), readSize( 0 ) { }
 
 	void Append( const char* s, int size )
 	{
@@ -146,7 +147,7 @@ ttt:
 		{
 			std::vector<char> a( res );
 			int n = Read( a.data(), res );
-			ASSERT( n == res );
+			CHECK_RET( n == res, std::vector<char>() );
 			return a;
 		}
 

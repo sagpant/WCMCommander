@@ -352,7 +352,7 @@ void FSSftp::CloseSession()
 	sshSession = 0;
 	sftpSession = 0;
 
-	if ( _sock.Id() >= 0 ) { _sock.Close( false ); }
+	if ( _sock.IsValid() ) { _sock.Close( false ); }
 }
 
 
@@ -980,8 +980,8 @@ int FSSftp::SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FS
 
 	LIBSSH2_SFTP_ATTRIBUTES attr;
 	attr.flags = LIBSSH2_SFTP_ATTR_ACMODTIME;
-	attr.atime = aTime;
-	attr.mtime = mTime;
+	attr.atime = (unsigned long)aTime;
+	attr.mtime = ( unsigned long )mTime;
 
 	try
 	{

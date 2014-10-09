@@ -32,7 +32,7 @@ int FS::ReadDir   ( FSList* list, FSPath& path,  int* err, FSCInfo* info )    { 
 int FS::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )         { SetError( err, 0 ); return -1; }
 int FS::FStat( int fd, FSStat* st, int* err, FSCInfo* info )     { SetError( err, 0 ); return -1; }
 int FS::Symlink   ( FSPath& path, FSString& str, int* err, FSCInfo* info )      { SetError( err, 0 ); return -1; }
-int64 FS::GetFileSystemFreeSpace( FSPath& path, int* err ) { SetError( err, 0 ); return -1; }
+int64_t FS::GetFileSystemFreeSpace( FSPath& path, int* err ) { SetError( err, 0 ); return -1; }
 
 unicode_t* FS::GetUserName( int user, unicode_t buf[64] ) { buf[0] = 0; return buf; };
 unicode_t* FS::GetGroupName( int group, unicode_t buf[64] ) { buf[0] = 0; return buf; };
@@ -438,7 +438,8 @@ static std::vector<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *
 }
 */
 
-static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t* cat )
+// make UNC path by concati'ing input pars in an intelligent way
+static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wchar_t* cat )
 {
 	int lcat = Utf16Chars( cat );
 
@@ -466,15 +467,31 @@ static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, wchar_t*
 		d += 2;
 	}
 
-	for ( ; *s; s++, d++ ) { *d = *s; }
+	
+	unicode_t lastChar = 0;
+	for (; *s; s++, d++) { lastChar = *d = *s; }
+
+	// ensure that we do not append double-backslash to the filepath.
+	// FindFirstFileW does not like UNC like \\?\c:\\*, and prefers \\?\c:\*
+	if (lastChar == '\\' && *cat == '\\'){ cat++; }
 
 	for ( ; *cat; cat++, d++ ) { *d = *cat; }
 
 	*d = 0;
+
 	return p;
 }
 
-
+#ifdef _DEBUG
+static void toStr(char* str, const wchar_t* wstr)
+{
+    for(;*wstr;)
+    {
+        *str++=*wstr++;
+    }
+    *str=0;
+}
+#endif
 
 int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 {
@@ -483,6 +500,13 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 	WIN32_FIND_DATAW ent;
 
 	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).data(), &ent );
+
+#ifdef _DEBUG
+	std::vector<wchar_t> wpath = FindPathStr(_drive, path.GetUnicode(), L"\\*");
+	char s[1024];
+	toStr(s,wpath.data());
+	dbg_printf("FSSys::ReadDir %s@UNC path=%s\n", handle == INVALID_HANDLE_VALUE ? "OK": "failed", s);
+#endif
 
 	if ( handle == INVALID_HANDLE_VALUE )
 	{
@@ -493,7 +517,6 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 		SetError( err, GetLastError() );
 		return -1;
 	}
-
 	try
 	{
 		while ( true )
@@ -604,7 +627,7 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	return -1;
 }
 
-int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
+int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 {
 	DWORD SectorsPerCluster;
 	DWORD BytesPerSector;
@@ -613,11 +636,11 @@ int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 
 	int d = Drive();
 
-	char RootPath[] = { d + 'A', ':', '\\', 0 };
+	char RootPath[] = { char(d + 'A'), ':', '\\', 0 };
 
 	if ( GetDiskFreeSpace( RootPath, &SectorsPerCluster, &BytesPerSector, &NumberOfFreeClusters, &TotalNumberOfClusters ) != TRUE ) { return -1; }
 
-	return ( int64 )SectorsPerCluster * ( int64 )BytesPerSector * ( int64 )NumberOfFreeClusters;
+	return ( int64_t )SectorsPerCluster * ( int64_t )BytesPerSector * ( int64_t )NumberOfFreeClusters;
 }
 
 int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
@@ -1226,9 +1249,9 @@ err:
 	}
 }
 
-int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
+int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 {
-#if defined( __linux__ ) && !defined( __APPLE__ ) 
+#if defined( __linux__ ) && !defined( __APPLE__ )
 	struct statfs64 s;
 
 	if ( statfs64( path.GetUtf8(), &s ) == -1 )
@@ -1247,7 +1270,7 @@ int64 FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 	}
 #endif
 
-	return ( int64 )( s.f_bfree ) * ( int64 )( s.f_bsize );
+	return ( int64_t )( s.f_bfree ) * ( int64_t )( s.f_bsize );
 }
 
 int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )

@@ -66,7 +66,7 @@ cfont* MSysGetFont( Win* w, int id )
 		if (  w->UiGetClassId() == uiClassMenuBar ||
 		      w->UiGetClassId() == uiClassPopupMenu ||
 		      w->UiGetClassId() == uiClassToolTip ||
-		      w->Parent() && w->UiGetClassId() == uiClassButton )
+		      ( w->Parent() && w->UiGetClassId() == uiClassButton ) )
 		{
 			return g_DialogFont.ptr();
 		}
@@ -189,7 +189,7 @@ int main( int argc, char** argv )
 		OldSysGetFont = SysGetFont;
 		SysGetFont = MSysGetFont;
 
-		cfont* defaultFont = SysGetFont( 0, 0 );
+//		cfont* defaultFont = SysGetFont( 0, 0 );
 		defaultGC = new wal::GC( ( Win* )0 );
 
 #ifndef _WIN32

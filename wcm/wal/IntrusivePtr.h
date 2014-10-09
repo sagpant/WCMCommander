@@ -34,9 +34,7 @@
 
 #pragma once
 
-#ifndef NULL
-#  define NULL 0
-#endif
+#include <atomic>
 
 class iIntrusiveCounter;
 
@@ -86,7 +84,7 @@ public:
 	}
 	inline bool IsNull() const
 	{
-		return FObject == 0;
+		return FObject == nullptr;
 	}
 	/// assignment of clPtr
 	clPtr& operator = ( const clPtr& Ptr )
@@ -109,7 +107,7 @@ public:
 	{
 		if ( !FObject )
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		static clProtector Protector;
@@ -150,7 +148,7 @@ public:
 	}
 	inline void drop()
 	{
-		FObject = NULL;
+		FObject = nullptr;
 	}
 	inline void clear()
 	{
@@ -160,35 +158,6 @@ private:
 	T*    FObject;
 };
 
-#if defined(_WIN32)
-#	if !defined( NOMINMAX )
-#		define NOMINMAX
-#	endif
-#  include <windows.h>
-#endif
-
-namespace Atomic
-{
-	template <class T> inline T Inc( T* Value )
-	{
-#ifdef _WIN32
-		return InterlockedIncrement( Value );
-#else
-		return __sync_fetch_and_add( Value, 1 );
-#endif
-	}
-
-	template <class T> inline T Dec( T* Value )
-	{
-#ifdef _WIN32
-		return InterlockedDecrement( Value );
-#else
-		return __sync_sub_and_fetch( Value, 1 );
-#endif
-	}
-
-} // namespace Atomic
-
 /// Intrusive reference-countable object for garbage collection
 class iIntrusiveCounter
 {
@@ -196,10 +165,10 @@ public:
 	iIntrusiveCounter( ) : m_RefCounter( 0 ) {}
 	virtual ~iIntrusiveCounter( ) {}
 
-	void    IncRefCount( ) { Atomic::Inc( &m_RefCounter ); }
-	void    DecRefCount( ) { if ( Atomic::Dec( &m_RefCounter ) == 0 ) { delete this; } }
+	void    IncRefCount( ) { m_RefCounter++; }
+	void    DecRefCount( ) { if ( --m_RefCounter == 0 ) { delete this; } }
 	long    GetReferenceCounter( ) const volatile { return m_RefCounter; }
 
 private:
-	volatile long m_RefCounter;
+	std::atomic<long> m_RefCounter;
 };

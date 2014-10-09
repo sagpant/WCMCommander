@@ -46,8 +46,6 @@ public:
 		case eFileAssociation_ViewSecondary: return GetViewCommandSecondary();
 		case eFileAssociation_Edit: return GetEditCommand();
 		case eFileAssociation_EditSecondary: return GetEditCommandSecondary();
-		default:
-			throw( "Unknown mode" );
 		}
 
 		return GetExecuteCommand();

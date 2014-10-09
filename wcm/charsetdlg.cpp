@@ -27,10 +27,13 @@ void InitOperCharsets()
 	csList.clear();
 	charset_struct* list[128];
 	int count = charset_table.GetList( list, 128 );
-	cstrhash<charset_struct*> hash;
+	std::unordered_map< std::string, charset_struct* > hash;
 	int i;
 
-	for ( i = 0; i < count; i++ ) { hash[list[i]->name] = list[i]; }
+	for ( i = 0; i < count; i++ )
+	{
+		hash[list[i]->name] = list[i];
+	}
 
 	ccollect< std::vector<char> > stringList;
 
@@ -38,9 +41,9 @@ void InitOperCharsets()
 	{
 		for ( i = 0; i < stringList.count(); i++ )
 		{
-			charset_struct** p = hash.exist( stringList[i].data() );
+			auto iter = hash.find( stringList[i].data() );
 
-			if ( p ) { csList.append( *p ); }
+			if ( iter != hash.end( ) ) { csList.append( iter->second ); }
 		}
 	}
 
@@ -179,7 +182,7 @@ void CharsetListWin::DrawItem( wal::GC& gc, int n, crect rect )
 {
 	if ( cList && n >= 0 && n < cCount )
 	{
-		bool frame = false;
+//		bool frame = false;
 
 		UiCondList ucl;
 
@@ -189,19 +192,19 @@ void CharsetListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 		unsigned bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 		unsigned textColor = UiGetColor( uiColor, uiItem, &ucl, 0 );
-		unsigned frameColor = UiGetColor( uiFrameColor, uiItem, &ucl, 0 );;
-
+//		unsigned frameColor = UiGetColor( uiFrameColor, uiItem, &ucl, 0 );;
+/*
 		if ( n == this->GetCurrent() )
 		{
 			frame = true;
 		}
-
+*/
 		gc.SetFillColor( bg );
 		gc.FillRect( rect );
 		gc.Set( GetFont() );
 
-		int x = 0;
-		const unicode_t* txt = 0;
+//		int x = 0;
+//		const unicode_t* txt = 0;
 
 		gc.SetTextColor( textColor );
 		gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( cList[n]->name ).data() );
@@ -238,7 +241,7 @@ public:
 		   addButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "&Add..." ), "(Ins)" ).data() ).data(), CMD_ADD ),
 		   delButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "&Del..." ), "(Del)" ).data() ).data(), CMD_DEL )
 	{
-		int i;
+//		int i;
 
 		InitOperCharsets();
 		list.SetList( ::csList.ptr(), ::csList.count() );

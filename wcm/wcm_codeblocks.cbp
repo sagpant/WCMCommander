@@ -117,14 +117,14 @@
 					<Add library="freetype" />
 				</Linker>
 			</Target>
-			<Target title="Release Win32">
+			<Target title="Debug Win32">
 				<Option platforms="Windows;" />
-				<Option output="../Release/wcm_codeblocks" prefix_auto="1" extension_auto="1" />
+				<Option output="../build/codeblocks/debugWin32/wcm" prefix_auto="1" extension_auto="1" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-D_WIN32_WINNT=0x0501" />
-					<Add option="-DNDEBUG" />
+					<Add option="-D_DEBUG" />
+					<Add option="-g" />
 					<Add directory="wal" />
 					<Add directory="swl" />
 				</Compiler>
@@ -135,10 +135,30 @@
 					<Add library="user32" />
 					<Add library="gdi32" />
 					<Add library="advapi32" />
-					<Add library="comdlg32.lib" />
+					<Add library="comdlg32" />
 					<Add library="libz.a" />
-					<Add library="ssl" />
-					<Add library="ssh2" />
+				</Linker>
+			</Target>
+			<Target title="Release Win32">
+				<Option platforms="Windows;" />
+				<Option output="../build/codeblocks/releaseWin32/wcm" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-DNDEBUG" />
+					<Add option="-O2" />
+					<Add directory="wal" />
+					<Add directory="swl" />
+				</Compiler>
+				<Linker>
+					<Add library="ws2_32" />
+					<Add library="mpr" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="advapi32" />
+					<Add library="comdlg32" />
+					<Add library="libz.a" />
 				</Linker>
 			</Target>
 		</Build>
@@ -252,6 +272,7 @@
 		<Unit filename="swl/swl_wincore.cpp" />
 		<Unit filename="swl/swl_wincore.h" />
 		<Unit filename="swl/swl_wincoreMS.cpp">
+			<Option target="Debug Win32" />
 			<Option target="Release Win32" />
 		</Unit>
 		<Unit filename="swl/swl_wincoreUX.cpp">
@@ -295,10 +316,12 @@
 		<Unit filename="vfspath.h" />
 		<Unit filename="w32cons.cpp">
 			<Option target="Release Win32" />
+			<Option target="Debug Win32" />
 		</Unit>
 		<Unit filename="w32cons.h" />
 		<Unit filename="w32util.cpp">
 			<Option target="Release Win32" />
+			<Option target="Debug Win32" />
 		</Unit>
 		<Unit filename="w32util.h" />
 		<Unit filename="wal/wal.cpp" />

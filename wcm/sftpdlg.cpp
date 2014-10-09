@@ -24,9 +24,10 @@ public:
 	StaticLabel userText;
 //	StaticLine passwordText;
 	StaticLabel portText;
-	int charset;
 	StaticLabel charsetText;
 	StaticLine charsetIdText;
+
+	int charset;
 
 	EditLine serverEdit;
 	EditLine userEdit;
@@ -50,9 +51,9 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 //	passwordText(this, utf8_to_unicode("Password:").ptr()),
 	   portText( 0, this, utf8_to_unicode( _LT( "&Port:" ) ).data(), &portEdit ),
 	   charsetText(0, this, utf8_to_unicode(_LT("&Charset:")).data(), &charsetButton),
+	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), //чтоб место забить
 
 	   charset( params.charset ),
-	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), //чтоб место забить
 
 	   serverEdit  ( 0, this, 0, 0, 16 ),
 	   userEdit ( 0, this, 0, 0, 16 ),

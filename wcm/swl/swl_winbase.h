@@ -45,12 +45,16 @@ namespace wal
 		unicode_t* strAfterHk;
 		unicode_t* strFull; // required to calculate text extents quickly
 		unicode_t hotkeyUpperCase;
-		void Clear();
 		void ParseHkText(const unicode_t* inStr);
+		void Clear();
+		void Init(const MenuTextInfo& src);
 	public:
 		explicit MenuTextInfo(const unicode_t* inStr);
-		MenuTextInfo(const MenuTextInfo& src);
-		~MenuTextInfo();
+		MenuTextInfo() :strBeforeHk(0), strHk(0), strAfterHk(0), strFull(0), hotkeyUpperCase(0) {}
+		MenuTextInfo(const MenuTextInfo& src) { Init(src); }
+		MenuTextInfo& operator=(const MenuTextInfo& src){ Clear(); Init(src); return *this; };
+		~MenuTextInfo() { Clear(); }
+
 		void SetText(const unicode_t* inStr);
 		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
 		cpoint GetTextExtents(GC& gc, cfont* font = 0) const
@@ -189,7 +193,8 @@ namespace wal
 		bool doAcceptAltKeys;
 		int first;
 		bool frame3d;
-		int charH, charW;
+		int charH;
+		int charW;
 		void DrawCursor( GC& gc );
 		bool CheckCursorPos(); //true -если нужна перерисовка
 		void ClipboardCopy();
@@ -270,9 +275,9 @@ namespace wal
 
 	struct ScrollInfo
 	{
-		int size, pageSize, pos;
+		seek_t size, pageSize, pos;
 		ScrollInfo(): size( 0 ), pageSize( 0 ), pos( 0 ) {}
-		ScrollInfo( int _size, int _pageSize, int _pos )
+		ScrollInfo( seek_t _size, seek_t _pageSize, seek_t _pos )
 			: size( _size ), pageSize( _pageSize ), pos( _pos ) {}
 	};
 
@@ -448,7 +453,7 @@ namespace wal
 			MenuData* sub;
 			//Node(): type( 0 ), sub( 0 ) {}
 			Node( int _type, int _id, const unicode_t* s,  const unicode_t* rt, MenuData* _sub )
-				: type(_type), id(_id), sub(_sub), leftText(s)
+				: type(_type), id(_id), leftText(s), sub(_sub)
 			{
 				//if ( s ) { leftText = new_unicode_str( s ); }
 

@@ -198,7 +198,7 @@ void OperRDThread::Run()
 		{
 			havePostponedStatError = 1;
 			postponedStrError = fs->StrError(ret_err);
-			if (!path.IsAbsolute() || !path.Pop())
+			if (!path.IsAbsolute() || path.Count() <=1 || !path.Pop())
 			{
 				throw_msg("%s", postponedStrError.GetUtf8());
 			}
@@ -237,7 +237,7 @@ void OperRDThread::Run()
 	{
 		havePostponedReadError = 1;
 		postponedStrError = fs->StrError(ret_err);
-		if (!path.IsAbsolute() || !path.Pop())
+		if (!path.IsAbsolute() || path.Count() <= 1 || !path.Pop())
 		{
 			throw_msg("%s", postponedStrError.GetUtf8());
 		}
@@ -273,6 +273,7 @@ void ReadDirThreadFunc( OperThreadNode* node )
 		if ( !node->Data() ) { return; }
 
 		OperRDData* data = ( ( OperRDData* )node->Data() );
+		//dbg_printf("ReadDirThreadFunc path=%s",data->path.GetUtf8());
 		OperRDThread thread( "panel::chdir", data->Parent(), node, data->fs, data->path );
 		lock.Unlock();//!!!
 
@@ -329,13 +330,14 @@ public:
 
 	Mutex infoMutex;
 	volatile bool pathChanged;
-	volatile unsigned64 infoCount;
+	volatile uint64_t infoCount;
 
 	FSString infoSrcUri; //??volatile
 	FSString infoDstUri; //??volatile
 
 	volatile bool progressChanged;
-	volatile int64 infoSize, infoProgress;
+	volatile int64_t infoSize;
+	volatile int64_t infoProgress;
 
 
 	OperCFData( NCDialogParent* p )
@@ -350,7 +352,7 @@ public:
 		srcList.clear();
 
 		pathChanged = false;
-		unsigned64 infoCount = 0;
+//		uint64_t infoCount = 0;
 		infoSrcUri.Clear();
 		infoDstUri.Clear();
 		progressChanged = false;
@@ -387,7 +389,7 @@ public:
 	//from и to - эффект cptr !!!
 	bool SendCopyNextFileInfo( FSString from, FSString to );
 
-	bool SendProgressInfo( int64 size, int64 progress );
+	bool SendProgressInfo( int64_t size, int64_t progress );
 
 	bool CopyLink( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& path, bool move );
 	bool CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& destPath, bool move );
@@ -739,7 +741,7 @@ bool OperCFThread::SendCopyNextFileInfo( FSString from, FSString to )
 	return true;
 }
 
-bool OperCFThread::SendProgressInfo( int64 size, int64 progress )
+bool OperCFThread::SendProgressInfo( int64_t size, int64_t progress )
 {
 	MutexLock lock( Node().GetMutex() );
 
@@ -805,7 +807,7 @@ OperFileNameWin::~OperFileNameWin() {};
 
 class NCNumberWin: public Win
 {
-	int64 _num;
+	int64_t _num;
 public:
 	NCNumberWin( Win* parent, int width = 10 )
 		:  Win( Win::WT_CHILD, 0, parent, 0 ), _num( 0 )
@@ -816,7 +818,7 @@ public:
 		SetLSize( LSize( size ) );
 	}
 
-	void SetNumber( int64 n )
+	void SetNumber( int64_t n )
 	{
 		if ( _num == n ) { return; }
 
@@ -840,7 +842,7 @@ void NCNumberWin::Paint( wal::GC& gc, const crect& paintRect )
 	unicode_t buf[32];
 	unicode_t* s = buf;
 
-	int64 n = _num;
+	int64_t n = _num;
 	bool minus = n < 0;
 
 	if ( minus ) { n = -n; }
@@ -865,9 +867,9 @@ NCNumberWin::~NCNumberWin() {}
 
 class NCProgressWin: public Win
 {
-	int64 _from, _to;
-	int64 _num;
-	int _lastWidth, _lastPos;
+	int64_t _from, _to;
+	int64_t _num;
+	int64_t _lastWidth, _lastPos;
 public:
 	NCProgressWin( Win* parent )
 		:  Win( Win::WT_CHILD, 0, parent, 0 ), _from( 0 ), _to( 0 ), _num( 0 ), _lastWidth( 0 ), _lastPos( 0 )
@@ -881,7 +883,7 @@ public:
 		SetLSize( ls );
 	}
 
-	void SetData( int64 from, int64 to, int64 num )
+	void SetData( int64_t from, int64_t to, int64_t num )
 	{
 		if ( _from == from && _to == to && _num == num ) { return; }
 
@@ -893,8 +895,8 @@ public:
 
 		if ( _num < _from || _to <= _from ) { return; }
 
-		int64 size = _to - _from;
-		int n = ( _lastWidth * _num ) / size;
+		int64_t size = _to - _from;
+		int64_t n = ( _lastWidth * _num ) / size;
 
 		if ( diapazonChanged || _lastPos != n )
 		{
@@ -946,8 +948,8 @@ void NCProgressWin::Paint( wal::GC& gc, const crect& paintRect )
 
 	if ( !( _num < _from || _to <= _from || w <= 0 ) )
 	{
-		int64 size = _to - _from;
-		int n = ( w * _num ) / size;
+		int64_t size = _to - _from;
+		int n = int( ( w * _num ) / size );
 
 		crect r = rect;
 		r.right = n;
@@ -1175,7 +1177,7 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 
 	int  bytes;
 	//char    buf[BUFSIZE];
-	int64 doneBytes = 0;
+	int64_t doneBytes = 0;
 
 	int blockSize = STARTSIZE;
 
@@ -1751,7 +1753,7 @@ bool OperCFThread::Move( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 			destPath.SetItemStr( destPos, list->First()->Name() );
 		}
 
-		FSNode* node = list->First();
+//		FSNode* node = list->First();
 
 		srcPath.SetItemStr( srcPos, list->First()->Name() );
 

@@ -928,7 +928,7 @@ txt "Внешний вид"
 
 #ncwin.cpp:207
 id "S&tyles"
-txt "Внешеий вид"
+txt "Внешний вид"
 
 #wcm-config.cpp:858
 id "Syntax highlighting"

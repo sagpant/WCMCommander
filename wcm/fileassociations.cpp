@@ -155,7 +155,7 @@ public:
 		wal::GC gc( this );
 		gc.Set( GetFont() );
 		cpoint ts = gc.GetTextExtents( ABCString );
-		int fontW = ( ts.x / ABCStringLen );
+//		int fontW = ( ts.x / ABCStringLen );
 		int fontH = ts.y + 2;
 
 		this->SetItemSize( ( fontH > 16 ? fontH : 16 ) + 1, 100 );
@@ -278,8 +278,8 @@ class clFileAssociationsWin: public NCDialog
 public:
 	clFileAssociationsWin( NCDialogParent* parent, std::vector<clNCFileAssociation>* Associations )
 	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel )
-	 , m_Layout( 10, 10 )
 	 , m_ListWin( this, Associations )
+	 , m_Layout( 10, 10 )
 	 , m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
 	 , m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
 	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )
@@ -432,7 +432,7 @@ bool clFileAssociationsWin::Key( cevent_key* pEvent )
 			return true;
 		}
 
-		unicode_t c = UnicodeLC( pEvent->Char() );
+//		unicode_t c = UnicodeLC( pEvent->Char() );
 	}
 
 	return false;
