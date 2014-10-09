@@ -215,7 +215,7 @@ static bool ReadCmd( int fd, int* pCmd, ccollect<std::vector<char> >& params )
 
 	return true;
 }
-
+/*
 static bool WriteCmd( int fd, int cmd, ccollect<char*>& list )
 {
 	try
@@ -232,7 +232,7 @@ static bool WriteCmd( int fd, int cmd, ccollect<char*>& list )
 
 	return true;
 }
-
+*/
 static bool WriteCmd( int fd, int cmd, ccollect<std::vector<char> >& list )
 {
 	try

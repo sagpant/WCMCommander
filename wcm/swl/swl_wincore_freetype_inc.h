@@ -68,7 +68,8 @@ namespace FTU
 		chash<Node, NK> hash;
 
 		SCImage image;
-		int yPos, xPos;
+		int xPos;
+		int yPos;
 		int cHeight;
 
 		Node* Alloc( unicode_t ch, unsigned bg, unsigned fg, int charW, int charH );

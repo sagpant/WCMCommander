@@ -1972,11 +1972,11 @@ begin:
 
 			if ( !t || !*t ) { return 0; }
 
-			bool minus = false;
+//			bool minus = false;
 
 			if ( *t == '-' )
 			{
-				minus = true;
+//				minus = true;
 				t++;
 			}
 

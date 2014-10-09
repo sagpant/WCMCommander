@@ -85,7 +85,7 @@ Ok:
 	_slaveName = new_sys_str( slaveName );
 }
 
-
+/*
 static int WritePipe( int fd, int cmd, ... )
 {
 	ccollect<char*> list;
@@ -126,7 +126,8 @@ static int WritePipe( int fd, int cmd, ... )
 
 	return 0;
 }
-
+*/
+/*
 static int ReadPipe( int fd, int& cmd, ccollect<std::vector<char> >& params )
 {
 	char c;
@@ -164,8 +165,8 @@ static int ReadPipe( int fd, int& cmd, ccollect<std::vector<char> >& params )
 
 	return 0;
 }
-
-
+*/
+/*
 static void Shell( int in, int out )
 {
 	fcntl( in, F_SETFD, long( FD_CLOEXEC ) );
@@ -223,7 +224,7 @@ static void Shell( int in, int out )
 		};
 	}
 }
-
+*/
 
 int TerminalStream::Read( char* buf, int size )
 {
@@ -273,7 +274,7 @@ int TerminalStream::SetSize( int rows, int cols )
 	struct winsize ws;
 	ws.ws_row = ( rows > 0 ) ? rows : 1;
 	ws.ws_col = ( cols > 0 ) ? cols : 1;
-	int r = ioctl( _masterFd, TIOCSWINSZ, &ws );
+	ioctl( _masterFd, TIOCSWINSZ, &ws );
 	return 0;
 }
 
@@ -461,7 +462,7 @@ inline void Terminal::OutAppendUnicode( unicode_t c )
 		}
 		else
 		{
-			outQueue.Put( ( 0xC0 | ( c >> 6 ) ) );
+			outQueue.Put( 0xC0 | ( c >> 6 ) );
 			outQueue.Put( 0x80 | ( c & 0x3F ) );
 		}
 	}
@@ -469,21 +470,21 @@ inline void Terminal::OutAppendUnicode( unicode_t c )
 	{
 		if ( c < 0x10000 ) //1110xxxx 10xxxxxx 10xxxxxx
 		{
-			outQueue.Put( 0x80 | c & 0x3F );
+			outQueue.Put( 0x80 | (c & 0x3F) );
 			c >>= 6;
-			outQueue.Put( 0x80 | c & 0x3F );
+			outQueue.Put( 0x80 | (c & 0x3F) );
 			c >>= 6;
-			outQueue.Put( ( c & 0x0F ) | 0xE0 );
+			outQueue.Put( 0xE0 | (c & 0x0F) );
 		}
 		else     //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 		{
-			outQueue.Put( 0x80 | c & 0x3F );
+			outQueue.Put( 0x80 | (c & 0x3F) );
 			c >>= 6;
-			outQueue.Put( 0x80 | c & 0x3F );
+			outQueue.Put( 0x80 | (c & 0x3F) );
 			c >>= 6;
-			outQueue.Put( 0x80 | c & 0x3F );
+			outQueue.Put( 0x80 | (c & 0x3F) );
 			c >>= 6;
-			outQueue.Put( ( c & 0x7 ) | 0xF0 );
+			outQueue.Put( 0xF0 | (c & 0x07) );
 		}
 	}
 }
@@ -561,6 +562,8 @@ void* TerminalInputThreadFunc( void* data )
 		//скорее всего shell сломался (перезапустится), ждем 1 секунду
 		sleep( 1 );
 	}
+
+	return nullptr;
 }
 
 void* TerminalOutputThreadFunc( void* data )
@@ -605,7 +608,7 @@ void* TerminalOutputThreadFunc( void* data )
 		sleep( 1 );
 	}
 
-	return 0;
+	return nullptr;
 }
 
 

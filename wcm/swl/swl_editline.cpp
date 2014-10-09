@@ -287,13 +287,13 @@ namespace wal
 	 , text( txt )
 	 , _chars( chars > 0 ? chars : 10 )
 	 , cursorVisible( false )
+	 , passwordMode( false )
+	 , showSpaces( true )
+	 , doAcceptAltKeys( false )
 	 , first( 0 )
 	 , frame3d( frame )
 	 , charH( 0 )
 	 , charW( 0 )
-	 , passwordMode( false )
-	 , showSpaces( true )
-	 , doAcceptAltKeys( false )
 	{
 		text.End();
 

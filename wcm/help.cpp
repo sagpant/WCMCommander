@@ -925,7 +925,12 @@ class HelpParzer
 
 public:
 	HelpParzer( HelpParzerStream* _stream, cstrhash<HelpStyle>* _styles )
-		: stream( _stream ), styles( _styles ), blockStack( 0 ), tok( 'a' ), cchar( 'a' ), backChar( 0 )
+		: stream( _stream )
+		, styles( _styles )
+		, cchar( 'a' )
+		, backChar( 0 )
+		, tok( 'a' )
+		, blockStack( 0 )
 	{
 		if ( styles ) { currentBData.style = styles->exist( "def" ); }
 

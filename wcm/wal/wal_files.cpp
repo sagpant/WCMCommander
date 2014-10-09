@@ -24,7 +24,7 @@ namespace wal
 	{
 #ifdef _WIN32
 		DWORD diseredAccess = 0;
-		DWORD shareMode = 0;
+//		DWORD shareMode = 0;
 		DWORD creationDisposition = 0;
 
 		if ( open_flag & FOPEN_READ ) { diseredAccess |= GENERIC_READ; }

@@ -172,8 +172,7 @@ namespace wal
 				}
 
 				node.rect.bottom = node.rect.top + itemH;
-				node.enabled = ( node.data->type == MenuData::CMD && cmdOwner ) ?
-				               node.enabled = cmdOwner->Command( CMD_CHECK, node.data->id, this, 0 ) : true;
+				node.enabled = ( node.data->type == MenuData::CMD && cmdOwner ) ? cmdOwner->Command( CMD_CHECK, node.data->id, this, 0 ) : true;
 			}
 
 			height += node.rect.Height() - 1;

@@ -529,6 +529,7 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	NCDialogParent( WT_CHILD, 0, 0, parent ),
 	_lo( 7, 4 ),
 	_scroll( 0, this, true ), //, false), //bug with autohide and layouts
+	_list( g_WcmConfig.panelShowHiddenFiles, g_WcmConfig.panelCaseSensitive ),
 	_itemHeight( 1 ),
 	_rows( 0 ),
 	_cols( 0 ),
@@ -536,8 +537,7 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	_current( 0 ),
 	_viewMode( CheckMode( mode ) ), //MEDIUM),
 	_inOperState( false ),
-	_operData( ( NCDialogParent* )parent ),
-	_list( g_WcmConfig.panelShowHiddenFiles, g_WcmConfig.panelCaseSensitive )
+	_operData( ( NCDialogParent* )parent )
 {
 	_lo.SetLineGrowth( 3 );
 	_lo.SetColGrowth( 1 );
@@ -673,18 +673,13 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 
 		if ( node ) { s.Copy( node->Name() ); }
 
-		bool a = _list.SetShowHidden( g_WcmConfig.panelShowHiddenFiles );
-		bool b = _list.SetCase( g_WcmConfig.panelCaseSensitive );
-
-//		if (a || b)
-//		{
+		_list.SetShowHidden( g_WcmConfig.panelShowHiddenFiles );
+		_list.SetCase( g_WcmConfig.panelCaseSensitive );
 
 		SetCurrent( _list.Find( s, HideDotsInDir() ) );
 		Invalidate();
 
 		GetNCWin()->NotifyCurrentPathInfo();
-
-//		}
 
 		return true;
 	}
@@ -921,7 +916,7 @@ int PanelWin::GetXMargin() const
 
 void PanelWin::DrawItem( wal::GC& gc,  int n )
 {
-	bool active = IsSelectedPanel() && n == _current;
+//	bool active = IsSelectedPanel() && n == _current;
 	int pos = n - _first;
 
 	if ( pos < 0 || pos >= _rectList.count() ) { return; }
@@ -1681,6 +1676,7 @@ void PanelWin::LoadPathStringSafe( const char* path )
 {
 	if ( !path || !*path ) { return; }
 
+    dbg_printf("PanelWin::LoadPathStringSafe path=%s\n",path);
 	FSPath fspath;
 
 	clPtr<FS> fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, 0, 0 );
@@ -1694,9 +1690,10 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 
 	FSStat stat;
 	FSCInfo info;
-	int err;
+//	int err;
 
 //	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;
+    dbg_printf("PanelWin::LoadPath paramPath=%s\n",paramPath.GetUtf8());
 
 	try
 	{
@@ -1730,7 +1727,7 @@ void PanelWin::OperThreadStopped()
 	if ( !_inOperState )
 	{
 		fprintf( stderr, "BUG: PanelWin::OperThreadStopped\n" );
-		Invalidate();	
+		Invalidate();
 		return;
 	}
 
@@ -1808,7 +1805,7 @@ void PanelWin::OperThreadStopped()
 void PanelWin::Reread( bool resetCurrent, const FSString& Name )
 {
 	clPtr<cstrhash<bool, unicode_t> > sHash = _list.GetSelectedHash();
-	bool Root = HideDotsInDir();
+//	bool Root = HideDotsInDir();
 	FSNode* node = resetCurrent ? 0 : GetCurrent();
 	FSString s;
 
@@ -1827,7 +1824,7 @@ void PanelWin::Reread( bool resetCurrent, const FSString& Name )
 
 bool PanelWin::EventMouse( cevent_mouse* pEvent )
 {
-	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
+//	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
 	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
 
 	switch ( pEvent->Type() )

@@ -14,7 +14,7 @@ StrConfig::StrConfig() {}
 void StrConfig::Clear() { varHash.clear(); }
 
 inline bool IsSpace( int c ) { return c > 0 && c <= 32; }
-inline bool IsAlpha( int c ) { return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'; }
+inline bool IsAlpha( int c ) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
 inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
 inline const char* SS( const char* s ) { while ( IsSpace( *s ) ) { s++; } return s; }
 inline const char* SNotS( const char* s ) { while ( *s && !IsSpace( *s ) ) { s++; } return s; }

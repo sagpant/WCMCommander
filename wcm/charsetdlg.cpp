@@ -182,7 +182,7 @@ void CharsetListWin::DrawItem( wal::GC& gc, int n, crect rect )
 {
 	if ( cList && n >= 0 && n < cCount )
 	{
-		bool frame = false;
+//		bool frame = false;
 
 		UiCondList ucl;
 
@@ -192,19 +192,19 @@ void CharsetListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 		unsigned bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 		unsigned textColor = UiGetColor( uiColor, uiItem, &ucl, 0 );
-		unsigned frameColor = UiGetColor( uiFrameColor, uiItem, &ucl, 0 );;
-
+//		unsigned frameColor = UiGetColor( uiFrameColor, uiItem, &ucl, 0 );;
+/*
 		if ( n == this->GetCurrent() )
 		{
 			frame = true;
 		}
-
+*/
 		gc.SetFillColor( bg );
 		gc.FillRect( rect );
 		gc.Set( GetFont() );
 
-		int x = 0;
-		const unicode_t* txt = 0;
+//		int x = 0;
+//		const unicode_t* txt = 0;
 
 		gc.SetTextColor( textColor );
 		gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( cList[n]->name ).data() );
@@ -241,7 +241,7 @@ public:
 		   addButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "&Add..." ), "(Ins)" ).data() ).data(), CMD_ADD ),
 		   delButton( 0, this, utf8_to_unicode( carray_cat<char>( _LT( "&Del..." ), "(Del)" ).data() ).data(), CMD_DEL )
 	{
-		int i;
+//		int i;
 
 		InitOperCharsets();
 		list.SetList( ::csList.ptr(), ::csList.count() );

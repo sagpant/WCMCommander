@@ -831,8 +831,8 @@ namespace wal
 		int64_t i;
 		std::vector<char> s;
 
-		UiValueNode( int64_t n ): i( n ), flags( INT ) {};
-		UiValueNode( const char* a ): s( new_char_str( a ) ), flags( STR ) {}
+		UiValueNode( int64_t n ): flags( INT ), i( n ) {};
+		UiValueNode( const char* a ): flags( STR ), s( new_char_str( a ) ) {}
 
 		int64_t Int();
 		const char* Str();

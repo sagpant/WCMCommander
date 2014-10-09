@@ -1084,7 +1084,7 @@ bool AppDB::ReadAppDesctopFile( const char* name )
 			return false;
 		}
 
-		AppNode* pNode = app.ptr();
+//		AppNode* pNode = app.ptr();
 
 //printf("read %s - ok\n", name);
 

@@ -244,8 +244,8 @@ struct EditPoint
 	EditPoint( int l, int p ): line( l ), pos( p ) {}
 	void Set( int l, int c ) { line = l; pos = c; }
 
-	bool operator < ( const EditPoint& a ) const { return line < a.line || line == a.line && pos < a.pos; }
-	bool operator <= ( const EditPoint& a ) const { return line < a.line || line == a.line && pos <= a.pos; }
+	bool operator < ( const EditPoint& a ) const { return line < a.line || (line == a.line && pos < a.pos); }
+	bool operator <= ( const EditPoint& a ) const { return line < a.line || (line == a.line && pos <= a.pos); }
 	bool operator != ( const EditPoint& a ) const { return line != a.line || pos != a.pos; }
 	bool operator == ( const EditPoint& a ) const { return line == a.line && pos == a.pos; }
 };
@@ -292,8 +292,11 @@ struct UndoBlock: public iIntrusiveCounter
 	EditPoint beginMarker;
 	EditPoint endCursor;
 	EditPoint endMarker;
-	int count;
 	UndoRec* first, *last;
+	int count;
+
+	UndoBlock( bool aggregate, bool changed ): editorChanged( changed ), canAggregate( aggregate ), first( 0 ), last( 0 ), count( 0 ) {}
+	~UndoBlock() { for ( UndoRec* p = first; p; ) { UndoRec* t = p->next; delete p; p = t; } }
 
 	void SetBeginPos( EditPoint cur, EditPoint marker )
 	{
@@ -361,10 +364,6 @@ struct UndoBlock: public iIntrusiveCounter
 		Append( p.ptr() );
 		p.drop();
 	}
-
-
-	UndoBlock( bool aggregate, bool changed ): editorChanged( changed ), canAggregate( aggregate ), first( 0 ), last( 0 ), count( 0 ) {}
-	~UndoBlock() { for ( UndoRec* p = first; p; ) { UndoRec* t = p->next; delete p; p = t; } }
 
 private:
 	UndoBlock(): editorChanged( true ), canAggregate( false ), first( 0 ), last( 0 ), count( 0 ) {}
@@ -454,13 +453,14 @@ struct EditScreenChar
 
 class EditScreen
 {
-	int rows, cols;
+	int rows;
+	int cols;
 	int data_rows, data_cols;
 	std::vector< std::vector<EditScreenChar> > data;
 public:
 	EditPoint prevCursor, cursor;
 
-	EditScreen(): rows( 0 ), cols( 0 ), prevCursor( -1, 0 ), cursor( -1, 0 ), data_rows( 0 ), data_cols( 0 ) {}
+	EditScreen(): rows( 0 ), cols( 0 ), data_rows( 0 ), data_cols( 0 ), prevCursor( -1, 0 ), cursor( -1, 0 ) {}
 	void Alloc( int r, int c )
 	{
 		if ( r > 0 && c > 0 && ( r > data_rows ||  c > data_cols ) )
@@ -513,31 +513,34 @@ struct sEditorScrollCtx
 class EditWin : public Win
 {
 	Layout _lo;
+	charset_struct* charset;
 	ScrollBar vscroll;
 	crect editRect;
 	EditList text;
 	UndoList undoList;
-	charset_struct* charset;
 	EditPoint marker, cursor;
 	cpoint lastMousePoint;
-	int recomendedCursorCol;
-	int charH, charW;
 	int tabSize;
 	bool autoIdent;
 	int firstLine;
 	int colOffset;
-	int rows, cols;
+	int rows;
+	int cols;
+	int charH;
+	int charW;
+	int recomendedCursorCol;
 
 	clPtr<SHL::ShlConf> _shlConf;
 	SHL::Shl* _shl;
 	int _shlLine;
 
 	bool _changed;
+
 	void SetChanged( int minLine );
 	unsigned ColorById( int id );
 	void RefreshShl( int n );
 
-	bool InMark( const EditPoint& p ) { return cursor <= p && p < marker || marker <= p && p < cursor; }
+	bool InMark( const EditPoint& p ) { return (cursor <= p && p < marker) || (marker <= p && p < cursor); }
 	void SendChanges() { if ( Parent() ) { Parent()->SendBroadcast( CMD_NCEDIT_INFO, CMD_NCEDIT_CHANGES, this, 0, 2 ); } }
 
 	void CalcScroll();

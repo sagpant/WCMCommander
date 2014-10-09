@@ -196,4 +196,4 @@ TARGET_LINK_LIBRARIES(wcm ${wcm_LIBS})
 # install
 INSTALL(TARGETS wcm RUNTIME DESTINATION bin)
 INSTALL(FILES wcm.desktop DESTINATION share/applications)
-INSTALL(FILES small.ico DESTINATION share/pixmaps RENAME wcm.ico)
+INSTALL(FILES install-files/share/wcm/icon/wcm.png DESTINATION share/pixmaps)

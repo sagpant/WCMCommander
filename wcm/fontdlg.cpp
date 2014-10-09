@@ -539,10 +539,10 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 FontDialogFT::FontDialogFT( NCDialogParent* parent, bool _fixed, ccollect<FileNode>* flist, const char* currentUri )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Select font" ) ).data(), bListOkCancel ),
-	   fixed( _fixed ),
-	   fontSize( 100 ),
 	   iL( 16, 2 ),
 	   fileList( flist ),
+	   fixed( _fixed ),
+	   fontSize( 100 ),
 	   textList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
 	   example( this, utf8_to_unicode( "Example text: [{(123)}] <?`!@#$%^&*>" ).data() ),
 	   filterStatic( 0, this, utf8_to_unicode( "Filter:" ).data() ),

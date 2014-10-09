@@ -791,7 +791,7 @@ namespace wal
 			chstring<CT> string;
 
 			Node( const T& d, const CT* s, unsigned h )
-				: m_data( d ), string( s ), hashKey( h )
+				: m_data( d ), hashKey( h ), string( s )
 			{
 			}
 
@@ -966,7 +966,7 @@ namespace wal
 		}
 		catch ( ... )
 		{
-			if ( nb ) { delete [] nb; }
+			if ( nb ) { delete [] nb; } //-V668
 
 			throw;
 		}
@@ -1031,7 +1031,7 @@ namespace wal
 		}
 		catch ( ... )
 		{
-			if ( nb ) { delete [] nb; }
+			if ( nb ) { delete [] nb; } //-V668
 
 			throw;
 		}
@@ -1053,7 +1053,7 @@ namespace wal
 
 			do
 			{
-				int sl2 = sl * 2;
+//				int sl2 = sl * 2;
 				T* pp0 = p0, *pp1 = p1;
 
 				for ( int n = count; n > 0; )
@@ -1099,7 +1099,7 @@ namespace wal
 		}
 		catch ( ... )
 		{
-			if ( nb ) { delete [] nb; }
+			if ( nb ) { delete [] nb; } //-V668
 
 			throw;
 		}

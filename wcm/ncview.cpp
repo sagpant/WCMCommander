@@ -198,8 +198,8 @@ VFile::VFile()
 VFile::VFile( clPtr<FS> _fs, FSPath _path, seek_t size, int tabSize )
 	:  useCount( 0 ),
 	   fs( _fs ),
-	   fd( -1 ),
 	   path( _path ),
+	   fd( -1 ),
 	   blockCount( 0 ), _offset( 0 ), _size( size ),
 	   _tabSize( tabSize ),
 	   _lastMTime( 0 )
@@ -261,7 +261,7 @@ seek_t VFile::Align( seek_t x, charset_struct* charset, FSCInfo* info )
 
 	char* s = buf + a;
 
-	if ( *s >= 0 && *s <= ' ' || s[-1] >= 0 && s[-1] <= ' ' ) { return x; }
+	if ( (*s >= 0 && *s <= ' ') || (s[-1] >= 0 && s[-1] <= ' ') ) { return x; }
 
 	s = charset->GetPrev( s + 1, buf );
 	return s ? ( x - a ) + ( s - buf ) : x;
@@ -480,7 +480,7 @@ VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 
 	return ptr;
 }
-
+/*
 static const unsigned char* StrLastNL( const unsigned char* ptr, int n )
 {
 	if ( !ptr ) { return 0; }
@@ -502,8 +502,7 @@ static const unsigned char* StrFirstNL( const unsigned char* ptr, int n )
 
 	return 0;
 }
-
-
+*/
 seek_t VFile::GetPrevLine( seek_t filePos,  int* pCols, charset_struct* charset, bool* nlFound, FSCInfo* info )
 {
 	char tabChar = charset->tabChar;
@@ -929,7 +928,7 @@ inline int VStrWrapCount( int lineCols, int cols )
 void* ViewerThread( void* param )
 {
 	static const int HSTEP = 20;
-	static const int tabSize = 8;
+//	static const int tabSize = 8;
 
 	ASSERT( param );
 	ViewerThreadData* tData = ( ViewerThreadData* ) param;
@@ -1727,9 +1726,9 @@ void* ViewerThread( void* param )
 ViewWin::ViewWin( Win* parent )
 	:   Win( WT_CHILD, 0, parent, 0, 0 ),
 	    _lo( 5, 5 ),
+	    threadData( 0 ),
 	    vscroll( 0, this, true, false ),
 	    hscroll( 0, this, false, true ),
-	    threadData( 0 ),
 	    charset( charset_table[GetFirstOperCharsetId()] ),
 	    wrap( true ),
 	    hex( false ),
@@ -1921,7 +1920,7 @@ bool ViewWin::EventKey( cevent_key* pEvent )
 
 	if ( pEvent->Type() == EV_KEYDOWN )
 	{
-		bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
+//		bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
 		bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
 
 		if ( ctrl )

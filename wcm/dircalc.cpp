@@ -168,7 +168,7 @@ void OperDirCalcThread::Calc()
 	{
 		bool IsDir = false;
 
-		path.SetItemStr( cnt, node->Name() );
+		path.SetItemStr( cnt, node->Name() ); //-V595
 
 		IsDir = node->IsDir() && !node->st.IsLnk();
 
@@ -369,7 +369,7 @@ static unicode_t* PrintableSizeStr( unicode_t buf[64], int64_t size )
 	seek_t num = size;
 
 	char dig[64];
-	char* end = unsigned_to_char<seek_t>( num, dig );
+	unsigned_to_char<seek_t>( num, dig );
 	int l = strlen( dig );
 
 	unicode_t* us = buf;

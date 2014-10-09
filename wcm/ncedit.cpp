@@ -91,14 +91,15 @@ EditWin::EditWin( Win* parent )
 	    _lo( 2, 2 ),
 	    charset( charset_table[GetFirstOperCharsetId()] ), //EditCSLatin1),
 	    vscroll( 0, this, true, false ),
-	    charH( 1 ),
-	    charW( 1 ),
-	    autoIdent( g_WcmConfig.editAutoIdent ),
 	    tabSize( g_WcmConfig.editTabSize ),
+	    autoIdent( g_WcmConfig.editAutoIdent ),
 	    firstLine( 0 ),
 	    colOffset( 0 ),
+	    rows( 0 ),
+		cols( 0 ),
+	    charH( 1 ),
+	    charW( 1 ),
 	    recomendedCursorCol( -1 ),
-	    rows( 0 ), cols( 0 ),
 
 	    _shl( 0 ),
 	    _shlLine( -1 ),
@@ -964,7 +965,7 @@ void EditWin::ToClipboard()
 			ctx.Append( '\n' );
 		}
 
-		EditString& eLine = text.Get( end.line );
+//		EditString& eLine = text.Get( end.line );
 
 		if ( end.pos > 0 )
 		{
@@ -1782,7 +1783,7 @@ void EditWin::__RefreshScreenData()
 
 	//EditorColors colors = *editorColors;
 
-	int r, c;
+	int r;
 
 	for ( r = 0; r < screen.Rows(); r++ )
 	{
@@ -2346,7 +2347,7 @@ void EditWin::SetCursor( cpoint p, bool mark )
 
 	if ( line < 0 ) { line = 0; }
 
-	EditString& str = text.Get( line );
+//	EditString& str = text.Get( line );
 	int pos = GetPosFromCol( line, c );
 	cursor.Set( line, pos );
 

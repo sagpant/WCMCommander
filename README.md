@@ -43,3 +43,10 @@ Features:
 
 ![alt tag](https://camo.githubusercontent.com/78a5803157bee9546aacbb56df325d7921f76c89/687474703a2f2f7777772e6c696e6465726461756d2e636f6d2f496d616765732f57616c436f6d6d616e6465722e706e67)
 ![alt tag](https://camo.githubusercontent.com/f467fa0d0a92dbf2debf0523b22ed1ad56b5b9ff/687474703a2f2f7777772e6c696e6465726461756d2e636f6d2f496d616765732f57616c436f6d6d616e6465725f4175746f636f6d706c6574652e706e67)
+
+=============================
+
+License:
+--------
+
+The source code is available under the terms of the MIT License: https://github.com/corporateshark/WalCommander/blob/master/LICENSE

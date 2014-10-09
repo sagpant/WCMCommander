@@ -653,6 +653,40 @@ namespace wal
 			case XK_z:
 				ks = XK_Z;
 				break;
+
+			// remap numpad keys: https://github.com/corporateshark/WalCommander/issues/198
+
+			case XK_KP_Left:
+				ks = XK_Left;
+				break;
+
+			case XK_KP_Right:
+				ks = XK_Right;
+				break;
+
+			case XK_KP_Up:
+				ks = XK_Up;
+				break;
+
+			case XK_KP_Down:
+				ks = XK_Down;
+				break;
+
+			case XK_KP_Prior:
+				ks = XK_Prior;
+				break;
+
+			case XK_KP_Next:
+				ks = XK_Next;
+				break;
+
+			case XK_KP_Home:
+				ks = XK_Home;
+				break;
+
+			case XK_KP_End:
+				ks = XK_End;
+				break;
 		}
 
 
@@ -1575,20 +1609,20 @@ namespace wal
 
 				if ( c < 0x10000 ) //1110xxxx 10xxxxxx 10xxxxxx
 				{
-					s[2] = 0x80 | c & 0x3F;
+					s[2] = 0x80 | (c & 0x3F);
 					c >>= 6;
-					s[1] = 0x80 | c & 0x3F;
+					s[1] = 0x80 | (c & 0x3F);
 					c >>= 6;
 					s[0] = ( c & 0x0F ) | 0xE0;
 					q->Put( s, 3 );
 				}
 				else     //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 				{
-					s[3] = 0x80 | c & 0x3F;
+					s[3] = 0x80 | (c & 0x3F);
 					c >>= 6;
-					s[2] = 0x80 | c & 0x3F;
+					s[2] = 0x80 | (c & 0x3F);
 					c >>= 6;
-					s[1] = 0x80 | c & 0x3F;
+					s[1] = 0x80 | (c & 0x3F);
 					c >>= 6;
 					s[0] = ( c & 0x7 ) | 0xF0;
 					q->Put( s, 4 );
@@ -2329,8 +2363,8 @@ Nah:
 		layout( 0 ),
 		uiNameId( uiNId ),
 
-		exposeRect( 0, 0, 0, 0 ),
-		reparent( 0 )
+		reparent( 0 ),
+		exposeRect( 0, 0, 0, 0 )
 	{
 		crect r = ( rect ? *rect : crect( 0, 0, 1, 1 ) );
 
