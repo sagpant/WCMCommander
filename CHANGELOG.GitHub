@@ -1,6 +1,17 @@
 0.17.1 GitHub Edition
+	Added: xprop can report a class name for WCM windows
+	Added: numpad arrows support
+	Improved: hotkeys colors in the default theme are now readable in dialogs
+	Improved: Linux icon is now in the .png format
+	Fixed: ESC key closes the main menu
+	Fixed: handling of '/' character while using Ctrl+Left/Ctrl+Right in the editor and edit lines
+	Fixed: tab size edit line location in Options -> Editor settings
+	Fixed: Ctrl+Right in the editor never skips the begginning of the line
+	Fixed: multimask file associations (separated with commas) were not working properly
+	Updated: readme, docs, localization
 	Development: Debian package building
 	Development: disabled level 4 warnings	
+	Development: fixed many compilation warnings
 
 0.17.0 GitHub Edition
 	Added: share search text between all search and search-n-replace dialogs
