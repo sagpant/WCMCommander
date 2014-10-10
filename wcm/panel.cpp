@@ -1355,17 +1355,13 @@ void PanelWin::DrawFooter( wal::GC& gc )
 		if ( FreeSpace >= 0 )
 		{
 			char Num[128];
-#if defined( _MSC_VER ) && ( _MSC_VER < 1700 )
-			_ui64toa_s( (uint64_t)FreeSpace, Num, sizeof( Num ) - 1, 10 );
-#else
-			sprintf( Num, _LT( "%" PRId64 ), FreeSpace );
-#endif
+			Lsnprintf( Num, sizeof(Num), _LT( "%" PRId64 ), FreeSpace );
 
 			char SplitNum[128];
 			SplitNumber_3( Num, SplitNum );
 
 			char b[128];
-			sprintf( b, _LT( "%s" ), SplitNum );
+			Lsnprintf( b, sizeof(b), _LT( "%s" ), SplitNum );
 
 			unicode_t ub[512];
 			utf8_to_unicode( ub, b );
@@ -1395,17 +1391,17 @@ void PanelWin::DrawFooter( wal::GC& gc )
 
 		char b3[0x100] = "";
 
-		if ( hiddenCount ) { sprintf( b3, _LT( "(%i hidden)" ), hiddenCount ); }
+		if ( hiddenCount ) { Lsnprintf( b3, sizeof(b3), _LT( "(%i hidden)" ), hiddenCount ); }
 
 		char b2[128];
 
 		if ( selectedCn.count )
 		{
-			sprintf( b2, _LT( ( selectedCn.count == 1 ) ? "%s bytes in %i file" : "%s bytes in %i files" ), b11, selectedCn.count );
+			Lsnprintf( b2, sizeof(b2), _LT( ( selectedCn.count == 1 ) ? "%s bytes in %i file" : "%s bytes in %i files" ), b11, selectedCn.count );
 		}
 		else
 		{
-			sprintf( b2, _LT( "%s (%i) %s" ), b11, filesCn.count, b3 );
+			Lsnprintf( b2, sizeof(b2), _LT( "%s (%i) %s" ), b11, filesCn.count, b3 );
 		}
 
 

@@ -2060,7 +2060,7 @@ static int PrepareText( unicode_t* buf, char* typeBuf, int bufSize, unicode_t* s
 	{
 		char type;
 
-		if ( *s >= 0 && *s < 32/* || *s >= 0x80 && *s < 0xA0*/ )
+		if ( *s < 32 )
 		{
 			*buf = '.';
 			type = 1;

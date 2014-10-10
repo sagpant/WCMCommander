@@ -7,6 +7,8 @@
 #include "w32cons.h"
 #include "string-util.h"
 
+#include <array>
+
 /*
    надо сделать, чтоб можно было выяснить запущен процесс или нет
 
@@ -669,16 +671,21 @@ bool W32Cons::Execute( Win* w, int tId, const unicode_t* _cmd, const unicode_t* 
 	}
 
 	static wchar_t comspec[] = L"COMSPEC";
-	wchar_t buf[1050];
-	int n = GetEnvironmentVariableW( comspec, buf, sizeof( buf ) );
+	std::array<wchar_t, 1050> buf;
+	//wchar_t buf[1050];
+	int n = GetEnvironmentVariableW( comspec, buf.data(), sizeof( buf ) );
 
-	if ( n < -0 )
+	if ( n < 0 )
 	{
-		n = GetSystemWindowsDirectoryW( buf, 1024 );
+		n = GetSystemWindowsDirectoryW( buf.data(), 1024 );
 
 		if ( n <= 0 || n > 1000 ) { return false; }
 
-		wcscpy( buf + n, L"\\system32\\cmd.exe" );
+#if _MSC_VER > 1700
+		Lwcsncpy( buf.data() + n, buf.size()-n, L"\\system32\\cmd.exe", _TRUNCATE );
+#else
+		Lwcsncpy( buf.data() + n, L"\\system32\\cmd.exe", buf.size()-n );
+#endif
 	}
 
 	std::vector<wchar_t> arg;
@@ -691,7 +698,7 @@ bool W32Cons::Execute( Win* w, int tId, const unicode_t* _cmd, const unicode_t* 
 
 //MessageBoxW(0, arg.ptr(), L"Hi", MB_OK);
 
-	if ( CreateProcessW( buf, arg.data(), 0, 0, TRUE, NORMAL_PRIORITY_CLASS, 0, 0, &startup, &processInfo ) )
+	if ( CreateProcessW( buf.data(), arg.data(), 0, 0, TRUE, NORMAL_PRIORITY_CLASS, 0, 0, &startup, &processInfo ) )
 	{
 		CloseHandle( processInfo.hThread ); //!!!
 
@@ -711,7 +718,7 @@ bool W32Cons::Execute( Win* w, int tId, const unicode_t* _cmd, const unicode_t* 
 
 void W32Cons::EventSize( cevent_size* pEvent )
 {
-	cpoint size = pEvent->Size();
+//	cpoint size = pEvent->Size();
 
 	int W = _rect.Width();
 	int H = _rect.Height();
@@ -768,7 +775,7 @@ inline bool EqCInfo( CHAR_INFO& a, CHAR_INFO& b )
 bool W32Cons::DrawChanges()
 {
 	GC gc( this );
-	crect clientRect = ClientRect();
+//	crect clientRect = ClientRect();
 	gc.Set( GetFont() );
 
 	int R = screen.Rows();
@@ -1068,8 +1075,8 @@ bool W32Cons::EventMouse( cevent_mouse* pEvent )
 	bool pointChanged = lastMousePoint != pt;
 	lastMousePoint = pt;
 
-	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
-	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
+//	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
+//	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
 
 	switch ( pEvent->Type() )
 	{

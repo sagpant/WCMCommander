@@ -600,7 +600,7 @@ bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 
 	for ( int i = 1; ; i++ )
 	{
-		snprintf( name, sizeof( name ), "v%i", i );
+		Lsnprintf( name, sizeof( name ), "v%i", i );
 		std::vector<char> s = RegReadString( section, name, "" );
 
 		if ( !s.data() || !s[0] ) { break; }
@@ -620,7 +620,7 @@ void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 	{
 		if ( list[i].data() && list[i][0] )
 		{
-			snprintf( name, sizeof( name ), "v%i", n );
+			Lsnprintf( name, sizeof( name ), "v%i", n );
 
 			if ( !RegWriteString( section, name, list[i].data() ) )
 			{
@@ -631,7 +631,7 @@ void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 		}
 	}
 
-	snprintf( name, sizeof( name ), "v%i", n );
+	Lsnprintf( name, sizeof( name ), "v%i", n );
 	RegWriteString( section, name, "" );
 }
 
@@ -795,7 +795,7 @@ public:
 	void Write( const char* KeyNamePattern, int i, const char* Data )
 	{
 		char Buf[4096];
-		snprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
 #ifdef _WIN32
 		RegWriteString( m_SectionName, Buf, Data );
 #else
@@ -805,7 +805,7 @@ public:
 	void WriteBool( const char* KeyNamePattern, int i, bool Data )
 	{
 		char Buf[4096];
-		snprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
 #ifdef _WIN32
 		RegWriteInt( m_SectionName, Buf, (int)Data );
 #else
@@ -832,7 +832,7 @@ public:
 	std::vector<unicode_t> Read( const char* KeyNamePattern, int i )
 	{
 		char Buf[4096];
-		snprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
 #ifdef _WIN32
 		std::vector<unicode_t> Result = utf8_to_unicode( RegReadString( m_SectionName, Buf, "" ).data( ) );
 #else
@@ -843,7 +843,7 @@ public:
 	bool ReadBool( const char* KeyNamePattern, int i, bool DefaultValue )
 	{
 		char Buf[4096];
-		snprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
 #ifdef _WIN32
 		bool Result = RegReadInt( m_SectionName, Buf, DefaultValue ) != 0;
 #else
@@ -1025,10 +1025,12 @@ void LoadEditorPositions()
 	{
 		std::vector<char> Line = Positions[i];
 
+		if ( !Line.data( ) || *Line.data( ) ) break;
+
 		int FL, L, P;
 		char Buf[0xFFFF];
 
-		int NumRead = sscanf( Line.data(), "FL = %i L = %i P = %i FN = %65535s", &FL, &L, &P, Buf );
+		int NumRead = Lsscanf( Line.data(), "FL = %i L = %i P = %i FN = %65535s", &FL, &L, &P, Buf );
 
 		if ( NumRead != 4 ) break;
 
@@ -1056,10 +1058,12 @@ void LoadViewerPositions()
 	{
 		std::vector<char> Line = Positions[i];
 
+		if ( !Line.data( ) || *Line.data( ) ) break;
+
 		int L;
 		char Buf[0xFFFF];
 
-		int NumRead = sscanf( Line.data(), "L = %i FN = %65535s", &L, Buf );
+		int NumRead = Lsscanf( Line.data(), "L = %i FN = %65535s", &L, Buf );
 
 		if ( NumRead != 2 ) break;
 
@@ -1153,7 +1157,7 @@ void SaveEditorPositions()
 		std::vector<char> FileName_utf8 = unicode_to_utf8( FileName.data() );
 
 		char Buf[0xFFFF];
-		snprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
+		Lsnprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
 
 		Positions.append( new_char_str( Buf ) );
 	}
@@ -1173,7 +1177,7 @@ void SaveViewerPositions()
 		std::vector<char> FileName_utf8 = unicode_to_utf8( FileName.data() );
 
 		char Buf[0xFFFF];
-		snprintf( Buf, sizeof( Buf ) - 1, "L = %i FN = %s", Line, FileName_utf8.data() );
+		Lsnprintf( Buf, sizeof( Buf ) - 1, "L = %i FN = %s", Line, FileName_utf8.data() );
 
 		Positions.append( new_char_str( Buf ) );
 	}
@@ -1432,7 +1436,7 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	   tabEdit( 0, this, 0, 0, 16 )
 {
 	char buf[0x100];
-	snprintf( buf, sizeof( buf ) - 1, "%i", g_WcmConfig.editTabSize );
+	Lsnprintf( buf, sizeof( buf ) - 1, "%i", g_WcmConfig.editTabSize );
 	tabEdit.SetText( utf8_to_unicode( buf ).data(), true );
 
 	iL.AddWin( &saveFilePosButton, 0, 0, 0, 1 );

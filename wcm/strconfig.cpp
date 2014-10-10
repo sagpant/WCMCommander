@@ -171,7 +171,7 @@ void StrConfig::Set( const char* name, const char* value )
 void StrConfig::Set( const char* name, unsigned value )
 {
 	char buf[64];
-	snprintf( buf, sizeof( buf ) - 1, "%i", value );
+	Lsnprintf( buf, sizeof( buf ) - 1, "%i", value );
 	Set( name, buf );
 }
 

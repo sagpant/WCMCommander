@@ -169,8 +169,14 @@ void KbIntCallback(
 				responses[i].length = l;
 				responses[i].text = ( char* ) malloc( l + 1 );
 
-				if ( responses[i].text ) { strcpy( responses[i].text, str.data() ); }
-
+				if ( responses[i].text )
+				{
+#if _MSC_VER > 1700
+					Lstrncpy( responses[i].text, l + 1, str.data(), _TRUNCATE );
+#else
+					Lstrncpy( responses[i].text, str.data(), l + 1 );
+#endif
+				}
 			}
 		}
 
@@ -618,7 +624,7 @@ FSString FSSftp::StrError( int err )
 				}
 
 				char buf[0x100];
-				snprintf( buf, sizeof( buf ), "err : %i ???", err );
+				Lsnprintf( buf, sizeof( buf ), "err : %i ???", err );
 				FSString str( CS_UTF8, buf );
 				return str;
 		}
@@ -1240,7 +1246,7 @@ FSString FSSftp::Uri( FSPath& path )
 	std::vector<char> a;
 
 	char port[0x100];
-	snprintf( port, sizeof( port ), ":%i", _infoParam.port );
+	Lsnprintf( port, sizeof( port ), ":%i", _infoParam.port );
 
 	FSString server( _infoParam.server.Data() );
 
