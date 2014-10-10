@@ -19,6 +19,8 @@
 #  include "w32util.h"
 #endif
 
+#define __STDC_FORMAT_MACROS
+#include <stdint.h>
 #if !defined(_MSC_VER) || _MSC_VER >= 1700
 #	include <inttypes.h>
 #endif
