@@ -1729,9 +1729,6 @@ namespace wal
 
 
 ///////////////////////////////// UiParzer
-	inline bool IsAlpha( int c ) { return ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ); }
-	inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
-
 	class UiParzer
 	{
 		UiStream* _stream;

@@ -944,19 +944,17 @@ public:
 	~HelpParzer();
 };
 
-inline bool IsSpaceChar( int c ) { return ( c > 0 && c <= 32 ); }
-
 int HelpParzer::NextToken()
 {
 begin:
 
 	if ( tok == TOK_EOF ) { return tok; }
 
-	if ( IsSpaceChar( cchar ) )
+	if ( IsSpace( cchar ) )
 	{
 		tok = TOK_SPACE;
 
-		while ( IsSpaceChar( cchar ) ) { NextChar(); }
+		while ( IsSpace( cchar ) ) { NextChar(); }
 
 		return tok;
 	}
@@ -965,7 +963,7 @@ begin:
 
 	while ( true )
 	{
-		if ( IsSpaceChar( cchar ) )
+		if ( IsSpace( cchar ) )
 		{
 			if ( word.count() > 0 ) { tok = TOK_WORD; word.append( 0 ); return tok; }
 
@@ -1086,9 +1084,9 @@ begin:
 				case 's':
 					NextChar();
 
-					while ( IsSpaceChar( cchar ) ) { NextChar(); }
+					while ( IsSpace( cchar ) ) { NextChar(); }
 
-					while ( cchar && !IsSpaceChar( cchar ) && cchar != '>' )
+					while ( cchar && !IsSpace( cchar ) && cchar != '>' )
 					{
 						word.append( cchar );
 						NextChar();
@@ -1096,7 +1094,7 @@ begin:
 
 					word.append( 0 );
 
-					while ( IsSpaceChar( cchar ) ) { NextChar(); }
+					while ( IsSpace( cchar ) ) { NextChar(); }
 
 					if ( cchar == '>' ) { NextChar(); }
 
@@ -1107,7 +1105,7 @@ begin:
 				{
 					NextChar();
 
-					while ( IsSpaceChar( cchar ) ) { NextChar(); }
+					while ( IsSpace( cchar ) ) { NextChar(); }
 
 					int n = 0;
 
@@ -1118,7 +1116,7 @@ begin:
 
 					num = n ? n : 10;
 
-					while ( IsSpaceChar( cchar ) ) { NextChar(); }
+					while ( IsSpace( cchar ) ) { NextChar(); }
 
 					if ( cchar == '>' ) { NextChar(); }
 
@@ -1130,7 +1128,7 @@ begin:
 				{
 					NextChar();
 
-					while ( IsSpaceChar( cchar ) ) { NextChar(); }
+					while ( IsSpace( cchar ) ) { NextChar(); }
 
 					int n = 0;
 
@@ -1141,7 +1139,7 @@ begin:
 
 					num = n ? n : 10;
 
-					while ( IsSpaceChar( cchar ) ) { NextChar(); }
+					while ( IsSpace( cchar ) ) { NextChar(); }
 
 					if ( cchar == '>' ) { NextChar(); }
 
@@ -1335,13 +1333,13 @@ bool HelpFile::LoadFile( sys_char_t* name )
 			{
 				s++;
 
-				while ( IsSpaceChar( *s ) ) { s++; }
+				while ( IsSpace( *s ) ) { s++; }
 
 				ccollect<char> str;
 
-				while ( *s && *s != ']' && !IsSpaceChar( *s ) ) { str.append( *s ); s++; }
+				while ( *s && *s != ']' && !IsSpace( *s ) ) { str.append( *s ); s++; }
 
-				while ( IsSpaceChar( *s ) ) { s++; }
+				while ( IsSpace( *s ) ) { s++; }
 
 				if ( *s == ']' && str.count() > 0 ) //ok
 				{

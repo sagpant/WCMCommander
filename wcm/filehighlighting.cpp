@@ -32,6 +32,11 @@ public:
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
 
+		clPtr<clUnsignedInt64Validator> Validator = new clUnsignedInt64Validator();
+
+		m_SizeMinEdit.SetValidator( Validator );
+		m_SizeMaxEdit.SetValidator( Validator );
+
 		if ( Rule )
 		{
 			m_MaskEdit.SetText( Rule->GetMask().data(), false );

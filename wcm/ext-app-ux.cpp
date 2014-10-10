@@ -352,7 +352,6 @@ static std::vector<unicode_t> GetFileExtLC( const unicode_t* uri )
 
 ////////////////// MimeGlobs //////////////////////////
 
-inline bool IsSpace( int c ) { return c > 0 && c <= 32; }
 inline char* SS( char* s ) { while ( IsSpace( *s ) ) { s++; } return s; }
 inline char* SNotS( char* s ) { while ( *s && !IsSpace( *s ) ) { s++; } return s; }
 inline char* SNotC( char* s, int c ) { while ( *s && *s != c ) { s++; } return s; }

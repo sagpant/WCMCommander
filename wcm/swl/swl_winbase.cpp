@@ -6,6 +6,8 @@
 #include "swl.h"
 #include <string.h>
 
+#include <limits.h>
+
 namespace wal
 {
 
@@ -290,6 +292,21 @@ namespace wal
 		tip = 0;
 	}
 
+	bool clUnsignedInt64Validator::IsValid( const std::vector<unicode_t>& Str ) const
+	{
+		std::vector<char> utf8 = unicode_to_utf8( Str.data() );
 
+		for ( size_t i = 0; i != utf8.size(); i++ )
+		{
+			if ( !utf8[i] ) break;
+			if ( !IsDigit( utf8[i] ) ) return false;
+		}
+
+		uint64_t Result = strtoull( utf8.data(), nullptr, 10 );
+
+		if ( Result == ULLONG_MAX ) return false;
+
+		return true;
+	}
 
 }; //anmespace wal

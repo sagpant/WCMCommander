@@ -618,7 +618,6 @@ namespace wal
 
 	bool EditLine::EventKey( cevent_key* pEvent )
 	{
-
 		if (!doAcceptAltKeys && (pEvent->Mod() & KM_ALT) != 0)
 		{
 			return false;
@@ -737,7 +736,12 @@ namespace wal
 
 					if ( c && c >= 0x20 )
 					{
+						std::vector<unicode_t> oldtext = GetText();
 						text.Insert( c );
+						if ( m_Validator && !m_Validator->IsValid( GetText() ) )
+						{
+							SetText( oldtext.data(), false );
+						}
 						Changed();
 					}
 					else { return false; }

@@ -172,13 +172,6 @@ void SysTextFileOut::Write( char* buf, int size ) {  f.Write( buf, size ); }
 
 static FSPath configDirPath( CS_UTF8, "???" );
 
-inline bool IsSpace( int c ) { return c > 0 && c <= 32; }
-inline bool IsLatinChar( int c ) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
-inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
-
-
-
-
 class IniHash
 {
 	cstrhash< cstrhash< std::vector<char> > > hash;

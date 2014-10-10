@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "IntrusivePtr.h"
+
 namespace wal
 {
 
@@ -169,6 +171,9 @@ namespace wal
 
 		void  Clear() { marker = cursor = count = 0; }
 
+		const std::vector<unicode_t>& GetText() const { return data; }
+		void SetText( const std::vector<unicode_t>& t ) { Set( t.data(), false ); }
+
 		EditBuf( const unicode_t* s ): size( 0 ), count( 0 ) { Set( s );}
 		EditBuf(): size( 0 ), count( 0 ), cursor( 0 ), marker( 0 ) {}
 
@@ -181,6 +186,18 @@ namespace wal
 	   SCMD_EDITLINE_CHANGED = 100
 	};
 
+	class clValidator: public iIntrusiveCounter
+	{
+	public:
+		virtual ~clValidator() {};
+		virtual bool IsValid( const std::vector<unicode_t>& Str ) const = 0;
+	};
+
+	class clUnsignedInt64Validator: public clValidator
+	{
+	public:
+		virtual bool IsValid( const std::vector<unicode_t>& Str ) const;
+	};
 
 	class EditLine: public Win
 	{
@@ -195,6 +212,9 @@ namespace wal
 		bool frame3d;
 		int charH;
 		int charW;
+
+		clPtr<clValidator> m_Validator;
+
 		void DrawCursor( GC& gc );
 		bool CheckCursorPos(); //true -если нужна перерисовка
 		void ClipboardCopy();
@@ -224,6 +244,7 @@ namespace wal
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();
 		virtual ~EditLine();
+		void SetValidator( clPtr<clValidator> Validator ) { m_Validator = Validator; }
 	};
 
 	extern cpoint GetStaticTextExtent( GC& gc, const unicode_t* s, cfont* font );
