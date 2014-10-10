@@ -381,4 +381,7 @@ public:
 
 	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
 	bool StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode );
+
+	const std::vector<clNCFileHighlightingRule>& GetFileHighlightingRules() const { return m_FileHighlightingRules; }
+	void SetFileHighlightingRules( const std::vector<clNCFileHighlightingRule>& Rules ) { m_FileHighlightingRules = Rules; }
 };

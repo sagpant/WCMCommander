@@ -11,6 +11,8 @@
 #include "ltext.h"
 #include "unicode_lc.h"
 
+#include <limits.h>
+
 /// dialog to edit a single file highlighting rule
 class clEditFileHighlightingWin: public NCVertDialog
 {
@@ -34,6 +36,8 @@ public:
 		{
 			m_MaskEdit.SetText( Rule->GetMask().data(), false );
 			m_DescriptionEdit.SetText( Rule->GetDescription().data(), false );
+			m_SizeMinEdit.SetText( std::to_wstring( Rule->GetSizeMin() ).c_str(), false );
+			m_SizeMaxEdit.SetText( std::to_wstring( Rule->GetSizeMax() ).c_str(), false );
 /*
 			m_HasTerminalButton.Change( Assoc->GetHasTerminal() );
 			m_ExecuteCommandEdit.SetText( Assoc->GetExecuteCommand().data(), false );
@@ -95,6 +99,19 @@ public:
 
 	std::vector<unicode_t> GetMask() const { return m_MaskEdit.GetText(); }
 	std::vector<unicode_t> GetDescription() const { return m_DescriptionEdit.GetText(); }
+	uint64_t GetSizeMin() const
+	{
+		std::vector<char> utf8 = unicode_to_utf8( m_SizeMinEdit.GetText().data() );
+		uint64_t Result = strtoull( utf8.data(), nullptr, 10 );
+		return ( Result == ULLONG_MAX ) ? 0 : Result;
+	}
+	uint64_t GetSizeMax() const
+	{
+		std::vector<char> utf8 = unicode_to_utf8( m_SizeMaxEdit.GetText().data() );
+		uint64_t Result = strtoull( utf8.data(), nullptr, 10 );
+		return ( Result == ULLONG_MAX ) ? 0 : Result;
+	}
+//	uint64_t GetAttributesMask() const { return strtoull( m_SizeMin.GetText().data(), nullptr, 10); }
 /*
 	std::vector<unicode_t> GetExecuteCommand() const { return m_ExecuteCommandEdit.GetText(); }
 	std::vector<unicode_t> GetExecuteCommandSecondary() const { return m_ExecuteCommandSecondaryEdit.GetText(); }
@@ -106,8 +123,10 @@ public:
 	const clNCFileHighlightingRule& GetResult() const
 	{
 		m_Result.SetMask( GetMask() );
-		/*
 		m_Result.SetDescription( GetDescription() );
+		m_Result.SetSizeMin( GetSizeMin() );
+		m_Result.SetSizeMax( GetSizeMax() );
+/*
 		m_Result.SetExecuteCommand( GetExecuteCommand() );
 		m_Result.SetExecuteCommandSecondary( GetExecuteCommandSecondary() );
 		m_Result.SetViewCommand( GetViewCommand() );
@@ -275,8 +294,8 @@ class clFileHighlightingWin: public NCDialog
 public:
 	clFileHighlightingWin( NCDialogParent* parent, std::vector<clNCFileHighlightingRule>* Rules )
 	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Files highlighting" ) ).data(), bListOkCancel )
-	 , m_Layout( 10, 10 )
 	 , m_ListWin( this, Rules )
+	 , m_Layout( 10, 10 )
 	 , m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
 	 , m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
 	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )

@@ -19,6 +19,10 @@
 #  include "w32util.h"
 #endif
 
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
+#	include <inttypes.h>
+#endif
+
 #include <map>
 
 WcmConfig wcmConfig;
@@ -768,6 +772,7 @@ void WcmConfig::MapStr( const char* Section, const char* Name, std::vector<char>
 
 static const char* CommandsHistorySection = "CommandsHistory";
 static const char* FilesAssociationsSection = "FilesAssociations";
+static const char* HighlightingRulesSection = "HighlightingRules";
 
 class clConfigHelper
 {
@@ -903,7 +908,7 @@ void SaveFileAssociations( NCWin* nc
 	Cfg.Write( "Mask%i", Assoc.size(), "" );
 }
 
-void LoadFilesAssociations( NCWin* nc
+void LoadFileAssociations( NCWin* nc
 #ifndef _WIN32
 , IniHash& hash
 #endif
@@ -952,6 +957,147 @@ void LoadFilesAssociations( NCWin* nc
 	}
 
 	nc->SetFileAssociations( Assoc );
+}
+
+void SaveFileHighlightingRules( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigWriter Cfg;
+#else
+	clConfigWriter Cfg( hash );
+#endif
+	Cfg.SetSectionName( HighlightingRulesSection );
+
+	const std::vector<clNCFileHighlightingRule>& Rules = nc->GetFileHighlightingRules();
+
+	for ( size_t i = 0; i < Rules.size(); i++ )
+	{
+		const clNCFileHighlightingRule& A = Rules[i];
+
+		std::vector<char> Mask_utf8 = unicode_to_utf8( A.GetMask().data() );
+		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
+
+		char Buf[0xFFFF];
+		Lsnprintf( Buf, sizeof( Buf ) - 1, "Min = %" PRIu64 " Max = %" PRIu64 " Attribs = %" PRIu64, A.GetSizeMin(), A.GetSizeMax(), A.GetAttributesMask() );
+/*
+	uint32_t GetColorNormal() const { return m_ColorNormal; }
+	uint32_t GetColorNormalBackground() const { return m_ColorNormalBackground; }
+	uint32_t GetColorSelected() const { return m_ColorSelected; }
+	uint32_t GetColorSelectedBackground() const { return m_ColorSelectedBackground; }
+	uint32_t GetColorUnderCursorNormal() const { return m_ColorUnderCursorNormal; }
+	uint32_t GetColorUnderCursorNormalBackground() const { return m_ColorUnderCursorNormalBackground; }
+	uint32_t GetColorUnderCursorSelected() const { return m_ColorUnderCursorSelected; }
+	uint32_t GetColorUnderCursorSelectedBackground() const { return m_ColorUnderCursorSelectedBackground; }
+*/
+
+/*
+		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetExecuteCommand().data() );
+		std::vector<char> ExecuteSecondary_utf8 = unicode_to_utf8( A.GetExecuteCommandSecondary().data() );
+		std::vector<char> View_utf8 = unicode_to_utf8( A.GetViewCommand().data() );
+		std::vector<char> ViewSecondary_utf8 = unicode_to_utf8( A.GetViewCommandSecondary().data() );
+		std::vector<char> Edit_utf8 = unicode_to_utf8( A.GetEditCommand().data() );
+		std::vector<char> EditSecondary_utf8 = unicode_to_utf8( A.GetEditCommandSecondary().data() );
+*/
+
+		Cfg.Write( "Mask%i", i, Mask_utf8.data( ) );
+		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
+		Cfg.Write( "SizeAttribs%i", i, Buf );
+/*
+		Cfg.Write( "Execute%i", i, Execute_utf8.data( ) );
+		Cfg.Write( "ExecuteSecondary%i", i, ExecuteSecondary_utf8.data( ) );
+		Cfg.Write( "View%i", i, View_utf8.data( ) );
+		Cfg.Write( "ViewSecondary%i", i, ViewSecondary_utf8.data( ) );
+		Cfg.Write( "Edit%i", i, Edit_utf8.data( ) );
+		Cfg.Write( "EditSecondary%i", i, EditSecondary_utf8.data( ) );
+*/
+		Cfg.WriteBool( "MaskEnabled%i", i, A.IsMaskEnabled() );
+	}
+
+	// end marker
+	Cfg.Write( "Mask%i", Rules.size(), "" );
+}
+
+void LoadFileHighlightingRules( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigReader Cfg;
+#else
+	clConfigReader Cfg( hash );
+#endif
+	Cfg.SetSectionName( HighlightingRulesSection );
+
+	int i = 0;
+
+	std::vector<clNCFileHighlightingRule> Rules;
+
+	while (true)
+	{
+		std::vector<unicode_t> Mask = Cfg.Read( "Mask%i", i );
+		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
+
+		std::vector<unicode_t> Line = Cfg.Read( "SizeAttribs%i", i );
+
+		std::vector<char> Line_utf8 = unicode_to_utf8( Line.data() );
+
+		uint64_t SizeMin, SizeMax, AttribsMask;
+
+		int NumRead = 0;
+
+		if ( Line.data() && *Line.data( ) )
+		{
+			NumRead = Lsscanf( Line_utf8.data(), "Min = %" PRIu64 " Max = %" PRIu64 " Attribs = %" PRIu64, &SizeMin, &SizeMax, &AttribsMask );
+		}
+
+		if ( NumRead != 3 )
+		{
+			SizeMin = 0;
+			SizeMax = 0;
+			AttribsMask = 0;
+		}
+/*
+		std::vector<unicode_t> Execute = Cfg.Read( "Execute%i", i );
+		std::vector<unicode_t> ExecuteSecondary = Cfg.Read( "ExecuteSecondary%i", i );
+		std::vector<unicode_t> View = Cfg.Read( "View%i", i );
+		std::vector<unicode_t> ViewSecondary = Cfg.Read( "ViewSecondary%i", i );
+		std::vector<unicode_t> Edit = Cfg.Read( "Edit%i", i );
+		std::vector<unicode_t> EditSecondary = Cfg.Read( "EditSecondary%i", i );
+		bool HasTerminal = Cfg.ReadBool( "HasTerminal%i", i, true );
+*/
+		if ( !Mask.data() || !*Mask.data() ) break;
+
+		clNCFileHighlightingRule R;
+		R.SetMask( Mask );
+		R.SetDescription( Description );
+		R.SetSizeMin( SizeMin );
+		R.SetSizeMax( SizeMax );
+		R.SetAttributesMask( AttribsMask );
+/*
+		A.SetExecuteCommand( Execute );
+		A.SetExecuteCommandSecondary( ExecuteSecondary );
+		A.SetViewCommand( View );
+		A.SetViewCommandSecondary( ViewSecondary );
+		A.SetEditCommand( Edit );
+		A.SetEditCommandSecondary( EditSecondary );
+		A.SetHasTerminal( HasTerminal );
+*/
+		Rules.push_back( R );
+
+		i++;
+	}
+
+	nc->SetFileHighlightingRules( Rules );
 }
 
 void SaveCommandsHistory( NCWin* nc
@@ -1096,7 +1242,8 @@ void WcmConfig::Load( NCWin* nc )
 
 
 	LoadCommandsHistory( nc );
-	LoadFilesAssociations( nc );
+	LoadFileAssociations( nc );
+	LoadFileHighlightingRules( nc );
 
 #else
 	IniHash hash;
@@ -1135,7 +1282,8 @@ void WcmConfig::Load( NCWin* nc )
 	}
 
 	LoadCommandsHistory( nc, hash );
-	LoadFilesAssociations( nc, hash );
+	LoadFileAssociations( nc, hash );
+	LoadFileHighlightingRules( nc, hash );
 
 #endif
 
@@ -1220,6 +1368,7 @@ void WcmConfig::Save( NCWin* nc )
 
 	SaveCommandsHistory( nc );
 	SaveFileAssociations( nc );
+	SaveFileHighlightingRules( nc );
 
 #else
 	IniHash hash;
@@ -1247,6 +1396,7 @@ void WcmConfig::Save( NCWin* nc )
 
 	SaveCommandsHistory( nc, hash );
 	SaveFileAssociations( nc, hash );
+	SaveFileHighlightingRules( nc, hash );
 
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
 #endif
