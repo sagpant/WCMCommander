@@ -4,6 +4,7 @@
 
 
 #include "swl.h"
+#include "../globals.h"
 // XXX: refactor to move the header to .
 #include "../unicode_lc.h" 
 
@@ -190,17 +191,21 @@ namespace wal
 
 		if ( pressed )
 		{
-#if USE_3D_BUTTONS
-			Draw3DButtonW2( gc, rect, colorBg, false );
-#endif
+			if ( g_WcmConfig.styleShow3DUI )
+			{
+				Draw3DButtonW2( gc, rect, colorBg, false );
+			}
+
 			rect.Dec();
 			rect.Dec();
 		}
 		else
 		{
-#if USE_3D_BUTTONS
-			Draw3DButtonW2( gc, rect, colorBg, true );
-#endif
+			if ( g_WcmConfig.styleShow3DUI )
+			{
+				Draw3DButtonW2( gc, rect, colorBg, true );
+			}
+
 			rect.Dec();
 
 			if ( InFocus() )
