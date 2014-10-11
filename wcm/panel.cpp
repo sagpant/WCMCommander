@@ -916,7 +916,7 @@ int PanelWin::GetXMargin() const
 
 void PanelWin::DrawItem( wal::GC& gc,  int n )
 {
-//	bool active = IsSelectedPanel() && n == _current;
+	bool active = IsSelectedPanel() && n == _current;
 	int pos = n - _first;
 
 	if ( pos < 0 || pos >= _rectList.count() ) { return; }
@@ -974,14 +974,10 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( n < 0 || n >= _list.Count( HideDotsInDir() ) ) { return; }
 
-#if USE_3D_BUTTONS
-
-	if ( active )
+	if ( g_WcmConfig.styleShow3DUI && active )
 	{
 		Draw3DButtonW2( gc, rect, color_bg, true );
 	}
-
-#endif
 
 	int x = rect.left + 7; //5;
 	int y = rect.top;

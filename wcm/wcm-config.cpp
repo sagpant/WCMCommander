@@ -669,6 +669,7 @@ WcmConfig::WcmConfig()
 
  , terminalBackspaceKey( 0 )
 
+ , styleShow3DUI( false )
  , styleColorMode( 0 )
  , styleShowToolBar( true )
  , styleShowButtonBar( true )
@@ -692,6 +693,7 @@ WcmConfig::WcmConfig()
 
 	MapBool( sectionSystem, "show_toolbar", &styleShowToolBar, styleShowToolBar );
 	MapBool( sectionSystem, "show_buttonbar", &styleShowButtonBar, styleShowButtonBar );
+	MapBool( sectionPanel, "show_3d_ui", &styleShow3DUI, styleShow3DUI );
 	MapInt( sectionPanel, "color_mode", &styleColorMode, styleColorMode );
 
 	MapBool( sectionPanel, "show_hidden_files",   &panelShowHiddenFiles, panelShowHiddenFiles );
@@ -1668,6 +1670,7 @@ public:
 
 	ccollect<Node>* pList;
 
+	SButton  styleShow3DUIButton;
 	StaticLine colorStatic;
 	SButton  styleDefButton;
 	SButton  styleBlackButton;
@@ -1723,6 +1726,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Style" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   pList( p ),
+	   styleShow3DUIButton( 0, this, utf8_to_unicode( _LT( "3D buttons" ) ).data(), 0, g_WcmConfig.styleShow3DUI ),
 	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
 	   styleDefButton( 0, this, utf8_to_unicode( _LT( "&Default colors" ) ).data(), 1, g_WcmConfig.styleColorMode != 1 && g_WcmConfig.styleColorMode != 2 ),
 	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "&Black" ) ).data(), 1, g_WcmConfig.styleColorMode == 1 ),
@@ -1738,34 +1742,16 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   changeButton( 0, this, utf8_to_unicode( _LT( "Set &font..." ) ).data(), CMD_CHFONT ),
 	   changeX11Button( 0, this, utf8_to_unicode( _LT( "Set &X11 font..." ) ).data(), CMD_CHFONTX11 )
 {
-	iL.AddWin( &colorStatic, 0, 0 );
-	colorStatic.Enable();
-	colorStatic.Show();
-	iL.AddWin( &styleDefButton, 1, 1 );
-	styleDefButton.Enable();
-	styleDefButton.Show();
-	iL.AddWin( &styleBlackButton,  2, 1 );
-	styleBlackButton.Enable();
-	styleBlackButton.Show();
-	iL.AddWin( &styleWhiteButton,  3, 1 );
-	styleWhiteButton.Enable();
-	styleWhiteButton.Show();
-
-	iL.AddWin( &showStatic,  4, 0 );
-	showStatic.Enable();
-	showStatic.Show();
-	iL.AddWin( &showToolbarButton, 5, 1 );
-	showToolbarButton.Enable();
-	showToolbarButton.Show();
-	iL.AddWin( &showButtonbarButton,  6, 1 );
-	showButtonbarButton.Enable();
-	showButtonbarButton.Show();
-
-	iL.LineSet( 7, 10 );
-	iL.AddWin( &fontsStatic, 8, 0 );
-	fontsStatic.Enable();
-	fontsStatic.Show();
-
+	iL.AddWinAndEnable( &styleShow3DUIButton, 0, 1 );
+	iL.AddWinAndEnable( &colorStatic, 1, 0 );
+	iL.AddWinAndEnable( &styleDefButton, 2, 1 );
+	iL.AddWinAndEnable( &styleBlackButton,  3, 1 );
+	iL.AddWinAndEnable( &styleWhiteButton,  4, 1 );
+	iL.AddWinAndEnable( &showStatic,  5, 0 );
+	iL.AddWinAndEnable( &showToolbarButton, 6, 1 );
+	iL.AddWinAndEnable( &showButtonbarButton,  7, 1 );
+	iL.LineSet( 8, 10 );
+	iL.AddWinAndEnable( &fontsStatic, 9, 0 );
 	iL.ColSet( 0, 10, 10, 10 );
 	iL.SetColGrowth( 1 );
 
@@ -1784,9 +1770,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	lsize.x.maximal = 1000;
 	fontList.SetLSize( lsize );
 
-	iL.AddWin( &fontList, 8, 1 );
-	fontList.Enable();
-	fontList.Show();
+	iL.AddWinAndEnable( &fontList, 9, 1 );
 
 	fontNameStatic.Enable();
 	fontNameStatic.Show();
@@ -1796,21 +1780,15 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	lsize.x.maximal = 1000;
 	fontNameStatic.SetLSize( lsize );
 
-	iL.AddWin( &fontNameStatic, 9, 1 );
+	iL.AddWin( &fontNameStatic, 10, 1 );
 #ifdef USEFREETYPE
-	iL.AddWin( &changeButton, 10, 1 );
-	changeButton.Enable();
-	changeButton.Show();
+	iL.AddWinAndEnable( &changeButton, 11, 1 );
 #endif
 
 #ifdef _WIN32
-	iL.AddWin( &changeButton, 10, 1 );
-	changeButton.Enable();
-	changeButton.Show();
+	iL.AddWinAndEnable( &changeButton, 11, 1 );
 #else
-	iL.AddWin( &changeX11Button, 11, 1 );
-	changeX11Button.Enable();
-	changeX11Button.Show();
+	iL.AddWinAndEnable( &changeX11Button, 12, 1 );
 	iL.LineSet( 12, 10 );
 #endif
 
@@ -1830,6 +1808,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 
 	styleDefButton.SetFocus();
 
+	order.append( &styleShow3DUIButton );
 	order.append( &styleDefButton );
 	order.append( &styleBlackButton );
 	order.append( &styleWhiteButton );
@@ -1983,6 +1962,7 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 
 		SetColorStyle( g_WcmConfig.styleColorMode );
 
+		g_WcmConfig.styleShow3DUI = dlg.styleShow3DUIButton.IsSet();
 		g_WcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );
 		g_WcmConfig.styleShowButtonBar = dlg.showButtonbarButton.IsSet( );
 

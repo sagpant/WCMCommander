@@ -75,7 +75,7 @@ namespace wal
 		MenuTextInfo text;
 		clPtr<cicon> icon;
 		int commandId;
-
+		
 		void SendCommand() { Command( commandId, 0, this, 0 ); }
 	public:
 		Button( int nId, Win* parent, const unicode_t* txt,  int id, crect* rect = 0, int iconX = 16, int iconY = 16 );

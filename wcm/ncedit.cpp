@@ -2610,6 +2610,8 @@ restart:
 							cursor.Set( line, s - begin );
 							marker = cursor;
 
+							if ( !p ) { break; }
+
 							goto restart;
 						}
 					}

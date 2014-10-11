@@ -124,6 +124,7 @@ public:
 #pragma endregion
 
 #pragma region Style settings
+	bool styleShow3DUI;
 	int styleColorMode;
 	bool styleShowToolBar;
 	bool styleShowButtonBar;
