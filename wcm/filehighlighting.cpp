@@ -13,6 +13,39 @@
 
 #include <limits.h>
 
+class clColorValidator: public clValidator
+{
+public:
+	virtual bool IsValid( const std::vector<unicode_t>& Str ) const
+	{
+		if ( Str.size() > 7 ) return false;
+
+		for ( size_t i = 0; i != Str.size(); i++ )
+		{
+			if ( !Str[i] ) break;
+
+			bool AlphaHex = IsAlphaHex( Str[i] );
+			bool Digit = IsDigit( Str[i] );
+			bool ValidChar = AlphaHex || Digit;
+
+			if ( !ValidChar ) return false;
+		}
+
+		return true;
+	}
+};
+
+class clColorEditLine: public EditLine
+{
+public:
+	clColorEditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true )
+	 : EditLine( nId, parent, rect, txt, chars, frame )
+	{
+		this->SetValidator( new clColorValidator() );
+	}
+};
+
+
 /// dialog to edit a single file highlighting rule
 class clEditFileHighlightingWin: public NCVertDialog
 {
@@ -21,13 +54,15 @@ public:
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file highlighting" ) ).data(), bListOkCancel )
 	 , m_Layout( 17, 2 )
 	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several file masks (separated with commas)")).data(), &m_MaskEdit)
-	 , m_MaskEdit( 0, this, 0, 0, 16 )
+	 , m_MaskEdit( 0, this, nullptr, nullptr, 16 )
 	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description of the file highlighting")).data(), &m_DescriptionEdit)
-	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
+	 , m_DescriptionEdit( 0, this, nullptr, nullptr, 16 )
 	 , m_SizeMinText(0, this, utf8_to_unicode(_LT("Size >= (bytes)")).data(), &m_SizeMinEdit)
-	 , m_SizeMinEdit( 0, this, 0, 0, 16 )
+	 , m_SizeMinEdit( 0, this, nullptr, nullptr, 16 )
 	 , m_SizeMaxText(0, this, utf8_to_unicode(_LT("Size <= (bytes)")).data(), &m_SizeMaxEdit)
-	 , m_SizeMaxEdit( 0, this, 0, 0, 16 )
+	 , m_SizeMaxEdit( 0, this, nullptr, nullptr, 16 )
+	 , m_ColorNormalText(0, this, utf8_to_unicode(_LT("Normal color (hexadecimal RGB)")).data(), &m_ColorNormalEdit)
+	 , m_ColorNormalEdit(0, this, nullptr, nullptr, 6)
 	 , m_HasMaskButton( 0, this, utf8_to_unicode( _LT( "Mask" ) ).data(), 0, true )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
@@ -68,21 +103,9 @@ public:
 		m_Layout.AddWinAndEnable( &m_SizeMaxText, 7, 0 );
 		m_Layout.AddWinAndEnable( &m_SizeMaxEdit, 8, 0 );
 
-/*
-		m_Layout.AddWinAndEnable( &m_HasTerminalButton, 4, 0 );
-		m_Layout.AddWinAndEnable( &m_ExecuteCommandText, 5, 0 );
-		m_Layout.AddWinAndEnable( &m_ExecuteCommandEdit, 6, 0 );
-		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryText, 7, 0 );
-		m_Layout.AddWinAndEnable( &m_ExecuteCommandSecondaryEdit, 8, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandText, 9, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandEdit, 10, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryText, 11, 0 );
-		m_Layout.AddWinAndEnable( &m_ViewCommandSecondaryEdit, 12, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandText, 13, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandEdit, 14, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryText, 15, 0 );
-		m_Layout.AddWinAndEnable( &m_EditCommandSecondaryEdit, 16, 0 );
-*/
+		m_Layout.AddWinAndEnable( &m_ColorNormalText, 9, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorNormalEdit, 10, 0 );
+
 		AddLayout( &m_Layout );
 
 		order.append( &m_MaskEdit );
@@ -90,15 +113,8 @@ public:
 		order.append( &m_DescriptionEdit );
 		order.append( &m_SizeMinEdit );
 		order.append( &m_SizeMaxEdit );
-/*
-		order.append( &m_HasTerminalButton );
-		order.append( &m_ExecuteCommandEdit );
-		order.append( &m_ExecuteCommandSecondaryEdit );
-		order.append( &m_ViewCommandEdit );
-		order.append( &m_ViewCommandSecondaryEdit );
-		order.append( &m_EditCommandEdit );
-		order.append( &m_EditCommandSecondaryEdit );
-*/
+		order.append( &m_ColorNormalEdit );
+
 		SetPosition();
 	}
 
@@ -158,6 +174,9 @@ public:
 
 	StaticLabel m_SizeMaxText;
 	EditLine   m_SizeMaxEdit;
+
+	StaticLabel m_ColorNormalText;
+	clColorEditLine m_ColorNormalEdit;
 
 	SButton m_HasMaskButton;
 
