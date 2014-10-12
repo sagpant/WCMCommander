@@ -381,7 +381,7 @@ public:
 
 	void Flush() { WriteBuf(); }
 	void Close( bool aborted = false ) { if ( !aborted ) { Flush(); sock.Shutdown(); };  sock.Close( aborted ); inBuf.Clear(); outBuf.Clear(); }
-	void PutC( int c ) { if ( !outBuf.Space() ) { WriteBuf(); } outBuf.data[outBuf.count++] = c; }
+	void PutC( unicode_t c ) { if ( !outBuf.Space() ) { WriteBuf(); } outBuf.data[outBuf.count++] = c; }
 	void WriteStr( const char* s ) { for ( ; *s; s++ ) { PutC( *s ); } }
 	void WriteStr( const char* s1, const char* s2 ) { WriteStr( s1 ); WriteStr( s2 ); }
 	void WriteStr( const char* s1, const char* s2, const char* s3 ) { WriteStr( s1 ); WriteStr( s2 ); WriteStr( s3 ); }

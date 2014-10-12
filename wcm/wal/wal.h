@@ -209,7 +209,7 @@ namespace wal
 					return b;
 				}
 
-				*s = c;
+				*s = char( c & 0xFF );
 
 				if ( c == '\n' )
 				{
@@ -221,7 +221,7 @@ namespace wal
 
 			*s = 0;
 
-			while ( true ) { int c = GetC(); if ( c == '\n' || c == EOF ) { break; } }
+			for (;;) { int c = GetC(); if ( c == '\n' || c == EOF ) { break; } }
 
 			return b;
 		}
