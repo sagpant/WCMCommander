@@ -35,7 +35,7 @@ class cs_string
 public:
 	struct Node: public iIntrusiveCounter
 	{
-		char m_Encoding;
+		int m_Encoding;
 		std::vector<char> m_ByteBuffer;
 	};
 private:
@@ -178,7 +178,7 @@ class FSPath
 		cacheSize = n;
 	}
 
-	void MakeCache( int cs, int splitter );
+	void MakeCache( int cs, unicode_t splitter );
 	void _Set( int cs, const void* v );
 public:
 	FSPath(): cacheCs( -2 ), cacheSize( 0 ), cacheSplitter( -1 ) {};

@@ -8,6 +8,11 @@
 //Wal templates 2.1
 //Created by Wal (Krasnoyarsk)
 
+#if defined( _MSC_VER )
+#	pragma warning( disable:4127 ) // warning C4127: conditional expression is constant (ext-app.cpp)
+#	pragma warning( disable:4512 ) // warning C4512: assignment operator could not be generated
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 

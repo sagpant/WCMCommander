@@ -131,7 +131,7 @@ public:
 		Invalidate();
 	}
 
-	void Next( int ch );
+	void Next( unicode_t ch );
 
 	void Del()
 	{
@@ -193,7 +193,7 @@ inline bool EqFirst( const unicode_t* s, int c )
 	return s && UnicodeLC( *s ) == c;
 }
 
-void SCListWin::Next( int ch )
+void SCListWin::Next( unicode_t ch )
 {
 	unicode_t c = UnicodeLC( ch );
 	int i;

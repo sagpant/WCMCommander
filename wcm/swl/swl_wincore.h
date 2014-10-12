@@ -4,6 +4,10 @@
 
 #pragma once
 
+#if defined( _MSC_VER )
+#	pragma warning( disable:4100 ) // C4100 : unreferenced formal parameter
+#endif
+
 #ifdef _WIN32
 #	if !defined( NOMINMAX )
 #		define NOMINMAX

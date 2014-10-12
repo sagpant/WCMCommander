@@ -91,7 +91,7 @@ void FSPath::_Set( int cs, const void* v )
 	}
 }
 
-void FSPath::MakeCache( int cs, int splitter )
+void FSPath::MakeCache( int cs, unicode_t splitter )
 {
 	ASSERT( data.count() >= 0 );
 
