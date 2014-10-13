@@ -1911,7 +1911,7 @@ void EditWin::__DrawChanges()
 				EditScreenChar* t = p + 1;
 				p->changed = false;
 
-				for ( ; t->ch == ' ' && t < pe && t->changed && t->bColor == p->bColor; t++ )
+				for ( ; t < pe && t->ch == ' ' && t->changed && t->bColor == p->bColor; t++ )
 				{
 					t->changed = false;
 				}
