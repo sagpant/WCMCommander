@@ -166,8 +166,8 @@ int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher,
 
 		int maxLen = pSearcher->MaxLen();
 		int minLen = pSearcher->MinLen();
-		int bufSize = 16000 + maxLen;
-		std::vector<char> buf( bufSize );
+		int bufSize = 16000;
+		std::vector<char> buf( bufSize + maxLen );
 
 		bytes =  fs->Read( fd, buf.data(), bufSize, err, info );
 
