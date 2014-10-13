@@ -2011,7 +2011,7 @@ void EditWin::Paint( wal::GC& gc, const crect& paintRect )
 				EditScreenChar* t = p + 1;
 				p->changed = false;
 
-				for ( ; t->ch == ' ' && t < pe && t->bColor == p->bColor; t++ )
+				for ( ; t < pe && t->ch == ' ' && t->bColor == p->bColor; t++ )
 				{
 					t->changed = false;
 				}
@@ -2027,7 +2027,7 @@ void EditWin::Paint( wal::GC& gc, const crect& paintRect )
 			EditScreenChar* t = p + 1;
 			p->changed = false;
 
-			for ( ; t < pe  && t->bColor == p->bColor && t->fColor == p->fColor; t++ )
+			for ( ; t < pe && t->bColor == p->bColor && t->fColor == p->fColor; t++ )
 			{
 				t->changed = false;
 			}
