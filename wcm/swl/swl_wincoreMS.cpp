@@ -924,7 +924,7 @@ namespace wal
 
 
 	GC::GC( Win* win )
-		:  handle( ::GetWindowDC( win ? win->GetID() : 0 ) ),
+		:  handle( ::GetDC( win ? win->GetID() : 0 ) ),
 		   needDelete( true ),
 		   savedPen( 0 ),
 		   savedBrush( 0 ),
