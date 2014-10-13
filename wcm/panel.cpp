@@ -122,7 +122,7 @@ void PanelSearchWin::EndSearch( cevent_key* pEvent )
 {
 	EndModal( 0 );
 
-	if ( pEvent )
+//	if ( pEvent )
 	{
 		ret_key = pEvent;
 	}
@@ -225,7 +225,7 @@ bool PanelSearchWin::EventShow( bool show )
 PanelSearchWin::~PanelSearchWin() {}
 
 
-clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
+cevent_key* PanelWin::QuickSearch( cevent_key* key )
 {
 	_search = new PanelSearchWin( this, key );
 	crect r = _footRect;
@@ -236,7 +236,7 @@ clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 
 	_search->DoModal();
 
-	clPtr<cevent_key> ret = _search->ret_key;
+	cevent_key* ret = _search->ret_key;
 	_search = nullptr;
 
 	return ret;

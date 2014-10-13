@@ -309,7 +309,7 @@ namespace wal
 	   KM_ALT  = 0x0004
 	};
 
-	class cevent: public iIntrusiveCounter
+	class cevent//: public iIntrusiveCounter
 	{
 		int type;
 	public:
