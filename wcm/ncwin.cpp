@@ -2622,7 +2622,6 @@ bool NCAutocompleteList::EventMouse( cevent_mouse* pEvent )
 	return Result;
 }
 
-
 std::vector<unicode_t> NCWin::FetchAndClearCommandLine()
 {
 	std::vector<unicode_t> txt = m_Edit.GetText();
@@ -2638,6 +2637,15 @@ bool IsCommand_CD( const unicode_t* p )
 	return ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' );
 #else
 	return ( p[0] == 'c' && p[1] == 'd' && ( !p[2] || p[2] == ' ' ) );
+#endif
+}
+
+bool IsCommand_CLS( const unicode_t* p )
+{
+#ifdef _WIN32
+	return ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' );
+#else
+	return ( p[0] == 'c' && p[1] == 'l' && ( !p[2] || p[2] == ' ' ) );
 #endif
 }
 
@@ -2730,6 +2738,109 @@ std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
 	return Out;
 }
 
+bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
+{
+	// make a mutable copy
+	std::vector<unicode_t> copy = new_unicode_str( cmd );
+
+	unicode_t* p = copy.data();
+
+	//change dir
+	_history.Put( p );
+	p += 2;
+
+	SkipSpaces( p );
+
+	std::vector<unicode_t> Path = ConvertCDArgToPath( p );
+
+	p = Path.data();
+
+	unicode_t* lastNoSpace = nullptr;
+
+	for ( unicode_t* s = p; *s; s++ )
+	{
+		if ( *s != ' ' ) { lastNoSpace = s; }
+	}
+
+	if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
+
+	clPtr<FS> checkFS[2];
+	checkFS[0] = _panel->GetFSPtr();
+	checkFS[1] = GetOtherPanel()->GetFSPtr();
+
+	FSPath path = _panel->GetPath();
+
+	ccollect<unicode_t, 0x100> pre;
+	int sc = 0;
+
+	while ( *p )
+	{
+		if ( sc )
+		{
+			if ( *p == sc ) { sc = 0;  p++; continue; }
+		}
+		else if ( *p == '\'' || *p == '"' )
+		{
+			sc = *p;
+			p++;
+			continue;
+		}
+#ifndef _WIN32
+		if ( *p == '\\' && !sc ) { p++; }
+#endif
+		if ( !p ) { break; }
+
+		pre.append( *p );
+		p++;
+	}
+
+	pre.append( 0 );
+	p = pre.ptr();
+
+	clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
+
+	if ( fs.IsNull() )
+	{
+		char buf[4096];
+		FSString name = p;
+		Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
+		NCMessageBox( this, "CD", buf, true );
+	}
+	else
+	{
+		_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
+	}
+
+	return true;
+}
+
+bool NCWin::ProcessCommand_CLS( const unicode_t* cmd )
+{
+	_terminal.TerminalReset( true );
+	return true;
+}
+
+bool NCWin::ProcessBuiltInCommands( const unicode_t* cmd )
+{
+#if defined( _WIN32 ) || defined( __APPLE__ )
+	bool CaseSensitive = false;
+#else
+	bool CaseSensitive = true;
+#endif
+
+	if ( IsEqual_Unicode_CStr( cmd, "cls", CaseSensitive ) )
+	{
+		ProcessCommand_CLS( cmd );
+	}
+	else if ( IsCommand_CD( cmd ) )
+	{
+		ProcessCommand_CD( cmd );
+		return true;
+	}
+
+	return false;
+}
+
 bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal )
 {
 	const unicode_t* p = cmd.data();
@@ -2742,80 +2853,7 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 	if ( *p )
 	{
-		if ( IsCommand_CD( p ) )
-		{
-			// make a mutable copy
-			std::vector<unicode_t> copy( cmd );
-
-			unicode_t* p = copy.data();
-
-			//change dir
-			_history.Put( p );
-			p += 2;
-
-			SkipSpaces( p );
-
-			std::vector<unicode_t> Path = ConvertCDArgToPath( p );
-
-			p = Path.data();
-
-			unicode_t* lastNoSpace = 0;
-
-			for ( unicode_t* s = p; *s; s++ )
-			{
-				if ( *s != ' ' ) { lastNoSpace = s; }
-			}
-
-			if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
-
-			clPtr<FS> checkFS[2];
-			checkFS[0] = _panel->GetFSPtr();
-			checkFS[1] = GetOtherPanel()->GetFSPtr();
-
-			FSPath path = _panel->GetPath();
-
-			ccollect<unicode_t, 0x100> pre;
-			int sc = 0;
-
-			while ( *p )
-			{
-				if ( sc )
-				{
-					if ( *p == sc ) { sc = 0;  p++; continue; }
-				}
-				else if ( *p == '\'' || *p == '"' )
-				{
-					sc = *p;
-					p++;
-					continue;
-				}
-#ifndef _WIN32
-				if ( *p == '\\' && !sc ) { p++; }
-#endif
-				if ( !p ) { break; }
-
-				pre.append( *p );
-				p++;
-			}
-
-			pre.append( 0 );
-			p = pre.ptr();
-
-			clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
-
-			if ( fs.IsNull() )
-			{
-				char buf[4096];
-				FSString name = p;
-				Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
-				NCMessageBox( this, "CD", buf, true );
-			}
-			else
-			{
-				_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
-			}
-		}
-		else
+		if ( !ProcessBuiltInCommands( p ) )
 		{
 #ifndef _WIN32
 			if ( p[0] == '&' || ForceNoTerminal )

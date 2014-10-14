@@ -376,4 +376,9 @@ public:
 
 	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
 	bool StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode );
+
+private:
+	bool ProcessCommand_CD( const unicode_t* cmd );
+	bool ProcessCommand_CLS( const unicode_t* cmd );
+	bool ProcessBuiltInCommands( const unicode_t* cmd );
 };
