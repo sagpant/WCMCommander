@@ -1,8 +1,21 @@
 0.18.0 GitHub Edition
 	Added: hotkeys in dialogs
+	Added: show spaces in input fields is shown as the · character
+	Added: show inner/trailing spaces in files/folders as the · character (option)
+	Added: numpad keys support while NumLock is disabled
+	Added: option to turn on/off the 3D UI (buttons, etc)
 	Hotkey: Shift+Tab to switch between controls in dialogs
 	Improved: CR/LF handling in the editor on Linux and OS X
 	Improved: window size selection on fresh install
+	Improved: handling of 'cd' command
+	Improved: show program info in the task manager on Windows
+	Improved: Shift+arrows selection in panels is now similar to Far Manager
+	Improved: begaviour of Ctrl+[ and Ctrl+]
+	Improved: default font on Windows is Consolas 12pt
+	Fixed: memory overruns in SFTP and SFTP2
+	Fixed: Ctrl+Left in the editor never skips the begginning of the line
+	Development: Qt Creator configs for OS X
+	Development: fixed many compilation warnings
 
 0.17.1 GitHub Edition
 	Added: xprop can report a class name for WCM windows
