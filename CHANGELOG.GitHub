@@ -12,6 +12,7 @@
 	Fixed: crash in Alt-search
 	Fixed: wrong device context for child windows
 	Fixed: editor search bug
+	Fixed: tab-order in the file associations dialog
 	Updated: readme, docs, localization
 	Development: Debian package building
 	Development: disabled level 4 warnings	
