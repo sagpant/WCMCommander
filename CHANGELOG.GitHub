@@ -14,6 +14,10 @@
 	Fixed: tab size edit line location in Options -> Editor settings
 	Fixed: Ctrl+Right in the editor never skips the begginning of the line
 	Fixed: multimask file associations (separated with commas) were not working properly
+	Fixed: buffer overruns in the editor
+	Fixed: crash in Alt-search
+	Fixed: wrong device context for child windows
+	Fixed: editor search bug
 	Updated: readme, docs, localization
 	Development: Debian package building
 	Development: disabled level 4 warnings	
