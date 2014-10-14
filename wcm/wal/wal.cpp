@@ -3,6 +3,7 @@
 */
 
 #include "wal.h"
+#include "../unicode_lc.h"
 
 namespace wal
 {
@@ -297,4 +298,26 @@ namespace wal
 		}
 	}
 
+	bool IsEqual_Unicode_CStr( const unicode_t* U, const char* S, bool CaseSensitive )
+	{
+		if ( !U && !S ) return true;
+		if ( !U ) return false;
+		if ( !S ) return false;
+
+		const unicode_t* UPtr = U;
+		const char*      SPtr = S;
+
+		while ( *UPtr || *SPtr )
+		{
+			unicode_t ChU = CaseSensitive ? *UPtr : UnicodeLC( *UPtr );
+			char      ChS = CaseSensitive ? *SPtr : tolower( *SPtr );
+
+			if ( ChU != ChS ) return false;
+
+			UPtr++;
+			SPtr++;
+		}
+
+		return true;
+	}
 }; //namespace wal

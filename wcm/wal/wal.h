@@ -443,6 +443,8 @@ namespace wal
 	void ReplaceSpaces( std::vector<unicode_t>* S );
 	/// replace trailing tabs and spaces with the U+00B7 character
 	void ReplaceTrailingSpaces( std::vector<unicode_t>* S );
+	/// compare unicode_t* string to char* string
+	bool IsEqual_Unicode_CStr( const unicode_t* U, const char* S, bool CaseSensitive = true );
 }; //namespace wal
 
 #endif
