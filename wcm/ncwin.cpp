@@ -2640,15 +2640,6 @@ bool IsCommand_CD( const unicode_t* p )
 #endif
 }
 
-bool IsCommand_CLS( const unicode_t* p )
-{
-#ifdef _WIN32
-	return ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' );
-#else
-	return ( p[0] == 'c' && p[1] == 'l' && ( !p[2] || p[2] == ' ' ) );
-#endif
-}
-
 bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 {
 	if ( !Out ) return false;
@@ -2831,6 +2822,7 @@ bool NCWin::ProcessBuiltInCommands( const unicode_t* cmd )
 	if ( IsEqual_Unicode_CStr( cmd, "cls", CaseSensitive ) )
 	{
 		ProcessCommand_CLS( cmd );
+		return true;
 	}
 	else if ( IsCommand_CD( cmd ) )
 	{
