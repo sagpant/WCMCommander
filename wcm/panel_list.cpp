@@ -7,6 +7,7 @@
 #include "panel_list.h"
 #include "wcm-config.h"
 #include "globals.h"
+#include "strmasks.h"
 
 using namespace wal;
 
@@ -83,56 +84,6 @@ void PanelList::Sort()
 			break;
 	}
 }
-
-
-bool accmask( const unicode_t* name, const unicode_t* mask )
-{
-	if ( !*mask )
-	{
-		return *name == 0;
-	}
-
-	while ( true )
-	{
-		switch ( *mask )
-		{
-			case 0:
-				for ( ; *name ; name++ )
-					if ( *name != '*' )
-					{
-						return false;
-					}
-
-				return true;
-
-			case '?':
-				break;
-
-			case '*':
-				while ( *mask == '*' ) { mask++; }
-
-				if ( !*mask ) { return true; }
-
-				for ( ; *name; name++ )
-					if ( accmask( name, mask ) )
-					{
-						return true;
-					}
-
-				return false;
-
-			default:
-				if ( *name != *mask )
-				{
-					return false;
-				}
-		}
-
-		name++;
-		mask++;
-	}
-}
-
 
 void PanelList::Mark( const unicode_t* mask, bool enable )
 {

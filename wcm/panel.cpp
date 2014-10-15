@@ -18,6 +18,7 @@
 #include "color-style.h"
 #include "string-util.h"
 #include "unicode_lc.h"
+#include "strmasks.h"
 
 #include "icons/folder3.xpm"
 #include "icons/folder.xpm"
@@ -240,48 +241,6 @@ cevent_key* PanelWin::QuickSearch( cevent_key* key )
 	_search = nullptr;
 
 	return ret;
-}
-
-bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
-{
-	if ( !*mask )
-	{
-		return *name == 0;
-	}
-
-	while ( true )
-	{
-		switch ( *mask )
-		{
-			case 0:
-				return true;
-
-			case '?':
-				break;
-
-			case '*':
-				while ( *mask == '*' ) { mask++; }
-
-				if ( !*mask ) { return true; }
-
-				for ( ; *name; name++ )
-					if ( accmask_nocase_begin( name, mask ) )
-					{
-						return true;
-					}
-
-				return false;
-
-			default:
-				if ( UnicodeLC( *name ) != UnicodeLC( *mask ) )
-				{
-					return false;
-				}
-		}
-
-		name++;
-		mask++;
-	}
 }
 
 NCWin* PanelWin::GetNCWin()

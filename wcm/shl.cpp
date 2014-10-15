@@ -5,6 +5,7 @@
  */
 
 #include "shl.h"
+#include "strmasks.h"
 
 namespace SHL
 {
@@ -1212,54 +1213,6 @@ begin:
 
 	ShlConf::ShlConf()
 	{
-	}
-
-	static bool accmask( const unicode_t* name, const unicode_t* mask )
-	{
-		if ( !*mask )
-		{
-			return *name == 0;
-		}
-
-		while ( true )
-		{
-			switch ( *mask )
-			{
-				case 0:
-					for ( ; *name ; name++ )
-						if ( *name != '*' )
-						{
-							return false;
-						}
-
-					return true;
-
-				case '?':
-					break;
-
-				case '*':
-					while ( *mask == '*' ) { mask++; }
-
-					if ( !*mask ) { return true; }
-
-					for ( ; *name; name++ )
-						if ( accmask( name, mask ) )
-						{
-							return true;
-						}
-
-					return false;
-
-				default:
-					if ( *name != *mask )
-					{
-						return false;
-					}
-			}
-
-			name++;
-			mask++;
-		}
 	}
 
 	Shl* ShlConf::Get( const char* name, cstrhash<int>& colors )
