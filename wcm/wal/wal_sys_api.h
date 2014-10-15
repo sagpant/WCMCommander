@@ -35,7 +35,7 @@ namespace wal
 	//typedef unsigned short sys_char_t;
 	typedef wchar_t sys_char_t;
 
-	inline int sys_strlen( const sys_char_t* s ) { return wcslen( s ); }
+	inline int sys_strlen( const sys_char_t* s ) { return int(wcslen( s )); }
 
 	typedef HANDLE file_t;
 

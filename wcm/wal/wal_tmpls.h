@@ -175,7 +175,7 @@ namespace wal
 
 	template <class T, size_t Step> inline int ccollect<T, Step>::count() const
 	{
-		return m_data.size();
+		return int(m_data.size());
 	}
 
 /// hash tables ////////////////////////////////////////////////////////////////////////////

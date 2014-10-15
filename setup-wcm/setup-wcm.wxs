@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+      WiX-инсталлятор WalCommander.
+      
+      Разработчики:
+                    Артём Н. Алексеев <aralex@inze.net>
+-->
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product
+    Id="57616C43-6F6D-6D61-6E64-657200010000"
+    Name="WalCommander"
+    Language="1049"
+    Codepage="1251"
+    Version="0.17.1.1"
+    Manufacturer="corporateshark"
+    UpgradeCode="57616C43-6F6D-6D61-6E64-657201010000">
+    <!--
+      GUID: 57616C43-6F6D-6D61-6E64-65720uppggnn
+    
+      u - признак GUID-а для upgrade-а (1).
+      pp - номер продукта.
+      gg - номер группы компонентов (продукта).
+      nn - номер компонента продукта.
+    -->
+    
+    <Package
+      InstallerVersion="200"
+      Compressed="yes"
+      SummaryCodepage="1251"
+      Description="Пакет установки программы WalCommander"
+      Manufacturer="corporateshark"
+      Comments="..." />
+    
+    <Icon Id="icon1.ico" SourceFile="$(var.SolutionDir)wcm\small.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon1.ico" />
+    
+    <Property Id="MSIFASTINSTALL" Value="1" />
+    
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.SolutionDir)LICENSE.rtf" />
+    
+    <Media Id="1" Cabinet="WalCommander.cab" EmbedCab="yes" />
+
+    <!-- Виртуальный корневой каталог -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+
+      <!-- Каталог Program Files\Atlas-Kard\wcm -->
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALL_LOCATION" Name="WalCommander">
+          <Directory Id="SUBDIR_fonts" Name="fonts">
+          </Directory>
+          <Directory Id="SUBDIR_lang" Name="lang">
+          </Directory>
+          <Directory Id="SUBDIR_shl" Name="shl">
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <!-- Рабочий стол -->
+      <Directory Id="DesktopFolder" />
+
+      <!-- Пуск\Программы\Demo Application -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="CompanyNameFolder3" Name="WalCommander" />
+      </Directory>
+      
+    </Directory>
+
+    <!-- Пиктограмма, извлекаемая из исполняемого (.exe) файла -->
+    <Icon Id="wcm.exe" SourceFile="$(var.wcm.TargetPath)" />
+
+    <!-- Содержимое для размещения в каталоге с идентификатором INSTALL_LOCATION -->
+    <DirectoryRef Id="INSTALL_LOCATION">
+      <Component Id="wcmExeComponent" Guid="41746C61-732D-4B61-7264-000000010001">
+        <File Id="wcmExe" Name="$(var.wcm.TargetFileName)" Source="$(var.wcm.TargetPath)" DiskId="1" KeyPath="yes" >
+          <!-- Ярлык для запуска программы -->
+          <Shortcut Id="DesktopShortcut" Name="WalCommander" Description="Запуск программы WalCommander" WorkingDirectory="DATA_LOCATION" Directory="DesktopFolder" Advertise="yes" Icon="$(var.wcm.TargetFileName)" />
+          <Shortcut Id="ProgramsMenuShortcut" Name="WalCommander" Description="Запуск программы WalCommander" WorkingDirectory="DATA_LOCATION" Directory="CompanyNameFolder3" Advertise="yes" Icon="$(var.wcm.TargetFileName)" />
+        </File>
+
+        <RemoveFolder Id='RemoveCompanyNameFolder3' Directory='CompanyNameFolder3' On='uninstall' />
+      </Component>
+      
+      <Component Id="COMP_00_00" Guid="57616C43-6F6D-6D61-6E64-657200010000">
+        <File Id="F_00_00" Name="config.default" Source="$(var.SolutionDir)wcm\install-files\share\wcm\config.default" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_00_01" Guid="57616C43-6F6D-6D61-6E64-657200010001">
+        <File Id="F_00_01" Name="small.ico" Source="$(var.SolutionDir)wcm\small.ico" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+
+    <DirectoryRef Id="SUBDIR_fonts">
+      <Component Id="COMP_01_00" Guid="57616C43-6F6D-6D61-6E64-657200010100">
+        <File Id="F_01_00" Name="DejaVuSans-Bold.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\DejaVuSans-Bold.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_01_01" Guid="57616C43-6F6D-6D61-6E64-657200010101">
+        <File Id="F_01_01" Name="DejaVuSans.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\DejaVuSans.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_01_02" Guid="57616C43-6F6D-6D61-6E64-657200010102">
+        <File Id="F_01_02" Name="DejaVuSansMono-Bold.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\DejaVuSansMono-Bold.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_01_03" Guid="57616C43-6F6D-6D61-6E64-657200010103">
+        <File Id="F_01_03" Name="DejaVuSansMono.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\DejaVuSansMono.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_01_04" Guid="57616C43-6F6D-6D61-6E64-657200010104">
+        <File Id="F_01_04" Name="DejaVuSerif-Bold.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\DejaVuSerif-Bold.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_01_05" Guid="57616C43-6F6D-6D61-6E64-657200010105">
+        <File Id="F_01_05" Name="DejaVuSerif.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\DejaVuSerif.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_01_06" Guid="57616C43-6F6D-6D61-6E64-657200010106">
+        <File Id="F_01_06" Name="DejaVuSerifCondensed-Bold.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\DejaVuSerifCondensed-Bold.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_01_07" Guid="57616C43-6F6D-6D61-6E64-657200010107">
+        <File Id="F_01_07" Name="DejaVuSerifCondensed.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\DejaVuSerifCondensed.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_01_08" Guid="57616C43-6F6D-6D61-6E64-657200010108">
+        <File Id="F_01_08" Name="LiberationMono-Regular.ttf" Source="$(var.SolutionDir)wcm\install-files\share\wcm\fonts\LiberationMono-Regular.ttf" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="SUBDIR_lang">
+      <Component Id="COMP_02_00" Guid="57616C43-6F6D-6D61-6E64-657200010200">
+        <File Id="F_02_00" Name="help.ru" Source="$(var.SolutionDir)wcm\install-files\share\wcm\lang\help.ru" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_02_01" Guid="57616C43-6F6D-6D61-6E64-657200010201">
+        <File Id="F_02_01" Name="list" Source="$(var.SolutionDir)wcm\install-files\share\wcm\lang\list" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_02_02" Guid="57616C43-6F6D-6D61-6E64-657200010202">
+        <File Id="F_02_02" Name="ltext.ru" Source="$(var.SolutionDir)wcm\install-files\share\wcm\lang\ltext.ru" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="SUBDIR_shl">
+      <Component Id="COMP_03_00" Guid="57616C43-6F6D-6D61-6E64-657200010300">
+        <File Id="F_03_00" Name="c.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\c.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_01" Guid="57616C43-6F6D-6D61-6E64-657200010301">
+        <File Id="F_03_01" Name="config.cfg" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\config.cfg" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_02" Guid="57616C43-6F6D-6D61-6E64-657200010302">
+        <File Id="F_03_02" Name="config.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\config.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_03" Guid="57616C43-6F6D-6D61-6E64-657200010303">
+        <File Id="F_03_03" Name="cpp.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\cpp.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_04" Guid="57616C43-6F6D-6D61-6E64-657200010304">
+        <File Id="F_03_04" Name="glsl.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\glsl.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_05" Guid="57616C43-6F6D-6D61-6E64-657200010305">
+        <File Id="F_03_05" Name="java.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\java.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_06" Guid="57616C43-6F6D-6D61-6E64-657200010306">
+        <File Id="F_03_06" Name="latex.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\latex.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_07" Guid="57616C43-6F6D-6D61-6E64-657200010307">
+        <File Id="F_03_07" Name="pas.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\pas.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_08" Guid="57616C43-6F6D-6D61-6E64-657200010308">
+        <File Id="F_03_08" Name="perl.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\perl.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_09" Guid="57616C43-6F6D-6D61-6E64-657200010309">
+        <File Id="F_03_09" Name="php.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\php.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_0A" Guid="57616C43-6F6D-6D61-6E64-65720001030A">
+        <File Id="F_03_0A" Name="python.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\python.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_0B" Guid="57616C43-6F6D-6D61-6E64-65720001030B">
+        <File Id="F_03_0B" Name="sh.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\sh.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_0C" Guid="57616C43-6F6D-6D61-6E64-65720001030C">
+        <File Id="F_03_0C" Name="shl.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\shl.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_0D" Guid="57616C43-6F6D-6D61-6E64-65720001030D">
+        <File Id="F_03_0D" Name="shlconfig.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\shlconfig.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_0E" Guid="57616C43-6F6D-6D61-6E64-65720001030E">
+        <File Id="F_03_0E" Name="shlconfig_v2.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\shlconfig_v2.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_0F" Guid="57616C43-6F6D-6D61-6E64-65720001030F">
+        <File Id="F_03_0F" Name="sql.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\sql.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_10" Guid="57616C43-6F6D-6D61-6E64-657200010310">
+        <File Id="F_03_10" Name="undef.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\undef.shl" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_03_11" Guid="57616C43-6F6D-6D61-6E64-657200010311">
+        <File Id="F_03_11" Name="xml.shl" Source="$(var.SolutionDir)wcm\install-files\share\wcm\shl\xml.shl" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+
+    <!-- Именованные наборы компонентов -->
+    <Feature Id="wcm" Title="wcm" Description="Программа WalCommander." Level="1" ConfigurableDirectory="INSTALL_LOCATION">
+      <ComponentRef Id="wcmExeComponent" />
+      
+      <ComponentRef Id="COMP_00_00" />
+      <ComponentRef Id="COMP_00_01" />
+      
+      <ComponentRef Id="COMP_01_00" />
+      <ComponentRef Id="COMP_01_01" />
+      <ComponentRef Id="COMP_01_02" />
+      <ComponentRef Id="COMP_01_03" />
+      <ComponentRef Id="COMP_01_04" />
+      <ComponentRef Id="COMP_01_05" />
+      <ComponentRef Id="COMP_01_06" />
+      <ComponentRef Id="COMP_01_07" />
+      <ComponentRef Id="COMP_01_08" />
+      <ComponentRef Id="COMP_02_00" />
+      <ComponentRef Id="COMP_02_01" />
+      <ComponentRef Id="COMP_02_02" />
+      <ComponentRef Id="COMP_03_00" />
+      <ComponentRef Id="COMP_03_01" />
+      <ComponentRef Id="COMP_03_02" />
+      <ComponentRef Id="COMP_03_03" />
+      <ComponentRef Id="COMP_03_04" />
+      <ComponentRef Id="COMP_03_05" />
+      <ComponentRef Id="COMP_03_06" />
+      <ComponentRef Id="COMP_03_07" />
+      <ComponentRef Id="COMP_03_08" />
+      <ComponentRef Id="COMP_03_09" />
+      <ComponentRef Id="COMP_03_0A" />
+      <ComponentRef Id="COMP_03_0B" />
+      <ComponentRef Id="COMP_03_0C" />
+      <ComponentRef Id="COMP_03_0D" />
+      <ComponentRef Id="COMP_03_0E" />
+      <ComponentRef Id="COMP_03_0F" />
+      <ComponentRef Id="COMP_03_10" />
+      <ComponentRef Id="COMP_03_11" />
+      
+    </Feature>
+        
+
+    <!-- Интерфейс пользователя -->
+    <UI Id="MyWixUI_Mondo">
+      <UIRef Id="WixUI_Mondo" />
+      <UIRef Id="WixUI_ErrorProgressText" />
+    </UI>
+
+  </Product>
+
+</Wix>
