@@ -240,9 +240,13 @@ void OperSearchThread::SearchDir( FS* fs, FSPath path, MegaSearcher* pSearcher )
 
 	int i;
 
+	std::vector<unicode_t> Mask = new_unicode_str( mask );
+
 	for ( i = 0; i < count; i++ )
 	{
-		if ( accmask_nocase( p[i]->Name().GetUnicode(), mask ) )
+		clMultimaskSplitter Splitter( Mask );
+
+		if ( Splitter.CheckAndFetchAllMasks_NoCase( p[i]->Name().GetUnicode() ) )
 		{
 			charset_struct* charset = 0;
 
