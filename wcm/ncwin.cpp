@@ -43,6 +43,7 @@
 #include "shell-tools.h"
 #include "dircalc.h"
 #include "ltext.h"
+#include "strmasks.h"
 
 #ifndef _WIN32
 #  include "ux_util.h"
@@ -993,53 +994,6 @@ void NCWin::RightButtonPressed( cpoint point )
 	return;
 }
 
-bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask );
-bool accmask( const unicode_t* name, const unicode_t* mask );
-
-class clMultimaskSplitter
-{
-public:
-	explicit clMultimaskSplitter( const std::vector<unicode_t>& MultiMask )
-	 : m_MultiMask( MultiMask )
-	 , m_CurrentPos( 0 )
-	{}
-
-	bool HasNextMask() const
-	{
-		return m_CurrentPos < m_MultiMask.size();
-	}
-
-	std::vector<unicode_t> GetNextMask()
-	{
-		size_t Next = m_CurrentPos;
-
-		// find the nearest ','
-		while ( Next < m_MultiMask.size() && m_MultiMask[Next] != ',' ) Next++;
-
-		if ( m_CurrentPos == Next ) return std::vector<unicode_t>();
-
-		std::vector<unicode_t> Result( m_MultiMask.begin()+m_CurrentPos, m_MultiMask.begin()+Next );
-
-		if ( Next < m_MultiMask.size() && m_MultiMask[Next] == ',' )
-		{
-			// skip ','
-			Next++;
-			// and trailing spaces
-			while ( Next < m_MultiMask.size() && m_MultiMask[Next] <= ' ' ) Next++;
-		}
-
-		m_CurrentPos = Next;
-
-		Result.push_back( 0 );
-
-		return Result;
-	}
-
-private:
-	const std::vector<unicode_t>& m_MultiMask;
-	size_t m_CurrentPos;
-};
-
 const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
 {
 	for ( auto i = m_FileAssociations.begin(); i != m_FileAssociations.end(); i++ )
@@ -1048,19 +1002,7 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 
 		clMultimaskSplitter Splitter( Mask );
 
-		while ( Splitter.HasNextMask() )
-		{
-			if (
-#if defined( _WIN32 ) || defined( __APPLE__ )
-				accmask_nocase_begin
-#else
-				accmask
-#endif
-				( FileName, Splitter.GetNextMask().data() ) )
-			{
-				return &(*i);
-			}
-		}
+		if ( Splitter.CheckAndFetchAllMasks( FileName ) ) return &(*i);
 	}
 
 	return NULL;

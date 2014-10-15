@@ -11,6 +11,7 @@ using namespace wal;
 #include "string-util.h"
 #include "ext-app.h"
 #include "unicode_lc.h"
+#include "strmasks.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/time.h>
@@ -452,55 +453,6 @@ void MimeGlobs::Refresh()
 
 	return;
 }
-
-static bool accmask( const unicode_t* name, const unicode_t* mask )
-{
-	if ( !*mask )
-	{
-		return *name == 0;
-	}
-
-	while ( true )
-	{
-		switch ( *mask )
-		{
-			case 0:
-				for ( ; *name ; name++ )
-					if ( *name != '*' )
-					{
-						return false;
-					}
-
-				return true;
-
-			case '?':
-				break;
-
-			case '*':
-				while ( *mask == '*' ) { mask++; }
-
-				if ( !*mask ) { return true; }
-
-				for ( ; *name; name++ )
-					if ( accmask( name, mask ) )
-					{
-						return true;
-					}
-
-				return false;
-
-			default:
-				if ( *name != *mask )
-				{
-					return false;
-				}
-		}
-
-		name++;
-		mask++;
-	}
-}
-
 
 int MimeGlobs::GetMimeList( const unicode_t* fileName, ccollect<int>& list )
 {

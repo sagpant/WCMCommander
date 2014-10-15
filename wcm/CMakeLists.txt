@@ -94,6 +94,7 @@ SET(wcm_SOURCES
 	shortcuts.cpp
 	smblogon.cpp
 	strconfig.cpp
+	strmasks.cpp
 	swl/swl_button.cpp
 	swl/swl_editline.cpp
 	swl/swl_layout.cpp

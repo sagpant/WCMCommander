@@ -10,6 +10,7 @@
 #include "search-tools.h"
 #include "ltext.h"
 #include "unicode_lc.h"
+#include "strmasks.h"
 
 #include <unordered_map>
 
@@ -105,54 +106,6 @@ public:
 	void Search();
 	virtual ~OperSearchThread();
 };
-
-static bool accmask_nocase( const unicode_t* name, const unicode_t* mask )
-{
-	if ( !*mask )
-	{
-		return *name == 0;
-	}
-
-	while ( true )
-	{
-		switch ( *mask )
-		{
-			case 0:
-				for ( ; *name ; name++ )
-					if ( *name != '*' )
-					{
-						return false;
-					}
-
-				return true;
-
-			case '?':
-				break;
-
-			case '*':
-				while ( *mask == '*' ) { mask++; }
-
-				if ( !*mask ) { return true; }
-
-				for ( ; *name; name++ )
-					if ( accmask_nocase( name, mask ) )
-					{
-						return true;
-					}
-
-				return false;
-
-			default:
-				if ( UnicodeLC( *name ) != UnicodeLC( *mask ) ) //(*name != *mask)
-				{
-					return false;
-				}
-		}
-
-		name++;
-		mask++;
-	}
-}
 
 int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher, int* err, FSCInfo* info, charset_struct** rCS ) //-2 - stop, -1 - err, 1 - true, 0 - false
 {
