@@ -1,0 +1,1 @@
+@perl -n gen_wix_comps.pl %1 %2 %3 %4
