@@ -1027,7 +1027,7 @@ void LoadEditorPositions()
 	{
 		std::vector<char> Line = Positions[i];
 
-		if ( !Line.data( ) || *Line.data( ) ) break;
+		if ( !Line.data() ) break;
 
 		int FL, L, P;
 		char Buf[0xFFFF];
@@ -1060,7 +1060,7 @@ void LoadViewerPositions()
 	{
 		std::vector<char> Line = Positions[i];
 
-		if ( !Line.data( ) || *Line.data( ) ) break;
+		if ( !Line.data() ) break;
 
 		int L;
 		char Buf[0xFFFF];
