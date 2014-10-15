@@ -10,10 +10,10 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product
     Id="57616C43-6F6D-6D61-6E64-657200010000"
-    Name="Wal commander"
+    Name="WalCommander"
     Language="1049"
     Codepage="1251"
-    Version="0.17.1"
+    Version="0.17.1.1"
     Manufacturer="corporateshark"
     UpgradeCode="57616C43-6F6D-6D61-6E64-657201010000">
     <!--
@@ -38,7 +38,7 @@
     
     <Property Id="MSIFASTINSTALL" Value="1" />
     
-    <WixVariable Id="WixUILicenseRtf" Value="$(var.SolutionDir)LICENSE" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.SolutionDir)LICENSE.rtf" />
     
     <Media Id="1" Cabinet="WalCommander.cab" EmbedCab="yes" />
 
@@ -75,11 +75,18 @@
       <Component Id="wcmExeComponent" Guid="41746C61-732D-4B61-7264-000000010001">
         <File Id="wcmExe" Name="$(var.wcm.TargetFileName)" Source="$(var.wcm.TargetPath)" DiskId="1" KeyPath="yes" >
           <!-- Ярлык для запуска программы -->
-          <Shortcut Id="DesktopShortcut" Name="Wal Commander" Description="Запуск программы WalCommander" WorkingDirectory="DATA_LOCATION" Directory="DesktopFolder" Advertise="yes" Icon="$(var.wcm.TargetFileName)" />
-          <Shortcut Id="ProgramsMenuShortcut" Name="Wal Commander" Description="Запуск программы WalCommander" WorkingDirectory="DATA_LOCATION" Directory="CompanyNameFolder3" Advertise="yes" Icon="$(var.wcm.TargetFileName)" />
+          <Shortcut Id="DesktopShortcut" Name="WalCommander" Description="Запуск программы WalCommander" WorkingDirectory="DATA_LOCATION" Directory="DesktopFolder" Advertise="yes" Icon="$(var.wcm.TargetFileName)" />
+          <Shortcut Id="ProgramsMenuShortcut" Name="WalCommander" Description="Запуск программы WalCommander" WorkingDirectory="DATA_LOCATION" Directory="CompanyNameFolder3" Advertise="yes" Icon="$(var.wcm.TargetFileName)" />
         </File>
 
         <RemoveFolder Id='RemoveCompanyNameFolder3' Directory='CompanyNameFolder3' On='uninstall' />
+      </Component>
+      
+      <Component Id="COMP_00_00" Guid="57616C43-6F6D-6D61-6E64-657200010000">
+        <File Id="F_00_00" Name="config.default" Source="$(var.SolutionDir)wcm\install-files\share\wcm\config.default" KeyPath="yes" />
+      </Component>
+      <Component Id="COMP_00_01" Guid="57616C43-6F6D-6D61-6E64-657200010001">
+        <File Id="F_00_01" Name="small.ico" Source="$(var.SolutionDir)wcm\small.ico" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
@@ -185,6 +192,9 @@
     <!-- Именованные наборы компонентов -->
     <Feature Id="wcm" Title="wcm" Description="Программа WalCommander." Level="1" ConfigurableDirectory="INSTALL_LOCATION">
       <ComponentRef Id="wcmExeComponent" />
+      
+      <ComponentRef Id="COMP_00_00" />
+      <ComponentRef Id="COMP_00_01" />
       
       <ComponentRef Id="COMP_01_00" />
       <ComponentRef Id="COMP_01_01" />
