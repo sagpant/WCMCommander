@@ -1,5 +1,8 @@
 # platform-specific options and dependencies
-IF(NOT MINGW)
+IF(MINGW)
+	# libssh2 is bundled, others are not needed
+	SET(wcm_LIBS gdi32 wsock32 mpr)
+ELSE(MINGW)
 	FIND_PACKAGE(Threads)
 	FIND_PACKAGE(X11)
 
@@ -48,9 +51,7 @@ IF(NOT MINGW)
 	ELSE(WITH_SMBCLIENT)
 		MESSAGE(STATUS "smbclient support disabled")
 	ENDIF(WITH_SMBCLIENT)
-ELSE(NOT MINGW)
-	# libssh2 is bundled, others are not needed
-ENDIF(NOT MINGW)
+ENDIF(MINGW)
 
 # flags
 CONFIGURE_FILE(libconf_ux.h.in libconf_ux.h) # noop, flags are passed via compiler args
