@@ -97,6 +97,7 @@ namespace wal
 
 			if ( n >= 0 )
 			{
+				SetFocus();
 				SetSelect( n );
 				OpenSub();
 				return true;
