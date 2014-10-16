@@ -17,8 +17,8 @@ namespace wal
 #define snprintf _snprintf
 #endif
 
-	typedef std::basic_string<unicode_t> unicode_string;
-	typedef std::basic_string<sys_char_t> sys_string;
+	typedef std::wstring UString;
+	typedef std::string LString;
 
 	std::vector<unicode_t> new_unicode_str( const unicode_t* );
 	std::vector<sys_char_t> new_sys_str( const sys_char_t* );
