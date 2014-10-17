@@ -1032,7 +1032,7 @@ void LoadEditorPositions()
 		int FL, L, P;
 		char Buf[0xFFFF];
 
-		int NumRead = Lsscanf( Line.data(), "FL = %i L = %i P = %i FN = %65535s", &FL, &L, &P, Buf );
+		int NumRead = Lsscanf( Line.data(), "FL = %i L = %i P = %i FN = %65534s", &FL, &L, &P, Buf );
 
 		if ( NumRead != 4 ) break;
 
@@ -1065,7 +1065,7 @@ void LoadViewerPositions()
 		int L;
 		char Buf[0xFFFF];
 
-		int NumRead = Lsscanf( Line.data(), "L = %i FN = %65535s", &L, Buf );
+		int NumRead = Lsscanf( Line.data(), "L = %i FN = %65534s", &L, Buf );
 
 		if ( NumRead != 2 ) break;
 
