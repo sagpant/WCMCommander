@@ -8,6 +8,7 @@
 #include "nc.h"
 #include "vfs-uri.h"
 #include "unicode_lc.h"
+#include "strmasks.h"
 
 struct ShellLoadDirTD
 {
@@ -230,83 +231,6 @@ ShellFileListWin::~ShellFileListWin() {};
 
 /////////////////////////////////////////
 
-static bool accmask_begin0( const unicode_t* name, const unicode_t* mask )
-{
-
-	while ( true )
-	{
-		switch ( *mask )
-		{
-			case 0:
-				return true;
-
-			case '?':
-				break;
-
-			case '*':
-				while ( *mask == '*' ) { mask++; }
-
-				if ( !*mask ) { return true; }
-
-				for ( ; *name; name++ )
-					if ( accmask_begin0( name, mask ) )
-					{
-						return true;
-					}
-
-				return false;
-
-			default:
-				if ( *name != *mask )
-				{
-					return false;
-				}
-		}
-
-		name++;
-		mask++;
-	}
-}
-#if !defined( __APPLE__ )
-static bool accmask_nocase_begin0( const unicode_t* name, const unicode_t* mask )
-{
-
-	while ( true )
-	{
-		switch ( *mask )
-		{
-			case 0:
-				return true;
-
-			case '?':
-				break;
-
-			case '*':
-				while ( *mask == '*' ) { mask++; }
-
-				if ( !*mask ) { return true; }
-
-				for ( ; *name; name++ )
-					if ( accmask_nocase_begin0( name, mask ) )
-					{
-						return true;
-					}
-
-				return false;
-
-			default:
-				if ( UnicodeLC( *name ) != UnicodeLC( *mask ) )
-				{
-					return false;
-				}
-		}
-
-		name++;
-		mask++;
-	}
-}
-#endif
-
 struct ShellFileDlgData
 {
 	clPtr<FSList> list;
@@ -343,10 +267,10 @@ void ShellFileDlgData::RefreshList( std::vector<unicode_t> m )
 		for ( int i = 0; i < n; i++ )
 		{
 			if (
-#ifdef _WIN32
-			   accmask_nocase_begin0
+#if defined( _WIN32 ) || defined( __APPLE__ )
+			   accmask_nocase
 #else
-			   accmask_begin0
+			   accmask
 #endif
 			   ( sorted[i]->GetUnicodeName(), mask.data() ) )
 			{

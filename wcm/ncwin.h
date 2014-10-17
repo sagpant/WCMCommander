@@ -384,4 +384,9 @@ public:
 
 	const std::vector<clNCFileHighlightingRule>& GetFileHighlightingRules() const { return m_FileHighlightingRules; }
 	void SetFileHighlightingRules( const std::vector<clNCFileHighlightingRule>& Rules ) { m_FileHighlightingRules = Rules; }
+
+private:
+	bool ProcessCommand_CD( const unicode_t* cmd );
+	bool ProcessCommand_CLS( const unicode_t* cmd );
+	bool ProcessBuiltInCommands( const unicode_t* cmd );
 };

@@ -10,6 +10,7 @@
 #include "search-tools.h"
 #include "ltext.h"
 #include "unicode_lc.h"
+#include "strmasks.h"
 
 #include <unordered_map>
 
@@ -106,54 +107,6 @@ public:
 	virtual ~OperSearchThread();
 };
 
-static bool accmask_nocase( const unicode_t* name, const unicode_t* mask )
-{
-	if ( !*mask )
-	{
-		return *name == 0;
-	}
-
-	while ( true )
-	{
-		switch ( *mask )
-		{
-			case 0:
-				for ( ; *name ; name++ )
-					if ( *name != '*' )
-					{
-						return false;
-					}
-
-				return true;
-
-			case '?':
-				break;
-
-			case '*':
-				while ( *mask == '*' ) { mask++; }
-
-				if ( !*mask ) { return true; }
-
-				for ( ; *name; name++ )
-					if ( accmask_nocase( name, mask ) )
-					{
-						return true;
-					}
-
-				return false;
-
-			default:
-				if ( UnicodeLC( *name ) != UnicodeLC( *mask ) ) //(*name != *mask)
-				{
-					return false;
-				}
-		}
-
-		name++;
-		mask++;
-	}
-}
-
 int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher, int* err, FSCInfo* info, charset_struct** rCS ) //-2 - stop, -1 - err, 1 - true, 0 - false
 {
 	if ( info && info->Stopped() ) { return -2; }
@@ -170,8 +123,8 @@ int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher,
 
 		int maxLen = pSearcher->MaxLen();
 		int minLen = pSearcher->MinLen();
-		int bufSize = 16000 + maxLen;
-		std::vector<char> buf( bufSize );
+		int bufSize = 16000;
+		std::vector<char> buf( bufSize + maxLen );
 
 		bytes =  fs->Read( fd, buf.data(), bufSize, err, info );
 
@@ -287,9 +240,13 @@ void OperSearchThread::SearchDir( FS* fs, FSPath path, MegaSearcher* pSearcher )
 
 	int i;
 
+	std::vector<unicode_t> Mask = new_unicode_str( mask );
+
 	for ( i = 0; i < count; i++ )
 	{
-		if ( accmask_nocase( p[i]->Name().GetUnicode(), mask ) )
+		clMultimaskSplitter Splitter( Mask );
+
+		if ( Splitter.CheckAndFetchAllMasks_NoCase( p[i]->Name().GetUnicode() ) )
 		{
 			charset_struct* charset = 0;
 

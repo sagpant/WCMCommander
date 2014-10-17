@@ -1,20 +1,33 @@
 language: cpp
 
-before_script:
-    - gcc -v
-    - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-    - sudo apt-get update
-    - sudo apt-get install gcc-4.8 g++-4.8 libsmbclient-dev libssh2-1-dev
-    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20
-    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
-    - sudo update-alternatives --config gcc
-    - sudo update-alternatives --config g++
-    - gcc -v 
-    - cd ./wcm
-
 compiler:
-    - gcc
-    - clang
+  - gcc
+  - clang
+
+env:
+  - BUILDMODE=custom
+  - BUILDMODE=cmake
+  - BUILDMODE=cmake-mingw32
+
+matrix:
+  exclude:
+    - compiler: clang
+      env: BUILDMODE=cmake-mingw32
+    - compiler: gcc # until mingw travis build is fixed
+      env: BUILDMODE=cmake-mingw32
+
+before_script:
+  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install libsmbclient-dev libssh2-1-dev
+  - sudo apt-get -qq install gcc-4.8 g++-4.8
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
+  - sudo update-alternatives --config gcc
+  - sudo update-alternatives --config g++
+  - if [ "$BUILDMODE" = "cmake-mingw32" ]; then sudo apt-get -qq install binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686; fi
 
 script:
-    - make all -B && cd .. && mkdir build && cd build && cmake .. && make # tests both cmake and custom builds
+  - if [ "$BUILDMODE" = "custom" ]; then echo "===> Building with custom buildsystem..." && cd "$TRAVIS_BUILD_DIR"/wcm && make all -B; fi
+  - if [ "$BUILDMODE" = "cmake" ]; then echo "===> Building with cmake..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake .. && make; fi
+  - if [ "$BUILDMODE" = "cmake-mingw32" ]; then echo "===> Building with cmake+mingw32..." && cd "$TRAVIS_BUILD_DIR" && mkdir build && cd build && cmake -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres .. && make; fi

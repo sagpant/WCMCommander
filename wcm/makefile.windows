@@ -54,6 +54,7 @@ OBJS = \
 	$(OBJDIR)/shortcuts.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
+	$(OBJDIR)/strmasks.o \
 	$(OBJDIR)/swl_button.o \
 	$(OBJDIR)/swl_editline.o  \
 	$(OBJDIR)/swl_layout.o    \
@@ -157,8 +158,11 @@ $(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) fileassociations.cpp
 $(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) filehighlighting.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) filehighlighting.cpp -o $(OBJDIR)/filehighlighting.o
 
-$(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp 
+$(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
+
+$(OBJDIR)/strmasks.o: $(HW) $(HS) $(HN) strmasks.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) strmasks.cpp -o $(OBJDIR)/strmasks.o
 
 $(OBJDIR)/shl.o: $(HW) $(HS) $(HN) shl.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) shl.cpp -o $(OBJDIR)/shl.o

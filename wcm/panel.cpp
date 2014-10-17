@@ -18,6 +18,7 @@
 #include "color-style.h"
 #include "string-util.h"
 #include "unicode_lc.h"
+#include "strmasks.h"
 
 #include "icons/folder3.xpm"
 #include "icons/folder.xpm"
@@ -122,7 +123,7 @@ void PanelSearchWin::EndSearch( cevent_key* pEvent )
 {
 	EndModal( 0 );
 
-	if ( pEvent )
+//	if ( pEvent )
 	{
 		ret_key = pEvent;
 	}
@@ -225,7 +226,7 @@ bool PanelSearchWin::EventShow( bool show )
 PanelSearchWin::~PanelSearchWin() {}
 
 
-clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
+cevent_key* PanelWin::QuickSearch( cevent_key* key )
 {
 	_search = new PanelSearchWin( this, key );
 	crect r = _footRect;
@@ -236,52 +237,10 @@ clPtr<cevent_key> PanelWin::QuickSearch( cevent_key* key )
 
 	_search->DoModal();
 
-	clPtr<cevent_key> ret = _search->ret_key;
+	cevent_key* ret = _search->ret_key;
 	_search = nullptr;
 
 	return ret;
-}
-
-bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
-{
-	if ( !*mask )
-	{
-		return *name == 0;
-	}
-
-	while ( true )
-	{
-		switch ( *mask )
-		{
-			case 0:
-				return true;
-
-			case '?':
-				break;
-
-			case '*':
-				while ( *mask == '*' ) { mask++; }
-
-				if ( !*mask ) { return true; }
-
-				for ( ; *name; name++ )
-					if ( accmask_nocase_begin( name, mask ) )
-					{
-						return true;
-					}
-
-				return false;
-
-			default:
-				if ( UnicodeLC( *name ) != UnicodeLC( *mask ) )
-				{
-					return false;
-				}
-		}
-
-		name++;
-		mask++;
-	}
 }
 
 NCWin* PanelWin::GetNCWin()
@@ -311,7 +270,7 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 	{
 		const unicode_t* name = _list.GetFileName( i, RootDir );
 
-		if ( name && accmask_nocase_begin( name, mask ) )
+		if ( name && accmask_nocase( name, mask ) )
 		{
 			SetCurrent( i );
 			return true;
@@ -322,7 +281,7 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 	{
 		const unicode_t* name = _list.GetFileName( i, HideDotsInDir() );
 
-		if ( name && accmask_nocase_begin( name, mask ) )
+		if ( name && accmask_nocase( name, mask ) )
 		{
 			SetCurrent( i );
 			return true;

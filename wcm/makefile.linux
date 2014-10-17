@@ -6,7 +6,7 @@ TARGET_DIR=$(DESTDIR)/usr/
 
 WCM_VERSION=$(shell ./get_wcm_version.sh)
 
-CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -Wall -Wextra -Wno-unknown-pragmas -Wno-unused-parameter -Wno-sign-compare -Wno-unused-variable -I wal -I swl $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
+CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O0 -g -Wall -Wextra -Wno-unknown-pragmas -Wno-unused-parameter -Wno-sign-compare -Wno-unused-variable -I wal -I swl $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
 #CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -O1 -fno-inline -I wal -I swl -pthread $(CFLAGS_FREETYPE)
 
 UNAME_S := $(shell uname -s)
@@ -38,7 +38,7 @@ HN = libconf.h nc.h ncwin.h panel.h ncdialogs.h  terminal.h termwin.h ncedit.h n
  strconfig.h shortcuts.h fontdlg.h ncfonts.h shl.h toolbar.h ncview.h search-dlg.h search-tools.h shell-tools.h t-emulator.h dircalc.h ltext.h
 
 COPTS += -I swl -std=c++11
-CC ?= gcc
+CC = clang
 
 # COPTS += -I swl -Wno-parentheses -fsanitize=address -g
 # -fsanitize=address -fsanitize=integer -fsanitize=thread -fsanitize=undefined
@@ -80,6 +80,7 @@ OBJS = \
 	$(OBJDIR)/shortcuts.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
+	$(OBJDIR)/strmasks.o \
 	$(OBJDIR)/swl_button.o \
 	$(OBJDIR)/swl_editline.o  \
 	$(OBJDIR)/swl_layout.o    \
@@ -202,6 +203,9 @@ $(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) filehighlighting.cpp
 
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
+
+$(OBJDIR)/strmasks.o: $(HW) $(HS) $(HN) strmasks.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) strmasks.cpp -o $(OBJDIR)/strmasks.o
 
 $(OBJDIR)/shl.o: $(HW) $(HS) $(HN) shl.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) shl.cpp -o $(OBJDIR)/shl.o

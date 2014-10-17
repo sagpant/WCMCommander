@@ -43,6 +43,7 @@
 #include "shell-tools.h"
 #include "dircalc.h"
 #include "ltext.h"
+#include "strmasks.h"
 
 #ifndef _WIN32
 #  include "ux_util.h"
@@ -995,74 +996,6 @@ void NCWin::RightButtonPressed( cpoint point )
 	return;
 }
 
-bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask );
-bool accmask( const unicode_t* name, const unicode_t* mask );
-
-class clMultimaskSplitter
-{
-public:
-	explicit clMultimaskSplitter( const std::vector<unicode_t>& MultiMask )
-	 : m_MultiMask( MultiMask )
-	 , m_CurrentPos( 0 )
-	{}
-
-	bool HasNextMask() const
-	{
-		return m_CurrentPos < m_MultiMask.size();
-	}
-
-	std::vector<unicode_t> GetNextMask()
-	{
-		size_t Next = m_CurrentPos;
-
-		// find the nearest ','
-		while ( Next < m_MultiMask.size() && m_MultiMask[Next] != ',' ) Next++;
-
-		if ( m_CurrentPos == Next ) return std::vector<unicode_t>();
-
-		std::vector<unicode_t> Result( m_MultiMask.begin()+m_CurrentPos, m_MultiMask.begin()+Next );
-
-		if ( Next < m_MultiMask.size() && m_MultiMask[Next] == ',' )
-		{
-			// skip ','
-			Next++;
-			// and trailing spaces
-			while ( Next < m_MultiMask.size() && m_MultiMask[Next] <= ' ' ) Next++;
-		}
-
-		m_CurrentPos = Next;
-
-		Result.push_back( 0 );
-
-		return Result;
-	}
-
-private:
-	const std::vector<unicode_t>& m_MultiMask;
-	size_t m_CurrentPos;
-};
-
-bool accmultimask( const unicode_t* FileName, const std::vector<unicode_t>& MultiMask )
-{
-	clMultimaskSplitter Splitter( MultiMask );
-
-	while ( Splitter.HasNextMask() )
-	{
-		if (
-#if defined( _WIN32 ) || defined( __APPLE__ )
-			accmask_nocase_begin
-#else
-			accmask
-#endif
-			( FileName, Splitter.GetNextMask().data() ) )
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
 {
 	for ( auto i = m_FileAssociations.begin(); i != m_FileAssociations.end(); i++ )
@@ -1071,10 +1004,7 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 
 		clMultimaskSplitter Splitter( Mask );
 
-		while ( Splitter.HasNextMask() )
-		{
-			if ( accmultimask( FileName, Splitter.GetNextMask() ) ) return &(*i);
-		}
+		if ( Splitter.CheckAndFetchAllMasks( FileName ) ) return &(*i);
 	}
 
 	return NULL;
@@ -2645,7 +2575,6 @@ bool NCAutocompleteList::EventMouse( cevent_mouse* pEvent )
 	return Result;
 }
 
-
 std::vector<unicode_t> NCWin::FetchAndClearCommandLine()
 {
 	std::vector<unicode_t> txt = m_Edit.GetText();
@@ -2753,6 +2682,110 @@ std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
 	return Out;
 }
 
+bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
+{
+	// make a mutable copy
+	std::vector<unicode_t> copy = new_unicode_str( cmd );
+
+	unicode_t* p = copy.data();
+
+	//change dir
+	_history.Put( p );
+	p += 2;
+
+	SkipSpaces( p );
+
+	std::vector<unicode_t> Path = ConvertCDArgToPath( p );
+
+	p = Path.data();
+
+	unicode_t* lastNoSpace = nullptr;
+
+	for ( unicode_t* s = p; *s; s++ )
+	{
+		if ( *s != ' ' ) { lastNoSpace = s; }
+	}
+
+	if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
+
+	clPtr<FS> checkFS[2];
+	checkFS[0] = _panel->GetFSPtr();
+	checkFS[1] = GetOtherPanel()->GetFSPtr();
+
+	FSPath path = _panel->GetPath();
+
+	ccollect<unicode_t, 0x100> pre;
+	int sc = 0;
+
+	while ( *p )
+	{
+		if ( sc )
+		{
+			if ( *p == sc ) { sc = 0;  p++; continue; }
+		}
+		else if ( *p == '\'' || *p == '"' )
+		{
+			sc = *p;
+			p++;
+			continue;
+		}
+#ifndef _WIN32
+		if ( *p == '\\' && !sc ) { p++; }
+#endif
+		if ( !p ) { break; }
+
+		pre.append( *p );
+		p++;
+	}
+
+	pre.append( 0 );
+	p = pre.ptr();
+
+	clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
+
+	if ( fs.IsNull() )
+	{
+		char buf[4096];
+		FSString name = p;
+		Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
+		NCMessageBox( this, "CD", buf, true );
+	}
+	else
+	{
+		_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
+	}
+
+	return true;
+}
+
+bool NCWin::ProcessCommand_CLS( const unicode_t* cmd )
+{
+	_terminal.TerminalReset( true );
+	return true;
+}
+
+bool NCWin::ProcessBuiltInCommands( const unicode_t* cmd )
+{
+#if defined( _WIN32 ) || defined( __APPLE__ )
+	bool CaseSensitive = false;
+#else
+	bool CaseSensitive = true;
+#endif
+
+	if ( IsEqual_Unicode_CStr( cmd, "cls", CaseSensitive ) )
+	{
+		ProcessCommand_CLS( cmd );
+		return true;
+	}
+	else if ( IsCommand_CD( cmd ) )
+	{
+		ProcessCommand_CD( cmd );
+		return true;
+	}
+
+	return false;
+}
+
 bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal )
 {
 	const unicode_t* p = cmd.data();
@@ -2765,80 +2798,7 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 	if ( *p )
 	{
-		if ( IsCommand_CD( p ) )
-		{
-			// make a mutable copy
-			std::vector<unicode_t> copy( cmd );
-
-			unicode_t* p = copy.data();
-
-			//change dir
-			_history.Put( p );
-			p += 2;
-
-			SkipSpaces( p );
-
-			std::vector<unicode_t> Path = ConvertCDArgToPath( p );
-
-			p = Path.data();
-
-			unicode_t* lastNoSpace = 0;
-
-			for ( unicode_t* s = p; *s; s++ )
-			{
-				if ( *s != ' ' ) { lastNoSpace = s; }
-			}
-
-			if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
-
-			clPtr<FS> checkFS[2];
-			checkFS[0] = _panel->GetFSPtr();
-			checkFS[1] = GetOtherPanel()->GetFSPtr();
-
-			FSPath path = _panel->GetPath();
-
-			ccollect<unicode_t, 0x100> pre;
-			int sc = 0;
-
-			while ( *p )
-			{
-				if ( sc )
-				{
-					if ( *p == sc ) { sc = 0;  p++; continue; }
-				}
-				else if ( *p == '\'' || *p == '"' )
-				{
-					sc = *p;
-					p++;
-					continue;
-				}
-#ifndef _WIN32
-				if ( *p == '\\' && !sc ) { p++; }
-#endif
-				if ( !p ) { break; }
-
-				pre.append( *p );
-				p++;
-			}
-
-			pre.append( 0 );
-			p = pre.ptr();
-
-			clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
-
-			if ( fs.IsNull() )
-			{
-				char buf[4096];
-				FSString name = p;
-				Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
-				NCMessageBox( this, "CD", buf, true );
-			}
-			else
-			{
-				_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
-			}
-		}
-		else
+		if ( !ProcessBuiltInCommands( p ) )
 		{
 #ifndef _WIN32
 			if ( p[0] == '&' || ForceNoTerminal )
@@ -2934,10 +2894,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			if ( c && c >= 0x20 )
 			{
-				clPtr<cevent_key> key = _panel->QuickSearch( pEvent );
+				cevent_key* key = _panel->QuickSearch( pEvent );
 				m_Edit.SetFocus();
 
-				if ( key.ptr() ) { OnKeyDown( this, key.ptr(), key->Type() == EV_KEYDOWN ); }
+				if ( key ) { OnKeyDown( this, key, key->Type() == EV_KEYDOWN ); }
 
 				return true;
 			}
@@ -3210,10 +3170,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case FC( VK_S, KM_CTRL ):
 			{
-				clPtr<cevent_key> key = _panel->QuickSearch( 0 );
+				cevent_key* key = _panel->QuickSearch( 0 );
 				m_Edit.SetFocus();
 
-				if ( key.ptr() ) { OnKeyDown( this, key.ptr(), key->Type() == EV_KEYDOWN ); }
+				if ( key ) { OnKeyDown( this, key, key->Type() == EV_KEYDOWN ); }
 			}
 
 			return true;

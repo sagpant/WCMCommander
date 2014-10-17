@@ -99,7 +99,7 @@ public:
 	void TerminalPrint( const unicode_t* s, unsigned fg, unsigned bg ) { }
 #else
 	void Key( unsigned key, unsigned ch ) { _terminal.Key( key, ch ); }
-	void TerminalReset( bool clearScreen = false ) { _terminal.TerminalReset( clearScreen ); }
+	void TerminalReset( bool clearScreen = false ) { _terminal.TerminalReset( clearScreen ); if ( clearScreen ) { Reread(); _firstRow = 0; CalcScroll(); MarkerClear(); } }
 	void TerminalPrint( const unicode_t* s, unsigned fg, unsigned bg ) { _terminal.TerminalPrint( s, fg, bg ); }
 #endif
 	void Paste();
