@@ -1093,13 +1093,14 @@ void NCWin::StartExecute( const unicode_t* cmd, FS* fs,  FSPath& path )
 	if ( !pref ) { pref = empty; }
 
 	_terminal.TerminalReset();
-	unsigned fg = 0xB;
+	unsigned fg_pref = 0xB;
+	unsigned fg_cmd = 0xF;
 	unsigned bg = 0;
 	static unicode_t newLine[] = {'\n', 0};
-	_terminal.TerminalPrint( newLine, fg, bg );
-	_terminal.TerminalPrint( pref, fg, bg );
-	_terminal.TerminalPrint( cmd, fg, bg );
-	_terminal.TerminalPrint( newLine, fg, bg );
+	_terminal.TerminalPrint( newLine, fg_pref, bg );
+	_terminal.TerminalPrint( pref, fg_pref, bg );
+	_terminal.TerminalPrint( cmd, fg_cmd, bg );
+	_terminal.TerminalPrint( newLine, fg_cmd, bg );
 
 	int l = unicode_strlen( cmd );
 	int i;
