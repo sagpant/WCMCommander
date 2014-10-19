@@ -238,7 +238,6 @@ namespace wal
 		//void SetText( const unicode_t* txt ) { text.SetText(txt) ; Invalidate(); }
 		void SetText(const unicode_t* txt) { text = wal::new_unicode_str(txt); Invalidate(); }
 		virtual int UiGetClassId();
-		virtual ~StaticLine();
 	};
 
 	// single line label that may have '&' in the text to designate hotkey
@@ -252,7 +251,6 @@ namespace wal
 		virtual void Paint(GC& gc, const crect& paintRect);
 		virtual Win* IsHisHotKey(cevent_key* pEvent);
 		virtual int UiGetClassId();
-		virtual ~StaticLabel();
 	};
 
 

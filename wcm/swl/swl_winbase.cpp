@@ -224,10 +224,6 @@ namespace wal
 		//text.DrawItem(gc, 0, 0, UiGetColor(uiColor, 0, 0, 0), UiGetColor(uiHotkeyColor, 0, 0, 0));
 	}
 
-
-	StaticLine::~StaticLine() {}
-
-
 //////////////////////////////////// ToolTip
 
 	class TBToolTip: public Win
