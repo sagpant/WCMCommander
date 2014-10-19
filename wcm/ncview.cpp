@@ -2044,13 +2044,6 @@ void ViewWin::OnChangeStyles()
 	if ( !CalcSize() ) { Invalidate(); }
 }
 
-inline char HexChar( int n )
-{
-	n &= 0xF;
-	return n >= 10 ? n - 10 + 'A' : n + '0';
-}
-
-
 //ret type 0 - normal, 1-spec symbol ('.'), else marked
 static int PrepareText( unicode_t* buf, char* typeBuf, int bufSize, unicode_t* s, char* attr, int count )
 {
@@ -2247,7 +2240,7 @@ void ViewWin::Paint( wal::GC& gc, const crect& paintRect )
 
 			for ( i = 10, s = buf; i > 0; i--, s++ )
 			{
-				*s = HexChar( ( offset >> ( i - 1 ) * 4 ) & 0xF );
+				*s = GetHexChar( ( offset >> ( i - 1 ) * 4 ) & 0xF );
 			}
 
 			*s = 0;
@@ -2265,8 +2258,8 @@ void ViewWin::Paint( wal::GC& gc, const crect& paintRect )
 
 				if ( c != 0x100 )
 				{
-					buf[0] = HexChar( c >> 4 );;
-					buf[1] = HexChar( c );
+					buf[0] = GetHexChar( c >> 4 );
+					buf[1] = GetHexChar( c );
 					gc.TextOutF( lx, y, buf, 2 );
 				}
 				else
