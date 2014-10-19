@@ -37,12 +37,6 @@ namespace wal
 	{
 		return text.isHotkeyMatching(UnicodeUC(pEvent->Char())) ? master : 0;
 	}
-	
-
-	StaticLabel::~StaticLabel()
-	{
-	
-	}
 
 }
 
