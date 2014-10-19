@@ -106,7 +106,7 @@ void FSPath::MakeCache( int cs, unicode_t splitter )
 		else
 		{
 			SetCacheSize( 2 );
-			cache[0] = splitter;
+			cache[0] = char( splitter & 0xFF );
 			cache[1] = 0;
 		}
 
@@ -170,7 +170,7 @@ void FSPath::MakeCache( int cs, unicode_t splitter )
 
 			p += l;
 
-			if ( i + 1 < data.count() ) { *( p++ ) = splitter; }        /////////////// !!!
+			if ( i + 1 < data.count() ) { *( p++ ) = char( splitter & 0xFF ); }        /////////////// !!!
 		}
 
 		*p++ = 0;
