@@ -212,6 +212,7 @@ namespace wal
 		bool frame3d;
 		int charH;
 		int charW;
+		bool m_ReplaceMode;
 
 		clPtr<clValidator> m_Validator;
 
@@ -221,7 +222,8 @@ namespace wal
 		void ClipboardPaste();
 		void ClipboardCut();
 		int GetCharPos( cpoint p );
-		void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
+	protected:
+		virtual void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
 	public:
 		EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true );
 		void SetAcceptAltKeys(){ doAcceptAltKeys = true; }
@@ -238,6 +240,7 @@ namespace wal
 		bool IsEmpty() const;
 		int GetCursorPos() { return text.Cursor(); }
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
+		void SetReplaceMode( bool ReplaceMode ) { m_ReplaceMode = ReplaceMode; }
 		std::vector<unicode_t> GetText() const;
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
 		void SetShowSpaces( bool enable = true ) { showSpaces = enable; Invalidate(); }

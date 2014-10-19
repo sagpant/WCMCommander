@@ -294,6 +294,7 @@ namespace wal
 	 , frame3d( frame )
 	 , charH( 0 )
 	 , charW( 0 )
+	 , m_ReplaceMode( false )
 	{
 		text.End();
 
@@ -737,6 +738,7 @@ namespace wal
 					if ( c && c >= 0x20 )
 					{
 						std::vector<unicode_t> oldtext = GetText();
+						if ( m_ReplaceMode ) text.Del( false );
 						text.Insert( c );
 						if ( m_Validator && !m_Validator->IsValid( GetText() ) )
 						{
