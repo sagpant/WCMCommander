@@ -339,7 +339,7 @@ void IniHash::Save( const sys_char_t* fileName )
 
 IniHash::~IniHash() {}
 
-bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
+bool LoadStringList( const char* section, std::vector< std::string >& list )
 {
 	try
 	{
@@ -357,7 +357,7 @@ bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 
 			while ( *s > 0 && *s <= ' ' ) { s++; }
 
-			if ( *s ) { list.append( new_char_str( s ) ); }
+			if ( *s ) { list.push_back( std::string( new_char_str( s ).data() ) ); }
 		}
 	}
 	catch ( cexception* ex )
@@ -370,7 +370,7 @@ bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 }
 
 
-void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
+void SaveStringList( const char* section, std::vector< std::string >& list )
 {
 	try
 	{
@@ -382,9 +382,9 @@ void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 
 		for ( int i = 0; i < list.count(); i++ )
 		{
-			if ( list[i].data() && list[i][0] )
+			if ( list[i].c_str() && list[i][0] )
 			{
-				out.Put( list[i].data() );
+				out.Put( list[i].c_str() );
 				out.PutC( '\n' );
 			}
 		}
@@ -592,7 +592,7 @@ bool RegWriteBin( const char* sect, const char* what, const void* data, int size
 	return lResult == ERROR_SUCCESS;
 }
 
-bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
+bool LoadStringList( const char* section, std::vector< std::string >& list )
 {
 	char name[64];
 	list.clear();
@@ -604,18 +604,18 @@ bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 
 		if ( !s.data() || !s[0] ) { break; }
 
-		list.append( s );
+		list.push_back( std::string( s.data() ) );
 	}
 
 	return true;
 }
 
-void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
+void SaveStringList( const char* section, std::vector< std::string >& list )
 {
 	int n = 1;
 	char name[64];
 
-	for ( int i = 0; i < list.count(); i++ )
+	for ( size_t i = 0; i < list.size(); i++ )
 	{
 		if ( list[i].data() && list[i][0] )
 		{
@@ -1158,22 +1158,20 @@ extern std::map<std::vector<unicode_t>, int> g_ViewPosHash;
 
 void LoadEditorPositions()
 {
-	ccollect< std::vector<char> > Positions;
+	std::vector< std::string > Positions;
 
 	LoadStringList( "EditorPositions", Positions );
 
 	g_EditPosHash.clear();
 
-	for ( int i = 0; i != Positions.count(); i++ )
+	for ( size_t i = 0; i != Positions.size(); i++ )
 	{
-		std::vector<char> Line = Positions[i];
-
-		if ( !Line.data() ) break;
+		std::string Line = Positions[i];
 
 		int FL, L, P;
 		char Buf[0xFFFF];
 
-		int NumRead = Lsscanf( Line.data(), "FL = %i L = %i P = %i FN = %65534s", &FL, &L, &P, Buf );
+		int NumRead = Lsscanf( Line.c_str(), "FL = %i L = %i P = %i FN = %65534s", &FL, &L, &P, Buf );
 
 		if ( NumRead != 4 ) break;
 
@@ -1191,22 +1189,20 @@ void LoadEditorPositions()
 
 void LoadViewerPositions()
 {
-	ccollect< std::vector<char> > Positions;
+	std::vector< std::string > Positions;
 
 	LoadStringList( "ViewerPositions", Positions );
 
 	g_ViewPosHash.clear();
 
-	for ( int i = 0; i != Positions.count(); i++ )
+	for ( size_t i = 0; i != Positions.size(); i++ )
 	{
-		std::vector<char> Line = Positions[i];
-
-		if ( !Line.data() ) break;
+		std::string Line = Positions[i];
 
 		int L;
 		char Buf[0xFFFF];
 
-		int NumRead = Lsscanf( Line.data(), "L = %i FN = %65534s", &L, Buf );
+		int NumRead = Lsscanf( Line.c_str(), "L = %i FN = %65534s", &L, Buf );
 
 		if ( NumRead != 2 ) break;
 
@@ -1292,7 +1288,7 @@ void WcmConfig::Load( NCWin* nc )
 
 void SaveEditorPositions()
 {
-	ccollect< std::vector<char> > Positions;
+	std::vector< std::string > Positions;
 
 	for ( auto i = g_EditPosHash.begin(); i != g_EditPosHash.end(); i++ )
 	{
@@ -1304,7 +1300,7 @@ void SaveEditorPositions()
 		char Buf[0xFFFF];
 		Lsnprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
 
-		Positions.append( new_char_str( Buf ) );
+		Positions.push_back( std::string( Buf ) );
 	}
 
 	SaveStringList( "EditorPositions", Positions );
@@ -1312,7 +1308,7 @@ void SaveEditorPositions()
 
 void SaveViewerPositions()
 {
-	ccollect< std::vector<char> > Positions;
+	std::vector< std::string > Positions;
 
 	for ( auto i = g_ViewPosHash.begin(); i != g_ViewPosHash.end(); i++ )
 	{
@@ -1324,7 +1320,7 @@ void SaveViewerPositions()
 		char Buf[0xFFFF];
 		Lsnprintf( Buf, sizeof( Buf ) - 1, "L = %i FN = %s", Line, FileName_utf8.data() );
 
-		Positions.append( new_char_str( Buf ) );
+		Positions.push_back( std::string( Buf ) );
 	}
 
 	SaveStringList( "ViewerPositions", Positions );

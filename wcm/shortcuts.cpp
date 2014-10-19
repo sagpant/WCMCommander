@@ -57,10 +57,10 @@ private:
 	{
 		itemList.clear();
 
-		ccollect< std::vector<char> > list;
+		std::vector< std::string > list;
 		LoadStringList( shortcursSection, list );
 
-		for ( int i = 0; i < list.count(); i++ )
+		for ( int i = 0; i < (int)list.size(); i++ )
 		{
 			if ( list[i].data() )
 			{
@@ -219,13 +219,13 @@ t:
 
 void SCListWin::Save()
 {
-	ccollect< std::vector<char> > list;
+	std::vector< std::string > list;
 
 	for ( int i = 0; i < itemList.count(); i++ )
 		if ( itemList[i].conf.ptr() && itemList[i].name.data() )
 		{
 			itemList[i].conf->Set( "name", unicode_to_utf8( itemList[i].name.data() ).data() );
-			list.append( itemList[i].conf->GetConfig() );
+			list.push_back( std::string( itemList[i].conf->GetConfig().data() ) );
 		}
 
 	SaveStringList( shortcursSection, list );
