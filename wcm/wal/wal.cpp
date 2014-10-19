@@ -337,15 +337,32 @@ namespace wal
 		return g_HexChars[ n & 0xF ];
 	}
 
-	std::wstring IntToHexStr( int64_t Value )
+	std::wstring IntToHexStr( int64_t Value, size_t Padding )
 	{
 		const int BUFFER = 1024;
 
 		char buf[BUFFER];
 
+#if defined( _WIN32 )
+#	if _MSC_VER >= 1400
+		_ui64toa_s( Value, buf, BUFFER - 1, 16 );
+#	else
+		_ui64toa( Value, buf, 16 );
+#	endif
+#else
 		Lsnprintf( buf, BUFFER - 1, "%" PRIu64 "x", Value );
+#endif
 
-		return std::wstring( utf8_to_unicode( buf ).data() );
+		std::vector<unicode_t> Str = utf8_to_unicode( buf );
+
+		std::wstring Result( Str.data() );
+
+		if ( Padding && Padding > Result.length() )
+		{
+			Result.insert( Result.begin( ), Padding - Result.length( ), '0' );
+		}
+
+		return Result;
 	}
 
 	int64_t HexStrToInt( const unicode_t* Str )
