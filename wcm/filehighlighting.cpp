@@ -132,7 +132,7 @@ void clColorLabel::OnChangeStyles()
 	SetLSize( ls );
 }
 
-void clColorLabel::Paint(GC& gc, const crect& PaintRect)
+void clColorLabel::Paint(wal::GC& gc, const crect& PaintRect)
 {
 	crect rect = ClientRect();
 	gc.SetFillColor( m_BgColor );
