@@ -14,8 +14,6 @@
 
 #include <limits.h>
 
-static int uiSelectedPanel = GetUiID( "selected-panel" );
-
 clNCFileHighlightingRule::clNCFileHighlightingRule()
  : m_Mask()
  , m_Description()
@@ -215,13 +213,13 @@ public:
 	 , m_ColorSelectedBGText( 0, this, utf8_to_unicode(_LT("Selected background")).data(), &m_ColorNormalBGEdit )
 	 , m_ColorSelectedBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedLabel, eColorEditLineType_Background )
 	 , m_ColorSelectedLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
-	// normal color under cursror
+	// normal color under cursor
 	 , m_ColorNormalUnderCursorFGText( 0, this, utf8_to_unicode(_LT("Cursor foreground")).data(), &m_ColorNormalUnderCursorFGEdit )
 	 , m_ColorNormalUnderCursorFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalUnderCursorLabel, eColorEditLineType_Foreground )
 	 , m_ColorNormalUnderCursorBGText( 0, this, utf8_to_unicode(_LT("Cursor background")).data(), &m_ColorNormalUnderCursorBGEdit )
 	 , m_ColorNormalUnderCursorBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalUnderCursorLabel, eColorEditLineType_Background )
 	 , m_ColorNormalUnderCursorLabel( 0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
-	// selected color under cursror
+	// selected color under cursor
 	 , m_ColorSelectedUnderCursorFGText(0, this, utf8_to_unicode(_LT("Selected cursor foreground")).data(), &m_ColorNormalUnderCursorFGEdit )
 	 , m_ColorSelectedUnderCursorFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedUnderCursorLabel, eColorEditLineType_Foreground )
 	 , m_ColorSelectedUnderCursorBGText( 0, this, utf8_to_unicode(_LT("Selected cursor background")).data(), &m_ColorNormalUnderCursorBGEdit )
@@ -257,16 +255,6 @@ public:
 
 			m_ColorSelectedUnderCursorFGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorSelected( ), Padding ).c_str( ) );
 			m_ColorSelectedUnderCursorBGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorSelectedBackground( ), Padding ).c_str( ) );
-
-/*
-			m_HasTerminalButton.Change( Assoc->GetHasTerminal() );
-			m_ExecuteCommandEdit.SetText( Assoc->GetExecuteCommand().data(), false );
-			m_ExecuteCommandSecondaryEdit.SetText( Assoc->GetExecuteCommandSecondary().data(), false );
-			m_ViewCommandEdit.SetText( Assoc->GetViewCommand().data(), false );
-			m_ViewCommandSecondaryEdit.SetText( Assoc->GetViewCommandSecondary().data(), false );
-			m_EditCommandEdit.SetText( Assoc->GetEditCommand().data(), false );
-			m_EditCommandSecondaryEdit.SetText( Assoc->GetEditCommandSecondary().data(), false );
-/*/
 		}
 
 		m_ColorNormalLabel.SetColors( 0x800000, 0xFFFF00 );
@@ -363,15 +351,7 @@ public:
 		uint64_t Result = strtoull( utf8.data(), nullptr, 10 );
 		return ( Result == ULLONG_MAX ) ? 0 : Result;
 	}
-//	uint64_t GetAttributesMask() const { return strtoull( m_SizeMin.GetText().data(), nullptr, 10); }
-/*
-	std::vector<unicode_t> GetExecuteCommand() const { return m_ExecuteCommandEdit.GetText(); }
-	std::vector<unicode_t> GetExecuteCommandSecondary() const { return m_ExecuteCommandSecondaryEdit.GetText(); }
-	std::vector<unicode_t> GetViewCommand() const { return m_ViewCommandEdit.GetText(); }
-	std::vector<unicode_t> GetViewCommandSecondary() const { return m_ViewCommandSecondaryEdit.GetText(); }
-	std::vector<unicode_t> GetEditCommand() const { return m_EditCommandEdit.GetText(); }
-	std::vector<unicode_t> GetEditCommandSecondary() const { return m_EditCommandSecondaryEdit.GetText(); }
-*/
+
 	const clNCFileHighlightingRule& GetResult() const
 	{
 		m_Result.SetMask( GetMask() );
@@ -391,15 +371,6 @@ public:
 		m_Result.SetColorUnderCursorSelected( ( uint32_t )HexStrToInt( m_ColorSelectedUnderCursorFGEdit.GetText().data() ) );
 		m_Result.SetColorUnderCursorSelectedBackground( ( uint32_t )HexStrToInt( m_ColorSelectedUnderCursorBGEdit.GetText( ).data( ) ) );
 
-/*
-		m_Result.SetExecuteCommand( GetExecuteCommand() );
-		m_Result.SetExecuteCommandSecondary( GetExecuteCommandSecondary() );
-		m_Result.SetViewCommand( GetViewCommand() );
-		m_Result.SetViewCommandSecondary( GetViewCommandSecondary() );
-		m_Result.SetEditCommand( GetEditCommand() );
-		m_Result.SetEditCommandSecondary( GetEditCommandSecondary() );
-		m_Result.SetHasTerminal( m_HasTerminalButton.IsSet() );
-			*/
 		return m_Result;
 	}
 

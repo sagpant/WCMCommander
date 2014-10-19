@@ -814,7 +814,16 @@ public:
 		m_Hash.SetBoolValue( m_SectionName, Buf, Data );
 #endif
 	}
-
+	void WriteInt( const char* KeyNamePattern, int i, int Data )
+	{
+		char Buf[4096];
+		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+#ifdef _WIN32
+		RegWriteInt( m_SectionName, Buf, Data );
+#else
+		m_Hash.SetIntValue( m_SectionName, Buf, Data );
+#endif
+	}
 
 private:
 #if !defined(_WIN32)
@@ -850,6 +859,17 @@ public:
 		bool Result = RegReadInt( m_SectionName, Buf, DefaultValue ) != 0;
 #else
 		bool Result = m_Hash.GetBoolValue( m_SectionName, Buf, DefaultValue );
+#endif
+		return Result;
+	}
+	int ReadInt( const char* KeyNamePattern, int i, int DefaultValue )
+	{
+		char Buf[4096];
+		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+#ifdef _WIN32
+		int Result = RegReadInt( m_SectionName, Buf, DefaultValue );
+#else
+		int Result = m_Hash.GetIntValue( m_SectionName, Buf, DefaultValue );
 #endif
 		return Result;
 	}
@@ -982,37 +1002,18 @@ void SaveFileHighlightingRules( NCWin* nc
 
 		char Buf[0xFFFF];
 		Lsnprintf( Buf, sizeof( Buf ) - 1, "Min = %" PRIu64 " Max = %" PRIu64 " Attribs = %" PRIu64, A.GetSizeMin(), A.GetSizeMax(), A.GetAttributesMask() );
-/*
-	uint32_t GetColorNormal() const { return m_ColorNormal; }
-	uint32_t GetColorNormalBackground() const { return m_ColorNormalBackground; }
-	uint32_t GetColorSelected() const { return m_ColorSelected; }
-	uint32_t GetColorSelectedBackground() const { return m_ColorSelectedBackground; }
-	uint32_t GetColorUnderCursorNormal() const { return m_ColorUnderCursorNormal; }
-	uint32_t GetColorUnderCursorNormalBackground() const { return m_ColorUnderCursorNormalBackground; }
-	uint32_t GetColorUnderCursorSelected() const { return m_ColorUnderCursorSelected; }
-	uint32_t GetColorUnderCursorSelectedBackground() const { return m_ColorUnderCursorSelectedBackground; }
-*/
-
-/*
-		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetExecuteCommand().data() );
-		std::vector<char> ExecuteSecondary_utf8 = unicode_to_utf8( A.GetExecuteCommandSecondary().data() );
-		std::vector<char> View_utf8 = unicode_to_utf8( A.GetViewCommand().data() );
-		std::vector<char> ViewSecondary_utf8 = unicode_to_utf8( A.GetViewCommandSecondary().data() );
-		std::vector<char> Edit_utf8 = unicode_to_utf8( A.GetEditCommand().data() );
-		std::vector<char> EditSecondary_utf8 = unicode_to_utf8( A.GetEditCommandSecondary().data() );
-*/
 
 		Cfg.Write( "Mask%i", i, Mask_utf8.data( ) );
 		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
 		Cfg.Write( "SizeAttribs%i", i, Buf );
-/*
-		Cfg.Write( "Execute%i", i, Execute_utf8.data( ) );
-		Cfg.Write( "ExecuteSecondary%i", i, ExecuteSecondary_utf8.data( ) );
-		Cfg.Write( "View%i", i, View_utf8.data( ) );
-		Cfg.Write( "ViewSecondary%i", i, ViewSecondary_utf8.data( ) );
-		Cfg.Write( "Edit%i", i, Edit_utf8.data( ) );
-		Cfg.Write( "EditSecondary%i", i, EditSecondary_utf8.data( ) );
-*/
+		Cfg.WriteInt( "ColorNormal%i", i, A.GetColorNormal() );
+		Cfg.WriteInt( "ColorNormalBackground%i", i, A.GetColorNormalBackground() );
+		Cfg.WriteInt( "ColorSelected%i", i, A.GetColorSelected() );
+		Cfg.WriteInt( "ColorSelectedBackground%i", i, A.GetColorSelectedBackground() );
+		Cfg.WriteInt( "ColorUnderCursorNormal%i", i, A.GetColorUnderCursorNormal() );
+		Cfg.WriteInt( "ColorUnderCursorNormalBackground%i", i, A.GetColorUnderCursorNormalBackground() );
+		Cfg.WriteInt( "ColorUnderCursorSelected%i", i, A.GetColorUnderCursorSelected() );
+		Cfg.WriteInt( "ColorUnderCursorSelectedBackground%i", i, A.GetColorUnderCursorSelectedBackground() );
 		Cfg.WriteBool( "MaskEnabled%i", i, A.IsMaskEnabled() );
 	}
 
@@ -1063,15 +1064,7 @@ void LoadFileHighlightingRules( NCWin* nc
 			SizeMax = 0;
 			AttribsMask = 0;
 		}
-/*
-		std::vector<unicode_t> Execute = Cfg.Read( "Execute%i", i );
-		std::vector<unicode_t> ExecuteSecondary = Cfg.Read( "ExecuteSecondary%i", i );
-		std::vector<unicode_t> View = Cfg.Read( "View%i", i );
-		std::vector<unicode_t> ViewSecondary = Cfg.Read( "ViewSecondary%i", i );
-		std::vector<unicode_t> Edit = Cfg.Read( "Edit%i", i );
-		std::vector<unicode_t> EditSecondary = Cfg.Read( "EditSecondary%i", i );
-		bool HasTerminal = Cfg.ReadBool( "HasTerminal%i", i, true );
-*/
+
 		if ( !Mask.data() || !*Mask.data() ) break;
 
 		clNCFileHighlightingRule R;
@@ -1080,15 +1073,15 @@ void LoadFileHighlightingRules( NCWin* nc
 		R.SetSizeMin( SizeMin );
 		R.SetSizeMax( SizeMax );
 		R.SetAttributesMask( AttribsMask );
-/*
-		A.SetExecuteCommand( Execute );
-		A.SetExecuteCommandSecondary( ExecuteSecondary );
-		A.SetViewCommand( View );
-		A.SetViewCommandSecondary( ViewSecondary );
-		A.SetEditCommand( Edit );
-		A.SetEditCommandSecondary( EditSecondary );
-		A.SetHasTerminal( HasTerminal );
-*/
+		R.SetColorNormal( Cfg.ReadInt( "ColorNormal%i", i, R.GetColorNormal() ) );
+		R.SetColorNormalBackground( Cfg.ReadInt( "ColorNormalBackground%i", i, R.GetColorNormalBackground() ) );
+		R.SetColorSelected( Cfg.ReadInt( "ColorSelected%i", i, R.GetColorSelected() ) );
+		R.SetColorSelectedBackground( Cfg.ReadInt( "ColorSelectedBackground%i", i, R.GetColorSelectedBackground() ) );
+		R.SetColorUnderCursorNormal( Cfg.ReadInt( "ColorUnderCursorNormal%i", i, R.GetColorUnderCursorNormal() ) );
+		R.SetColorUnderCursorNormalBackground( Cfg.ReadInt( "ColorUnderCursorNormalBackground%i", i, R.GetColorUnderCursorNormalBackground( ) ) );
+		R.SetColorUnderCursorSelected( Cfg.ReadInt( "ColorUnderCursorSelected%i", i, R.GetColorUnderCursorSelected() ) );
+		R.SetColorUnderCursorSelectedBackground( Cfg.ReadInt( "ColorUnderCursorSelectedBackground%i", i, R.GetColorUnderCursorSelectedBackground() ) );
+
 		Rules.push_back( R );
 
 		i++;
