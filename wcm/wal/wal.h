@@ -448,7 +448,7 @@ namespace wal
 	/// n is 0...15
 	char GetHexChar( int n );
 	/// convert int to hexadecimal string
-	std::wstring IntToHexStr( int64_t Value );
+	std::wstring IntToHexStr( int64_t Value, size_t Padding = 0 );
 	/// convert hexadecimal string to int
 	int64_t HexStrToInt( const unicode_t* Str );
 }; //namespace wal
