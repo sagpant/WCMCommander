@@ -46,6 +46,70 @@ public:
 	}
 };
 
+class clColorLabel: public Win
+{
+public:
+	clColorLabel( int nId, Win* Parent, const unicode_t* Text, crect* Rect = nullptr );
+
+	//
+	// Win interface
+	//
+	virtual void OnChangeStyles() override;
+	virtual void Paint( GC& gc, const crect& PaintRect ) override;
+
+	//
+	// clColorLabel
+	//
+	virtual void SetColors( uint32_t Bg, uint32_t Fg )
+	{
+		m_BgColor = Bg;
+		m_FgColor = Fg;
+	}
+
+private:
+	uint32_t m_BgColor;
+	uint32_t m_FgColor;
+	std::vector<unicode_t> m_Text;
+};
+
+clColorLabel::clColorLabel( int nId, Win* Parent, const unicode_t* Text, crect* Rect )
+: Win( Win::WT_CHILD, 0, Parent, Rect, nId )
+ , m_BgColor( 0x800000 )
+ , m_FgColor( 0xFFFF00 )
+ , m_Text( new_unicode_str( Text ) )
+{
+	if ( !Rect )
+	{
+		OnChangeStyles();
+	}
+}
+
+void clColorLabel::OnChangeStyles()
+{
+	GC gc( this );
+	gc.Set( GetFont() );
+
+	cpoint ts = gc.GetTextExtents( m_Text.data() );
+
+	int w = ( ts.x / ABCStringLen ) * m_Text.size();
+	int h = ts.y + 2;
+
+	LSize ls;
+	ls.x.minimal = ls.x.ideal = w;
+	ls.x.maximal = 16000;
+	ls.y.minimal = ls.y.maximal = ls.y.ideal = h;
+	SetLSize( ls );
+}
+
+void clColorLabel::Paint(GC& gc, const crect& PaintRect)
+{
+	crect rect = ClientRect();
+	gc.SetFillColor( m_BgColor );
+	gc.FillRect( rect ); 
+	gc.Set( GetFont() );
+	gc.SetTextColor( m_FgColor );
+	gc.TextOutF( 0, 0, m_Text.data() );	
+}
 
 /// dialog to edit a single file highlighting rule
 class clEditFileHighlightingWin: public NCVertDialog
@@ -53,7 +117,7 @@ class clEditFileHighlightingWin: public NCVertDialog
 public:
 	clEditFileHighlightingWin( NCDialogParent* parent, const clNCFileHighlightingRule* Rule )
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file highlighting" ) ).data(), bListOkCancel )
-	 , m_Layout( 17, 2 )
+	 , m_Layout( 17, 3 )
 	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several file masks (separated with commas)")).data(), &m_MaskEdit)
 	 , m_MaskEdit( 0, this, nullptr, nullptr, 16 )
 	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description of the file highlighting")).data(), &m_DescriptionEdit)
@@ -62,8 +126,20 @@ public:
 	 , m_SizeMinEdit( 0, this, nullptr, nullptr, 16 )
 	 , m_SizeMaxText(0, this, utf8_to_unicode(_LT("Size <= (bytes)")).data(), &m_SizeMaxEdit)
 	 , m_SizeMaxEdit( 0, this, nullptr, nullptr, 16 )
-	 , m_ColorNormalText(0, this, utf8_to_unicode(_LT("Normal color (hexadecimal RGB)")).data(), &m_ColorNormalEdit)
-	 , m_ColorNormalEdit(0, this, nullptr, nullptr, 6)
+	 , m_ColorText(0, this, utf8_to_unicode(_LT("Colors (hexadecimal RGB)")).data(), nullptr)
+	// normal color
+	 , m_ColorNormalFGText(0, this, utf8_to_unicode(_LT("Normal foreground")).data(), &m_ColorNormalFGEdit)
+	 , m_ColorNormalFGEdit(0, this, nullptr, nullptr, 6 )
+	 , m_ColorNormalBGText(0, this, utf8_to_unicode(_LT("Normal background")).data(), &m_ColorNormalBGEdit)
+	 , m_ColorNormalBGEdit(0, this, nullptr, nullptr, 6 )
+	 , m_ColorNormalLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
+	// selected color
+	 , m_ColorSelectedFGText(0, this, utf8_to_unicode(_LT("Selected foreground")).data(), &m_ColorNormalFGEdit)
+	 , m_ColorSelectedFGEdit(0, this, nullptr, nullptr, 6 )
+	 , m_ColorSelectedBGText(0, this, utf8_to_unicode(_LT("Selected background")).data(), &m_ColorNormalBGEdit)
+	 , m_ColorSelectedBGEdit(0, this, nullptr, nullptr, 6 )
+	 , m_ColorSelectedLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
+	//
 	 , m_HasMaskButton( 0, this, utf8_to_unicode( _LT( "Mask" ) ).data(), 0, true )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
@@ -79,6 +155,12 @@ public:
 			m_DescriptionEdit.SetText( Rule->GetDescription().data(), false );
 			m_SizeMinEdit.SetText( std::to_wstring( Rule->GetSizeMin() ).c_str(), false );
 			m_SizeMaxEdit.SetText( std::to_wstring( Rule->GetSizeMax() ).c_str(), false );
+
+			uint32_t ColorNormalFG = Rule->GetColorNormal();
+			uint32_t ColorNormalBG = Rule->GetColorNormalBackground();
+
+			//m_ColorNormalFGEdit.SetText( IntToHexStr( ColorNormalFG ).c_str() );
+			//m_ColorNormalBGEdit.SetText( IntToHexStr( ColorNormalBG ).c_str( ) );
 /*
 			m_HasTerminalButton.Change( Assoc->GetHasTerminal() );
 			m_ExecuteCommandEdit.SetText( Assoc->GetExecuteCommand().data(), false );
@@ -89,6 +171,9 @@ public:
 			m_EditCommandSecondaryEdit.SetText( Assoc->GetEditCommandSecondary().data(), false );
 /*/
 		}
+
+		m_ColorNormalLabel.SetColors( 0x800000, 0xFFFF00 );
+		m_ColorSelectedLabel.SetColors( 0x800000, 0xFFFF00 );
 
 		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
 
@@ -104,8 +189,20 @@ public:
 		m_Layout.AddWinAndEnable( &m_SizeMaxText, 7, 0 );
 		m_Layout.AddWinAndEnable( &m_SizeMaxEdit, 8, 0 );
 
-		m_Layout.AddWinAndEnable( &m_ColorNormalText, 9, 0 );
-		m_Layout.AddWinAndEnable( &m_ColorNormalEdit, 10, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorText, 10, 0 );
+		// normal
+		m_Layout.AddWinAndEnable( &m_ColorNormalFGText, 12, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorNormalFGEdit, 13, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorNormalBGText, 12, 1 );
+		m_Layout.AddWinAndEnable( &m_ColorNormalBGEdit, 13, 1 );
+		m_Layout.AddWinAndEnable( &m_ColorNormalLabel, 13, 2 );
+		// selected
+		m_Layout.AddWinAndEnable( &m_ColorSelectedFGText, 14, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorSelectedFGEdit, 15, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorSelectedBGText, 14, 1 );
+		m_Layout.AddWinAndEnable( &m_ColorSelectedBGEdit, 15, 1 );
+		m_Layout.AddWinAndEnable( &m_ColorSelectedLabel, 15, 2 );
+		//
 
 		AddLayout( &m_Layout );
 
@@ -114,7 +211,10 @@ public:
 		order.append( &m_DescriptionEdit );
 		order.append( &m_SizeMinEdit );
 		order.append( &m_SizeMaxEdit );
-		order.append( &m_ColorNormalEdit );
+		order.append( &m_ColorNormalFGEdit );
+		order.append( &m_ColorNormalBGEdit );
+		order.append( &m_ColorSelectedFGEdit );
+		order.append( &m_ColorSelectedBGEdit );
 
 		SetPosition();
 	}
@@ -165,19 +265,30 @@ private:
 
 public:
 	StaticLabel m_MaskText;
-	EditLine   m_MaskEdit;
+	EditLine    m_MaskEdit;
 
 	StaticLabel m_DescriptionText;
-	EditLine   m_DescriptionEdit;
+	EditLine    m_DescriptionEdit;
 
 	StaticLabel m_SizeMinText;
-	EditLine   m_SizeMinEdit;
+	EditLine    m_SizeMinEdit;
 
 	StaticLabel m_SizeMaxText;
-	EditLine   m_SizeMaxEdit;
+	EditLine    m_SizeMaxEdit;
 
-	StaticLabel m_ColorNormalText;
-	clColorEditLine m_ColorNormalEdit;
+	StaticLabel     m_ColorText;
+	StaticLabel     m_ColorNormalFGText;
+	clColorEditLine m_ColorNormalFGEdit;
+	StaticLabel     m_ColorNormalBGText;
+	clColorEditLine m_ColorNormalBGEdit;
+	clColorLabel    m_ColorNormalLabel;
+
+	StaticLabel     m_ColorSelectedFGText;
+	clColorEditLine m_ColorSelectedFGEdit;
+	StaticLabel     m_ColorSelectedBGText;
+	clColorEditLine m_ColorSelectedBGEdit;
+	clColorLabel    m_ColorSelectedLabel;
+
 
 	SButton m_HasMaskButton;
 
