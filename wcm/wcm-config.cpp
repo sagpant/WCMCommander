@@ -380,7 +380,7 @@ void SaveStringList( const char* section, std::vector< std::string >& list )
 		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).data() );
 		out.Open( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
-		for ( int i = 0; i < list.count(); i++ )
+		for ( int i = 0; i < (int)list.size(); i++ )
 		{
 			if ( list[i].c_str() && list[i][0] )
 			{
