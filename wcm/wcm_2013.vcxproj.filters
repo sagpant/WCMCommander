@@ -71,6 +71,7 @@
     <ClCompile Include="wal\wal_tmpls.cpp" />
     <ClCompile Include="wcm-config.cpp" />
     <ClCompile Include="wal\IntrusivePtr.h" />
+    <ClCompile Include="strmasks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="charsetdlg.h" />
@@ -136,6 +137,7 @@
     <ClInclude Include="wal\wal_sys_api.h" />
     <ClInclude Include="wal\wal_tmpls.h" />
     <ClInclude Include="wcm-config.h" />
+    <ClInclude Include="strmasks.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="icon1.ico">

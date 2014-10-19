@@ -417,7 +417,7 @@ namespace wal
 		return DefWindowProc( hWnd, message, wParam, lParam );
 	}
 
-	int Win32HIconId = 0;
+	size_t Win32HIconId = 0;
 	HINSTANCE Win32HInstance = 0;
 
 	static ATOM RegisterWClass()
