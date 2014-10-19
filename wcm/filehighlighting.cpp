@@ -73,7 +73,7 @@ public:
 	// Win interface
 	//
 	virtual void OnChangeStyles() override;
-	virtual void Paint( GC& gc, const crect& PaintRect ) override;
+	virtual void Paint( wal::GC& gc, const crect& PaintRect ) override;
 
 	//
 	// clColorLabel
