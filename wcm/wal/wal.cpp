@@ -5,6 +5,15 @@
 #include "wal.h"
 #include "../unicode_lc.h"
 
+#define __STDC_FORMAT_MACROS
+#include <stdint.h>
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
+#	include <inttypes.h>
+#endif
+
+#include <string>
+#include <sstream>
+
 namespace wal
 {
 
@@ -320,4 +329,36 @@ namespace wal
 
 		return true;
 	}
+
+	static char g_HexChars[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+	char GetHexChar( int n )
+	{
+		return g_HexChars[ n & 0xF ];
+	}
+
+	std::wstring IntToHexStr( int64_t Value )
+	{
+		const int BUFFER = 1024;
+
+		char buf[BUFFER];
+
+		Lsnprintf( buf, BUFFER - 1, "%" PRIu64 "x", Value );
+
+		return std::wstring( utf8_to_unicode( buf ).data() );
+	}
+
+	int64_t HexStrToInt( const unicode_t* Str )
+	{
+		std::vector<char> utf8 = unicode_to_utf8( Str );
+
+		int64_t i = 0x0;
+
+		std::stringstream Convert( std::string( utf8.data() ) );
+
+		Convert >> std::hex >> i;
+
+		return i;
+	}
+
 }; //namespace wal

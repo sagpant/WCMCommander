@@ -445,6 +445,12 @@ namespace wal
 	void ReplaceTrailingSpaces( std::vector<unicode_t>* S );
 	/// compare unicode_t* string to char* string
 	bool IsEqual_Unicode_CStr( const unicode_t* U, const char* S, bool CaseSensitive = true );
+	/// n is 0...15
+	char GetHexChar( int n );
+	/// convert int to hexadecimal string
+	std::wstring IntToHexStr( int64_t Value );
+	/// convert hexadecimal string to int
+	int64_t HexStrToInt( const unicode_t* Str );
 }; //namespace wal
 
 #endif
