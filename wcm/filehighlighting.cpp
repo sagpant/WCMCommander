@@ -117,7 +117,7 @@ clColorLabel::clColorLabel( int nId, Win* Parent, const unicode_t* Text, crect* 
 
 void clColorLabel::OnChangeStyles()
 {
-	GC gc( this );
+	wal::GC gc( this );
 	gc.Set( GetFont() );
 
 	cpoint ts = gc.GetTextExtents( m_Text.data() );
