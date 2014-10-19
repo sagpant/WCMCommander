@@ -14,6 +14,30 @@
 
 #include <limits.h>
 
+static int uiSelectedPanel = GetUiID( "selected-panel" );
+
+clNCFileHighlightingRule::clNCFileHighlightingRule()
+ : m_Mask()
+ , m_Description()
+ , m_MaskEnabled( false )
+ , m_SizeMin( 0 )
+ , m_SizeMax( 0 )
+ , m_AttributesMask( 0 )
+
+ , m_ColorNormal( 0xFFFF00 )
+ , m_ColorNormalBackground( 0x800000 )
+
+ , m_ColorSelected( 0x00FFFF )
+ , m_ColorSelectedBackground( 0x800000 )
+
+ , m_ColorUnderCursorNormal( 0x000000 )
+ , m_ColorUnderCursorNormalBackground( 0x808000 )
+
+ , m_ColorUnderCursorSelected( 0x00FFFF )
+ , m_ColorUnderCursorSelectedBackground( 0x808000 )
+{
+}
+
 class clColorValidator: public clValidator
 {
 public:
@@ -36,14 +60,10 @@ public:
 	}
 };
 
-class clColorEditLine: public EditLine
+enum eColorEditLineType
 {
-public:
-	clColorEditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true )
-	 : EditLine( nId, parent, rect, txt, chars, frame )
-	{
-		this->SetValidator( new clColorValidator() );
-	}
+	eColorEditLineType_Foreground,
+	eColorEditLineType_Background,
 };
 
 class clColorLabel: public Win
@@ -64,6 +84,19 @@ public:
 	{
 		m_BgColor = Bg;
 		m_FgColor = Fg;
+	}
+	virtual void SetBgColor( uint32_t Bg )
+	{
+		m_BgColor = Bg;
+	}
+	virtual void SetFgColor( uint32_t Fg )
+	{
+		m_FgColor = Fg;
+	}
+	virtual void SetColor( eColorEditLineType Type, uint32_t Color )
+	{
+		if ( Type == eColorEditLineType_Foreground ) m_FgColor = Color;
+		if ( Type == eColorEditLineType_Background ) m_BgColor = Color;
 	}
 
 private:
@@ -111,14 +144,57 @@ void clColorLabel::Paint(GC& gc, const crect& PaintRect)
 	gc.TextOutF( 0, 0, m_Text.data() );	
 }
 
+class clColorEditLine: public EditLine
+{
+public:
+	clColorEditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true, clColorLabel* Label = nullptr, eColorEditLineType Type = eColorEditLineType_Foreground)
+	 : EditLine( nId, parent, rect, txt, chars, frame )
+	 , m_Label( Label )
+	 , m_Type( Type )
+	{
+		this->SetValidator( new clColorValidator() );
+	}
+
+	uint32_t GetEditColor() const
+	{
+		int64_t Color = HexStrToInt( GetText().data() );
+
+		// truncate
+		return uint32_t( uint64_t(Color) & 0xFFFFFFFF );
+	}
+
+	void Notify()
+	{
+		Changed();
+	}
+
+protected:
+	virtual void Changed() override
+	{
+		EditLine::Changed();
+
+		if ( m_Label )
+		{
+			uint32_t Color = GetEditColor();
+
+			m_Label->SetColor( m_Type, Color );
+			m_Label->Invalidate();
+		}
+	}
+
+private:
+	clColorLabel* m_Label;
+	eColorEditLineType m_Type;
+};
+
 /// dialog to edit a single file highlighting rule
 class clEditFileHighlightingWin: public NCVertDialog
 {
 public:
 	clEditFileHighlightingWin( NCDialogParent* parent, const clNCFileHighlightingRule* Rule )
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file highlighting" ) ).data(), bListOkCancel )
-	 , m_Layout( 17, 3 )
-	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several file masks (separated with commas)")).data(), &m_MaskEdit)
+	 , m_Layout( 21, 3 )
+	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several masks (separated with commas)")).data(), &m_MaskEdit)
 	 , m_MaskEdit( 0, this, nullptr, nullptr, 16 )
 	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description of the file highlighting")).data(), &m_DescriptionEdit)
 	 , m_DescriptionEdit( 0, this, nullptr, nullptr, 16 )
@@ -126,19 +202,31 @@ public:
 	 , m_SizeMinEdit( 0, this, nullptr, nullptr, 16 )
 	 , m_SizeMaxText(0, this, utf8_to_unicode(_LT("Size <= (bytes)")).data(), &m_SizeMaxEdit)
 	 , m_SizeMaxEdit( 0, this, nullptr, nullptr, 16 )
-	 , m_ColorText(0, this, utf8_to_unicode(_LT("Colors (hexadecimal RGB)")).data(), nullptr)
+	 , m_ColorText(0, this, utf8_to_unicode(_LT("Colors (hexadecimal BGR)")).data(), nullptr)
 	// normal color
-	 , m_ColorNormalFGText(0, this, utf8_to_unicode(_LT("Normal foreground")).data(), &m_ColorNormalFGEdit)
-	 , m_ColorNormalFGEdit(0, this, nullptr, nullptr, 6 )
-	 , m_ColorNormalBGText(0, this, utf8_to_unicode(_LT("Normal background")).data(), &m_ColorNormalBGEdit)
-	 , m_ColorNormalBGEdit(0, this, nullptr, nullptr, 6 )
-	 , m_ColorNormalLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
+	 , m_ColorNormalFGText( 0, this, utf8_to_unicode(_LT("Normal foreground")).data(), &m_ColorNormalFGEdit )
+	 , m_ColorNormalFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalLabel, eColorEditLineType_Foreground )
+	 , m_ColorNormalBGText( 0, this, utf8_to_unicode(_LT("Normal background")).data(), &m_ColorNormalBGEdit )
+	 , m_ColorNormalBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalLabel, eColorEditLineType_Background )
+	 , m_ColorNormalLabel( 0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
 	// selected color
-	 , m_ColorSelectedFGText(0, this, utf8_to_unicode(_LT("Selected foreground")).data(), &m_ColorNormalFGEdit)
-	 , m_ColorSelectedFGEdit(0, this, nullptr, nullptr, 6 )
-	 , m_ColorSelectedBGText(0, this, utf8_to_unicode(_LT("Selected background")).data(), &m_ColorNormalBGEdit)
-	 , m_ColorSelectedBGEdit(0, this, nullptr, nullptr, 6 )
+	 , m_ColorSelectedFGText(0, this, utf8_to_unicode(_LT("Selected foreground")).data(), &m_ColorNormalFGEdit )
+	 , m_ColorSelectedFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedLabel, eColorEditLineType_Foreground )
+	 , m_ColorSelectedBGText( 0, this, utf8_to_unicode(_LT("Selected background")).data(), &m_ColorNormalBGEdit )
+	 , m_ColorSelectedBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedLabel, eColorEditLineType_Background )
 	 , m_ColorSelectedLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
+	// normal color under cursror
+	 , m_ColorNormalUnderCursorFGText( 0, this, utf8_to_unicode(_LT("Cursor foreground")).data(), &m_ColorNormalUnderCursorFGEdit )
+	 , m_ColorNormalUnderCursorFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalUnderCursorLabel, eColorEditLineType_Foreground )
+	 , m_ColorNormalUnderCursorBGText( 0, this, utf8_to_unicode(_LT("Cursor background")).data(), &m_ColorNormalUnderCursorBGEdit )
+	 , m_ColorNormalUnderCursorBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalUnderCursorLabel, eColorEditLineType_Background )
+	 , m_ColorNormalUnderCursorLabel( 0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
+	// selected color under cursror
+	 , m_ColorSelectedUnderCursorFGText(0, this, utf8_to_unicode(_LT("Selected cursor foreground")).data(), &m_ColorNormalUnderCursorFGEdit )
+	 , m_ColorSelectedUnderCursorFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedUnderCursorLabel, eColorEditLineType_Foreground )
+	 , m_ColorSelectedUnderCursorBGText( 0, this, utf8_to_unicode(_LT("Selected cursor background")).data(), &m_ColorNormalUnderCursorBGEdit )
+	 , m_ColorSelectedUnderCursorBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedUnderCursorLabel, eColorEditLineType_Background )
+	 , m_ColorSelectedUnderCursorLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
 	//
 	 , m_HasMaskButton( 0, this, utf8_to_unicode( _LT( "Mask" ) ).data(), 0, true )
 	{
@@ -156,11 +244,20 @@ public:
 			m_SizeMinEdit.SetText( std::to_wstring( Rule->GetSizeMin() ).c_str(), false );
 			m_SizeMaxEdit.SetText( std::to_wstring( Rule->GetSizeMax() ).c_str(), false );
 
-			uint32_t ColorNormalFG = Rule->GetColorNormal();
-			uint32_t ColorNormalBG = Rule->GetColorNormalBackground();
+			const size_t Padding = 6;
 
-			//m_ColorNormalFGEdit.SetText( IntToHexStr( ColorNormalFG ).c_str() );
-			//m_ColorNormalBGEdit.SetText( IntToHexStr( ColorNormalBG ).c_str( ) );
+			m_ColorNormalFGEdit.SetText( IntToHexStr( Rule->GetColorNormal( ), Padding ).c_str( ) );
+			m_ColorNormalBGEdit.SetText( IntToHexStr( Rule->GetColorNormalBackground( ), Padding ).c_str( ) );
+
+			m_ColorSelectedFGEdit.SetText( IntToHexStr( Rule->GetColorSelected( ), Padding ).c_str( ) );
+			m_ColorSelectedBGEdit.SetText( IntToHexStr( Rule->GetColorSelectedBackground( ), Padding ).c_str( ) );
+
+			m_ColorNormalUnderCursorFGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorNormal( ), Padding ).c_str( ) );
+			m_ColorNormalUnderCursorBGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorNormalBackground( ), Padding ).c_str( ) );
+
+			m_ColorSelectedUnderCursorFGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorSelected( ), Padding ).c_str( ) );
+			m_ColorSelectedUnderCursorBGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorSelectedBackground( ), Padding ).c_str( ) );
+
 /*
 			m_HasTerminalButton.Change( Assoc->GetHasTerminal() );
 			m_ExecuteCommandEdit.SetText( Assoc->GetExecuteCommand().data(), false );
@@ -192,16 +289,36 @@ public:
 		m_Layout.AddWinAndEnable( &m_ColorText, 10, 0 );
 		// normal
 		m_Layout.AddWinAndEnable( &m_ColorNormalFGText, 12, 0 );
+		m_ColorNormalFGEdit.SetReplaceMode( true );
 		m_Layout.AddWinAndEnable( &m_ColorNormalFGEdit, 13, 0 );
 		m_Layout.AddWinAndEnable( &m_ColorNormalBGText, 12, 1 );
+		m_ColorNormalBGEdit.SetReplaceMode( true );
 		m_Layout.AddWinAndEnable( &m_ColorNormalBGEdit, 13, 1 );
 		m_Layout.AddWinAndEnable( &m_ColorNormalLabel, 13, 2 );
 		// selected
 		m_Layout.AddWinAndEnable( &m_ColorSelectedFGText, 14, 0 );
+		m_ColorSelectedFGEdit.SetReplaceMode( true );
 		m_Layout.AddWinAndEnable( &m_ColorSelectedFGEdit, 15, 0 );
 		m_Layout.AddWinAndEnable( &m_ColorSelectedBGText, 14, 1 );
+		m_ColorSelectedBGEdit.SetReplaceMode( true );
 		m_Layout.AddWinAndEnable( &m_ColorSelectedBGEdit, 15, 1 );
 		m_Layout.AddWinAndEnable( &m_ColorSelectedLabel, 15, 2 );
+		// normal under cursor
+		m_Layout.AddWinAndEnable( &m_ColorNormalUnderCursorFGText, 16, 0 );
+		m_ColorNormalUnderCursorFGEdit.SetReplaceMode( true );
+		m_Layout.AddWinAndEnable( &m_ColorNormalUnderCursorFGEdit, 17, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorNormalUnderCursorBGText, 16, 1 );
+		m_ColorNormalUnderCursorBGEdit.SetReplaceMode( true );
+		m_Layout.AddWinAndEnable( &m_ColorNormalUnderCursorBGEdit, 17, 1 );
+		m_Layout.AddWinAndEnable( &m_ColorNormalUnderCursorLabel, 17, 2 );
+		// selected under cursor
+		m_Layout.AddWinAndEnable( &m_ColorSelectedUnderCursorFGText, 18, 0 );
+		m_ColorSelectedUnderCursorFGEdit.SetReplaceMode( true );
+		m_Layout.AddWinAndEnable( &m_ColorSelectedUnderCursorFGEdit, 19, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorSelectedUnderCursorBGText, 18, 1 );
+		m_ColorSelectedUnderCursorBGEdit.SetReplaceMode( true );
+		m_Layout.AddWinAndEnable( &m_ColorSelectedUnderCursorBGEdit, 19, 1 );
+		m_Layout.AddWinAndEnable( &m_ColorSelectedUnderCursorLabel, 19, 2 );
 		//
 
 		AddLayout( &m_Layout );
@@ -215,6 +332,19 @@ public:
 		order.append( &m_ColorNormalBGEdit );
 		order.append( &m_ColorSelectedFGEdit );
 		order.append( &m_ColorSelectedBGEdit );
+		order.append( &m_ColorNormalUnderCursorFGEdit );
+		order.append( &m_ColorNormalUnderCursorBGEdit );
+		order.append( &m_ColorSelectedUnderCursorFGEdit );
+		order.append( &m_ColorSelectedUnderCursorBGEdit );
+
+		m_ColorNormalFGEdit.Notify();
+		m_ColorNormalBGEdit.Notify();
+		m_ColorSelectedFGEdit.Notify();
+		m_ColorSelectedBGEdit.Notify();
+		m_ColorNormalUnderCursorFGEdit.Notify();
+		m_ColorNormalUnderCursorBGEdit.Notify();
+		m_ColorSelectedUnderCursorFGEdit.Notify();
+		m_ColorSelectedUnderCursorBGEdit.Notify();
 
 		SetPosition();
 	}
@@ -248,6 +378,19 @@ public:
 		m_Result.SetDescription( GetDescription() );
 		m_Result.SetSizeMin( GetSizeMin() );
 		m_Result.SetSizeMax( GetSizeMax() );
+
+		m_Result.SetColorNormal( (uint32_t)HexStrToInt( m_ColorNormalFGEdit.GetText().data() ) );
+		m_Result.SetColorNormalBackground( ( uint32_t )HexStrToInt( m_ColorNormalBGEdit.GetText( ).data( ) ) );
+
+		m_Result.SetColorSelected( ( uint32_t )HexStrToInt( m_ColorSelectedFGEdit.GetText().data() ) );
+		m_Result.SetColorSelectedBackground( ( uint32_t )HexStrToInt( m_ColorSelectedBGEdit.GetText().data() ) );
+
+		m_Result.SetColorUnderCursorNormal( ( uint32_t )HexStrToInt( m_ColorNormalUnderCursorFGEdit.GetText().data() ) );
+		m_Result.SetColorUnderCursorNormalBackground( ( uint32_t )HexStrToInt( m_ColorNormalUnderCursorBGEdit.GetText( ).data( ) ) );
+
+		m_Result.SetColorUnderCursorSelected( ( uint32_t )HexStrToInt( m_ColorSelectedUnderCursorFGEdit.GetText().data() ) );
+		m_Result.SetColorUnderCursorSelectedBackground( ( uint32_t )HexStrToInt( m_ColorSelectedUnderCursorBGEdit.GetText( ).data( ) ) );
+
 /*
 		m_Result.SetExecuteCommand( GetExecuteCommand() );
 		m_Result.SetExecuteCommandSecondary( GetExecuteCommandSecondary() );
@@ -288,6 +431,18 @@ public:
 	StaticLabel     m_ColorSelectedBGText;
 	clColorEditLine m_ColorSelectedBGEdit;
 	clColorLabel    m_ColorSelectedLabel;
+
+	StaticLabel     m_ColorNormalUnderCursorFGText;
+	clColorEditLine m_ColorNormalUnderCursorFGEdit;
+	StaticLabel     m_ColorNormalUnderCursorBGText;
+	clColorEditLine m_ColorNormalUnderCursorBGEdit;
+	clColorLabel    m_ColorNormalUnderCursorLabel;
+
+	StaticLabel     m_ColorSelectedUnderCursorFGText;
+	clColorEditLine m_ColorSelectedUnderCursorFGEdit;
+	StaticLabel     m_ColorSelectedUnderCursorBGText;
+	clColorEditLine m_ColorSelectedUnderCursorBGEdit;
+	clColorLabel    m_ColorSelectedUnderCursorLabel;
 
 
 	SButton m_HasMaskButton;

@@ -14,22 +14,7 @@
 class clNCFileHighlightingRule
 {
 public:
-	clNCFileHighlightingRule()
-	 : m_Mask()
-	 , m_Description()
-	 , m_MaskEnabled( false )
-	 , m_SizeMin( 0 )
-	 , m_SizeMax( 0 )
-	 , m_AttributesMask( 0 )
-	 , m_ColorNormal( 0 )
-	 , m_ColorNormalBackground( 0 )
-	 , m_ColorSelected( 0 )
-	 , m_ColorSelectedBackground( 0 )
-	 , m_ColorUnderCursorNormal( 0 )
-	 , m_ColorUnderCursorNormalBackground( 0 )
-	 , m_ColorUnderCursorSelected( 0 )
-	 , m_ColorUnderCursorSelectedBackground( 0 )
-	{}
+	clNCFileHighlightingRule();
 
 	const std::vector<unicode_t>& GetMask() const { return m_Mask; }
 	const std::vector<unicode_t>& GetDescription() const { return m_Description; }
