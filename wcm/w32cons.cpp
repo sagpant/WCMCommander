@@ -338,19 +338,20 @@ void W32Cons::Paste()
 
 void W32Cons::PageUp()
 {
-	if ( SetFirst( _firstRow - screen.Rows() ) )
-	{
-		Reread();
-		CalcScroll();
-		Invalidate();
-	}
+	Scroll( screen.Rows() );
 }
 
 
 void W32Cons::PageDown()
 {
-	if ( SetFirst( _firstRow + screen.Rows() ) )
+	Scroll( -screen.Rows() );
+}
+
+void W32Cons::Scroll( int Lines )
+{
+	if ( SetFirst( _firstRow - Lines ) )
 	{
+		if ( Lines > 0 ) Reread();
 		CalcScroll();
 		Invalidate();
 	}

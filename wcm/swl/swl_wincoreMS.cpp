@@ -374,7 +374,7 @@ namespace wal
 
 				case WM_SYSKEYDOWN:
 				case WM_KEYDOWN:
-					if ( KeyEvent( EV_KEYDOWN, win, wParam, lParam ) )
+					if ( KeyEvent( EV_KEYDOWN, win, wParam, lParam, false ) )
 					{
 						return 0;
 					}
@@ -383,7 +383,7 @@ namespace wal
 
 				case WM_SYSKEYUP:
 				case WM_KEYUP:
-					if ( KeyEvent( EV_KEYUP, win, wParam, lParam ) )
+					if ( KeyEvent( EV_KEYUP, win, wParam, lParam, false ) )
 					{
 						return 0;
 					}
