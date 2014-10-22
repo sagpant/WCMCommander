@@ -4,11 +4,15 @@ Wal Commander
 [![Scan Status](https://scan.coverity.com/projects/2933/badge.svg?flat=1)](https://scan.coverity.com/projects/2933)
 
 Copyright (c) Valery [Wal] Goryachev 2013-2014
+
 Copyright (c) Sergey Kosarevsky, 2014
 
 Maintained by Sergey Kosarevsky
+
 https://github.com/corporateshark/WalCommander
+
 http://wcm.linderdaum.com
+
 walcommander@linderdaum.com
 
 =============================
