@@ -375,21 +375,25 @@ namespace wal
 		virtual ~cevent_mouse();
 	};
 
-
-// применяются виндовозные Virtual keys
 	class cevent_key: public cevent_input
 	{
-		int key; //virtual key
-		int count;
-		unicode_t chr;
+		int       m_Key;	// virtual key code (Windows virtual keys are used)
+		int       m_Count;
+		unicode_t m_Chr;
+		bool      m_FromMouseWheel;
 	public:
-		cevent_key( int type, int k, unsigned km, int cnt, unicode_t ch )
-			: cevent_input( type, km ), key( k ), count( cnt ), chr( ch ) {};
-
-		int Key() { return key; }
-		int Count() { return count; }
-		unicode_t Char() { return chr; };
+		cevent_key( int type, int k, unsigned km, int cnt, unicode_t ch, bool FromMouseWheel )
+		 : cevent_input( type, km )
+		 , m_Key( k )
+		 , m_Count( cnt )
+		 , m_Chr( ch )
+		 , m_FromMouseWheel( FromMouseWheel )
+		{};
 		virtual ~cevent_key();
+		int Key() const { return m_Key; }
+		int Count() const { return m_Count; }
+		bool IsFromMouseWheel() const { return m_FromMouseWheel; }
+		unicode_t Char() const { return m_Chr; };
 	};
 
 	class cevent_size: public cevent

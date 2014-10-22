@@ -544,7 +544,7 @@ namespace wal
 
 
 
-	static void DoKeyEvent( int type, Win* w, KeySym ks, unsigned km,  unicode_t ch )
+	static void DoKeyEvent( int type, Win* w, KeySym ks, unsigned km,  unicode_t ch, bool FromMouseWheel = false )
 	{
 //	printf( "type = %i ks = %x km = %u, ch = %u\n", type, (unsigned int)ks, km, ch );
 
@@ -690,7 +690,7 @@ namespace wal
 		}
 
 
-		cevent_key ev( type, ks , km, 1, ch );
+		cevent_key ev( type, ks , km, 1, ch, FromMouseWheel );
 
 		if ( w->Type() != Win::WT_MAIN && ChildKeyRecursive( w->Parent(), w, &ev ) )
 		{
@@ -881,8 +881,8 @@ namespace wal
 				// mouse wheel up
 				if ( e->button == Button4 && event->type == ButtonPress )
 				{
-					DoKeyEvent( EV_KEYDOWN, w, VK_UP, 0, 0 );
-					DoKeyEvent( EV_KEYUP,   w, VK_UP, 0, 0 );
+					DoKeyEvent( EV_KEYDOWN, w, VK_UP, 0, 0, true );
+					DoKeyEvent( EV_KEYUP,   w, VK_UP, 0, 0, true );
 					break;
 				}
 
@@ -890,8 +890,8 @@ namespace wal
 				if ( e->button == Button5 && event->type == ButtonPress )
 				{
 
-					DoKeyEvent( EV_KEYDOWN, w, VK_DOWN, 0, 0 );
-					DoKeyEvent( EV_KEYUP, w, VK_DOWN, 0, 0 );
+					DoKeyEvent( EV_KEYDOWN, w, VK_DOWN, 0, 0, true );
+					DoKeyEvent( EV_KEYUP, w, VK_DOWN, 0, 0, true );
 					break;
 				}
 

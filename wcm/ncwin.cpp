@@ -3041,6 +3041,19 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			}
 		}
 
+		if ( !_panelVisible && pEvent->IsFromMouseWheel() )
+		{
+			if ( fullKey == VK_DOWN )
+			{
+				_terminal.Scroll( -25 );
+				return true;
+			}
+			if ( fullKey == VK_UP   )
+			{
+				_terminal.Scroll( +25 );
+				return true;
+			}
+		}
 
 		switch ( fullKey )
 		{
