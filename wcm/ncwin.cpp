@@ -569,7 +569,11 @@ NCWin::NCWin()
 
 	m_Edit.SetFocus();
 
+#if defined( _WIN32 )
 	SetName( appName );
+#else
+	SetName( getuid() ? appName : appNameRoot );
+#endif
 
 	this->AddLayout( &_lo );
 

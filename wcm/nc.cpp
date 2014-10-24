@@ -25,12 +25,14 @@
 #include "string-util.h"
 #include "ltext.h"
 #include "globals.h"
+#include "eloadsave.h"
 
 #include "intarnal_icons.inc"
 
 clPtr<wal::GC> defaultGC;
 
 const char* appName = "Wal Commander GitHub Edition";
+const char* appNameRoot = "Wal Commander GitHub Edition (Root)";
 
 cfont* ( *OldSysGetFont )( Win* w, int id ) = 0;
 
