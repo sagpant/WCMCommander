@@ -2088,6 +2088,58 @@ void NCWin::FileAssociations()
 	}
 }
 
+bool NCWin::StartEditor( const std::vector<unicode_t> FileName, int Line, int Pos )
+{
+	if ( !FileName.data() ) { return false; }
+
+	FSPath fspath;
+
+	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, nullptr, 0 );
+
+	if ( !fs.Ptr() ) { return false; }
+
+ 	clPtr<MemFile> file = LoadFile( fs, fspath, this, true );
+
+	if ( !file.ptr() ) { return false; }
+
+	_editor.Load( fs, fspath, *file.ptr() );
+
+	sEditorScrollCtx ScrollCtx;
+
+	ScrollCtx.m_FirstLine = 0;
+	ScrollCtx.m_Point = EditPoint( Line, Pos );
+
+	_editor.SetScrollCtx( ScrollCtx );
+
+	SetMode( EDIT );
+
+ 	return true;
+}
+
+bool NCWin::StartViewer( const std::vector<unicode_t> FileName, int Line )
+{
+	if ( !FileName.data() ) { return false; }
+
+	FSPath fspath;
+
+	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, nullptr, 0 );
+
+	if ( !fs.Ptr() ) { return false; }
+
+	FSStat st;
+	int err;
+	FSCInfo info;
+
+	fs->Stat( fspath, &st, &err, &info );
+
+	SetMode( VIEW );
+
+	_viewer.SetFile( fs, fspath, st.size );
+	_viewer.SetCol( Line );
+
+	return true;
+}
+
 bool NCWin::EditSave( bool saveAs )
 {
 
