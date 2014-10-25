@@ -3115,6 +3115,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		{
 
 			case FC( VK_X, KM_CTRL ):
+				m_Edit.SetText( _history.Next() );
+				NotifyAutoComplete();
+				break;
 			case VK_DOWN:
 				if ( m_AutoCompleteList.IsVisible() )
 				{
@@ -3125,6 +3128,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case FC( VK_E, KM_CTRL ):
+				m_Edit.SetText( _history.Prev() );
+				NotifyAutoComplete();
+				break;
 			case VK_UP:
 				if ( m_AutoCompleteList.IsVisible() )
 				{
