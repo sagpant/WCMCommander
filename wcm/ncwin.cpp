@@ -2578,7 +2578,26 @@ bool NCCommandLine::EventKey( cevent_key* pEvent )
 
 	bool Pressed = pEvent->Type( ) == EV_KEYDOWN;
 
-	if ( p && Pressed ) p->NotifyAutoComplete();
+	switch ( pEvent->Key() )
+	{
+#ifdef _WIN32
+	case VK_CONTROL:
+	case VK_SHIFT:
+	case VK_MENU:
+#endif
+	case VK_LMETA:
+	case VK_RMETA:
+	case VK_LCONTROL:
+	case VK_RCONTROL:
+	case VK_LSHIFT:
+	case VK_RSHIFT:
+	case VK_LMENU:
+	case VK_RMENU:
+		break;
+	default:
+		if ( p && Pressed ) p->NotifyAutoComplete( );
+		break;
+	}
 	
 	return Result;
 }
@@ -2936,6 +2955,8 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		if ( alt && !shift && !ctrl )
 		{
+			HideAutoComplete();
+
 			wchar_t c = pEvent->Char();
 
 			if ( c && c >= 0x20 )
