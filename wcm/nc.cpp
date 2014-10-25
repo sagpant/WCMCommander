@@ -378,7 +378,10 @@ int main( int argc, char** argv )
 
 		InitExtensionApp();
 
+#if !defined( _WIN32 )
+		// don't bother with this on Windows
 		if ( !ParseCommandLine( argc, argv, &ncWin ) ) return 0;
+#endif
 
 		for ( auto i = g_Applets.begin(); i != g_Applets.end(); i++ )
 		{
