@@ -165,8 +165,18 @@ public:
 	iIntrusiveCounter( ) : m_RefCounter( 0 ) {}
 	virtual ~iIntrusiveCounter( ) {}
 
-	void    IncRefCount( ) { m_RefCounter++; }
-	void    DecRefCount( ) { if ( --m_RefCounter == 0 ) { delete this; } }
+	void    IncRefCount( )
+	{
+		m_RefCounter.fetch_add( 1, std::memory_order_relaxed );
+	}
+	void    DecRefCount()
+	{
+		if ( m_RefCounter.fetch_sub( 1, std::memory_order_release ) == 1 )
+		{
+			std::atomic_thread_fence( std::memory_order_acquire );
+			delete this;
+		}
+	}
 	long    GetReferenceCounter( ) const volatile { return m_RefCounter; }
 
 private:
