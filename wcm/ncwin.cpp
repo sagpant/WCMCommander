@@ -229,11 +229,11 @@ std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const uni
 	std::vector<unicode_t> Result( cmd );
 	std::vector<unicode_t> Name = new_unicode_str( FileName );
 
-	bool HasSpaces = StrHaveSpace( Name.data() );
+//	bool HasSpaces = StrHaveSpace( Name.data() );
 
 	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
 
-	if ( HasSpaces )
+//	if ( HasSpaces )
 	{
 		Name.insert( Name.begin(), '"' );
 		Name.push_back( '"' );
