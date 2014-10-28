@@ -13,8 +13,6 @@ matrix:
   exclude:
     - compiler: clang
       env: BUILDMODE=cmake-mingw32
-    - compiler: gcc # until mingw travis build is fixed
-      env: BUILDMODE=cmake-mingw32
 
 before_script:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
