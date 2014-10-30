@@ -2974,9 +2974,20 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		{
 			switch ( fullKey )
 			{
+				case FC( VK_M, KM_CTRL ):
+					{
+						crect rect = ScreenRect();
+						cpoint p;
+						p.x = ( rect.left + rect.right ) / 3;
+						p.y = ( rect.top  + rect.bottom ) / 3;
+						RightButtonPressed( p );
+					}
+					return true;
+
 				case FC( VK_DOWN, KM_SHIFT ):
 					_panel->KeyDown( shift, &_shiftSelectType );
 					return true;
+
 				case VK_DOWN:
 					if ( m_AutoCompleteList.IsVisible() )
 					{
