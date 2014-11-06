@@ -35,6 +35,7 @@
 	Fixed: tab size edit line location in Options -> Editor settings
 	Fixed: tab-order in the file associations dialog
 	Fixed: wrong device context for child windows
+	Fixed: Russian localization
 	Updated: readme, docs, localization
 	Development: Debian package building
 	Development: disabled level 4 warnings	
