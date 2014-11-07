@@ -476,8 +476,8 @@ int FSSmb::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 	////////////// работает, но при первом вызове выдает "no talloc stackframe around, leaking memory", ХЗ
 	if (!st.f_frsize) st.f_frsize = st.f_bsize;
 
-	vst->size = int64(st.f_blocks) * st.f_frsize;
-	vst->avail = int64(st.f_bavail) * st.f_bsize;
+	vst->size = int64_t(st.f_blocks) * st.f_frsize;
+	vst->avail = int64_t(st.f_bavail) * st.f_bsize;
 
 	return 0;
 	*/
