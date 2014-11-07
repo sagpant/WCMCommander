@@ -25,6 +25,7 @@ OBJS = \
 	$(OBJDIR)/charsetdlg.o \
 	$(OBJDIR)/color-style.o\
 	$(OBJDIR)/dircalc.o \
+	$(OBJDIR)/dlg-ctrl-l.o \
 	$(OBJDIR)/eloadsave.o \
 	$(OBJDIR)/ext-app.o \
 	$(OBJDIR)/fileassociations.o \
@@ -99,6 +100,9 @@ $(OBJDIR)/wcm.res: $(HW) $(HS) $(HN) wcm.rc
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
+
+$(OBJDIR)/dlg-ctrl-l.o: $(HW) $(HS) $(HN) dlg-ctrl-l.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) dlg-ctrl-l.cpp -o $(OBJDIR)/dlg-ctrl-l.o
 
 $(OBJDIR)/globals.o: $(HW) $(HS) $(HN) globals.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) globals.cpp -o $(OBJDIR)/globals.o

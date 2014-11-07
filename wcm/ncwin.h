@@ -299,6 +299,7 @@ private:
 	void Mark( bool enable );
 	void CtrlEnter();
 	void CtrlF();
+	void CtrlL();
 	void HistoryDialog();
 	void SelectDrive( PanelWin* p, PanelWin* OtherPanel );
 	void SaveSetupDialog();
