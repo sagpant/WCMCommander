@@ -43,6 +43,7 @@ public:
 	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat ( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
+	virtual int StatVfs(FSPath &path, FSStatVfs *st, int *err, FSCInfo *info);
 
 	virtual FSString Uri( FSPath& path );
 	virtual ~FSSmb();

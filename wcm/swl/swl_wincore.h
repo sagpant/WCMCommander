@@ -927,7 +927,9 @@ namespace wal
 	extern int uiPointerColor;
 	extern int uiOdd;
 
-
+	extern int uiVariable;
+	extern int uiValue;
+											  
 	class Win: public iIntrusiveCounter
 	{
 

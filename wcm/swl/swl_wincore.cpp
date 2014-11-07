@@ -2463,6 +2463,9 @@ begin:
 	int uiPointerColor = GetUiID( "pointer-color" );
 	int uiOdd = GetUiID( "odd" );
 
+	int uiVariable = GetUiID( "variable" );
+	int uiValue = GetUiID( "value" );
+
 	int uiEnabled = GetUiID( "enabled" );
 	int uiFocus = GetUiID( "focus" );
 	int uiItem = GetUiID( "item" );

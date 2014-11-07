@@ -453,6 +453,35 @@ int FSSmb::Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info ) //EPE
 	return -1;
 }
 
+int FSSmb::StatVfs(FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info)
+{
+
+	SetError(err, 0); 
+	return -1; 
+	/*
+
+	////////////// СЂР°Р±РѕС‚Р°РµС‚, РЅРѕ РїСЂРё РїРµСЂРІРѕРј РІС‹Р·РѕРІРµ РІС‹РґР°РµС‚ "no talloc stackframe around, leaking memory", РҐР— 
+	FREPARE_SMB_OPER(lock, info, &_param);
+	ASSERT(vst);
+
+	struct statvfs st;
+	memset(&st, 0, sizeof(st));
+
+	if (smbc_statvfs(pathBuffer1.SetPath(path), &st))
+	{
+		SetError(err, errno);
+		return -1;
+	}
+
+	////////////// работает, но при первом вызове выдает "no talloc stackframe around, leaking memory", ХЗ 
+	if (!st.f_frsize) st.f_frsize = st.f_bsize;
+
+	vst->size = int64(st.f_blocks) * st.f_frsize;
+	vst->avail = int64(st.f_bavail) * st.f_bsize;
+
+	return 0;
+	*/
+}
 
 FSString FSSmb::Uri( FSPath& path )
 {

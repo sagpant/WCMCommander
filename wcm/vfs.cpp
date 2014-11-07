@@ -32,6 +32,7 @@ int FS::ReadDir   ( FSList* list, FSPath& path,  int* err, FSCInfo* info )    { 
 int FS::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )         { SetError( err, 0 ); return -1; }
 int FS::FStat( int fd, FSStat* st, int* err, FSCInfo* info )     { SetError( err, 0 ); return -1; }
 int FS::Symlink   ( FSPath& path, FSString& str, int* err, FSCInfo* info )      { SetError( err, 0 ); return -1; }
+int FS::StatVfs( FSPath &path, FSStatVfs *st, int *err, FSCInfo *info )		{ SetError( err, 0 ); return -1; }
 int64_t FS::GetFileSystemFreeSpace( FSPath& path, int* err ) { SetError( err, 0 ); return -1; }
 
 unicode_t* FS::GetUserName( int user, unicode_t buf[64] ) { buf[0] = 0; return buf; };
@@ -679,6 +680,52 @@ int FSSys::Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info )
 	//...
 	SetError( err, 50 );
 	return -1;
+}
+
+int FSSys::StatVfs( FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info )
+{
+	ccollect<wchar_t, 0x100> root;
+
+	root.append( '\\' );
+	root.append( '\\' );
+	root.append( '?' );
+	root.append( '\\' );
+
+	if ( Drive() == -1 ) {
+		root.append( 'U' );
+		root.append( 'N' );
+		root.append( 'C' );
+		root.append( '\\' );
+		int n = path.Count() < 3 ? path.Count() : 3;
+		for ( int i = 1; i < n; i++ )
+		{
+			const unicode_t * s = path.GetItem( i )->GetUnicode();
+			for ( ; *s; s++ ) root.append( *s );
+			root.append( '\\' );
+		}
+	}
+	else {
+		root.append( Drive() + 'a' );
+		root.append( ':' );
+		root.append( '\\' );
+	}
+
+	root.append( 0 );
+
+	DWORD SectorsPerCluster;
+	DWORD BytesPerSector;
+	DWORD NumberOfFreeClusters;
+	DWORD TotalNumberOfClusters;
+
+	if ( !GetDiskFreeSpaceW( root.ptr(), &SectorsPerCluster, &BytesPerSector, &NumberOfFreeClusters, &TotalNumberOfClusters ) )
+	{
+		SetError( err, GetLastError() );
+		return -1;
+	}
+
+	vst->size = int64_t( TotalNumberOfClusters ) * SectorsPerCluster * BytesPerSector;
+	vst->avail = int64_t( NumberOfFreeClusters ) * SectorsPerCluster * BytesPerSector;
+	return 0;
 }
 
 FSString FSSys::Uri( FSPath& path )
@@ -1372,6 +1419,22 @@ int FSSys::Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info )
 
 static std::unordered_map<int, std::vector<unicode_t> > userList;
 static std::unordered_map<int, std::vector<unicode_t> > groupList;
+
+#include <sys/statvfs.h>
+
+int FSSys::StatVfs( FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info )
+{
+	struct statvfs st;
+	if (statvfs((char*)path.GetString(sys_charset_id), &st))
+	{
+		SetError(err, errno);
+		return -1;
+	}
+
+	vst->size = int64(st.f_blocks) * st.f_frsize;
+	vst->avail = int64(st.f_bavail) * st.f_bsize;
+	return 0;
+}
 
 FSString FSSys::Uri( FSPath& path )
 {

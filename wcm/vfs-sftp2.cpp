@@ -1238,6 +1238,46 @@ int FSSftp::Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info )
 	return 0;
 }
 
+int FSSftp::StatVfs( FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info )
+{
+	vst->size = 0;
+	vst->avail = 0;
+	if ( err ) *err = 0;
+	return 0;
+
+	///////////////////// отключено
+	///////////////////// зависает (libssh2_sftp_statvfs постоянно возвращает LIBSSH2_ERROR_EAGAIN)
+	/*
+	printf( "FSSftp::StatVfs 1 \n" );
+	MutexLock lock( &mutex );
+	int ret = CheckSession( err, info );
+	if ( ret ) return ret;
+	printf( "FSSftp::StatVfs 2 \n" );
+	char *fullPath = ( char* )path.GetString( _operParam.charset, '/' );
+
+	try {
+		printf( "FSSftp::StatVfs 3 \n" );
+		struct _LIBSSH2_SFTP_STATVFS st;
+		int ret;
+		WHILE_EAGAIN_COUNT( ret, libssh2_sftp_statvfs( sftpSession, fullPath, strlen( fullPath ), &st ), 2 );
+		if ( ret == LIBSSH2_ERROR_EAGAIN )
+			throw( int( 0 ) );
+		printf( "FSSftp::StatVfs 4 \n" );
+		CheckSFTP( ret );
+		printf( "FSSftp::StatVfs 5 \n" );
+		vst->size = int64_t( st.f_blocks ) * st.f_frsize;
+		vst->avail = int64_t( st.f_bavail ) * st.f_bsize;
+
+	}
+	catch ( int e ) {
+		vst->size = 0;
+		vst->avail = 0;
+		if ( err ) *err = e;
+		return ( e == -2 ) ? -2 : -1;
+	}
+	return 0;
+	*/
+}
 
 FSString FSSftp::Uri( FSPath& path )
 {

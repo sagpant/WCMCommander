@@ -9,7 +9,7 @@
 
 #define VALUE_WIDTH 12
 
-static unicode_t* PrintableSizeStr(unicode_t buf[64], int64 size)
+static unicode_t* PrintableSizeStr(unicode_t buf[64], int64_t size)
 {
 	seek_t num = size;	
 
@@ -41,7 +41,7 @@ class DirCtrlL: public NCDialog {
 	void PutSpace(int height);
 public:
 	DirCtrlL(NCDialogParent *parent, FSStatVfs &statVfs)
-	:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Information")).ptr(), bListOk),
+	:	NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Information")).data(), bListOk),
 		lo(50, 5),
 		row(0)
 	{
@@ -133,7 +133,7 @@ public:
 void DirCtrlL::PutLabel(const char *s)
 {
 	int n = row;
-	clPtr<Win> win = new StaticLine(0, this, utf8_to_unicode( s ).ptr());
+	clPtr<Win> win = new StaticLine(0, this, utf8_to_unicode( s ).data());
 	lo.AddWin(win.ptr(), n, 0, n, 4, Layout::CENTER);
 	win->Show(); win->Enable(); list.append(win);
 	row++;
@@ -142,11 +142,11 @@ void DirCtrlL::PutLabel(const char *s)
 void DirCtrlL::PutValue(const char *name, const char *value)
 {
 	int n = row;
-	clPtr<Win> win = new StaticLine(uiVariable, this, utf8_to_unicode( name ).ptr());
+	clPtr<Win> win = new StaticLine(uiVariable, this, utf8_to_unicode( name ).data());
 	lo.AddWin(win.ptr(), n, 1);
 	win->Show(); win->Enable(); list.append(win);
 
-	win = new StaticLine(uiValue, this, utf8_to_unicode( value ).ptr());
+	win = new StaticLine(uiValue, this, utf8_to_unicode( value ).data());
 	lo.AddWin(win.ptr(), n, 3, n, 3, Layout::RIGHT);
 	win->Show(); win->Enable(); list.append(win);
 	row++;
@@ -155,7 +155,7 @@ void DirCtrlL::PutValue(const char *name, const char *value)
 void DirCtrlL::PutValue(const char *name, const unicode_t *value)
 {
 	int n = row;
-	clPtr<Win> win = new StaticLine(uiVariable, this, utf8_to_unicode( name ).ptr());
+	clPtr<Win> win = new StaticLine(uiVariable, this, utf8_to_unicode( name ).data());
 	lo.AddWin(win.ptr(), n, 1);
 	win->Show(); win->Enable(); list.append(win);
 

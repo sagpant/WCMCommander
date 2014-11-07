@@ -248,6 +248,9 @@ void OperRDThread::Run()
 	//if (ret)
 	// throw_msg("%s", fs->StrError(ret_err).GetUtf8());
 
+	FSStatVfs vst;
+	fs->StatVfs( path, &vst, &ret_err, Info() );
+
 	MutexLock lock( Node().GetMutex() ); //!!!
 
 	if ( Node().NBStopped() ) { return; }
@@ -256,6 +259,7 @@ void OperRDThread::Run()
 	data->list = list;
 	data->path = path;
 	data->executed = true;
+	data->vst = vst;
 	if (havePostponedReadError || havePostponedStatError)
 	{
 		data->nonFatalErrorString = postponedStrError;

@@ -111,6 +111,13 @@ typedef time_t FSTime;
 #	endif
 #endif
 
+struct FSStatVfs {
+	int64_t size;
+	int64_t avail;
+
+	FSStatVfs() :size( -1 ), avail( -1 ){}
+};
+
 struct FSStat
 {
 	FSString link;
@@ -512,6 +519,7 @@ public:
 	virtual int Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
+	virtual int StatVfs( FSPath &path, FSStatVfs *st, int *err, FSCInfo *info );
 	virtual int64_t GetFileSystemFreeSpace( FSPath& path, int* err );
 
 	virtual FSString Uri( FSPath& path )                    = 0;
@@ -608,6 +616,7 @@ public:
 	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
+	virtual int StatVfs( FSPath &path, FSStatVfs *st, int *err, FSCInfo *info );
 	virtual FSString Uri( FSPath& path );
 	virtual int64_t GetFileSystemFreeSpace( FSPath& path, int* err );
 
