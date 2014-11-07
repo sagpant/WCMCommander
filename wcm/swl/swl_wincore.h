@@ -5,20 +5,20 @@
 #pragma once
 
 #if defined( _MSC_VER )
-#	pragma warning( disable:4100 ) // C4100 : unreferenced formal parameter
+#  pragma warning( disable:4100 ) // C4100 : unreferenced formal parameter
 #endif
 
 #ifdef _WIN32
-#	if !defined( NOMINMAX )
-#		define NOMINMAX
-#	endif
-#	include <windows.h>
+#  if !defined( NOMINMAX )
+#     define NOMINMAX
+#  endif
+#  include <windows.h>
 typedef HWND WinID;
 extern HINSTANCE appInstance;
 #else
-#	include <X11/Xlib.h>
-#	include <X11/keysym.h>
-#	include <wchar.h>
+#  include <X11/Xlib.h>
+#  include <X11/keysym.h>
+#  include <wchar.h>
 typedef Window WinID;
 #endif
 
@@ -30,11 +30,11 @@ namespace wal
 
 	enum CoreCommands
 	{
-	   CMD_CHECK = 0, //команда проверки (поддерживается команда или нет) номер команды в этом случае передается в подкоманде
-	   CMD_OK = 1,
-	   CMD_CANCEL = 2,
-	   CMD_YES = 3,
-	   CMD_NO = 4
+		CMD_CHECK = 0, //команда проверки (поддерживается команда или нет) номер команды в этом случае передается в подкоманде
+		CMD_OK = 1,
+		CMD_CANCEL = 2,
+		CMD_YES = 3,
+		CMD_NO = 4
 	};
 
 	struct cpoint;
@@ -110,63 +110,63 @@ namespace wal
 #ifdef _WIN32
 	enum Keyboard
 	{
-	   VK_NUMPAD_CENTER = 0x0C,
-	   VK_NUMPAD_RETURN = 0xFFFF,
+		VK_NUMPAD_CENTER = 0x0C,
+		VK_NUMPAD_RETURN = 0xFFFF,
 
 		VK_LMETA      = VK_LWIN,
 		VK_RMETA      = VK_RWIN,
 
 #ifndef VK_SLASH
-	   VK_SLASH      =   0xBF,
+		VK_SLASH      =   0xBF,
 #endif
 
 #ifndef VK_BACKSLASH
-	   VK_BACKSLASH  =   0xDC,
+		VK_BACKSLASH  =   0xDC,
 #endif
 
 #ifndef VK_GRAVE
-	   VK_GRAVE = 0xC0,
+		VK_GRAVE = 0xC0,
 #endif
-	   VK_0 = 0x30,
-	   VK_1 = 0x31,
-	   VK_2 = 0x32,
-	   VK_3 = 0x33,
-	   VK_4 = 0x34,
-	   VK_5 = 0x35,
-	   VK_6 = 0x36,
-	   VK_7 = 0x37,
-	   VK_8 = 0x38,
-	   VK_9 = 0x39,
+		VK_0 = 0x30,
+		VK_1 = 0x31,
+		VK_2 = 0x32,
+		VK_3 = 0x33,
+		VK_4 = 0x34,
+		VK_5 = 0x35,
+		VK_6 = 0x36,
+		VK_7 = 0x37,
+		VK_8 = 0x38,
+		VK_9 = 0x39,
 
-	   VK_A = 0x41,
-	   VK_B = 0x42,
-	   VK_C = 0x43,
-	   VK_D = 0x44,
-	   VK_E = 0x45,
-	   VK_F = 0x46,
-	   VK_G = 0x47,
-	   VK_H = 0x48,
-	   VK_I = 0x49,
-	   VK_J = 0x4A,
-	   VK_K = 0x4B,
-	   VK_L = 0x4C,
-	   VK_M = 0x4D,
-	   VK_N = 0x4E,
-	   VK_O = 0x4F,
-	   VK_P = 0x50,
-	   VK_Q = 0x51,
-	   VK_R = 0x52,
-	   VK_S = 0x53,
-	   VK_T = 0x54,
-	   VK_U = 0x55,
-	   VK_V = 0x56,
-	   VK_W = 0x57,
-	   VK_X = 0x58,
-	   VK_Y = 0x59,
-	   VK_Z = 0x5A,
+		VK_A = 0x41,
+		VK_B = 0x42,
+		VK_C = 0x43,
+		VK_D = 0x44,
+		VK_E = 0x45,
+		VK_F = 0x46,
+		VK_G = 0x47,
+		VK_H = 0x48,
+		VK_I = 0x49,
+		VK_J = 0x4A,
+		VK_K = 0x4B,
+		VK_L = 0x4C,
+		VK_M = 0x4D,
+		VK_N = 0x4E,
+		VK_O = 0x4F,
+		VK_P = 0x50,
+		VK_Q = 0x51,
+		VK_R = 0x52,
+		VK_S = 0x53,
+		VK_T = 0x54,
+		VK_U = 0x55,
+		VK_V = 0x56,
+		VK_W = 0x57,
+		VK_X = 0x58,
+		VK_Y = 0x59,
+		VK_Z = 0x5A,
 
-	   VK_BRACKETLEFT = 219,
-	   VK_BRACKETRIGHT = 221,
+		VK_BRACKETLEFT = 219,
+		VK_BRACKETRIGHT = 221,
 	};
 
 
@@ -176,137 +176,137 @@ namespace wal
 #ifndef _WIN32
 	enum Keyboard
 	{
-	   VK_NUMPAD_CENTER = XK_KP_Begin,
+		VK_NUMPAD_CENTER = XK_KP_Begin,
 
-	   VK_ESCAPE = XK_Escape,
-	   VK_TAB = XK_Tab,
-	   VK_RETURN = XK_Return,
-	   VK_NUMPAD_RETURN = XK_KP_Enter,
-	   VK_BACK = XK_BackSpace,
-	   VK_LEFT = XK_Left,
-	   VK_RIGHT = XK_Right,
-	   VK_HOME = XK_Home,
-	   VK_END = XK_End,
-	   VK_UP = XK_Up,
-	   VK_DOWN = XK_Down,
-	   VK_SPACE = XK_space, //XK_KP_Space,
-	   VK_DELETE = XK_Delete,
-	   VK_NEXT = XK_Next,
-	   VK_PRIOR = XK_Prior,
-	   VK_OEM_PLUS = XK_equal,
+		VK_ESCAPE = XK_Escape,
+		VK_TAB = XK_Tab,
+		VK_RETURN = XK_Return,
+		VK_NUMPAD_RETURN = XK_KP_Enter,
+		VK_BACK = XK_BackSpace,
+		VK_LEFT = XK_Left,
+		VK_RIGHT = XK_Right,
+		VK_HOME = XK_Home,
+		VK_END = XK_End,
+		VK_UP = XK_Up,
+		VK_DOWN = XK_Down,
+		VK_SPACE = XK_space, //XK_KP_Space,
+		VK_DELETE = XK_Delete,
+		VK_NEXT = XK_Next,
+		VK_PRIOR = XK_Prior,
+		VK_OEM_PLUS = XK_equal,
 
-	   VK_ADD = XK_KP_Add,
-	   VK_SUBTRACT = XK_KP_Subtract,
-	   VK_MULTIPLY = XK_KP_Multiply,
+		VK_ADD = XK_KP_Add,
+		VK_SUBTRACT = XK_KP_Subtract,
+		VK_MULTIPLY = XK_KP_Multiply,
 
-	   VK_DIVIDE = XK_KP_Divide,
-	   VK_SLASH      =   XK_slash,
-	   VK_BACKSLASH  =   XK_backslash,
+		VK_DIVIDE = XK_KP_Divide,
+		VK_SLASH      =   XK_slash,
+		VK_BACKSLASH  =   XK_backslash,
 
-	   VK_GRAVE = XK_grave,
+		VK_GRAVE = XK_grave,
 
-	   VK_INSERT = XK_Insert,
+		VK_INSERT = XK_Insert,
 
 		VK_LMETA = XK_Meta_L,
 		VK_RMETA = XK_Meta_R,
 
-	   VK_LCONTROL = XK_Control_L,
-	   VK_RCONTROL = XK_Control_R,
-	   VK_LSHIFT = XK_Shift_L,
-	   VK_RSHIFT = XK_Shift_R,
+		VK_LCONTROL = XK_Control_L,
+		VK_RCONTROL = XK_Control_R,
+		VK_LSHIFT = XK_Shift_L,
+		VK_RSHIFT = XK_Shift_R,
 
-	   VK_LMENU = XK_Alt_L,
-	   VK_RMENU = XK_Alt_R,
+		VK_LMENU = XK_Alt_L,
+		VK_RMENU = XK_Alt_R,
 
-	   VK_F1 = XK_F1,
-	   VK_F2 = XK_F2,
-	   VK_F3 = XK_F3,
-	   VK_F4 = XK_F4,
-	   VK_F5 = XK_F5,
-	   VK_F6 = XK_F6,
-	   VK_F7 = XK_F7,
-	   VK_F8 = XK_F8,
-	   VK_F9 = XK_F9,
-	   VK_F10 = XK_F10,
-	   VK_F11 = XK_F11,
-	   VK_F12 = XK_F12,
+		VK_F1 = XK_F1,
+		VK_F2 = XK_F2,
+		VK_F3 = XK_F3,
+		VK_F4 = XK_F4,
+		VK_F5 = XK_F5,
+		VK_F6 = XK_F6,
+		VK_F7 = XK_F7,
+		VK_F8 = XK_F8,
+		VK_F9 = XK_F9,
+		VK_F10 = XK_F10,
+		VK_F11 = XK_F11,
+		VK_F12 = XK_F12,
 
-	   VK_1 = XK_1,
-	   VK_2 = XK_2,
-	   VK_3 = XK_3,
-	   VK_4 = XK_4,
-	   VK_5 = XK_5,
-	   VK_6 = XK_6,
-	   VK_7 = XK_7,
-	   VK_8 = XK_8,
-	   VK_9 = XK_9,
-	   VK_0 = XK_0,
+		VK_1 = XK_1,
+		VK_2 = XK_2,
+		VK_3 = XK_3,
+		VK_4 = XK_4,
+		VK_5 = XK_5,
+		VK_6 = XK_6,
+		VK_7 = XK_7,
+		VK_8 = XK_8,
+		VK_9 = XK_9,
+		VK_0 = XK_0,
 
-	   VK_BRACKETLEFT = XK_bracketleft,
-	   VK_BRACKETRIGHT = XK_bracketright,
+		VK_BRACKETLEFT = XK_bracketleft,
+		VK_BRACKETRIGHT = XK_bracketright,
 
 #define S(a) VK_##a = XK_##a
-	   S( A ),
-	   S( B ),
-	   S( C ),
-	   S( D ),
-	   S( E ),
-	   S( F ),
-	   S( G ),
-	   S( H ),
-	   S( I ),
-	   S( J ),
-	   S( K ),
-	   S( L ),
-	   S( M ),
-	   S( N ),
-	   S( O ),
-	   S( P ),
-	   S( Q ),
-	   S( R ),
-	   S( S ),
-	   S( T ),
-	   S( U ),
-	   S( V ),
-	   S( W ),
-	   S( X ),
-	   S( Y ),
-	   S( Z )
+		S( A ),
+		S( B ),
+		S( C ),
+		S( D ),
+		S( E ),
+		S( F ),
+		S( G ),
+		S( H ),
+		S( I ),
+		S( J ),
+		S( K ),
+		S( L ),
+		S( M ),
+		S( N ),
+		S( O ),
+		S( P ),
+		S( Q ),
+		S( R ),
+		S( S ),
+		S( T ),
+		S( U ),
+		S( V ),
+		S( W ),
+		S( X ),
+		S( Y ),
+		S( Z )
 #undef s
 	};
 #endif
 
 	enum events
 	{
-	   EV_NONE = 0,
-	   EV_CLOSE,
-	   EV_SHOW,
-	   EV_ACTIVATE,
+		EV_NONE = 0,
+		EV_CLOSE,
+		EV_SHOW,
+		EV_ACTIVATE,
 
-	   EV_KEYDOWN = 10,
-	   EV_KEYUP,
+		EV_KEYDOWN = 10,
+		EV_KEYUP,
 
-	   EV_MOUSE_MOVE = 20,
-	   EV_MOUSE_PRESS,
-	   EV_MOUSE_RELEASE,
-	   EV_MOUSE_DOUBLE,
-	   EV_MOUSE_WHELL,
+		EV_MOUSE_MOVE = 20,
+		EV_MOUSE_PRESS,
+		EV_MOUSE_RELEASE,
+		EV_MOUSE_DOUBLE,
+		EV_MOUSE_WHELL,
 
-	   EV_ENTER,
-	   EV_LEAVE,
-	   EV_SETFOCUS = 30,
-	   EV_KILLFOCUS,
-	   EV_SIZE = 50,
-	   EV_MOVE,
-	   EV_TIMER = 70,
+		EV_ENTER,
+		EV_LEAVE,
+		EV_SETFOCUS = 30,
+		EV_KILLFOCUS,
+		EV_SIZE = 50,
+		EV_MOVE,
+		EV_TIMER = 70,
 	};
 
 
 	enum KEYMODFLAG
 	{
-	   KM_SHIFT = 0x0001,
-	   KM_CTRL = 0x0002,
-	   KM_ALT  = 0x0004
+		KM_SHIFT = 0x0001,
+		KM_CTRL = 0x0002,
+		KM_ALT  = 0x0004
 	};
 
 	class cevent//: public iIntrusiveCounter
@@ -350,11 +350,11 @@ namespace wal
 
 	enum MOUSEBUTTON
 	{
-	   MB_L  = 0x01,
-	   MB_M  = 0x02,
-	   MB_R  = 0x04,
-	   MB_X1 = 0x08,
-	   MB_X2 = 0x10
+		MB_L  = 0x01,
+		MB_M  = 0x02,
+		MB_R  = 0x04,
+		MB_X1 = 0x08,
+		MB_X2 = 0x10
 	};
 
 	class cevent_mouse: public cevent_input
@@ -377,17 +377,17 @@ namespace wal
 
 	class cevent_key: public cevent_input
 	{
-		int       m_Key;	// virtual key code (Windows virtual keys are used)
+		int       m_Key;  // virtual key code (Windows virtual keys are used)
 		int       m_Count;
 		unicode_t m_Chr;
 		bool      m_FromMouseWheel;
 	public:
 		cevent_key( int type, int k, unsigned km, int cnt, unicode_t ch, bool FromMouseWheel )
-		 : cevent_input( type, km )
-		 , m_Key( k )
-		 , m_Count( cnt )
-		 , m_Chr( ch )
-		 , m_FromMouseWheel( FromMouseWheel )
+			: cevent_input( type, km )
+			, m_Key( k )
+			, m_Count( cnt )
+			, m_Chr( ch )
+			, m_FromMouseWheel( FromMouseWheel )
 		{};
 		virtual ~cevent_key();
 		int Key() const { return m_Key; }
@@ -474,7 +474,7 @@ namespace wal
 		{
 			clPtr<cfont> p = new cfont( gc, name, pointSize, weight, flags );
 
-			if ( !p->Ok() ) return clPtr<cfont>();
+			if ( !p->Ok() ) { return clPtr<cfont>(); }
 
 			return p;
 		}
@@ -483,7 +483,7 @@ namespace wal
 		{
 			clPtr<cfont> p = new cfont( fileName, pointSize );
 
-			if ( !p->Ok( ) ) return clPtr<cfont>( );
+			if ( !p->Ok( ) ) { return clPtr<cfont>( ); }
 
 			return p;
 		}
@@ -492,7 +492,7 @@ namespace wal
 		{
 			clPtr<cfont> p = new cfont( x11string );
 
-			if ( !p->Ok( ) ) return clPtr<cfont>( );
+			if ( !p->Ok( ) ) { return clPtr<cfont>( ); }
 
 			return p;
 		}
@@ -713,13 +713,13 @@ namespace wal
 	public:
 		enum LineStyle
 		{
-		   SOLID = 0,
-		   DOT
+			SOLID = 0,
+			DOT
 		};
 	private:
 		GC() {};
-		GC(const GC&) = delete;
-		GC& operator=(const GC&) = delete;
+		GC( const GC& ) = delete;
+		GC& operator=( const GC& ) = delete;
 #ifdef _WIN32
 		friend LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 		friend class cfont;
@@ -929,7 +929,7 @@ namespace wal
 
 	extern int uiVariable;
 	extern int uiValue;
-											  
+
 	class Win: public iIntrusiveCounter
 	{
 
@@ -944,32 +944,32 @@ namespace wal
 	public:
 		enum WTYPE
 		{
-		   WT_MAIN = 1,
-		   WT_POPUP = 2,
-		   WT_CHILD = 4
+			WT_MAIN = 1,
+			WT_POPUP = 2,
+			WT_CHILD = 4
 		};
 
 		enum WHINT
 		{
-		   WH_MINBOX = 8,
-		   WH_MAXBOX = 0x10,
-		   WH_SYSMENU = 0x20,
-		   WH_RESIZE = 0x40,
-		   WH_TABFOCUS = 0x80,
-		   WH_CLICKFOCUS = 0x100,
-		   WH_USEDEFPOS = 0x200 //for WT_MAIN (in win32) use default width and height
+			WH_MINBOX = 8,
+			WH_MAXBOX = 0x10,
+			WH_SYSMENU = 0x20,
+			WH_RESIZE = 0x40,
+			WH_TABFOCUS = 0x80,
+			WH_CLICKFOCUS = 0x100,
+			WH_USEDEFPOS = 0x200 //for WT_MAIN (in win32) use default width and height
 		};
 
 		enum STATE
 		{
-		   S_VISIBLE = 1,
-		   S_ENABLED = 4
+			S_VISIBLE = 1,
+			S_ENABLED = 4
 		};
 
 		enum SHOW_TYPE
 		{
-		   SHOW_ACTIVE = 0,
-		   SHOW_INACTIVE = 1
+			SHOW_ACTIVE = 0,
+			SHOW_INACTIVE = 1
 		};
 
 	private:
@@ -1059,7 +1059,7 @@ namespace wal
 		void DelTimer( int id );
 		void DelAllTimers();
 
-		void ThreadCreate( int id, void * ( *f )( void* ), void* d );
+		void ThreadCreate( int id, void* ( *f )( void* ), void* d );
 		virtual void ThreadSignal( int id, int data );
 		virtual void ThreadStopped( int id, void* data );
 
@@ -1096,8 +1096,8 @@ namespace wal
 		virtual bool EventChildKey( Win* child, cevent_key* pEvent );
 		// overridden in dialog elements to help dialog winow to find child that matches the hotkey
 		// returns window to activate on the hotkey, or 0 if the key is unknown
-		virtual Win* IsHisHotKey(cevent_key* pEvent){ return 0; }; 
-		virtual bool EventKey(cevent_key* pEvent);
+		virtual Win* IsHisHotKey( cevent_key* pEvent ) { return 0; };
+		virtual bool EventKey( cevent_key* pEvent );
 		virtual bool EventFocus( bool recv );
 		virtual bool EventActivate( bool activated, Win* w );
 		virtual bool EventShow( bool show );

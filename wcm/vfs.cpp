@@ -10,8 +10,8 @@
 #include "unicode_lc.h"
 
 #if defined( __APPLE__ )
-#	include <sys/param.h>
-#	include <sys/mount.h>
+#  include <sys/param.h>
+#  include <sys/mount.h>
 #endif
 
 #include <unordered_map>
@@ -32,7 +32,7 @@ int FS::ReadDir   ( FSList* list, FSPath& path,  int* err, FSCInfo* info )    { 
 int FS::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )         { SetError( err, 0 ); return -1; }
 int FS::FStat( int fd, FSStat* st, int* err, FSCInfo* info )     { SetError( err, 0 ); return -1; }
 int FS::Symlink   ( FSPath& path, FSString& str, int* err, FSCInfo* info )      { SetError( err, 0 ); return -1; }
-int FS::StatVfs( FSPath &path, FSStatVfs *st, int *err, FSCInfo *info )		{ SetError( err, 0 ); return -1; }
+int FS::StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info )    { SetError( err, 0 ); return -1; }
 int64_t FS::GetFileSystemFreeSpace( FSPath& path, int* err ) { SetError( err, 0 ); return -1; }
 
 unicode_t* FS::GetUserName( int user, unicode_t buf[64] ) { buf[0] = 0; return buf; };
@@ -468,13 +468,14 @@ static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wc
 		d += 2;
 	}
 
-	
+
 	unicode_t lastChar = 0;
-	for (; *s; s++, d++) { lastChar = *d = *s; }
+
+	for ( ; *s; s++, d++ ) { lastChar = *d = *s; }
 
 	// ensure that we do not append double-backslash to the filepath.
 	// FindFirstFileW does not like UNC like \\?\c:\\*, and prefers \\?\c:\*
-	if (lastChar == '\\' && *cat == '\\'){ cat++; }
+	if ( lastChar == '\\' && *cat == '\\' ) { cat++; }
 
 	for ( ; *cat; cat++, d++ ) { *d = *cat; }
 
@@ -484,13 +485,14 @@ static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wc
 }
 
 #ifdef _DEBUG
-static void toStr(char* str, const wchar_t* wstr)
+static void toStr( char* str, const wchar_t* wstr )
 {
-    while (*wstr)
-    {
-        *str++= char( ( *wstr++ ) & 0xFF );
-    }
-    *str=0;
+	while ( *wstr )
+	{
+		*str++ = char( ( *wstr++ ) & 0xFF );
+	}
+
+	*str = 0;
 }
 #endif
 
@@ -503,10 +505,10 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).data(), &ent );
 
 #ifdef _DEBUG
-	std::vector<wchar_t> wpath = FindPathStr(_drive, path.GetUnicode(), L"\\*");
+	std::vector<wchar_t> wpath = FindPathStr( _drive, path.GetUnicode(), L"\\*" );
 	char s[1024];
-	toStr(s,wpath.data());
-	dbg_printf("FSSys::ReadDir %s@UNC path=%s\n", handle == INVALID_HANDLE_VALUE ? "OK": "failed", s);
+	toStr( s, wpath.data() );
+	dbg_printf( "FSSys::ReadDir %s@UNC path=%s\n", handle == INVALID_HANDLE_VALUE ? "OK" : "failed", s );
 #endif
 
 	if ( handle == INVALID_HANDLE_VALUE )
@@ -518,6 +520,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 		SetError( err, GetLastError() );
 		return -1;
 	}
+
 	try
 	{
 		while ( true )
@@ -578,7 +581,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 
 int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 {
-	if ( (_drive >= 0 && path.Count() == 1) || (_drive == -1 && path.Count() == 3) )
+	if ( ( _drive >= 0 && path.Count() == 1 ) || ( _drive == -1 && path.Count() == 3 ) )
 	{
 		//pseudo stat
 		fsStat->size = 0;
@@ -637,7 +640,7 @@ int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 
 	int d = Drive();
 
-	char RootPath[] = { char(d + 'A'), ':', '\\', 0 };
+	char RootPath[] = { char( d + 'A' ), ':', '\\', 0 };
 
 	if ( GetDiskFreeSpace( RootPath, &SectorsPerCluster, &BytesPerSector, &NumberOfFreeClusters, &TotalNumberOfClusters ) != TRUE ) { return -1; }
 
@@ -682,7 +685,7 @@ int FSSys::Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info )
 	return -1;
 }
 
-int FSSys::StatVfs( FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info )
+int FSSys::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 {
 	ccollect<wchar_t, 0x100> root;
 
@@ -691,20 +694,25 @@ int FSSys::StatVfs( FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info )
 	root.append( '?' );
 	root.append( '\\' );
 
-	if ( Drive() == -1 ) {
+	if ( Drive() == -1 )
+	{
 		root.append( 'U' );
 		root.append( 'N' );
 		root.append( 'C' );
 		root.append( '\\' );
 		int n = path.Count() < 3 ? path.Count() : 3;
+
 		for ( int i = 1; i < n; i++ )
 		{
-			const unicode_t * s = path.GetItem( i )->GetUnicode();
-			for ( ; *s; s++ ) root.append( *s );
+			const unicode_t* s = path.GetItem( i )->GetUnicode();
+
+			for ( ; *s; s++ ) { root.append( *s ); }
+
 			root.append( '\\' );
 		}
 	}
-	else {
+	else
+	{
 		root.append( Drive() + 'a' );
 		root.append( ':' );
 		root.append( '\\' );
@@ -817,9 +825,9 @@ void W32NetRes::Set( NETRESOURCEW* p )
 	node.rs = *p;
 	int offset = sizeof( node );
 #if _MSC_VER > 1700
-#	define QQQ(a, b, len) if (len>0) { a = (wchar_t*)(data + offset); Lwcsncpy(a, len, b, _TRUNCATE); } offset += len*sizeof(wchar_t);
+#  define QQQ(a, b, len) if (len>0) { a = (wchar_t*)(data + offset); Lwcsncpy(a, len, b, _TRUNCATE); } offset += len*sizeof(wchar_t);
 #else
-#	define QQQ(a, b, len) if (len>0) { a = (wchar_t*)(data + offset); Lwcsncpy(a, b, len); } offset += len*sizeof(wchar_t);
+#  define QQQ(a, b, len) if (len>0) { a = (wchar_t*)(data + offset); Lwcsncpy(a, b, len); } offset += len*sizeof(wchar_t);
 #endif
 	QQQ( node.rs.lpLocalName, p->lpLocalName, nameLen );
 	QQQ( node.rs.lpRemoteName, p->lpRemoteName, remoteNameLen );
@@ -1009,7 +1017,7 @@ int FSWin32Net::ReadDir ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 
 			switch ( p->dwDisplayType )
 			{
-					//case RESOURCEDISPLAYTYPE_GENERIC: return "GENERIC";
+				//case RESOURCEDISPLAYTYPE_GENERIC: return "GENERIC";
 				case RESOURCEDISPLAYTYPE_DOMAIN:
 				case RESOURCEDISPLAYTYPE_GROUP:
 				case RESOURCEDISPLAYTYPE_NETWORK:
@@ -1306,6 +1314,7 @@ int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 		SetError( err, errno );
 		return -1;
 	}
+
 #else
 	// FreeBSD and probably other systems have 64 bit support in regular statfs
 	struct statfs s;
@@ -1315,6 +1324,7 @@ int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
 		SetError( err, errno );
 		return -1;
 	}
+
 #endif
 
 	return ( int64_t )( s.f_bfree ) * ( int64_t )( s.f_bsize );
@@ -1422,17 +1432,18 @@ static std::unordered_map<int, std::vector<unicode_t> > groupList;
 
 #include <sys/statvfs.h>
 
-int FSSys::StatVfs( FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info )
+int FSSys::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 {
 	struct statvfs st;
-	if (statvfs((char*)path.GetString(sys_charset_id), &st))
+
+	if ( statvfs( ( char* )path.GetString( sys_charset_id ), &st ) )
 	{
-		SetError(err, errno);
+		SetError( err, errno );
 		return -1;
 	}
 
-	vst->size = int64(st.f_blocks) * st.f_frsize;
-	vst->avail = int64(st.f_bavail) * st.f_bsize;
+	vst->size = int64( st.f_blocks ) * st.f_frsize;
+	vst->avail = int64( st.f_bavail ) * st.f_bsize;
 	return 0;
 }
 
@@ -1445,7 +1456,7 @@ static std::vector<unicode_t> GetOSUserName( int id )
 {
 	auto i = userList.find( id );
 
-	if ( i != userList.end() ) return i->second;
+	if ( i != userList.end() ) { return i->second; }
 
 	setpwent();
 	struct passwd* p = getpwuid( id );
@@ -1464,7 +1475,7 @@ static std::vector<unicode_t> GetOSGroupName( int id )
 {
 	auto i = groupList.find( id );
 
-	if ( i != groupList.end() ) return i->second;
+	if ( i != groupList.end() ) { return i->second; }
 
 	setgrent();
 	struct group* p = getgrgid( id );
@@ -1982,9 +1993,9 @@ unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
 
 	if ( !FileTimeToLocalFileTime( &mt, &lt ) || !FileTimeToSystemTime( &lt, &st ) ) { ret[0] = '?'; ret[1] = 0; return ret; }
 
-	Lsnprintf( str, sizeof(str), "%02i/%02i/%04i  %02i:%02i:%02i",
-	         int( st.wDay ), int( st.wMonth ), int( st.wYear ),
-	         int( st.wHour ), int( st.wMinute ), int( st.wSecond ) );
+	Lsnprintf( str, sizeof( str ), "%02i/%02i/%04i  %02i:%02i:%02i",
+	           int( st.wDay ), int( st.wMonth ), int( st.wYear ),
+	           int( st.wHour ), int( st.wMinute ), int( st.wSecond ) );
 #else
 	time_t mt = mtime;
 	struct tm* p = localtime( &mt );

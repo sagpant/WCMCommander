@@ -40,82 +40,83 @@ typedef time_t FSTime;
 #endif
 
 #ifdef _WIN32
-#	if !defined( S_IFMT )
-#		define S_IFMT 0170000  //bitmask for the file type bitfields
-#	endif
-#	if !defined( S_IFSOCK )
-#		define S_IFSOCK  0140000  //socket
-#	endif
-#	if !defined( S_IFLNK )
-#		define S_IFLNK   0120000  //symbolic link
-#	endif
-#	if !defined( S_IFREG )
-#		define S_IFREG   0100000  //regular file
-#	endif
-#	if !defined( S_IFBLK )
-#		define S_IFBLK   0060000  //block device
-#	endif
-#	if !defined( S_IFDIR )
-#		define S_IFDIR   0040000  //directory
-#	endif
-#	if !defined( S_IFCHR )
-#		define S_IFCHR   0020000  //character device
-#	endif
-#	if !defined( S_IFIFO )
-#		define S_IFIFO   0010000  //fifo
-#	endif
-#	if !defined( S_ISUID )
-#		define S_ISUID   0004000  //set UID bit
-#	endif
-#	if !defined( S_ISGID )
-#		define S_ISGID   0002000  //set GID bit (see below)
-#	endif
-#	if !defined( S_ISVTX )
-#		define S_ISVTX   0001000  //sticky bit (see below)
-#	endif
-#	if !defined( S_IRWXU )
-#		define S_IRWXU    00700   //mask for file owner permissions
-#	endif
-#	if !defined( S_IRUSR )
-#		define S_IRUSR   00400 //owner has read permission
-#	endif
-#	if !defined( S_IWUSR )
-#		define S_IWUSR   00200 //owner has write permission
-#	endif
-#	if !defined( S_IXUSR )
-#		define S_IXUSR   00100 //owner has execute permission
-#	endif
-#	if !defined( S_IRWXG )
-#		define S_IRWXG   00070 //mask for group permissions
-#	endif
-#	if !defined( S_IRGRP )
-#		define S_IRGRP   00040 //group has read permission
-#	endif
-#	if !defined( S_IWGRP )
-#		define S_IWGRP   00020 //group has write permission
-#	endif
-#	if !defined( S_IXGRP )
-#		define S_IXGRP   00010 //group has execute permission
-#	endif
-#	if !defined( S_IRWXO )
-#		define S_IRWXO   00007 //mask for permissions for others (not in group)
-#	endif
-#	if !defined( S_IROTH )
-#		define S_IROTH   00004 //others have read permission
-#	endif
-#	if !defined( S_IWOTH )
-#		define S_IWOTH   00002 //others have write permisson
-#	endif
-#	if !defined( S_IXOTH )
-#		define S_IXOTH   00001 //others have execute permission
-#	endif
+#  if !defined( S_IFMT )
+#     define S_IFMT 0170000  //bitmask for the file type bitfields
+#  endif
+#  if !defined( S_IFSOCK )
+#     define S_IFSOCK  0140000  //socket
+#  endif
+#  if !defined( S_IFLNK )
+#     define S_IFLNK   0120000  //symbolic link
+#  endif
+#  if !defined( S_IFREG )
+#     define S_IFREG   0100000  //regular file
+#  endif
+#  if !defined( S_IFBLK )
+#     define S_IFBLK   0060000  //block device
+#  endif
+#  if !defined( S_IFDIR )
+#     define S_IFDIR   0040000  //directory
+#  endif
+#  if !defined( S_IFCHR )
+#     define S_IFCHR   0020000  //character device
+#  endif
+#  if !defined( S_IFIFO )
+#     define S_IFIFO   0010000  //fifo
+#  endif
+#  if !defined( S_ISUID )
+#     define S_ISUID   0004000  //set UID bit
+#  endif
+#  if !defined( S_ISGID )
+#     define S_ISGID   0002000  //set GID bit (see below)
+#  endif
+#  if !defined( S_ISVTX )
+#     define S_ISVTX   0001000  //sticky bit (see below)
+#  endif
+#  if !defined( S_IRWXU )
+#     define S_IRWXU    00700   //mask for file owner permissions
+#  endif
+#  if !defined( S_IRUSR )
+#     define S_IRUSR   00400 //owner has read permission
+#  endif
+#  if !defined( S_IWUSR )
+#     define S_IWUSR   00200 //owner has write permission
+#  endif
+#  if !defined( S_IXUSR )
+#     define S_IXUSR   00100 //owner has execute permission
+#  endif
+#  if !defined( S_IRWXG )
+#     define S_IRWXG   00070 //mask for group permissions
+#  endif
+#  if !defined( S_IRGRP )
+#     define S_IRGRP   00040 //group has read permission
+#  endif
+#  if !defined( S_IWGRP )
+#     define S_IWGRP   00020 //group has write permission
+#  endif
+#  if !defined( S_IXGRP )
+#     define S_IXGRP   00010 //group has execute permission
+#  endif
+#  if !defined( S_IRWXO )
+#     define S_IRWXO   00007 //mask for permissions for others (not in group)
+#  endif
+#  if !defined( S_IROTH )
+#     define S_IROTH   00004 //others have read permission
+#  endif
+#  if !defined( S_IWOTH )
+#     define S_IWOTH   00002 //others have write permisson
+#  endif
+#  if !defined( S_IXOTH )
+#     define S_IXOTH   00001 //others have execute permission
+#  endif
 #endif
 
-struct FSStatVfs {
+struct FSStatVfs
+{
 	int64_t size;
 	int64_t avail;
 
-	FSStatVfs() :size( -1 ), avail( -1 ){}
+	FSStatVfs() : size( -1 ), avail( -1 ) {}
 };
 
 struct FSStat
@@ -353,9 +354,9 @@ struct FSFtpParam
 #else
 		charset( sys_charset_id ),
 #endif
-	anonymous( true ),
-	passive( true ),
-	isSet( false )
+		anonymous( true ),
+		passive( true ),
+		isSet( false )
 	{}
 
 	void GetConf( StrConfig& conf )
@@ -482,7 +483,7 @@ public:
 */
 
 
-class FS:public iIntrusiveCounter
+class FS: public iIntrusiveCounter
 {
 public:
 	enum TYPES { SYSTEM = 0, SFTP = 1, SAMBA = 2, FTP = 3, WIN32NET = 4 };
@@ -519,7 +520,7 @@ public:
 	virtual int Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
-	virtual int StatVfs( FSPath &path, FSStatVfs *st, int *err, FSCInfo *info );
+	virtual int StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info );
 	virtual int64_t GetFileSystemFreeSpace( FSPath& path, int* err );
 
 	virtual FSString Uri( FSPath& path )                    = 0;
@@ -616,7 +617,7 @@ public:
 	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
-	virtual int StatVfs( FSPath &path, FSStatVfs *st, int *err, FSCInfo *info );
+	virtual int StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info );
 	virtual FSString Uri( FSPath& path );
 	virtual int64_t GetFileSystemFreeSpace( FSPath& path, int* err );
 

@@ -11,9 +11,9 @@
 #include "string-util.h"
 
 #ifdef LIBSMB40
-#	include <samba-4.0/libsmbclient.h>
+#  include <samba-4.0/libsmbclient.h>
 #else
-#	include <libsmbclient.h>
+#  include <libsmbclient.h>
 #endif
 
 #include <sys/types.h>
@@ -21,9 +21,9 @@
 #include <sys/time.h>
 
 #ifdef __linux__
-#	define OPENFLAG_LARGEFILE (O_LARGEFILE)
+#  define OPENFLAG_LARGEFILE (O_LARGEFILE)
 #else
-#	define OPENFLAG_LARGEFILE (0)
+#  define OPENFLAG_LARGEFILE (0)
 #endif
 
 static Mutex smbMutex;
@@ -453,14 +453,14 @@ int FSSmb::Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info ) //EPE
 	return -1;
 }
 
-int FSSmb::StatVfs(FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info)
+int FSSmb::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 {
 
-	SetError(err, 0); 
-	return -1; 
+	SetError( err, 0 );
+	return -1;
 	/*
 
-	////////////// СЂР°Р±РѕС‚Р°РµС‚, РЅРѕ РїСЂРё РїРµСЂРІРѕРј РІС‹Р·РѕРІРµ РІС‹РґР°РµС‚ "no talloc stackframe around, leaking memory", РҐР— 
+	////////////// СЂР°Р±РѕС‚Р°РµС‚, РЅРѕ РїСЂРё РїРµСЂРІРѕРј РІС‹Р·РѕРІРµ РІС‹РґР°РµС‚ "no talloc stackframe around, leaking memory", РҐР—
 	FREPARE_SMB_OPER(lock, info, &_param);
 	ASSERT(vst);
 
@@ -469,11 +469,11 @@ int FSSmb::StatVfs(FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info)
 
 	if (smbc_statvfs(pathBuffer1.SetPath(path), &st))
 	{
-		SetError(err, errno);
-		return -1;
+	   SetError(err, errno);
+	   return -1;
 	}
 
-	////////////// работает, но при первом вызове выдает "no talloc stackframe around, leaking memory", ХЗ 
+	////////////// работает, но при первом вызове выдает "no talloc stackframe around, leaking memory", ХЗ
 	if (!st.f_frsize) st.f_frsize = st.f_bsize;
 
 	vst->size = int64(st.f_blocks) * st.f_frsize;

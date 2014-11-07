@@ -5,7 +5,7 @@
  */
 
 #ifdef _WIN32
-#	include <winsock2.h>
+#  include <winsock2.h>
 #endif
 
 
@@ -24,14 +24,14 @@ void InitSSH()
 
 enum INT_SSH_ERRORS
 {
-   SSH_INTERROR_NOTSUPPORT = -20,
-   SSH_INTERROR_X3 = -21,
-   SSH_INTERROR_CONNECT = -22,
-   SSH_INTERROR_AUTH = -23,
-   SSH_INTERROR_FATAL = -24,
-   SSH_INTERROR_OUTOF = -25,
-   SSH_INTERROR_UNSUPPORTED_AUTH = -26,
-   SSH_INTERROR_STOPPED = -50
+	SSH_INTERROR_NOTSUPPORT = -20,
+	SSH_INTERROR_X3 = -21,
+	SSH_INTERROR_CONNECT = -22,
+	SSH_INTERROR_AUTH = -23,
+	SSH_INTERROR_FATAL = -24,
+	SSH_INTERROR_OUTOF = -25,
+	SSH_INTERROR_UNSUPPORTED_AUTH = -26,
+	SSH_INTERROR_STOPPED = -50
 };
 
 
@@ -986,7 +986,7 @@ int FSSftp::SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FS
 
 	LIBSSH2_SFTP_ATTRIBUTES attr;
 	attr.flags = LIBSSH2_SFTP_ATTR_ACMODTIME;
-	attr.atime = (unsigned long)aTime;
+	attr.atime = ( unsigned long )aTime;
 	attr.mtime = ( unsigned long )mTime;
 
 	try
@@ -1238,11 +1238,13 @@ int FSSftp::Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info )
 	return 0;
 }
 
-int FSSftp::StatVfs( FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info )
+int FSSftp::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 {
 	vst->size = 0;
 	vst->avail = 0;
-	if ( err ) *err = 0;
+
+	if ( err ) { *err = 0; }
+
 	return 0;
 
 	///////////////////// отключено
@@ -1256,24 +1258,24 @@ int FSSftp::StatVfs( FSPath &path, FSStatVfs *vst, int *err, FSCInfo *info )
 	char *fullPath = ( char* )path.GetString( _operParam.charset, '/' );
 
 	try {
-		printf( "FSSftp::StatVfs 3 \n" );
-		struct _LIBSSH2_SFTP_STATVFS st;
-		int ret;
-		WHILE_EAGAIN_COUNT( ret, libssh2_sftp_statvfs( sftpSession, fullPath, strlen( fullPath ), &st ), 2 );
-		if ( ret == LIBSSH2_ERROR_EAGAIN )
-			throw( int( 0 ) );
-		printf( "FSSftp::StatVfs 4 \n" );
-		CheckSFTP( ret );
-		printf( "FSSftp::StatVfs 5 \n" );
-		vst->size = int64_t( st.f_blocks ) * st.f_frsize;
-		vst->avail = int64_t( st.f_bavail ) * st.f_bsize;
+	   printf( "FSSftp::StatVfs 3 \n" );
+	   struct _LIBSSH2_SFTP_STATVFS st;
+	   int ret;
+	   WHILE_EAGAIN_COUNT( ret, libssh2_sftp_statvfs( sftpSession, fullPath, strlen( fullPath ), &st ), 2 );
+	   if ( ret == LIBSSH2_ERROR_EAGAIN )
+	      throw( int( 0 ) );
+	   printf( "FSSftp::StatVfs 4 \n" );
+	   CheckSFTP( ret );
+	   printf( "FSSftp::StatVfs 5 \n" );
+	   vst->size = int64_t( st.f_blocks ) * st.f_frsize;
+	   vst->avail = int64_t( st.f_bavail ) * st.f_bsize;
 
 	}
 	catch ( int e ) {
-		vst->size = 0;
-		vst->avail = 0;
-		if ( err ) *err = e;
-		return ( e == -2 ) ? -2 : -1;
+	   vst->size = 0;
+	   vst->avail = 0;
+	   if ( err ) *err = e;
+	   return ( e == -2 ) ? -2 : -1;
 	}
 	return 0;
 	*/
