@@ -1,3 +1,7 @@
+0.18.1 GitHub Edition
+	Added: speed indicator while copying
+	Hotkey: Ctrl+L to open info dialog
+
 0.18.0 GitHub Edition
 	Added: 'cls' command clears the whole terminal ('clear' still works as expected on Linux/OSX)
 	Added: command line switches on Linux (run ./wcm -h)
