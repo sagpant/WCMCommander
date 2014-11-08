@@ -333,23 +333,25 @@ namespace wal
 	bool Win::EventMouse( cevent_mouse* pEvent ) {  return false; }
 	bool Win::EventKey( cevent_key* pEvent ) {   return false;}
 
-	bool Win::EventChildKey( Win* child, cevent_key* pEvent ) 
-	{ 
+	bool Win::EventChildKey( Win* child, cevent_key* pEvent )
+	{
 		//dbg_printf("Win::EventChildKey key=0x%x mod=%d\n", pEvent->Key(), pEvent->Mod());
 		// check if any child recognizes the key as its hot key
-		if ((pEvent->Mod() & KM_ALT)!=0)
+		if ( ( pEvent->Mod() & KM_ALT ) != 0 )
 		{
-			for (int i = 0; i < childList.count(); i++)
+			for ( int i = 0; i < childList.count(); i++ )
 			{
 				Win* tchild = childList[i];
 				Win* tHotkeyWin;
-				if ((tHotkeyWin=tchild->IsHisHotKey(pEvent))!=0)
+
+				if ( ( tHotkeyWin = tchild->IsHisHotKey( pEvent ) ) != 0 )
 				{
 					tHotkeyWin->SetFocus();
-					return tHotkeyWin->EventKey(pEvent);
+					return tHotkeyWin->EventKey( pEvent );
 				}
 			}
 		}
+
 		return false;
 	}
 
@@ -576,7 +578,7 @@ namespace wal
 		return parent ? parent->GetChildFont( w, fontId ) : SysGetFont( w, fontId );
 	}
 
-	void Win::ThreadCreate( int id, void * ( *f )( void* ), void* d )
+	void Win::ThreadCreate( int id, void* ( *f )( void* ), void* d )
 	{
 		wth_CreateThread( this, id, f, d );
 	}
@@ -638,9 +640,9 @@ namespace wal
 
 	enum WTHCMD
 	{
-	   WTH_CMD_NONE = 0,
-	   WTH_CMD_EVENT = 1,
-	   WTH_CMD_END = 2
+		WTH_CMD_NONE = 0,
+		WTH_CMD_EVENT = 1,
+		WTH_CMD_END = 2
 	};
 
 	struct WTHNode
@@ -662,7 +664,7 @@ namespace wal
 	{
 		unsigned key = 0;
 
-		for ( auto i = 0; i < sizeof( th ); i++ ) key += (( unsigned char* )&th )[i];
+		for ( auto i = 0; i < sizeof( th ); i++ ) { key += ( ( unsigned char* )&th )[i]; }
 
 		return key;
 	}
@@ -675,7 +677,7 @@ namespace wal
 	class WTHash
 	{
 		friend void wth_DropWindow( Win* w );
-		friend void wth_CreateThread( Win* w, int id, void * ( *f )( void* ), void* d );
+		friend void wth_CreateThread( Win* w, int id, void* ( *f )( void* ), void* d );
 		friend bool WinThreadSignal( int data );
 		friend void* _swl_win_thread_func( void* data );
 		friend void wth_DoEvents();
@@ -753,7 +755,7 @@ namespace wal
 		return ret;
 	}
 
-	void wth_CreateThread( Win* w, int id, void * ( *f )( void* ), void* d )
+	void wth_CreateThread( Win* w, int id, void* ( *f )( void* ), void* d )
 	{
 		WTHNode* p = new WTHNode;
 		p->w = w;
@@ -1016,7 +1018,7 @@ namespace wal
 
 		for ( int i = top; i < bottom; i++ )
 		{
-			uint32_t* p = &_data[i*_width];
+			uint32_t* p = &_data[i * _width];
 			uint32_t* end = p + right;
 			p += left;
 
@@ -1084,7 +1086,7 @@ namespace wal
 		for ( y = 0; y < h; y++ )
 		{
 
-			uint32_t* line =  &_data[y*_width];
+			uint32_t* line =  &_data[y * _width];
 			int hN2 = hN / 2;
 
 			if ( !hN )
@@ -1499,9 +1501,9 @@ namespace wal
 
 		auto i = cmdIconList.find( cmd );
 
-		if ( i == cmdIconList.end() ) return;
+		if ( i == cmdIconList.end() ) { return; }
 
-		ccollect< clPtr<cicon> >* p = &(i->second);
+		ccollect< clPtr<cicon> >* p = &( i->second );
 
 		if ( !p ) { return; }
 
@@ -1644,7 +1646,7 @@ namespace wal
 
 		auto i = hash.find( name );
 
-		if ( i != hash.end() ) return i->second;	
+		if ( i != hash.end() ) { return i->second; }
 
 		id++;
 		hash[name] = id;
@@ -1745,10 +1747,10 @@ namespace wal
 	public:
 		enum TOKENS
 		{
-		   TOK_ID = -500,   // /[_\a][_\a\d]+/
-		   TOK_STR, // "...\?..."
-		   TOK_INT,
-		   TOK_EOF
+			TOK_ID = -500,   // /[_\a][_\a\d]+/
+			TOK_STR, // "...\?..."
+			TOK_INT,
+			TOK_EOF
 		};
 
 		void Syntax( const char* s = "" );
@@ -2046,7 +2048,9 @@ begin:
 		int Cmp( const clPtr<UiSelector>& a )
 		{
 			int i = 0;
-			while ( i < CMPN && cmpLev[i] == a->cmpLev[i] ) i++;
+
+			while ( i < CMPN && cmpLev[i] == a->cmpLev[i] ) { i++; }
+
 			return ( i >= CMPN ) ? 0 : cmpLev[i] < a->cmpLev[i] ? -1 : 1;
 		};
 
@@ -2238,7 +2242,9 @@ begin:
 				while ( i < selectors.count() )
 				{
 					clPtr<UiSelector> other = selectors[i];
-					if ( sel->Cmp( other ) >= 0 ) break;
+
+					if ( sel->Cmp( other ) >= 0 ) { break; }
+
 					i++;
 				}
 
@@ -2295,7 +2301,7 @@ begin:
 
 		for ( int i = 0; count > 0; count--, psl++, i++ )
 		{
-			clPtr<UiSelector> s = rules.selectors.get(i);
+			clPtr<UiSelector> s = rules.selectors.get( i );
 			int scount = s->stack.count();
 
 			if ( scount > 0 )
@@ -2353,9 +2359,9 @@ begin:
 	{
 		auto i = hash.find( id );
 
-		if ( i == hash.end() ) return nullptr;
-		
-		ccollect<Node>* ids = &(i->second);
+		if ( i == hash.end() ) { return nullptr; }
+
+		ccollect<Node>* ids = &( i->second );
 
 		if ( !ids ) { return nullptr; }
 
@@ -2450,7 +2456,7 @@ begin:
 	}
 
 	int uiColor = GetUiID( "color" );
-	int uiHotkeyColor = GetUiID("hotkey-color");
+	int uiHotkeyColor = GetUiID( "hotkey-color" );
 	int uiBackground = GetUiID( "background" );
 	int uiFocusFrameColor = GetUiID( "focus-frame-color" );
 	int uiFrameColor = GetUiID( "frame-color" );
@@ -2462,6 +2468,9 @@ begin:
 	int uiLineColor = GetUiID( "line-color" );
 	int uiPointerColor = GetUiID( "pointer-color" );
 	int uiOdd = GetUiID( "odd" );
+
+	int uiVariable = GetUiID( "variable" );
+	int uiValue = GetUiID( "value" );
 
 	int uiEnabled = GetUiID( "enabled" );
 	int uiFocus = GetUiID( "focus" );
@@ -2515,7 +2524,7 @@ begin:
 		UiValue* v = uiCache.Get( id, itemId, buf );
 //printf("4 %p\n", v);
 //if (v) printf("5 %i\n", v->Int());
-		return v ? unsigned( v->Int() ): def;
+		return v ? unsigned( v->Int() ) : def;
 	};
 
 	int Win::UiGetClassId()

@@ -44,6 +44,7 @@
 #include "dircalc.h"
 #include "ltext.h"
 #include "strmasks.h"
+#include "dlg-ctrl-l.h"
 
 #ifndef _WIN32
 #  include "ux_util.h"
@@ -1812,6 +1813,14 @@ void NCWin::CtrlF()
 	}
 }
 
+void NCWin::CtrlL()
+{
+	if ( _mode != PANEL ) return;
+	if ( _panel->IsVisible() ) 
+	{
+		DoCtrlLDialog( this, _panel->StatVfs() );
+	}
+}
 
 void NCWin::HistoryDialog()
 {
@@ -3125,6 +3134,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				case FC( VK_GRAVE, KM_CTRL ):
 					Home( _panel );
+					break;
+
+				case FC( VK_L, KM_CTRL ):
+					CtrlL();
 					break;
 			}
 		}

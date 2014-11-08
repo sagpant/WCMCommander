@@ -86,6 +86,7 @@ SET(wcm_COMMON_SOURCES
 	charsetdlg.cpp
 	color-style.cpp
 	dircalc.cpp
+	dlg-ctrl-l.cpp
 	eloadsave.cpp
 	globals.cpp
 	fileassociations.cpp
@@ -152,6 +153,7 @@ SET(wcm_HEADERS
 	charsetdlg.h
 	color-style.h
 	dircalc.h
+	dlg-ctrl-l.h
 	eloadsave.h
 	ext-app.h
 	globals.h

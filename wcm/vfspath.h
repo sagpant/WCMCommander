@@ -56,7 +56,7 @@ public:
 	void copy( const cs_string& a );
 	void copy( const cs_string&, int cs );
 
-	int cs() const { return m_Data ? m_Data->m_Encoding	 : 0; }
+	int cs() const { return m_Data ? m_Data->m_Encoding    : 0; }
 	const void* str() const { return m_Data ? m_Data->m_ByteBuffer.data() : nullptr; }
 	void clear() { m_Data = nullptr; }
 	bool is_null() const { return m_Data.IsNull(); }

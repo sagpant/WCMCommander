@@ -242,14 +242,14 @@ public:
 		   curSumSize( -1 ),
 		   curBadDirs( -1 ),
 		   dirString( 0, this, ScanedDirString( dirName ).data() ),
-		   fileCountName( 0, this, utf8_to_unicode( _LT( "Files:" ) ).data() ),
-		   fileCountNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
-		   folderCountName( 0, this, utf8_to_unicode( _LT( "Folders:" ) ).data() ),
-		   folderCountNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
-		   sumSizeName( 0, this, utf8_to_unicode( _LT( "Files size:" ) ).data() ),
-		   sumSizeNum( 0, this, utf8_to_unicode( "AAAAAAAAAAAAAAAAAAAA" ).data() ),
-		   badDirsName( 0, this, utf8_to_unicode( _LT( "Not readable folders:" ) ).data() ),
-		   badDirsNum( 0, this, utf8_to_unicode( "AAAAAAAAAA" ).data() )
+		   fileCountName( uiVariable, this, utf8_to_unicode( _LT( "Files:" ) ).data() ),
+		   fileCountNum( uiValue, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
+		   folderCountName( uiVariable, this, utf8_to_unicode( _LT( "Folders:" ) ).data() ),
+		   folderCountNum( uiValue, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
+		   sumSizeName( uiVariable, this, utf8_to_unicode( _LT( "Files size:" ) ).data() ),
+		   sumSizeNum( uiValue, this, utf8_to_unicode( "AAAAAAAAAAAAAAAAAAAA" ).data() ),
+		   badDirsName( uiVariable, this, utf8_to_unicode( _LT( "Not readable folders:" ) ).data() ),
+		   badDirsNum( uiValue, this, utf8_to_unicode( "AAAAAAAAAA" ).data() )
 	{
 		lo.AddWin( &dirString, 0, 0, 0, 3 );
 		lo.AddWin( &cPathWin, 9, 0, 9, 3 );

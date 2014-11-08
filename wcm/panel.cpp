@@ -1723,6 +1723,8 @@ void PanelWin::OperThreadStopped()
 				break;
 		};
 
+		_vst = _operData.vst;
+
 		_list.SetData( list );
 
 		if ( selected.ptr() )

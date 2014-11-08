@@ -80,7 +80,8 @@ namespace wal
 	struct LItemWin: public LItem
 	{
 		Win* w;
-		LItemWin( Win* _w, int _r1, int _r2, int _c1, int _c2 ): LItem( _r1, _r2, _c1, _c2 ), w( _w ) {}
+		int align;
+		LItemWin( Win* _w, int _r1, int _r2, int _c1, int _c2, int al ) : LItem( _r1, _r2, _c1, _c2 ), w( _w ), align( al ) {}
 		virtual void GetLSize( LSize* ls );
 		virtual void SetPos( crect rect, wal::ccollect<WSS>& wList );
 		virtual void* ObjPtr();
@@ -92,7 +93,8 @@ namespace wal
 	struct LItemLayout: public LItem
 	{
 		Layout* l;
-		LItemLayout( Layout* _l, int _r1, int _r2, int _c1, int _c2 ): LItem( _r1, _r2, _c1, _c2 ), l( _l ) {}
+		int align;
+		LItemLayout( Layout* _l, int _r1, int _r2, int _c1, int _c2, int al ): LItem( _r1, _r2, _c1, _c2 ), l( _l ), align( al ) {}
 		virtual void GetLSize( LSize* ls );
 		virtual void SetPos( crect rect, wal::ccollect<WSS>& wList );
 		virtual void* ObjPtr();
@@ -126,11 +128,19 @@ namespace wal
 
 		void Recalc();
 	public:
+		enum {
+			LEFT = 1,
+			RIGHT = 2,
+			TOP = 4,
+			BOTTOM = 8,
+			CENTER = 0
+		};
+
 		Layout( int lineCount, int colCount );
 		void DelObj( void* p );
-		void AddWin( Win* w, int r1, int c1, int r2 = -1, int c2 = -1 );
-		void AddWinAndEnable( Win* w, int r1, int c1, int r2 = -1, int c2 = -1 );
-		void AddLayout( Layout* l, int r1, int c1, int r2 = -1, int c2 = -1 );
+		void AddWin( Win* w, int r1, int c1, int r2 = -1, int c2 = -1, int al = LEFT | TOP );
+		void AddWinAndEnable( Win* w, int r1, int c1, int r2 = -1, int c2 = -1, int al = LEFT | TOP );
+		void AddLayout( Layout* l, int r1, int c1, int r2 = -1, int c2 = -1, int al = LEFT | TOP );
 		void AddRect( crect* rect, int r1, int c1, int r2 = -1, int c2 = -1 );
 		void GetLSize( LSize* ls );
 		LSize GetLSize() { LSize ls; GetLSize( &ls ); return ls; }

@@ -45,6 +45,11 @@ static char uiDefaultWcmRules[] =
    "EditLine:focus {color: 0; background: 0x909000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
    "EditLine {color: 0; background: 0x909000; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
 
+	"#variable { color : 0x800000 }"
+	"#value { color : 0x009000 }"
+
+	"Progress { color:0xA00000; frame-color: 0x808080; background: 0xD8E9EC }"
+
    "command-line:!enabled { background: 0; }"
    "command-line:focus {color: 0xFFFFFF; background: 0; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
    "command-line {color: 0xFFFFFF; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
@@ -150,6 +155,8 @@ static char uiBlackWcmRules[] =
    "*@item:current-item	{color: 0xFFFFFF; background: 0x505050; }"
    "*@item			{color: 0xFFFFFF; background: 0; }"
 
+	"Progress { color:0xA00000; frame-color: 0x808080; background: 0xD8E9EC }"
+
    "ScrollBar { button-color: 0xD8E9EC;  }"
    "EditLine:!enabled { background: 0xD8E9EC; }"
    "EditLine:focus {color: 0; background: 0x909000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xA0B0B0 }"
@@ -238,6 +245,8 @@ static char uiWhiteWcmRules[] =
    "*@item:odd		{color: 0; background: 0xE0FFE0; }"
    "*@item:current-item	{color: 0xFFFFFF; background: 0x800000; }"
    "*@item			{color: 0; background: 0xFFFFFF; }"
+
+	"Progress { color:0xA00000; frame-color: 0x808080; background: 0xD8E9EC }"
 
    "ScrollBar { button-color: 0xD8E9EC;  }"
    "EditLine:!enabled { background: 0xD8E9EC; }"

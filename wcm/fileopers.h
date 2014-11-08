@@ -45,6 +45,7 @@ public:
 	FSString errorString; //??volatile
 	FSString nonFatalErrorString;
 	clPtr<FSList> list; //??volatile
+	FSStatVfs vst;
 
 	OperRDData( NCDialogParent* p ): OperData( p ), executed( false ) {}
 

@@ -76,14 +76,14 @@ FSSftp::FSSftp( FSSftpParam* param )
 
 enum INT_SSH_ERRORS
 {
-   SSH_INTERROR_NOTSUPPORT = -20,
-   SSH_INTERROR_X3 = -21,
-   SSH_INTERROR_CONNECT = -22,
-   SSH_INTERROR_AUTH = -23,
-   SSH_INTERROR_FATAL = -24,
-   SSH_INTERROR_OUTOF = -25,
-   SSH_INTERROR_UNSUPPORTED_AUTH = -26,
-   SSH_INTERROR_STOPPED = -50
+	SSH_INTERROR_NOTSUPPORT = -20,
+	SSH_INTERROR_X3 = -21,
+	SSH_INTERROR_CONNECT = -22,
+	SSH_INTERROR_AUTH = -23,
+	SSH_INTERROR_FATAL = -24,
+	SSH_INTERROR_OUTOF = -25,
+	SSH_INTERROR_UNSUPPORTED_AUTH = -26,
+	SSH_INTERROR_STOPPED = -50
 };
 
 
@@ -359,11 +359,11 @@ FSString FSSftp::StrError( int err )
 			break;
 
 
-			/* case SSH_NO_ERROR: s = "no error"; break;
-			   case SSH_REQUEST_DENIED: s = "recoverable error"; break;
-			   case SSH_FATAL: s = "fatal ssh error"; break;
-			   case SSH_INTERROR_OUTOF: s = "out of invernal sftp vfs resources"; break;
-			*/
+		/* case SSH_NO_ERROR: s = "no error"; break;
+		   case SSH_REQUEST_DENIED: s = "recoverable error"; break;
+		   case SSH_FATAL: s = "fatal ssh error"; break;
+		   case SSH_INTERROR_OUTOF: s = "out of invernal sftp vfs resources"; break;
+		*/
 		default:
 			s = "???";
 			break;

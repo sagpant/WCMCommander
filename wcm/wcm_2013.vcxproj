@@ -177,6 +177,7 @@
     <ClCompile Include="charsetdlg.cpp" />
     <ClCompile Include="color-style.cpp" />
     <ClCompile Include="dircalc.cpp" />
+    <ClCompile Include="dlg-ctrl-l.cpp" />
     <ClCompile Include="eloadsave.cpp" />
     <ClCompile Include="ext-app.cpp" />
     <ClCompile Include="globals.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="charsetdlg.h" />
     <ClInclude Include="color-style.h" />
     <ClInclude Include="dircalc.h" />
+    <ClInclude Include="dlg-ctrl-l.h" />
     <ClInclude Include="eloadsave.h" />
     <ClInclude Include="ext-app.h" />
     <ClInclude Include="fileassociations.h" />
