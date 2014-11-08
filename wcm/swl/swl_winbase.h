@@ -230,10 +230,19 @@ namespace wal
 
 	class StaticLine: public Win
 	{
+	public:
+		enum ALIGN
+		{
+			LEFT = -1,
+			CENTER = 0,
+			RIGHT = 1
+		};
 		//MenuTextInfo text;
 		std::vector<unicode_t> text;
+		ALIGN align;
+		int width; //ширина в ВЫСОТАХ фонта
 	public:
-		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = 0 );
+		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = 0, ALIGN al = LEFT, int w = -1 );
 		virtual void Paint( GC& gc, const crect& paintRect );
 		//void SetText( const unicode_t* txt ) { text.SetText(txt) ; Invalidate(); }
 		void SetText(const unicode_t* txt) { text = wal::new_unicode_str(txt); Invalidate(); }

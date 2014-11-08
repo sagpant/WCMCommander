@@ -201,14 +201,25 @@ namespace wal
 	int uiClassStatic = GetUiID( "Static" );
 	int StaticLine::UiGetClassId() {  return uiClassStatic;}
 
-	StaticLine::StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect )
-		: Win(Win::WT_CHILD, 0, parent, rect, nId), text(new_unicode_str(txt))
+	StaticLine::StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect, ALIGN al, int w )
+		: Win(Win::WT_CHILD, 0, parent, rect, nId)
+		, text( txt ? new_unicode_str(txt) : std::vector<wchar_t>() )
+		, align( al )
+		, width( w )
 	{
-		if ( !rect )
+		if (!rect) 
 		{
-			GC gc( this );
-			SetLSize(LSize(GetStaticTextExtent(gc, txt, GetFont())));
-			//SetLSize(LSize(text.GetTextExtents(gc, GetFont())));
+			GC gc(this);
+			if (w >= 0)
+			{
+				static unicode_t t[]={'A', 'B', 'C', 0};
+				cpoint p = GetStaticTextExtent(gc,t,GetFont());
+				p.x = p.y * w;
+				SetLSize(LSize(p));
+			} else if (txt)
+				SetLSize(LSize(GetStaticTextExtent(gc,txt,GetFont())));
+			else
+				SetLSize(LSize(cpoint(0, 0)));
 		}
 	}
 
@@ -218,10 +229,21 @@ namespace wal
 		crect rect = ClientRect();
 		gc.SetFillColor( UiGetColor( uiBackground, 0, 0, 0xFFFFFF )/*GetColor(0)*/ );
 		gc.FillRect( rect ); //CCC
+
+		if ( !text.data() || !text[0] ) return;
+
 		gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 )/*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ ); //CCC
 		gc.Set( GetFont() );
-		DrawStaticText(gc, 0, 0, text.data());
-		//text.DrawItem(gc, 0, 0, UiGetColor(uiColor, 0, 0, 0), UiGetColor(uiHotkeyColor, 0, 0, 0));
+
+		if (align >= 0)
+		{
+			cpoint size = gc.GetTextExtents( text.data() );
+			if (align) //right	
+				DrawStaticText( gc, rect.right - size.x, 0, text.data() );
+			else //center
+				DrawStaticText( gc, (rect.Width() - size.x) / 2, 0, text.data() );
+		} else
+			DrawStaticText( gc, 0, 0, text.data() );
 	}
 
 //////////////////////////////////// ToolTip
