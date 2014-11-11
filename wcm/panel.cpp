@@ -1164,10 +1164,10 @@ void PanelWin::SetCurrent( int n, bool Shift, LPanelSelectionType* SelectType, b
 			for ( int i = old; count >= 0; count--, i += delta )
 			{
 				LPanelSelectionType* SType = SelectType;
+				LPanelSelectionType  LastSelection = LPanelSelectionType_Disable;
 				// the last line should be selected only in specific cases
 				if ( count == 0 )
 				{
-					LPanelSelectionType LastSelection = LPanelSelectionType_Disable;
 					SType = SelectLast ? SelectType : &LastSelection;
 				}
 				_list.ShiftSelection( i, SType, HideDotsInDir() );
@@ -1722,6 +1722,8 @@ void PanelWin::OperThreadStopped()
 				_place.Set( _operData.fs, _operData.path, false );
 				break;
 		};
+
+		_vst = _operData.vst;
 
 		_list.SetData( list );
 

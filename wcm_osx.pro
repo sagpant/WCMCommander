@@ -60,6 +60,7 @@ SOURCES += wcm/nc.cpp \
     wcm/shortcuts.cpp \
     wcm/smblogon.cpp \
     wcm/strconfig.cpp \
+    wcm/strmasks.cpp \
     wcm/t-emulator.cpp \
     wcm/tcp_sock.cpp \
     wcm/terminal.cpp \
@@ -130,6 +131,7 @@ HEADERS += \
     wcm/smblogon.h \
     wcm/strconfig.h \
     wcm/string-util.h \
+    wcm/strmasks.h \
     wcm/t-emulator.h \
     wcm/targetver.h \
     wcm/tcp_sock.h \

@@ -187,7 +187,7 @@ FSPath::~FSPath() {}
 inline clPtr<cs_string::Node> new_node( int size, int cs )
 {
 	clPtr<cs_string::Node> p = new cs_string::Node();
-	
+
 	p->m_Encoding = cs;
 	p->m_ByteBuffer.resize( size );
 
@@ -254,12 +254,12 @@ inline clPtr<cs_string::Node> new_node( const unicode_t* s, int len )
 }
 
 cs_string::cs_string( const unicode_t* s )
- : m_Data( new_node( s ) )
+	: m_Data( new_node( s ) )
 {
 }
 
 cs_string::cs_string( const char* utf8Str )
- : m_Data( new_node( CS_UTF8, utf8Str ) )
+	: m_Data( new_node( CS_UTF8, utf8Str ) )
 {
 }
 
@@ -281,15 +281,15 @@ void cs_string::set( const unicode_t* s )
 void cs_string::set( int cs, const void* s )
 {
 	m_Data = ( cs == CS_UNICODE ) ?
-					new_node( ( const unicode_t* )s ) :
-					new_node( cs, ( const char* )s );
+	         new_node( ( const unicode_t* )s ) :
+	         new_node( cs, ( const char* )s );
 }
 
 void cs_string::set( int cs, const void* s, int len )
 {
 	m_Data = ( cs == CS_UNICODE ) ?
-					new_node( ( const unicode_t* )s, len ) :
-					new_node( cs, ( const char* )s, len );
+	         new_node( ( const unicode_t* )s, len ) :
+	         new_node( cs, ( const char* )s, len );
 }
 
 

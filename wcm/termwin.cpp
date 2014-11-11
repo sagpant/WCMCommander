@@ -87,18 +87,18 @@ void TerminalWin::Paste()
 
 void TerminalWin::PageUp()
 {
-	if ( SetFirst( _firstRow + ( screen.rows - 1 ) ) )
-	{
-		Reread();
-		CalcScroll();
-		Invalidate();
-	}
+	Scroll( + ( screen.rows - 1 ) );
 }
 
 
 void TerminalWin::PageDown()
 {
-	if ( SetFirst( _firstRow - ( screen.rows - 1 ) ) )
+	Scroll( - ( screen.rows - 1 ) );
+}
+
+void TerminalWin::Scroll(int Lines)
+{
+	if ( SetFirst( _firstRow + Lines ) )
 	{
 		Reread();
 		CalcScroll();

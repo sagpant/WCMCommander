@@ -44,6 +44,7 @@
 #include "dircalc.h"
 #include "ltext.h"
 #include "strmasks.h"
+#include "dlg-ctrl-l.h"
 
 #ifndef _WIN32
 #  include "ux_util.h"
@@ -229,11 +230,11 @@ std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const uni
 	std::vector<unicode_t> Result( cmd );
 	std::vector<unicode_t> Name = new_unicode_str( FileName );
 
-	bool HasSpaces = StrHaveSpace( Name.data() );
+//	bool HasSpaces = StrHaveSpace( Name.data() );
 
 	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
 
-	if ( HasSpaces )
+//	if ( HasSpaces )
 	{
 		Name.insert( Name.begin(), '"' );
 		Name.push_back( '"' );
@@ -571,7 +572,11 @@ NCWin::NCWin()
 
 	m_Edit.SetFocus();
 
+#if defined( _WIN32 )
 	SetName( appName );
+#else
+	SetName( getuid() ? appName : appNameRoot );
+#endif
 
 	this->AddLayout( &_lo );
 
@@ -1810,6 +1815,14 @@ void NCWin::CtrlF()
 	}
 }
 
+void NCWin::CtrlL()
+{
+	if ( _mode != PANEL ) return;
+	if ( _panel->IsVisible() ) 
+	{
+		DoCtrlLDialog( this, _panel->StatVfs() );
+	}
+}
 
 void NCWin::HistoryDialog()
 {
@@ -2083,6 +2096,7 @@ void NCWin::FileAssociations()
 
 	if ( FileAssociationsDlg( this, &m_FileAssociations ) )
 	{
+		// do nothing
 	}
 }
 
@@ -2092,7 +2106,60 @@ void NCWin::FileHighlighting()
 
 	if ( FileHighlightingDlg( this, &m_FileHighlightingRules ) )
 	{
+		// do nothing
 	}
+}
+
+bool NCWin::StartEditor( const std::vector<unicode_t> FileName, int Line, int Pos )
+{
+	if ( !FileName.data() ) { return false; }
+
+	FSPath fspath;
+
+	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, nullptr, 0 );
+
+	if ( !fs.Ptr() ) { return false; }
+
+ 	clPtr<MemFile> file = LoadFile( fs, fspath, this, true );
+
+	if ( !file.ptr() ) { return false; }
+
+	_editor.Load( fs, fspath, *file.ptr() );
+
+	sEditorScrollCtx ScrollCtx;
+
+	ScrollCtx.m_FirstLine = 0;
+	ScrollCtx.m_Point = EditPoint( Line, Pos );
+
+	_editor.SetScrollCtx( ScrollCtx );
+
+	SetMode( EDIT );
+
+ 	return true;
+}
+
+bool NCWin::StartViewer( const std::vector<unicode_t> FileName, int Line )
+{
+	if ( !FileName.data() ) { return false; }
+
+	FSPath fspath;
+
+	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, nullptr, 0 );
+
+	if ( !fs.Ptr() ) { return false; }
+
+	FSStat st;
+	int err;
+	FSCInfo info;
+
+	fs->Stat( fspath, &st, &err, &info );
+
+	SetMode( VIEW );
+
+	_viewer.SetFile( fs, fspath, st.size );
+	_viewer.SetCol( Line );
+
+	return true;
 }
 
 bool NCWin::EditSave( bool saveAs )
@@ -2533,7 +2600,26 @@ bool NCCommandLine::EventKey( cevent_key* pEvent )
 
 	bool Pressed = pEvent->Type( ) == EV_KEYDOWN;
 
-	if ( p && Pressed ) p->NotifyAutoComplete();
+	switch ( pEvent->Key() )
+	{
+#ifdef _WIN32
+	case VK_CONTROL:
+	case VK_SHIFT:
+	case VK_MENU:
+#endif
+	case VK_LMETA:
+	case VK_RMETA:
+	case VK_LCONTROL:
+	case VK_RCONTROL:
+	case VK_LSHIFT:
+	case VK_RSHIFT:
+	case VK_LMENU:
+	case VK_RMENU:
+		break;
+	default:
+		if ( p && Pressed ) p->NotifyAutoComplete( );
+		break;
+	}
 	
 	return Result;
 }
@@ -2891,6 +2977,8 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		if ( alt && !shift && !ctrl )
 		{
+			HideAutoComplete();
+
 			wchar_t c = pEvent->Char();
 
 			if ( c && c >= 0x20 )
@@ -2908,9 +2996,20 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		{
 			switch ( fullKey )
 			{
+				case FC( VK_M, KM_CTRL ):
+					{
+						crect rect = ScreenRect();
+						cpoint p;
+						p.x = ( rect.left + rect.right ) / 3;
+						p.y = ( rect.top  + rect.bottom ) / 3;
+						RightButtonPressed( p );
+					}
+					return true;
+
 				case FC( VK_DOWN, KM_SHIFT ):
 					_panel->KeyDown( shift, &_shiftSelectType );
 					return true;
+
 				case VK_DOWN:
 					if ( m_AutoCompleteList.IsVisible() )
 					{
@@ -3049,14 +3148,34 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				case FC( VK_GRAVE, KM_CTRL ):
 					Home( _panel );
 					break;
+
+				case FC( VK_L, KM_CTRL ):
+					CtrlL();
+					break;
 			}
 		}
 
+		if ( !_panelVisible && pEvent->IsFromMouseWheel() )
+		{
+			if ( fullKey == VK_DOWN )
+			{
+				_terminal.Scroll( -25 );
+				return true;
+			}
+			if ( fullKey == VK_UP   )
+			{
+				_terminal.Scroll( +25 );
+				return true;
+			}
+		}
 
 		switch ( fullKey )
 		{
 
 			case FC( VK_X, KM_CTRL ):
+				m_Edit.SetText( _history.Next() );
+				NotifyAutoComplete();
+				break;
 			case VK_DOWN:
 				if ( m_AutoCompleteList.IsVisible() )
 				{
@@ -3067,6 +3186,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case FC( VK_E, KM_CTRL ):
+				m_Edit.SetText( _history.Prev() );
+				NotifyAutoComplete();
+				break;
 			case VK_UP:
 				if ( m_AutoCompleteList.IsVisible() )
 				{

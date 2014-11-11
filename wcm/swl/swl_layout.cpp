@@ -9,7 +9,7 @@ namespace wal
 {
 
 
-	void Layout::AddWin( Win* w, int r1, int c1, int r2, int c2 )
+	void Layout::AddWin( Win* w, int r1, int c1, int r2, int c2, int al )
 	{
 		if ( r2 < 0 ) { r2 = r1; }
 
@@ -23,19 +23,19 @@ namespace wal
 		if ( w->upLayout ) { w->upLayout->DelObj( w ); }
 
 		w->upLayout = this;
-		objList.append( new LItemWin( w, r1, r2, c1, c2 ) );
+		objList.append( new LItemWin( w, r1, r2, c1, c2, al ) );
 	}
 
-	void Layout::AddWinAndEnable( Win* w, int r1, int c1, int r2, int c2 )
+	void Layout::AddWinAndEnable( Win* w, int r1, int c1, int r2, int c2, int al )
 	{
 		if ( !w ) return;
 
-		this->AddWin( w, r1, c1, r2, c2 );
+		this->AddWin( w, r1, c1, r2, c2, al );
 		w->Enable();
 		w->Show();
 	}
 
-	void Layout::AddLayout( Layout* l, int r1, int c1, int r2, int c2 )
+	void Layout::AddLayout( Layout* l, int r1, int c1, int r2, int c2, int al )
 	{
 		if ( r2 < 0 ) { r2 = r1; }
 
@@ -46,7 +46,7 @@ namespace wal
 		if ( r1 < 0 || c1 < 0 || r2 >= lines.count() || c2 >= columns.count() ) { return; }
 
 //??? if (w->layout) w->layout->DelObj(w);
-		objList.append( new LItemLayout( l, r1, r2, c1, c2 ) );
+		objList.append( new LItemLayout( l, r1, r2, c1, c2, al ) );
 	}
 
 	void Layout::AddRect( crect* rect, int r1, int c1, int r2, int c2 )
@@ -575,18 +575,54 @@ namespace wal
 		l->GetLSize( ls );
 	}
 
-	void LItemLayout::SetPos( crect rect, wal::ccollect<WSS>& wList )
+	void LItemLayout::SetPos( crect rect, wal::ccollect<WSS> &wList )
 	{
 		LSize ls;
 		l->GetLSize( &ls );
+		//	if (rect.Width() > ls.x.maximal) rect.right = rect.left + ls.x.maximal;
+		//	if (rect.Height() > ls.y.maximal) rect.bottom = rect.top + ls.y.maximal;
 
-		if ( rect.Width() > ls.x.maximal ) { rect.right = rect.left + ls.x.maximal; }
+		int width = rect.Width();
 
-		if ( rect.Height() > ls.y.maximal ) { rect.bottom = rect.top + ls.y.maximal; }
+		if ( width > ls.x.maximal )
+		{
+			switch ( align & ( Layout::LEFT + Layout::RIGHT ) )	{
+			case Layout::LEFT:
+				rect.right = rect.left + ls.x.maximal;
+				break;
+			case Layout::RIGHT:
+				rect.left = rect.right - ls.x.maximal;
+				break;
+			default:
+			{
+						 int n = ( width - ls.x.maximal ) / 2;
+						 rect.left += n;
+						 rect.right += n;
+			}
+			}
+		}
+
+		int height = rect.Height();
+		if ( rect.Height() > ls.y.maximal )
+		{
+			switch ( align & ( Layout::TOP + Layout::BOTTOM ) )	{
+			case Layout::TOP:
+				rect.bottom = rect.top + ls.y.maximal;
+				break;
+			case Layout::RIGHT:
+				rect.top = rect.bottom - ls.y.maximal;
+				break;
+			default:
+			{
+						 int n = ( height - ls.y.maximal ) / 2;
+						 rect.top += n;
+						 rect.bottom += n;
+			}
+			}
+		};
 
 		l->SetPos( rect, wList );
 	}
-
 
 	void LItemWin::GetLSize( LSize* ls )
 	{
@@ -598,17 +634,51 @@ namespace wal
 	}
 
 
-	void LItemWin::SetPos( crect rect, wal::ccollect<WSS>& wList )
+	void LItemWin::SetPos( crect rect, wal::ccollect<WSS> &wList )
 	{
 		LSize ls;
-
-		if ( !w->IsVisible() ) { return; }
+		if ( !w->IsVisible() ) return;
 
 		w->GetLSize( &ls );
 
-		if ( rect.Width() > ls.x.maximal ) { rect.right = rect.left + ls.x.maximal; }
+		int width = rect.Width();
 
-		if ( rect.Height() > ls.y.maximal ) { rect.bottom = rect.top + ls.y.maximal; }
+		if ( width > ls.x.maximal )
+		{
+			switch ( align & ( Layout::LEFT + Layout::RIGHT ) )	{
+			case Layout::LEFT:
+				rect.right = rect.left + ls.x.maximal;
+				break;
+			case Layout::RIGHT:
+				rect.left = rect.right - ls.x.maximal;
+				break;
+			default:
+			{
+						 int n = ( width - ls.x.maximal ) / 2;
+						 rect.left += n;
+						 rect.right = rect.left + ls.x.maximal;
+			}
+			}
+		}
+
+		int height = rect.Height();
+		if ( rect.Height() > ls.y.maximal )
+		{
+			switch ( align & ( Layout::TOP + Layout::BOTTOM ) )	{
+			case Layout::TOP:
+				rect.bottom = rect.top + ls.y.maximal;
+				break;
+			case Layout::RIGHT:
+				rect.top = rect.bottom - ls.y.maximal;
+				break;
+			default:
+			{
+						 int n = ( height - ls.y.maximal ) / 2;
+						 rect.top += n;
+						 rect.bottom = rect.top + ls.y.maximal;
+			}
+			}
+		};
 
 		if ( w->Rect() != rect )
 		{
@@ -618,7 +688,6 @@ namespace wal
 			wList.append( wss );
 		}
 	}
-
 
 	void* LItemLayout::ObjPtr() { return l; }
 	void* LItemWin::ObjPtr() { return w; }

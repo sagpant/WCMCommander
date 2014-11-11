@@ -50,6 +50,7 @@ OBJS = \
 	$(OBJDIR)/charsetdlg.o \
 	$(OBJDIR)/color-style.o\
 	$(OBJDIR)/dircalc.o \
+	$(OBJDIR)/dlg-ctrl-l.o \
 	$(OBJDIR)/eloadsave.o \
 	$(OBJDIR)/ext-app-ux.o \
 	$(OBJDIR)/fileassociations.o \
@@ -137,6 +138,9 @@ wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
+
+$(OBJDIR)/dlg-ctrl-l.o: $(HW) $(HS) $(HN) dlg-ctrl-l.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) dlg-ctrl-l.cpp -o $(OBJDIR)/dlg-ctrl-l.o
 
 $(OBJDIR)/globals.o: $(HW) $(HS) $(HN) globals.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) globals.cpp -o $(OBJDIR)/globals.o

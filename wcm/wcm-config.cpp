@@ -1163,8 +1163,11 @@ void LoadEditorPositions()
 
 		int FL, L, P;
 		char Buf[0xFFFF];
+		memset( Buf, 0, sizeof( Buf ) );
 
-		int NumRead = Lsscanf( Line.c_str(), "FL = %i L = %i P = %i FN = %65534s", &FL, &L, &P, Buf );
+		if ( !Line.size() ) continue;
+
+		int NumRead = Lsscanf( Line.data( ), "FL = %i L = %i P = %i FN = %65534c", &FL, &L, &P, Buf );
 
 		if ( NumRead != 4 ) break;
 
@@ -1194,8 +1197,9 @@ void LoadViewerPositions()
 
 		int L;
 		char Buf[0xFFFF];
+		memset( Buf, 0, sizeof( Buf ) );
 
-		int NumRead = Lsscanf( Line.c_str(), "L = %i FN = %65534s", &L, Buf );
+		int NumRead = Lsscanf( Line.data(), "L = %i FN = %65534c", &L, Buf );
 
 		if ( NumRead != 2 ) break;
 

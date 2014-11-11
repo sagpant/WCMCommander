@@ -76,7 +76,7 @@ CAPTION "About Wal Commander GitHub Edition"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            128,IDC_STATIC,14,14,21,20
-    LTEXT           "Wal Commander GitHub Edition, Version 0.18.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Wal Commander GitHub Edition, Version 0.18.1",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2014",IDC_STATIC,42,26,114,8
     DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
 END
@@ -159,8 +159,8 @@ END
 #endif    // not APSTUDIO_INVOKED
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,18,0,0
- PRODUCTVERSION 0,18,0,0
+ FILEVERSION 0,18,1,0
+ PRODUCTVERSION 0,18,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -178,8 +178,8 @@ BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "http://wcm.linderdaum.com\0"
             VALUE "FileDescription", "Wal Commander GitHub Edition\0"
-		      VALUE "FileVersion", "0.18.0\0"
-		      VALUE "ProductVersion", "0.18.0\0"
+		      VALUE "FileVersion", "0.18.1\0"
+		      VALUE "ProductVersion", "0.18.1\0"
 		      VALUE "OriginalFilename", "wcm.exe\0"
 		      VALUE "ProductName", "Wal Commander GitHub Edition\0"
 				VALUE "LegalCopyright", "Valery Goryachev 2013-2014; Sergey Kosarevsky, 2014\0"

@@ -18,6 +18,7 @@ using namespace wal;
 extern clPtr<wal::GC> defaultGC;
 
 extern const char* appName;
+extern const char* appNameRoot;
 
 enum NC_CLASSIDS
 {

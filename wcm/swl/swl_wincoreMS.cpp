@@ -123,7 +123,7 @@ namespace wal
 		return parent->IsEnabled() && parent->EventChildKey( child, ev );
 	}
 
-	static bool KeyEvent( int type, Win* win, WPARAM wParam, LPARAM lParam )
+	static bool KeyEvent( int type, Win* win, WPARAM wParam, LPARAM lParam, bool FromMouseWheel )
 	{
 		if ( win->Blocked() ) { return false; }
 
@@ -149,7 +149,7 @@ namespace wal
 			km |= KM_ALT;
 		}
 
-		cevent_key ev( type, wParam, km, lParam & 0xFFFF, ch );
+		cevent_key ev( type, wParam, km, lParam & 0xFFFF, ch, FromMouseWheel );
 
 		if ( win->Type() != Win::WT_MAIN && ChildKeyRecursive( win->Parent(), win, &ev ) )
 		{
@@ -359,14 +359,14 @@ namespace wal
 					if ( static_cast< int >( wParam ) > 0 )
 					{
 						// wheel up
-						KeyEvent( EV_KEYDOWN, win, VK_UP, 0 );
-						KeyEvent( EV_KEYUP,   win, VK_UP, 0 );
+						KeyEvent( EV_KEYDOWN, win, VK_UP, 0, true );
+						KeyEvent( EV_KEYUP,   win, VK_UP, 0, true );
 					}
 					else
 					{
 						// wheel down
-						KeyEvent( EV_KEYDOWN, win, VK_DOWN, 0 );
-						KeyEvent( EV_KEYUP, win, VK_DOWN, 0 );
+						KeyEvent( EV_KEYDOWN, win, VK_DOWN, 0, true );
+						KeyEvent( EV_KEYUP, win, VK_DOWN, 0, true );
 					}
 
 					return true;
@@ -374,7 +374,7 @@ namespace wal
 
 				case WM_SYSKEYDOWN:
 				case WM_KEYDOWN:
-					if ( KeyEvent( EV_KEYDOWN, win, wParam, lParam ) )
+					if ( KeyEvent( EV_KEYDOWN, win, wParam, lParam, false ) )
 					{
 						return 0;
 					}
@@ -383,7 +383,7 @@ namespace wal
 
 				case WM_SYSKEYUP:
 				case WM_KEYUP:
-					if ( KeyEvent( EV_KEYUP, win, wParam, lParam ) )
+					if ( KeyEvent( EV_KEYUP, win, wParam, lParam, false ) )
 					{
 						return 0;
 					}

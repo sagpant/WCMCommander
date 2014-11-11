@@ -1,43 +1,52 @@
+0.18.1 GitHub Edition
+	Added: speed indicator while copying
+	Hotkey: Ctrl+L to open info dialog
+
 0.18.0 GitHub Edition
-	Added: hotkeys in dialogs
-	Added: show spaces in input fields is shown as the · character
-	Added: show inner/trailing spaces in files/folders as the · character (option)
+	Added: 'cls' command clears the whole terminal ('clear' still works as expected on Linux/OSX)
+	Added: command line switches on Linux (run ./wcm -h)
+	Added: hotkeys in dialogs (use Alt+highlighted letter)
 	Added: numpad keys support while NumLock is disabled
 	Added: option to turn on/off the 3D UI (buttons, etc)
-	Added: hotkeys in dialogs (use Alt+highlighted letter)
-	Added: 'cls' command clears the whole terminal ('clear' still works as expected on Linux/OSX)
-	Hotkey: Shift+Tab to switch between controls in dialogs
-	Improved: CR/LF handling in the editor on Linux and OS X
-	Improved: window size selection on fresh install
-	Improved: handling of 'cd' command
-	Improved: show program info in the task manager on Windows
-	Improved: Shift+arrows selection in panels is now similar to Far Manager
-	Improved: behaviour of Ctrl+[ and Ctrl+]
-	Improved: default font on Windows is Consolas 12pt
-	Fixed: memory overruns in SFTP and SFTP2
-	Fixed: Ctrl+Left in the editor never skips the begginning of the line
-	Development: Qt Creator configs for OS X
-	Development: fixed many compilation warnings
-
-0.17.1 GitHub Edition
+	Added: show '(Root)' in the window caption while running with root privileges
+	Added: show inner/trailing spaces in files/folders as the · character (option)
+	Added: show spaces in input fields as the · character
 	Added: xprop can report a class name for WCM windows
-	Added: numpad arrows support
-	Improved: hotkeys colors in the default theme are now readable in dialogs
+	Hotkey: Ctrl+M to open "Open with" popup
+	Hotkey: Shift+Tab to switch between controls in dialogs
+	Improved: behaviour of Ctrl+[ and Ctrl+]
+	Improved: CR/LF handling in the editor on Linux and OS X
+	Improved: Ctrl+E/Ctrl+X behaviour with autocomplete
+	Improved: default font on Windows is Consolas 12pt
+	Improved: handling of 'cd' command
+	Improved: hotkey colors in the default theme are now readable in dialogs
 	Improved: Linux icon is now in the .png format
-	Fixed: ESC key closes the main menu
-	Fixed: handling of '/' character while using Ctrl+Left/Ctrl+Right in the editor and edit lines
-	Fixed: tab size edit line location in Options -> Editor settings
-	Fixed: Ctrl+Right in the editor never skips the begginning of the line
-	Fixed: multimask file associations (separated with commas) were not working properly
+	Improved: Shift+arrows selection in panels is now similar to Far Manager
+	Improved: show program info in the task manager on Windows
+	Improved: terminal scrolling via a mouse wheel
+	Improved: window size selection on fresh install
+	Fixed: buffer overruns in SFTP and SFTP2
 	Fixed: buffer overruns in the editor
+	Fixed: commands color in the terminal
 	Fixed: crash in Alt-search
-	Fixed: wrong device context for child windows
+	Fixed: Ctrl+Left in the editor never skips the begginning of the line
+	Fixed: Ctrl+Right in the editor never skips the begginning of the line
 	Fixed: editor search bug
+	Fixed: ESC key closes the main menu
+	Fixed: focus on main menu if opened with a mouse
+	Fixed: handling of '/' character while using Ctrl+Left/Ctrl+Right in the editor and edit lines
+	Fixed: multimask file associations (separated with commas) were not working properly
+	Fixed: tab size edit line location in Options -> Editor settings
 	Fixed: tab-order in the file associations dialog
+	Fixed: wrong device context for child windows
+	Fixed: Russian localization
 	Updated: readme, docs, localization
 	Development: Debian package building
 	Development: disabled level 4 warnings	
 	Development: fixed many compilation warnings
+	Development: fixed many compilation warnings
+	Development: fixed MinGW cross-compilation
+	Development: Qt Creator configs for OS X
 
 0.17.0 GitHub Edition
 	Added: share search text between all search and search-n-replace dialogs

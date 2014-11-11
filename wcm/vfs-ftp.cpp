@@ -157,9 +157,9 @@ void FTPNode::Passive( unsigned& passiveIp, int& passivePort )
 void FTPNode::Port( unsigned ip, int port )
 {
 	char buf[0x100];
-	Lsnprintf( buf, sizeof(buf), "PORT %i,%i,%i,%i,%i,%i\r\n",
-	         ( ip >> 24 ) & 0xFF, ( ip >> 16 ) & 0xFF, ( ip >> 8 ) & 0xFF, ip & 0xFF,
-	         ( port >> 8 ) & 0xFF, port & 0xFF );
+	Lsnprintf( buf, sizeof( buf ), "PORT %i,%i,%i,%i,%i,%i\r\n",
+	           ( ip >> 24 ) & 0xFF, ( ip >> 16 ) & 0xFF, ( ip >> 8 ) & 0xFF, ip & 0xFF,
+	           ( port >> 8 ) & 0xFF, port & 0xFF );
 
 	ctrl.WriteStr( buf );
 	CheckFtpRet( ReadCode() );
@@ -570,7 +570,7 @@ FSString FSFtp::StrError( int err )
 			break;
 
 		default:
-			Lsnprintf( buf, sizeof(buf), "Unknown error code in FSFtp:%i", err );
+			Lsnprintf( buf, sizeof( buf ), "Unknown error code in FSFtp:%i", err );
 			str = buf;
 	}
 
@@ -1121,14 +1121,20 @@ static time_t GetFtpFTime( const char* p1, const char* p2, const char* p3 )
 
 #if _MSC_VER > 1700
 		struct tm st;
+
 		if ( localtime_s( &st, &tim ) == 0 ) { y = st.tm_year; }
+
 #elif defined( _WIN32 )
 		struct tm* st = localtime( &tim );
+
 		if ( st ) { y = st->tm_year; }
+
 #else
 		struct tm result;
 		struct tm* st = localtime_r( &tim, &result );
+
 		if ( st ) { y = st->tm_year; }
+
 #endif
 
 		*t = 0;

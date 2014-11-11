@@ -169,6 +169,7 @@ private:
 	int _first;
 	int _current;
 	int* _viewMode;
+	FSStatVfs _vst;
 
 	ccollect<crect, 0x100> _rectList;
 	ccollect<crect, 0x100> _emptyRectList;
@@ -221,6 +222,8 @@ public:
 	const FSPath& GetPath( ) const { return _place.GetPath( ); }
 	FS* GetFS() { return _place.GetFS(); }
 	clPtr<FS> GetFSPtr() const { return _place.GetFSPtr(); }
+
+	FSStatVfs StatVfs() const { return _vst; }
 
 	FSString UriOfDir();
 	FSString UriOfCurrent();

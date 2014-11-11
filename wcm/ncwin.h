@@ -193,8 +193,10 @@ enum eBackgroundActivity
 
 class NCWin: public NCDialogParent
 {
+public:
 	friend class PanelWin;
 	enum MODE { PANEL, TERMINAL, VIEW, EDIT };
+
 private:
 	Layout   _lo,
 	         _lpanel,
@@ -301,6 +303,7 @@ private:
 	void Mark( bool enable );
 	void CtrlEnter();
 	void CtrlF();
+	void CtrlL();
 	void HistoryDialog();
 	void SelectDrive( PanelWin* p, PanelWin* OtherPanel );
 	void SaveSetupDialog();
@@ -375,6 +378,10 @@ public:
 	void NotifyAutoCompleteChange();
 	void NotifyCurrentPathInfo();
 
+	bool StartEditor( const std::vector<unicode_t> FileName, int Line, int Pos );
+	bool StartViewer( const std::vector<unicode_t> FileName, int Line );
+
+	EditWin* GetEditor() { return &_editor; }
 	NCHistory* GetHistory() { return &_history; }
 	const std::vector<clNCFileAssociation>& GetFileAssociations() const { return m_FileAssociations; }
 	void SetFileAssociations( const std::vector<clNCFileAssociation>& Assoc ) { m_FileAssociations = Assoc; }

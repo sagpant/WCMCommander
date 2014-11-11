@@ -20,8 +20,8 @@
 Выход				@c /r {<sbold>F10} @n<v2>@n
 Поиск файла			@c /r {<sbold>Shift-F7} @c (Alt-F7) @n<v2>@n
 Сохранить настройки		@c /r {<sbold>Shift-F9} @c @n<v2>@n
-Установить новую ФС в левой панеле@c /r {<sbold>Shift-F1} @c (Alt-F1) @n<v2>@n
-Установить новую ФС в правой панеле@c /r {<sbold>Shift-F2} @c (Alt-F2) @n<v2>@n
+Установить новую ФС в левой панели@c /r {<sbold>Shift-F1} @c (Alt-F1) @n<v2>@n
+Установить новую ФС в правой панели@c /r {<sbold>Shift-F2} @c (Alt-F2) @n<v2>@n
 Установить неактивную панель равной текущей	@c /r {<sbold>Ctrl-=} @c@n<v2>@n
 Список быстрых ссылок	@c /r {<sbold>Ctrl-D} @c@n<v2>@n
 @e/n
@@ -41,7 +41,7 @@
 Сортировка панели по размеру@c /r {<sbold>Ctrl-F6}	@n<v2>@n
 Отключить сортировку@c /r {<sbold>Ctrl-F7}	@n<v2>@n
 Включить//выключить показ скрытых файлов@c /r {<sbold>Ctrl-H} @n<v2>@n
-Поматить//Снять пометку текущего файла @c /r {<sbold>Ins} @n<v2>@n
+Пометить//Снять пометку текущего файла @c /r {<sbold>Ins} @n<v2>@n
 				@c /r {<sbold>Shift-Left//Right//Up//Down} @n<v2>@n
 Пометить группу файлов по маске@c /r {<sbold>GRAY +} @n<v2>@n
 Снять пометку с группы файлов по маске@c /r {<sbold>GRAY -} @n<v2>@n
@@ -94,9 +94,9 @@ Redo		@c /r {<sbold> Ctrl-Shift-Z} @c @n<v2>@n
 /c{<shead>Viewer/n}
 <v5>/n
 /c@t
-Помошь		@c /r {<sbold>F1}	@n<v2>@n
+Помощь		@c /r {<sbold>F1}	@n<v2>@n
 Toggle line wrap//unwrap		@c /r {<sbold>F2} @n<v2>@n
-Переключение текстового//hex режимов	@c /r {<sbold>F4} @n<v2>@n
+Переключение текстового//шестнадцатиричного режимов	@c /r {<sbold>F4} @n<v2>@n
 Поиск		@c /r {<sbold>F7} @n<v2>@n
 Продолжение поиска		@c /r {<sbold>Shift-F7, Space} @n<v2>@n
 Кодировка символов (сменить)	@c /r {<sbold>F8} @c @n<v2>@n

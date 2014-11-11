@@ -105,6 +105,8 @@ public:
 	void Paste();
 	void PageUp();
 	void PageDown();
+	// + up, - down
+	void Scroll(int Lines);
 	bool Marked() const { return !screen.marker.Empty(); }
 	bool GetMarked( ClipboardText& ct );
 	void MarkerClear();
