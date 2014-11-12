@@ -16,3 +16,5 @@ clPtr<cfont> g_TerminalFont;
 clPtr<cfont> g_HelpTextFont;
 clPtr<cfont> g_HelpBoldFont;
 clPtr<cfont> g_HelpHeadFont;
+
+bool g_DebugKeyboard = false;

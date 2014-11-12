@@ -388,4 +388,5 @@ private:
 	bool ProcessCommand_CD( const unicode_t* cmd );
 	bool ProcessCommand_CLS( const unicode_t* cmd );
 	bool ProcessBuiltInCommands( const unicode_t* cmd );
+	void DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const;
 };

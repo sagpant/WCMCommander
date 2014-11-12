@@ -26,3 +26,5 @@ extern clPtr<cfont> g_TerminalFont;
 extern clPtr<cfont> g_HelpTextFont;
 extern clPtr<cfont> g_HelpBoldFont;
 extern clPtr<cfont> g_HelpHeadFont;
+
+extern bool g_DebugKeyboard;

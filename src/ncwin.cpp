@@ -2902,8 +2902,27 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 	return true;
 }
 
+void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const
+{
+	if ( !DebugEnabledFlag ) return;
+
+	if ( !KeyEvent ) return;
+
+	const int Key = KeyEvent->Key();
+	const int Mod = KeyEvent->Mod();
+
+	const char* DebugLine = "DebugKeyboard(): Key = %i Mod = %i\n";
+
+	fprintf( stderr, DebugLine, Key, Mod );
+#if defined(_MSC_VER)
+	dbg_printf( DebugLine, Key, Mod );
+#endif
+}
+
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 {
+	DebugKeyboard( pEvent, pressed, g_DebugKeyboard );
+	
 	if ( Blocked() ) { return false; }
 
 	unsigned mod = pEvent->Mod();
