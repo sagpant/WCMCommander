@@ -2991,10 +2991,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			if ( c && c >= 0x20 )
 			{
-				cevent_key* key = _panel->QuickSearch( pEvent );
+				cevent_key key = _panel->QuickSearch( pEvent );
 				m_Edit.SetFocus();
 
-				if ( key ) { OnKeyDown( this, key, key->Type() == EV_KEYDOWN ); }
+				if ( key.Type() != 0 ) { OnKeyDown( this, &key, key.Type() == EV_KEYDOWN ); }
 
 				return true;
 			}
@@ -3298,7 +3298,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				_panel->Reread();
 				_panel->Invalidate();
 				break;
-
+				/*
 			case FC( VK_S, KM_CTRL ):
 			{
 				cevent_key* key = _panel->QuickSearch( nullptr );
@@ -3306,6 +3306,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				if ( key ) { OnKeyDown( this, key, key->Type() == EV_KEYDOWN ); }
 			}
+			*/
 
 			return true;
 
