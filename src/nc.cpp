@@ -27,7 +27,7 @@
 #include "globals.h"
 #include "eloadsave.h"
 
-#include "intarnal_icons.inc"
+#include "internal_icons.inc"
 
 clPtr<wal::GC> defaultGC;
 

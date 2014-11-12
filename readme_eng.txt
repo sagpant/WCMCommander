@@ -1,4 +1,4 @@
-         Wal commander 0.18.0 GitHub Edition
+         Wal commander 0.18.1 GitHub Edition
     https://github.com/corporateshark/WalCommander
 =======================================================
 
@@ -24,7 +24,6 @@ Build (FreeBSD, Linux, OS X, MinGW):
 
 	The code uses c++11. GCC versions below 4.7 do not have the c++11 support. This is the only minimum requirement known by this time.
 
-		cd wcm
 		make all -B
 
 Install:
