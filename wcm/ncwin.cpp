@@ -1208,23 +1208,25 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 		}
 
 	mData.AddSplitter();
-	mData.Add( "NETWORK", 0, ID_DEV_SMB );
+	mData.Add( "1. NETWORK", 0, ID_DEV_SMB );
+	mData.Add( "2. FTP", 0, ID_DEV_FTP );
 #else
-	mData.Add( "/", 0,  ID_DEV_ROOT );
-	mData.Add( _LT( "Home" ), 0, ID_DEV_HOME );
-#ifdef LIBSMBCLIENT_EXIST
-	mData.Add( "Smb network", 0, ID_DEV_SMB );
-	mData.Add( "Smb server", 0, ID_DEV_SMB_SERVER );
-#endif
+	mData.Add( "1. /", 0,  ID_DEV_ROOT );
+	mData.Add( _LT( "2. Home" ), 0, ID_DEV_HOME );
+	mData.Add( "3. FTP", 0, ID_DEV_FTP );
 
-#endif
+#ifdef LIBSMBCLIENT_EXIST
+	mData.Add( "4. Smb network", 0, ID_DEV_SMB );
+	mData.Add( "5. Smb server", 0, ID_DEV_SMB_SERVER );
+#else
+
+#endif // LIBSMBCLIENT_EXIST
+
+#endif // _WIN32
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
-	mData.Add( "SFTP", 0, ID_DEV_SFTP );
+	mData.Add( "6. SFTP", 0, ID_DEV_SFTP );
 #endif
-
-	mData.Add( "FTP", 0, ID_DEV_FTP );
-
 
 #ifndef _WIN32  //unix mounts
 	//ID_MNT_UX0
