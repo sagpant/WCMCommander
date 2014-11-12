@@ -3282,7 +3282,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case FC( VK_S, KM_CTRL ):
 			{
-				cevent_key* key = _panel->QuickSearch( 0 );
+				cevent_key* key = _panel->QuickSearch( nullptr );
 				m_Edit.SetFocus();
 
 				if ( key ) { OnKeyDown( this, key, key->Type() == EV_KEYDOWN ); }
