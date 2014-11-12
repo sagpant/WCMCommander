@@ -2925,17 +2925,18 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 	
 	if ( Blocked() ) { return false; }
 
-	unsigned mod = pEvent->Mod();
-	unsigned fullKey = ( pEvent->Key() & 0xFFFF ) + ( mod << 16 );
+	const int Key = pEvent->Key();
+	const int Mod = pEvent->Mod();
+	const unsigned FullKey = ( Key & 0xFFFF ) + ( Mod << 16 );
 
-	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
+	const bool shift = ( Mod & KM_SHIFT ) != 0;
 
 	if ( !shift ) { _shiftSelectType = LPanelSelectionType_NotDefined; }
 
-	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
-	bool alt = ( pEvent->Mod() & KM_ALT ) != 0;
+	const bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
+	const bool alt = ( pEvent->Mod() & KM_ALT ) != 0;
 
-	CheckKM( ctrl, alt, shift, pressed, pEvent->Key() );
+	CheckKM( ctrl, alt, shift, pressed, Key );
 
 	if ( pressed && ctrl &&
 	     ( ( _mode == PANEL && m_Edit.InFocus() && !_panelVisible ) ||
@@ -2943,7 +2944,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 	{
 		if ( _terminal.Marked() )
 		{
-			if ( pEvent->Key() == VK_INSERT )
+			if ( Key == VK_INSERT )
 			{
 				ClipboardText ct;
 				_terminal.GetMarked( ct );
@@ -2954,25 +2955,25 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		}
 	}
 
-//printf("Key='%X'\n",pEvent->Key());
+//printf("Key='%X'\n",Key);
 
 	if ( _mode == PANEL && m_Edit.InFocus() )
 	{
 		if ( !pressed ) { return false; }
 
-		if ( pEvent->Key() == VK_TAB && ( pEvent->Mod() & KM_CTRL ) )
+		if ( Key == VK_TAB && ( Mod & KM_CTRL ) )
 		{
 			SwitchToBackgroundActivity();
 		}
 
-		if ( pEvent->Key() == VK_O && ( pEvent->Mod() & KM_CTRL ) )
+		if ( Key == VK_O && ( Mod & KM_CTRL ) )
 		{
 			ShowPanels( !_panelVisible );
 			m_AutoCompleteList.Hide();
 			return true;
 		}
 
-		if ( pEvent->Key() == VK_U && ( pEvent->Mod() & KM_CTRL ) )
+		if ( Key == VK_U && ( Mod & KM_CTRL ) )
 		{
 			FSPath LeftPath = _leftPanel.GetPath();
 			FSPath RightPath = _rightPanel.GetPath();
@@ -3002,7 +3003,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		if ( _panelVisible )
 		{
-			switch ( fullKey )
+			switch ( FullKey )
 			{
 				case FC( VK_M, KM_CTRL ):
 					{
@@ -3165,19 +3166,19 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		if ( !_panelVisible && pEvent->IsFromMouseWheel() )
 		{
-			if ( fullKey == VK_DOWN )
+			if ( FullKey == VK_DOWN )
 			{
 				_terminal.Scroll( -25 );
 				return true;
 			}
-			if ( fullKey == VK_UP   )
+			if ( FullKey == VK_UP   )
 			{
 				_terminal.Scroll( +25 );
 				return true;
 			}
 		}
 
-		switch ( fullKey )
+		switch ( FullKey )
 		{
 
 			case FC( VK_X, KM_CTRL ):
@@ -3207,6 +3208,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case VK_INSERT:
+			//case FC( VK_S, KM_CTRL ):
 				_panel->KeyIns();
 				break;
 
@@ -3521,7 +3523,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 #endif
 
-		switch ( fullKey )
+		switch ( FullKey )
 		{
 			case FC( VK_O, KM_CTRL ):
 			case VK_ESCAPE:
@@ -3529,7 +3531,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				HideAutoComplete();
 				if ( pressed ) SwitchToBackgroundActivity();
 				// Send ESC to terminal. Fix for https://github.com/corporateshark/WalCommander/issues/94
-				if ( fullKey == VK_ESCAPE ) break;
+				if ( FullKey == VK_ESCAPE ) break;
 				return true;
 			}
 
@@ -3569,7 +3571,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 #ifdef _WIN32
 		_terminal.Key( pEvent );
 #else
-		_terminal.Key( pEvent->Key(), pEvent->Char() );
+		_terminal.Key( Key, pEvent->Char() );
 #endif
 		return true;
 	}
@@ -3579,7 +3581,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		{
 			if ( !pressed ) { return false; }
 
-			switch ( fullKey )
+			switch ( FullKey )
 			{
 				case FC( VK_TAB, KM_CTRL ):
 					SetMode( PANEL );
@@ -3652,7 +3654,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			{
 				if ( !pressed ) { return false; }
 
-				switch ( fullKey )
+				switch ( FullKey )
 				{
 					case FC( VK_O, KM_CTRL ):
 						SetMode( TERMINAL );
