@@ -5,7 +5,7 @@ SCRIPTDIR=`pwd`
 WCMDIR=${SCRIPTDIR}/..
 SCRIPTNAME=`basename $0`
 
-WCM_VERSION=`awk '($2 ~ /WCM_VERSION/) {gsub(/"/,"",$3); print $3}'` < ${WCMDIR}/wcm-version.h
+WCM_VERSION=`awk '($2 ~ /WCM_VERSION/) {gsub(/"/,"",$3); print $3}'` < ${WCMDIR}/src/wcm-version.h
 
 if [ -z "`head -1 ${SCRIPTDIR}/changelog | grep ${WCM_VERSION}`" ]
 then
@@ -21,9 +21,7 @@ case "$1" in
     cd ${WCMDIR}
 	make clean
 	${SCRIPTDIR}/${SCRIPTNAME} clean
-	cd ${WCMDIR}/..
-	tar czf wcm_${WCM_VERSION}.orig.tar.gz wcm
-	cd ${WCMDIR}
+	tar czf ../wcm_${WCM_VERSION}.orig.tar.gz .
 	dpkg-buildpackage -us -uc
   ;;
   clean)
@@ -39,4 +37,3 @@ case "$1" in
     exit 2
   ;;
 esac
-
