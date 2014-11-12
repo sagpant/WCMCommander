@@ -17,23 +17,23 @@
 *.suo
 *.user
 
-wcm/Debug/
-wcm/Release/
+wcm
+
+src/Debug/
+src/Release/
 ipch/
 
-wcm/libconf_ux.h
-wcm/info.txt
-wcm/makelib.mk
-wcm/wcm
-wcm/libtester/libfreetype_test
-wcm/libtester/libssh2test
-wcm/libtester/libsmb40test
-wcm/libtester/libsmbtest
-wcm/obj/wcm.res
+src/libconf_ux.h
+src/info.txt
+src/libtester/libfreetype_test
+src/libtester/libssh2test
+src/libtester/libsmb40test
+src/libtester/libsmbtest
+src/obj/wcm.res
 
 #Code::Blocks IDE files
-wcm/*.depend
-wcm/*.layout
+src/*.depend
+src/*.layout
 
 Debug/
 Release/

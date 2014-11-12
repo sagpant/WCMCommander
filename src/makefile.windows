@@ -99,228 +99,227 @@ $(OBJDIR)/wcm.res: $(HW) $(HS) $(HN) wcm.rc
 	windres wcm.rc -O coff -o $(OBJDIR)/wcm.res
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/dircalc.cpp -o $(OBJDIR)/dircalc.o
 
 $(OBJDIR)/dlg-ctrl-l.o: $(HW) $(HS) $(HN) dlg-ctrl-l.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) dlg-ctrl-l.cpp -o $(OBJDIR)/dlg-ctrl-l.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/dlg-ctrl-l.cpp -o $(OBJDIR)/dlg-ctrl-l.o
 
 $(OBJDIR)/globals.o: $(HW) $(HS) $(HN) globals.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) globals.cpp -o $(OBJDIR)/globals.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/globals.cpp -o $(OBJDIR)/globals.o
 
 $(OBJDIR)/ncvfs.o: $(HW) $(HS) $(HN) ncvfs.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ncvfs.cpp -o $(OBJDIR)/ncvfs.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ncvfs.cpp -o $(OBJDIR)/ncvfs.o
 
 $(OBJDIR)/eloadsave.o: $(HW) $(HS) $(HN) eloadsave.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) eloadsave.cpp -o $(OBJDIR)/eloadsave.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/eloadsave.cpp -o $(OBJDIR)/eloadsave.o
 
 $(OBJDIR)/smblogon.o: $(HW) $(HS) $(HN) smblogon.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) smblogon.cpp -o $(OBJDIR)/smblogon.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/smblogon.cpp -o $(OBJDIR)/smblogon.o
 
 $(OBJDIR)/ftplogon.o: $(HW) $(HS) $(HN) ftplogon.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ftplogon.cpp -o $(OBJDIR)/ftplogon.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ftplogon.cpp -o $(OBJDIR)/ftplogon.o
 	
 $(OBJDIR)/sftpdlg.o: $(HW) $(HS) $(HN) sftpdlg.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) sftpdlg.cpp -o $(OBJDIR)/sftpdlg.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/sftpdlg.cpp -o $(OBJDIR)/sftpdlg.o
 	
 $(OBJDIR)/ext-app.o: $(HW) $(HS) $(HN) ext-app.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ext-app.cpp -o $(OBJDIR)/ext-app.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ext-app.cpp -o $(OBJDIR)/ext-app.o
 
 $(OBJDIR)/operthread.o: $(HW) $(HS) $(HN) operthread.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) operthread.cpp -o $(OBJDIR)/operthread.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/operthread.cpp -o $(OBJDIR)/operthread.o
 	
 $(OBJDIR)/operwin.o: $(HW) $(HS) $(HN) operwin.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) operwin.cpp -o $(OBJDIR)/operwin.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/operwin.cpp -o $(OBJDIR)/operwin.o
 
 $(OBJDIR)/wcm-config.o: $(HW) $(HS) $(HN) wcm-config.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) wcm-config.cpp -o $(OBJDIR)/wcm-config.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/wcm-config.cpp -o $(OBJDIR)/wcm-config.o
 	
 $(OBJDIR)/color-style.o: $(HW) $(HS) $(HN) color-style.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) color-style.cpp -o $(OBJDIR)/color-style.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/color-style.cpp -o $(OBJDIR)/color-style.o
 
 $(OBJDIR)/filesearch.o: $(HW) $(HS) $(HN) filesearch.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) filesearch.cpp -o $(OBJDIR)/filesearch.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/filesearch.cpp -o $(OBJDIR)/filesearch.o
 	
 $(OBJDIR)/help.o: $(HW) $(HS) $(HN) help.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) help.cpp -o $(OBJDIR)/help.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/help.cpp -o $(OBJDIR)/help.o
 	
 $(OBJDIR)/helpres.o: $(HW) $(HS) $(HN) helpres.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) helpres.cpp -o $(OBJDIR)/helpres.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/helpres.cpp -o $(OBJDIR)/helpres.o
 
 $(OBJDIR)/ltext.o: $(HW) $(HS) $(HN) ltext.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ltext.cpp -o $(OBJDIR)/ltext.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ltext.cpp -o $(OBJDIR)/ltext.o
 	
 $(OBJDIR)/ncfonts.o: $(HW) $(HS) $(HN) ncfonts.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ncfonts.cpp -o $(OBJDIR)/ncfonts.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ncfonts.cpp -o $(OBJDIR)/ncfonts.o
 	
 $(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) shortcuts.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) shortcuts.cpp -o $(OBJDIR)/shortcuts.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/shortcuts.cpp -o $(OBJDIR)/shortcuts.o
 
 $(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) fileassociations.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) fileassociations.cpp -o $(OBJDIR)/fileassociations.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/fileassociations.cpp -o $(OBJDIR)/fileassociations.o
 
 $(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) filehighlighting.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) filehighlighting.cpp -o $(OBJDIR)/filehighlighting.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/filehighlighting.cpp -o $(OBJDIR)/filehighlighting.o
 
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/strconfig.cpp -o $(OBJDIR)/strconfig.o
 
 $(OBJDIR)/strmasks.o: $(HW) $(HS) $(HN) strmasks.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) strmasks.cpp -o $(OBJDIR)/strmasks.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/strmasks.cpp -o $(OBJDIR)/strmasks.o
 
 $(OBJDIR)/shl.o: $(HW) $(HS) $(HN) shl.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) shl.cpp -o $(OBJDIR)/shl.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/shl.cpp -o $(OBJDIR)/shl.o
 
 $(OBJDIR)/toolbar.o: $(HW) $(HS) $(HN) toolbar.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) toolbar.cpp -o $(OBJDIR)/toolbar.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/toolbar.cpp -o $(OBJDIR)/toolbar.o
 		
 $(OBJDIR)/charsetdlg.o: $(HW) $(HS) $(HN) charsetdlg.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) charsetdlg.cpp -o $(OBJDIR)/charsetdlg.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/charsetdlg.cpp -o $(OBJDIR)/charsetdlg.o
 	
 $(OBJDIR)/ux_util.o: $(HW) $(HS) $(HN) ux_util.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ux_util.cpp -o $(OBJDIR)/ux_util.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ux_util.cpp -o $(OBJDIR)/ux_util.o
 	
 		
 $(OBJDIR)/vfs.o: $(HW) $(HS) $(HN) vfs.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) vfs.cpp -o $(OBJDIR)/vfs.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs.cpp -o $(OBJDIR)/vfs.o
 	
 $(OBJDIR)/vfspath.o: $(HW) $(HS) $(HN) vfspath.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) vfspath.cpp -o $(OBJDIR)/vfspath.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfspath.cpp -o $(OBJDIR)/vfspath.o
 	
 $(OBJDIR)/vfs-smb.o: $(HW) $(HS) $(HN) vfs-smb.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) vfs-smb.cpp -o $(OBJDIR)/vfs-smb.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-smb.cpp -o $(OBJDIR)/vfs-smb.o
 	
 	
 $(OBJDIR)/tcp_sock.o: $(HW) $(HS) $(HN) tcp_sock.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) tcp_sock.cpp -o $(OBJDIR)/tcp_sock.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/tcp_sock.cpp -o $(OBJDIR)/tcp_sock.o
 	
 $(OBJDIR)/search-dlg.o: $(HW) $(HS) $(HN) search-dlg.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) search-dlg.cpp -o $(OBJDIR)/search-dlg.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/search-dlg.cpp -o $(OBJDIR)/search-dlg.o
 	
 $(OBJDIR)/search-tools.o: $(HW) $(HS) $(HN) search-tools.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) search-tools.cpp -o $(OBJDIR)/search-tools.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/search-tools.cpp -o $(OBJDIR)/search-tools.o
 
 $(OBJDIR)/shell-tools.o: $(HW) $(HS) $(HN) shell-tools.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) shell-tools.cpp -o $(OBJDIR)/shell-tools.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/shell-tools.cpp -o $(OBJDIR)/shell-tools.o
 
 $(OBJDIR)/vfs-ftp.o: $(HW) $(HS) $(HN) vfs-ftp.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) vfs-ftp.cpp -o $(OBJDIR)/vfs-ftp.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-ftp.cpp -o $(OBJDIR)/vfs-ftp.o
 		
 $(OBJDIR)/vfs-uri.o: $(HW) $(HS) $(HN) vfs-uri.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) vfs-uri.cpp -o $(OBJDIR)/vfs-uri.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-uri.cpp -o $(OBJDIR)/vfs-uri.o
 
 $(OBJDIR)/vfs-sftp.o: $(HW) $(HS) $(HN) vfs-sftp.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) vfs-sftp.cpp -o $(OBJDIR)/vfs-sftp.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-sftp.cpp -o $(OBJDIR)/vfs-sftp.o
 
 $(OBJDIR)/vfs-sftp2.o: $(HW) $(HS) $(HN) vfs-sftp2.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) vfs-sftp2.cpp -o $(OBJDIR)/vfs-sftp2.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-sftp2.cpp -o $(OBJDIR)/vfs-sftp2.o
 		
 $(OBJDIR)/nchistory.o: $(HW) $(HS) $(HN) nchistory.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) nchistory.cpp -o $(OBJDIR)/nchistory.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/nchistory.cpp -o $(OBJDIR)/nchistory.o
 		
 $(OBJDIR)/unicode_lc.o: $(HW) $(HS) $(HN) unicode_lc.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) unicode_lc.cpp -o $(OBJDIR)/unicode_lc.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/unicode_lc.cpp -o $(OBJDIR)/unicode_lc.o
 
 $(OBJDIR)/fileopers.o: $(HW) $(HS) $(HN) fileopers.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) fileopers.cpp -o $(OBJDIR)/fileopers.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/fileopers.cpp -o $(OBJDIR)/fileopers.o
 	
 	
 $(OBJDIR)/ncdialogs.o: $(HW) $(HS) $(HN) ncdialogs.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ncdialogs.cpp -o $(OBJDIR)/ncdialogs.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ncdialogs.cpp -o $(OBJDIR)/ncdialogs.o
 
 $(OBJDIR)/panel_list.o: $(HW) $(HS) $(HN) panel_list.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) panel_list.cpp -o $(OBJDIR)/panel_list.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/panel_list.cpp -o $(OBJDIR)/panel_list.o
 		
 $(OBJDIR)/panel.o: $(HW) $(HS) $(HN) panel.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) panel.cpp -o $(OBJDIR)/panel.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/panel.cpp -o $(OBJDIR)/panel.o
 
 $(OBJDIR)/ncedit.o: $(HW) $(HS) $(HN) ncedit.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ncedit.cpp -o $(OBJDIR)/ncedit.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ncedit.cpp -o $(OBJDIR)/ncedit.o
 	
 $(OBJDIR)/ncview.o: $(HW) $(HS) $(HN) ncview.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ncview.cpp -o $(OBJDIR)/ncview.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ncview.cpp -o $(OBJDIR)/ncview.o
 	
 
 $(OBJDIR)/ncwin.o: $(HW) $(HS) $(HN) ncwin.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) ncwin.cpp -o $(OBJDIR)/ncwin.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/ncwin.cpp -o $(OBJDIR)/ncwin.o
 	
 	
 $(OBJDIR)/t-emulator.o: $(HW) $(HS) $(HN) t-emulator.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) t-emulator.cpp -o $(OBJDIR)/t-emulator.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/t-emulator.cpp -o $(OBJDIR)/t-emulator.o
 
 	
 $(OBJDIR)/w32cons.o: $(HW) $(HS) $(HN) w32cons.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) w32cons.cpp -o $(OBJDIR)/w32cons.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/w32cons.cpp -o $(OBJDIR)/w32cons.o
 
 $(OBJDIR)/w32util.o: $(HW) $(HS) $(HN) w32util.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) w32util.cpp -o $(OBJDIR)/w32util.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/w32util.cpp -o $(OBJDIR)/w32util.o
 
 $(OBJDIR)/termwin.o: $(HW) $(HS) $(HN) termwin.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) termwin.cpp -o $(OBJDIR)/termwin.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/termwin.cpp -o $(OBJDIR)/termwin.o
 
 $(OBJDIR)/wal_tmpls.o: $(HW) wal/wal_tmpls.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_tmpls.cpp -o $(OBJDIR)/wal_tmpls.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/wal/wal_tmpls.cpp -o $(OBJDIR)/wal_tmpls.o
 
 $(OBJDIR)/wal.o: $(HW) wal/wal.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) wal/wal.cpp -o $(OBJDIR)/wal.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/wal/wal.cpp -o $(OBJDIR)/wal.o
 
 $(OBJDIR)/wal_charset.o: $(HW) wal/wal_charset.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_charset.cpp -o $(OBJDIR)/wal_charset.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/wal/wal_charset.cpp -o $(OBJDIR)/wal_charset.o
 
 $(OBJDIR)/wal_sys_api.o: $(HW) wal/wal_sys_api.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_sys_api.cpp -o $(OBJDIR)/wal_sys_api.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/wal/wal_sys_api.cpp -o $(OBJDIR)/wal_sys_api.o
 
 $(OBJDIR)/wal_exceptions.o: $(HW) wal/wal_exceptions.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_exceptions.cpp -o $(OBJDIR)/wal_exceptions.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/wal/wal_exceptions.cpp -o $(OBJDIR)/wal_exceptions.o
 
 $(OBJDIR)/wal_files.o: $(HW) wal/wal_files.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_files.cpp -o $(OBJDIR)/wal_files.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/wal/wal_files.cpp -o $(OBJDIR)/wal_files.o
 
 
 $(OBJDIR)/swl_button.o: $(HW) $(HS) swl/swl_button.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_button.cpp -o $(OBJDIR)/swl_button.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_button.cpp -o $(OBJDIR)/swl_button.o
 
 $(OBJDIR)/swl_editline.o: $(HW) $(HS) swl/swl_editline.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_editline.cpp -o $(OBJDIR)/swl_editline.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_editline.cpp -o $(OBJDIR)/swl_editline.o
 
 $(OBJDIR)/swl_layout.o: $(HW) $(HS) swl/swl_layout.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_layout.cpp -o $(OBJDIR)/swl_layout.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_layout.cpp -o $(OBJDIR)/swl_layout.o
 
 
 $(OBJDIR)/swl_menubox.o: $(HW) $(HS) swl/swl_menubox.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menubox.cpp -o $(OBJDIR)/swl_menubox.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_menubox.cpp -o $(OBJDIR)/swl_menubox.o
 
 $(OBJDIR)/swl_menutextinfo.o: $(HW) $(HS) swl/swl_menutextinfo.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menutextinfo.cpp -o $(OBJDIR)/swl_menutextinfo.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_menutextinfo.cpp -o $(OBJDIR)/swl_menutextinfo.o
 
 $(OBJDIR)/swl_popupmenu.o: $(HW) $(HS) swl/swl_popupmenu.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_popupmenu.cpp -o $(OBJDIR)/swl_popupmenu.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_popupmenu.cpp -o $(OBJDIR)/swl_popupmenu.o
 
 $(OBJDIR)/swl_sbutton.o: $(HW) $(HS) swl/swl_sbutton.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_sbutton.cpp -o $(OBJDIR)/swl_sbutton.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_sbutton.cpp -o $(OBJDIR)/swl_sbutton.o
 
 $(OBJDIR)/swl_scrollbar.o: $(HW) $(HS) swl/swl_scrollbar.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_scrollbar.cpp -o $(OBJDIR)/swl_scrollbar.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_scrollbar.cpp -o $(OBJDIR)/swl_scrollbar.o
 
 $(OBJDIR)/swl_staticlabel.o: $(HW) $(HS) swl/swl_staticlabel.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_staticlabel.cpp -o $(OBJDIR)/swl_staticlabel.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_staticlabel.cpp -o $(OBJDIR)/swl_staticlabel.o
 
 $(OBJDIR)/swl_textlist.o: $(HW) $(HS) swl/swl_textlist.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_textlist.cpp -o $(OBJDIR)/swl_textlist.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_textlist.cpp -o $(OBJDIR)/swl_textlist.o
 
 $(OBJDIR)/swl_vlist.o: $(HW) $(HS) swl/swl_vlist.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_vlist.cpp -o $(OBJDIR)/swl_vlist.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_vlist.cpp -o $(OBJDIR)/swl_vlist.o
 
 $(OBJDIR)/swl_winbase.o: $(HW) $(HS) swl/swl_winbase.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_winbase.cpp -o $(OBJDIR)/swl_winbase.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_winbase.cpp -o $(OBJDIR)/swl_winbase.o
 
 $(OBJDIR)/swl_wincore.o: $(HW) $(HS) swl/swl_wincore.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincore.cpp -o $(OBJDIR)/swl_wincore.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_wincore.cpp -o $(OBJDIR)/swl_wincore.o
 
 $(OBJDIR)/swl_wincoreMS.o: $(HW) $(HS) swl/swl_wincoreMS.cpp swl/swl_wincore_freetype_inc.h
-	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincoreMS.cpp -o $(OBJDIR)/swl_wincoreMS.o
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_wincoreMS.cpp -o $(OBJDIR)/swl_wincoreMS.o
 
-$(OBJDIR)/nc.o: $(HW) $(HS) $(HN) nc.cpp intarnal_icons.inc
-	$(CC) $(COPTS) -c $(CFLAGS) nc.cpp -o $(OBJDIR)/nc.o
+$(OBJDIR)/nc.o: $(HW) $(HS) $(HN) nc.cpp internal_icons.inc
+	$(CC) $(COPTS) -c $(CFLAGS) src/nc.cpp -o $(OBJDIR)/nc.o
 
 clean:
-	del makelib.mk /Q

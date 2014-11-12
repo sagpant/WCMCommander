@@ -29,7 +29,7 @@ before_script:
 script:
   - if [ "$BUILDMODE" = "custom" ]; then
       echo "===> Building with custom buildsystem..." &&
-      cd "$TRAVIS_BUILD_DIR"/wcm &&
+      cd "$TRAVIS_BUILD_DIR"/src &&
       make all -B;
     fi
   - if [ "$BUILDMODE" = "cmake" ]; then
