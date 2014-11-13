@@ -83,7 +83,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>wal;swl;../libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>..\libssh2\static32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libssh2\static32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -107,7 +107,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>wal;swl;../libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -119,7 +119,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;..\libssh2\libssh2_debug.lib;Mpr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;libssh2\libssh2_debug.lib;Mpr.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
     </Link>
@@ -128,7 +128,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>wal;swl;../libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -146,7 +146,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>..\libssh2\static32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libssh2\static32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
@@ -154,7 +154,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>wal;swl;../libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -166,7 +166,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;..\libssh2\libssh2.lib;Mpr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;libssh2\libssh2.lib;Mpr.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -174,158 +174,153 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="charsetdlg.cpp" />
-    <ClCompile Include="color-style.cpp" />
-    <ClCompile Include="dircalc.cpp" />
-    <ClCompile Include="dlg-ctrl-l.cpp" />
-    <ClCompile Include="eloadsave.cpp" />
-    <ClCompile Include="ext-app.cpp" />
-    <ClCompile Include="globals.cpp" />
-    <ClCompile Include="fileassociations.cpp" />
-    <ClCompile Include="filehighlighting.cpp" />
-    <ClCompile Include="fileopers.cpp" />
-    <ClCompile Include="filesearch.cpp" />
-    <ClCompile Include="ftplogon.cpp" />
-    <ClCompile Include="help.cpp" />
-    <ClCompile Include="helpres.cpp" />
-    <ClCompile Include="ltext.cpp" />
-    <ClCompile Include="nc.cpp" />
-    <ClCompile Include="ncdialogs.cpp" />
-    <ClCompile Include="ncedit.cpp" />
-    <ClCompile Include="ncfonts.cpp" />
-    <ClCompile Include="nchistory.cpp" />
-    <ClCompile Include="ncview.cpp" />
-    <ClCompile Include="ncwin.cpp" />
-    <ClCompile Include="operthread.cpp" />
-    <ClCompile Include="operwin.cpp" />
-    <ClCompile Include="panel-style.cpp" />
-    <ClCompile Include="panel.cpp" />
-    <ClCompile Include="panel_list.cpp" />
-    <ClCompile Include="search-dlg.cpp" />
-    <ClCompile Include="search-tools.cpp" />
-    <ClCompile Include="sftpdlg.cpp" />
-    <ClCompile Include="shell-tools.cpp" />
-    <ClCompile Include="shl.cpp" />
-    <ClCompile Include="shortcuts.cpp" />
-    <ClCompile Include="smblogon.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="src/charsetdlg.cpp" />
+    <ClCompile Include="src/color-style.cpp" />
+    <ClCompile Include="src/dircalc.cpp" />
+    <ClCompile Include="src/dlg-ctrl-l.cpp" />
+    <ClCompile Include="src/eloadsave.cpp" />
+    <ClCompile Include="src/ext-app.cpp" />
+    <ClCompile Include="src/globals.cpp" />
+    <ClCompile Include="src/fileassociations.cpp" />
+    <ClCompile Include="src/filehighlighting.cpp" />
+    <ClCompile Include="src/fileopers.cpp" />
+    <ClCompile Include="src/filesearch.cpp" />
+    <ClCompile Include="src/ftplogon.cpp" />
+    <ClCompile Include="src/help.cpp" />
+    <ClCompile Include="src/helpres.cpp" />
+    <ClCompile Include="src/ltext.cpp" />
+    <ClCompile Include="src/nc.cpp" />
+    <ClCompile Include="src/ncdialogs.cpp" />
+    <ClCompile Include="src/ncedit.cpp" />
+    <ClCompile Include="src/ncfonts.cpp" />
+    <ClCompile Include="src/nchistory.cpp" />
+    <ClCompile Include="src/ncview.cpp" />
+    <ClCompile Include="src/ncwin.cpp" />
+    <ClCompile Include="src/operthread.cpp" />
+    <ClCompile Include="src/operwin.cpp" />
+    <ClCompile Include="src/panel-style.cpp" />
+    <ClCompile Include="src/panel.cpp" />
+    <ClCompile Include="src/panel_list.cpp" />
+    <ClCompile Include="src/search-dlg.cpp" />
+    <ClCompile Include="src/search-tools.cpp" />
+    <ClCompile Include="src/sftpdlg.cpp" />
+    <ClCompile Include="src/shell-tools.cpp" />
+    <ClCompile Include="src/shl.cpp" />
+    <ClCompile Include="src/shortcuts.cpp" />
+    <ClCompile Include="src/smblogon.cpp" />
+    <ClCompile Include="src/stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="strconfig.cpp" />
-    <ClCompile Include="strmasks.cpp" />
-    <ClCompile Include="swl\swl_button.cpp" />
-    <ClCompile Include="swl\swl_editline.cpp" />
-    <ClCompile Include="swl\swl_layout.cpp" />
-    <ClCompile Include="swl\swl_menubox.cpp" />
-    <ClCompile Include="swl\swl_menutextinfo.cpp" />
-    <ClCompile Include="swl\swl_popupmenu.cpp" />
-    <ClCompile Include="swl\swl_sbutton.cpp" />
-    <ClCompile Include="swl\swl_scrollbar.cpp" />
-    <ClCompile Include="swl\swl_staticlabel.cpp" />
-    <ClCompile Include="swl\swl_textlist.cpp" />
-    <ClCompile Include="swl\swl_vlist.cpp" />
-    <ClCompile Include="swl\swl_winbase.cpp" />
-    <ClCompile Include="swl\swl_wincore.cpp" />
-    <ClCompile Include="swl\swl_wincoreMS.cpp" />
-    <ClCompile Include="tcp_sock.cpp" />
-    <ClCompile Include="termwin.cpp" />
-    <ClCompile Include="toolbar.cpp" />
-    <ClCompile Include="unicode_lc.cpp" />
-    <ClCompile Include="vfs-ftp.cpp" />
-    <ClCompile Include="vfs-sftp.cpp" />
-    <ClCompile Include="vfs-sftp2.cpp" />
-    <ClCompile Include="vfs-smb.cpp" />
-    <ClCompile Include="vfs-uri.cpp" />
-    <ClCompile Include="vfs.cpp" />
-    <ClCompile Include="vfspath.cpp" />
-    <ClCompile Include="w32cons.cpp" />
-    <ClCompile Include="w32util.cpp" />
-    <ClCompile Include="wal\wal.cpp" />
-    <ClCompile Include="wal\wal_charset.cpp" />
-    <ClCompile Include="wal\wal_exceptions.cpp" />
-    <ClCompile Include="wal\wal_files.cpp" />
-    <ClCompile Include="wal\wal_sys_api.cpp" />
-    <ClCompile Include="wal\wal_tmpls.cpp" />
-    <ClCompile Include="wcm-config.cpp" />
+    <ClCompile Include="src/strconfig.cpp" />
+    <ClCompile Include="src/strmasks.cpp" />
+    <ClCompile Include="src/swl\swl_button.cpp" />
+    <ClCompile Include="src/swl\swl_editline.cpp" />
+    <ClCompile Include="src/swl\swl_layout.cpp" />
+    <ClCompile Include="src/swl\swl_menubox.cpp" />
+    <ClCompile Include="src/swl\swl_menutextinfo.cpp" />
+    <ClCompile Include="src/swl\swl_popupmenu.cpp" />
+    <ClCompile Include="src/swl\swl_sbutton.cpp" />
+    <ClCompile Include="src/swl\swl_scrollbar.cpp" />
+    <ClCompile Include="src/swl\swl_staticlabel.cpp" />
+    <ClCompile Include="src/swl\swl_textlist.cpp" />
+    <ClCompile Include="src/swl\swl_vlist.cpp" />
+    <ClCompile Include="src/swl\swl_winbase.cpp" />
+    <ClCompile Include="src/swl\swl_wincore.cpp" />
+    <ClCompile Include="src/swl\swl_wincoreMS.cpp" />
+    <ClCompile Include="src/tcp_sock.cpp" />
+    <ClCompile Include="src/termwin.cpp" />
+    <ClCompile Include="src/toolbar.cpp" />
+    <ClCompile Include="src/unicode_lc.cpp" />
+    <ClCompile Include="src/vfs-ftp.cpp" />
+    <ClCompile Include="src/vfs-sftp.cpp" />
+    <ClCompile Include="src/vfs-sftp2.cpp" />
+    <ClCompile Include="src/vfs-smb.cpp" />
+    <ClCompile Include="src/vfs-uri.cpp" />
+    <ClCompile Include="src/vfs.cpp" />
+    <ClCompile Include="src/vfspath.cpp" />
+    <ClCompile Include="src/w32cons.cpp" />
+    <ClCompile Include="src/w32util.cpp" />
+    <ClCompile Include="src/wal\wal.cpp" />
+    <ClCompile Include="src/wal\wal_charset.cpp" />
+    <ClCompile Include="src/wal\wal_exceptions.cpp" />
+    <ClCompile Include="src/wal\wal_files.cpp" />
+    <ClCompile Include="src/wal\wal_sys_api.cpp" />
+    <ClCompile Include="src/wal\wal_tmpls.cpp" />
+    <ClCompile Include="src/wcm-config.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="charsetdlg.h" />
-    <ClInclude Include="color-style.h" />
-    <ClInclude Include="dircalc.h" />
-    <ClInclude Include="dlg-ctrl-l.h" />
-    <ClInclude Include="eloadsave.h" />
-    <ClInclude Include="ext-app.h" />
-    <ClInclude Include="fileassociations.h" />
-    <ClInclude Include="filehighlighting.h" />
-    <ClInclude Include="fileopers.h" />
-    <ClInclude Include="filesearch.h" />
-    <ClInclude Include="ftplogon.h" />
-    <ClInclude Include="globals.h" />
-    <ClInclude Include="help.h" />
-    <ClInclude Include="libconf.h" />
-    <ClInclude Include="libconf_win32.h" />
-    <ClInclude Include="ltext.h" />
-    <ClInclude Include="mfile.h" />
-    <ClInclude Include="nc.h" />
-    <ClInclude Include="ncdialogs.h" />
-    <ClInclude Include="ncedit.h" />
-    <ClInclude Include="ncfonts.h" />
-    <ClInclude Include="nchistory.h" />
-    <ClInclude Include="ncview.h" />
-    <ClInclude Include="ncwin.h" />
-    <ClInclude Include="operthread.h" />
-    <ClInclude Include="operwin.h" />
-    <ClInclude Include="panel-style.h" />
-    <ClInclude Include="panel.h" />
-    <ClInclude Include="panel_list.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="search-dlg.h" />
-    <ClInclude Include="search-tools.h" />
-    <ClInclude Include="sftpdlg.h" />
-    <ClInclude Include="shell-tools.h" />
-    <ClInclude Include="shell.h" />
-    <ClInclude Include="shl.h" />
-    <ClInclude Include="shortcuts.h" />
-    <ClInclude Include="smblogon.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="strconfig.h" />
-    <ClInclude Include="string-util.h" />
-    <ClInclude Include="strmasks.h" />
-    <ClInclude Include="swl\swl.h" />
-    <ClInclude Include="swl\swl_internal.h" />
-    <ClInclude Include="swl\swl_layout.h" />
-    <ClInclude Include="swl\swl_winbase.h" />
-    <ClInclude Include="swl\swl_wincore.h" />
-    <ClInclude Include="swl\swl_wincore_internal.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="tcp_sock.h" />
-    <ClInclude Include="terminal.h" />
-    <ClInclude Include="termwin.h" />
-    <ClInclude Include="toolbar.h" />
-    <ClInclude Include="vfs-ftp.h" />
-    <ClInclude Include="vfs-sftp.h" />
-    <ClInclude Include="vfs-smb.h" />
-    <ClInclude Include="vfs-uri.h" />
-    <ClInclude Include="vfs.h" />
-    <ClInclude Include="vfspath.h" />
-    <ClInclude Include="w32cons.h" />
-    <ClInclude Include="w32util.h" />
-    <ClCompile Include="wal\IntrusivePtr.h" />
-    <ClInclude Include="wal\wal.h" />
-    <ClInclude Include="wal\wal_sys_api.h" />
-    <ClInclude Include="wal\wal_tmpls.h" />
-    <ClInclude Include="wcm-config.h" />
+    <ClInclude Include="src/charsetdlg.h" />
+    <ClInclude Include="src/color-style.h" />
+    <ClInclude Include="src/dircalc.h" />
+    <ClInclude Include="src/dlg-ctrl-l.h" />
+    <ClInclude Include="src/eloadsave.h" />
+    <ClInclude Include="src/ext-app.h" />
+    <ClInclude Include="src/fileassociations.h" />
+    <ClInclude Include="src/filehighlighting.h" />
+    <ClInclude Include="src/fileopers.h" />
+    <ClInclude Include="src/filesearch.h" />
+    <ClInclude Include="src/ftplogon.h" />
+    <ClInclude Include="src/globals.h" />
+    <ClInclude Include="src/help.h" />
+    <ClInclude Include="src/libconf.h" />
+    <ClInclude Include="src/libconf_win32.h" />
+    <ClInclude Include="src/ltext.h" />
+    <ClInclude Include="src/mfile.h" />
+    <ClInclude Include="src/nc.h" />
+    <ClInclude Include="src/ncdialogs.h" />
+    <ClInclude Include="src/ncedit.h" />
+    <ClInclude Include="src/ncfonts.h" />
+    <ClInclude Include="src/nchistory.h" />
+    <ClInclude Include="src/ncview.h" />
+    <ClInclude Include="src/ncwin.h" />
+    <ClInclude Include="src/operthread.h" />
+    <ClInclude Include="src/operwin.h" />
+    <ClInclude Include="src/panel-style.h" />
+    <ClInclude Include="src/panel.h" />
+    <ClInclude Include="src/panel_list.h" />
+    <ClInclude Include="src/Resource.h" />
+    <ClInclude Include="src/search-dlg.h" />
+    <ClInclude Include="src/search-tools.h" />
+    <ClInclude Include="src/sftpdlg.h" />
+    <ClInclude Include="src/shell-tools.h" />
+    <ClInclude Include="src/shell.h" />
+    <ClInclude Include="src/shl.h" />
+    <ClInclude Include="src/shortcuts.h" />
+    <ClInclude Include="src/smblogon.h" />
+    <ClInclude Include="src/stdafx.h" />
+    <ClInclude Include="src/strconfig.h" />
+    <ClInclude Include="src/string-util.h" />
+    <ClInclude Include="src/strmasks.h" />
+    <ClInclude Include="src/swl\swl.h" />
+    <ClInclude Include="src/swl\swl_internal.h" />
+    <ClInclude Include="src/swl\swl_layout.h" />
+    <ClInclude Include="src/swl\swl_winbase.h" />
+    <ClInclude Include="src/swl\swl_wincore.h" />
+    <ClInclude Include="src/swl\swl_wincore_internal.h" />
+    <ClInclude Include="src/targetver.h" />
+    <ClInclude Include="src/tcp_sock.h" />
+    <ClInclude Include="src/terminal.h" />
+    <ClInclude Include="src/termwin.h" />
+    <ClInclude Include="src/toolbar.h" />
+    <ClInclude Include="src/vfs-ftp.h" />
+    <ClInclude Include="src/vfs-sftp.h" />
+    <ClInclude Include="src/vfs-smb.h" />
+    <ClInclude Include="src/vfs-uri.h" />
+    <ClInclude Include="src/vfs.h" />
+    <ClInclude Include="src/vfspath.h" />
+    <ClInclude Include="src/w32cons.h" />
+    <ClInclude Include="src/w32util.h" />
+    <ClCompile Include="src/wal\IntrusivePtr.h" />
+    <ClInclude Include="src/wal\wal.h" />
+    <ClInclude Include="src/wal\wal_sys_api.h" />
+    <ClInclude Include="src/wal\wal_tmpls.h" />
+    <ClInclude Include="src/wcm-config.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="icon1.ico" />
-    <None Include="small.ico" />
-    <None Include="wcm.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="wcm.rc" />
+    <ResourceCompile Include="src/wcm.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

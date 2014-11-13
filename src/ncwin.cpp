@@ -1210,23 +1210,25 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 		}
 
 	mData.AddSplitter();
-	mData.Add( "NETWORK", 0, ID_DEV_SMB );
+	mData.Add( "1. NETWORK", 0, ID_DEV_SMB );
+	mData.Add( "2. FTP", 0, ID_DEV_FTP );
 #else
-	mData.Add( "/", 0,  ID_DEV_ROOT );
-	mData.Add( _LT( "Home" ), 0, ID_DEV_HOME );
-#ifdef LIBSMBCLIENT_EXIST
-	mData.Add( "Smb network", 0, ID_DEV_SMB );
-	mData.Add( "Smb server", 0, ID_DEV_SMB_SERVER );
-#endif
+	mData.Add( "1. /", 0,  ID_DEV_ROOT );
+	mData.Add( _LT( "2. Home" ), 0, ID_DEV_HOME );
+	mData.Add( "3. FTP", 0, ID_DEV_FTP );
 
-#endif
+#ifdef LIBSMBCLIENT_EXIST
+	mData.Add( "4. Smb network", 0, ID_DEV_SMB );
+	mData.Add( "5. Smb server", 0, ID_DEV_SMB_SERVER );
+#else
+
+#endif // LIBSMBCLIENT_EXIST
+
+#endif // _WIN32
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
-	mData.Add( "SFTP", 0, ID_DEV_SFTP );
+	mData.Add( "6. SFTP", 0, ID_DEV_SFTP );
 #endif
-
-	mData.Add( "FTP", 0, ID_DEV_FTP );
-
 
 #ifndef _WIN32  //unix mounts
 	//ID_MNT_UX0
@@ -2913,21 +2915,41 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 	return true;
 }
 
+void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const
+{
+	if ( !DebugEnabledFlag ) return;
+
+	if ( !KeyEvent ) return;
+
+	const int Key = KeyEvent->Key();
+	const int Mod = KeyEvent->Mod();
+
+	const char* DebugLine = "DebugKeyboard(): Key = %i Mod = %i\n";
+
+	fprintf( stderr, DebugLine, Key, Mod );
+#if defined(_MSC_VER)
+	dbg_printf( DebugLine, Key, Mod );
+#endif
+}
+
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 {
+	DebugKeyboard( pEvent, pressed, g_DebugKeyboard );
+	
 	if ( Blocked() ) { return false; }
 
-	unsigned mod = pEvent->Mod();
-	unsigned fullKey = ( pEvent->Key() & 0xFFFF ) + ( mod << 16 );
+	const int Key = pEvent->Key();
+	const int Mod = pEvent->Mod();
+	const unsigned FullKey = ( Key & 0xFFFF ) + ( Mod << 16 );
 
-	bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
+	const bool shift = ( Mod & KM_SHIFT ) != 0;
 
 	if ( !shift ) { _shiftSelectType = LPanelSelectionType_NotDefined; }
 
-	bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
-	bool alt = ( pEvent->Mod() & KM_ALT ) != 0;
+	const bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
+	const bool alt = ( pEvent->Mod() & KM_ALT ) != 0;
 
-	CheckKM( ctrl, alt, shift, pressed, pEvent->Key() );
+	CheckKM( ctrl, alt, shift, pressed, Key );
 
 	if ( pressed && ctrl &&
 	     ( ( _mode == PANEL && m_Edit.InFocus() && !_panelVisible ) ||
@@ -2935,7 +2957,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 	{
 		if ( _terminal.Marked() )
 		{
-			if ( pEvent->Key() == VK_INSERT )
+			if ( Key == VK_INSERT )
 			{
 				ClipboardText ct;
 				_terminal.GetMarked( ct );
@@ -2946,25 +2968,25 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		}
 	}
 
-//printf("Key='%X'\n",pEvent->Key());
+//printf("Key='%X'\n",Key);
 
 	if ( _mode == PANEL && m_Edit.InFocus() )
 	{
 		if ( !pressed ) { return false; }
 
-		if ( pEvent->Key() == VK_TAB && ( pEvent->Mod() & KM_CTRL ) )
+		if ( Key == VK_TAB && ( Mod & KM_CTRL ) )
 		{
 			SwitchToBackgroundActivity();
 		}
 
-		if ( pEvent->Key() == VK_O && ( pEvent->Mod() & KM_CTRL ) )
+		if ( Key == VK_O && ( Mod & KM_CTRL ) )
 		{
 			ShowPanels( !_panelVisible );
 			m_AutoCompleteList.Hide();
 			return true;
 		}
 
-		if ( pEvent->Key() == VK_U && ( pEvent->Mod() & KM_CTRL ) )
+		if ( Key == VK_U && ( Mod & KM_CTRL ) )
 		{
 			FSPath LeftPath = _leftPanel.GetPath();
 			FSPath RightPath = _rightPanel.GetPath();
@@ -2983,10 +3005,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			if ( c && c >= 0x20 )
 			{
-				cevent_key* key = _panel->QuickSearch( pEvent );
+				cevent_key key = _panel->QuickSearch( pEvent );
 				m_Edit.SetFocus();
 
-				if ( key ) { OnKeyDown( this, key, key->Type() == EV_KEYDOWN ); }
+				if ( key.Type() != 0 ) { OnKeyDown( this, &key, key.Type() == EV_KEYDOWN ); }
 
 				return true;
 			}
@@ -2994,7 +3016,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		if ( _panelVisible )
 		{
-			switch ( fullKey )
+			switch ( FullKey )
 			{
 				case FC( VK_M, KM_CTRL ):
 					{
@@ -3157,19 +3179,19 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		if ( !_panelVisible && pEvent->IsFromMouseWheel() )
 		{
-			if ( fullKey == VK_DOWN )
+			if ( FullKey == VK_DOWN )
 			{
 				_terminal.Scroll( -25 );
 				return true;
 			}
-			if ( fullKey == VK_UP   )
+			if ( FullKey == VK_UP   )
 			{
 				_terminal.Scroll( +25 );
 				return true;
 			}
 		}
 
-		switch ( fullKey )
+		switch ( FullKey )
 		{
 
 			case FC( VK_X, KM_CTRL ):
@@ -3199,6 +3221,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case VK_INSERT:
+			case FC( VK_S, KM_CTRL ):
 				_panel->KeyIns();
 				break;
 
@@ -3290,14 +3313,15 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				_panel->Reread();
 				_panel->Invalidate();
 				break;
-
+				/*
 			case FC( VK_S, KM_CTRL ):
 			{
-				cevent_key* key = _panel->QuickSearch( 0 );
+				cevent_key* key = _panel->QuickSearch( nullptr );
 				m_Edit.SetFocus();
 
 				if ( key ) { OnKeyDown( this, key, key->Type() == EV_KEYDOWN ); }
 			}
+			*/
 
 			return true;
 
@@ -3512,7 +3536,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 #endif
 
-		switch ( fullKey )
+		switch ( FullKey )
 		{
 			case FC( VK_O, KM_CTRL ):
 			case VK_ESCAPE:
@@ -3520,7 +3544,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				HideAutoComplete();
 				if ( pressed ) SwitchToBackgroundActivity();
 				// Send ESC to terminal. Fix for https://github.com/corporateshark/WalCommander/issues/94
-				if ( fullKey == VK_ESCAPE ) break;
+				if ( FullKey == VK_ESCAPE ) break;
 				return true;
 			}
 
@@ -3560,7 +3584,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 #ifdef _WIN32
 		_terminal.Key( pEvent );
 #else
-		_terminal.Key( pEvent->Key(), pEvent->Char() );
+		_terminal.Key( Key, pEvent->Char() );
 #endif
 		return true;
 	}
@@ -3570,7 +3594,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		{
 			if ( !pressed ) { return false; }
 
-			switch ( fullKey )
+			switch ( FullKey )
 			{
 				case FC( VK_TAB, KM_CTRL ):
 					SetMode( PANEL );
@@ -3643,7 +3667,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			{
 				if ( !pressed ) { return false; }
 
-				switch ( fullKey )
+				switch ( FullKey )
 				{
 					case FC( VK_O, KM_CTRL ):
 						SetMode( TERMINAL );

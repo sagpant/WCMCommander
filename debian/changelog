@@ -1,0 +1,93 @@
+wcm (0.18.1-1) unstable; urgency=medium
+  * Added: speed indicator while copying
+  * Hotkey: Ctrl+L to open info dialog
+
+ -- Sergey Kosarevsky <sk@linderdaum.com>  Mon, 12 Nov 2014 15:56:25 +0300
+
+wcm (0.18.0-1) unstable; urgency=medium
+  * Added: 'cls' command clears the whole terminal ('clear' still works as expected on Linux/OSX)
+  * Added: command line switches on Linux (run ./wcm -h)
+  * Added: hotkeys in dialogs (use Alt+highlighted letter)
+  * Added: numpad keys support while NumLock is disabled
+  * Added: option to turn on/off the 3D UI (buttons, etc)
+  * Added: show '(Root)' in the window caption while running with root privileges
+  * Added: show inner/trailing spaces in files/folders as the · character (option)
+  * Added: show spaces in input fields as the · character
+  * Added: xprop can report a class name for WCM windows
+  * Hotkey: Ctrl+M to open "Open with" popup
+  * Hotkey: Shift+Tab to switch between controls in dialogs
+  * Improved: behaviour of Ctrl+[ and Ctrl+]
+  * Improved: CR/LF handling in the editor on Linux and OS X
+  * Improved: Ctrl+E/Ctrl+X behaviour with autocomplete
+  * Improved: default font on Windows is Consolas 12pt
+  * Improved: handling of 'cd' command
+  * Improved: hotkey colors in the default theme are now readable in dialogs
+  * Improved: Linux icon is now in the .png format
+  * Improved: Shift+arrows selection in panels is now similar to Far Manager
+  * Improved: show program info in the task manager on Windows
+  * Improved: terminal scrolling via a mouse wheel
+  * Improved: window size selection on fresh install
+  * Fixed: buffer overruns in SFTP and SFTP2
+  * Fixed: buffer overruns in the editor
+  * Fixed: commands color in the terminal
+  * Fixed: crash in Alt-search
+  * Fixed: Ctrl+Left in the editor never skips the begginning of the line
+  * Fixed: Ctrl+Right in the editor never skips the begginning of the line
+  * Fixed: editor search bug
+  * Fixed: ESC key closes the main menu
+  * Fixed: focus on main menu if opened with a mouse
+  * Fixed: handling of '/' character while using Ctrl+Left/Ctrl+Right in the editor and edit lines
+  * Fixed: multimask file associations (separated with commas) were not working properly
+  * Fixed: tab size edit line location in Options -> Editor settings
+  * Fixed: tab-order in the file associations dialog
+  * Fixed: wrong device context for child windows
+  * Fixed: Russian localization
+  * Updated: readme, docs, localization
+  * Development: Debian package building
+  * Development: disabled level 4 warnings	
+  * Development: fixed many compilation warnings
+  * Development: fixed many compilation warnings
+  * Development: fixed MinGW cross-compilation
+  * Development: Qt Creator configs for OS X
+
+ -- Sergey Kosarevsky <sk@linderdaum.com>  Mon, 07 Nov 2014 23:11:43 +0300
+
+wcm (0.17.1-1) unstable; urgency=medium
+
+  * Fixed: non-makefile builds now retain version number
+  * Added: share search text between all search and search-n-replace dialogs
+  * Added: indicator of the current sorting order in the panel
+  * Added: taskbar hints for the Alt key
+  * Added: option 'Select folders'
+  * Added: F3 calculates the size of multiple selected folders
+  * Added: command line autocomplete
+  * Hotkey: Ctrl+Tab to switch between editor/viewer and panels
+  * Hotkey: Ctrl+O in editor or viewer shows the terminal terminal
+  * Hotkey: '5' on numpad calculates the size of the selected files
+  * Hotkey: Ctrl+U swap panels
+  * Hotkey: Ctrl+Del in the editor
+  * Hotkey: Ctrl+BackSpace in the editor
+  * Hotkey: Ctrl+[ and Ctrl+] paste a path from the left/right panel to the command line
+  * Hotkey: Ctrl+Enter in Alt-search moved to the next file
+  * Hotkey: Ctrl+G apply command to the selected files
+  * Improved: Alt-search editline repaints correctly
+  * Improved: mouse wheel support
+  * Improved: FreeBSD support
+  * Improved: editor cursor is now Far-like and blinking
+  * Improved: save per-file scrolling positions in the editor
+  * Improved: inaccessible paths bring you to the root folder or to the drive selection dialog
+  * Improved: panel footer text (less garbage, info on free space)
+  * Improved: show other panel's full path in the drive selection dialog
+  * Fixed: vertical lines in Full panel modes
+  * Fixed: command line is now black
+  * Fixed: numpad Enter
+  * Fixed: cursor position in the panel after deleting files
+  * Fixed: switching language while in Alt-search closes the search editline
+  * Fixed: bug with the first letter in Alt-search
+  * Fixed: save/restore panel paths on Windows
+  * Fixed: save the configuration on exit
+  * Development: added CMake and Code::Blocks configs
+  * Disabled most of the 3D UI
+  * Disabled auto indent in the editor
+
+ -- Sergey Kosarevsky <sk@linderdaum.com>  Mon, 01 Sep 2014 19:51:31 +0400

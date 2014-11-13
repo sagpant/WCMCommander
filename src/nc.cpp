@@ -27,7 +27,7 @@
 #include "globals.h"
 #include "eloadsave.h"
 
-#include "intarnal_icons.inc"
+#include "internal_icons.inc"
 
 clPtr<wal::GC> defaultGC;
 
@@ -134,6 +134,7 @@ void ShowHelp()
 	printf( " --help                              This help.\n\n" );
 #ifndef _WIN32
 	printf( " --dlg                               Show dialogs as child windows (OS X/Linux only).\n\n" );
+	printf( " --debug-keyboard                    Write keypresses to stderr (OS X/Linux only).\n\n" );
 #endif
 	printf( " /e [<line>:<pos>] <filename>\n" );
 	printf( " -e [<line>:<pos>] <filename>\n" );
@@ -256,6 +257,11 @@ bool ParseCommandLine( int argc, char** argv, NCWin* NcWin )
 			continue;
 		}
 #endif
+		if ( !strcmp( argv[i], "--debug-keyboard" ) )
+		{
+			g_DebugKeyboard = true;
+			continue;
+		}
 		if ( !strcmp( argv[i], "--edit" ) || !strcmp( argv[i], "-e" ) || !strcmp( argv[i], "/e" ) )
 		{
 			FETCH_ARG_AND_CHECK( i, "Expected file name to edit" );

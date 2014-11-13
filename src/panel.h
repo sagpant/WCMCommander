@@ -30,7 +30,7 @@ class PanelSearchWin: public Win
 	Layout _lo;
 	std::vector<unicode_t> oldMask;
 public:
-	cevent_key* ret_key;
+	cevent_key ret_key;
 	PanelSearchWin( PanelWin* parent, cevent_key* key );
 	virtual void Repaint();
 	virtual void Paint( wal::GC& gc, const crect& paintRect );
@@ -234,7 +234,7 @@ public:
 	void SortByMTime();
 	void DisableSort();
 
-	cevent_key* QuickSearch( cevent_key* key );
+	cevent_key QuickSearch( cevent_key* key );
 	bool Search( unicode_t* s, bool SearchForNext );
 
 	void SetCurrent( int n );

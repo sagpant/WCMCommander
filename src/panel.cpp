@@ -38,7 +38,8 @@ PanelSearchWin::PanelSearchWin( PanelWin* parent, cevent_key* key )
 	   _parent( parent ),
 	   _edit( 0, this, 0, 0, 16, true ),
 	   _static( 0, this, utf8_to_unicode( _LT( "Search:" ) ).data() ),
-	   _lo( 3, 4 )
+	   _lo( 3, 4 ),
+		ret_key( 0, 0, 0, 0, 0, false )
 {
 	_edit.SetAcceptAltKeys();
 	_lo.AddWin( &_static, 1, 1 );
@@ -125,7 +126,7 @@ void PanelSearchWin::EndSearch( cevent_key* pEvent )
 
 //	if ( pEvent )
 	{
-		ret_key = pEvent;
+		ret_key = *pEvent;
 	}
 }
 
@@ -226,7 +227,7 @@ bool PanelSearchWin::EventShow( bool show )
 PanelSearchWin::~PanelSearchWin() {}
 
 
-cevent_key* PanelWin::QuickSearch( cevent_key* key )
+cevent_key PanelWin::QuickSearch( cevent_key* key )
 {
 	_search = new PanelSearchWin( this, key );
 	crect r = _footRect;
@@ -237,7 +238,8 @@ cevent_key* PanelWin::QuickSearch( cevent_key* key )
 
 	_search->DoModal();
 
-	cevent_key* ret = _search->ret_key;
+	cevent_key ret = _search->ret_key;
+
 	_search = nullptr;
 
 	return ret;
