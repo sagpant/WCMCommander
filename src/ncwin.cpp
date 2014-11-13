@@ -3208,7 +3208,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case VK_INSERT:
-			//case FC( VK_S, KM_CTRL ):
+			case FC( VK_S, KM_CTRL ):
 				_panel->KeyIns();
 				break;
 
