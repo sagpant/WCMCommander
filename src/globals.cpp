@@ -6,7 +6,7 @@
 
 #include "globals.h"
 
-WcmConfig g_WcmConfig;
+clWcmConfig g_WcmConfig;
 
 clPtr<cfont> g_PanelFont;
 clPtr<cfont> g_ViewerFont;

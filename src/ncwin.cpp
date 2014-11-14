@@ -625,7 +625,7 @@ NCWin::NCWin()
 
 bool NCWin::EventClose()
 {
-	g_WcmConfig.Save( this );
+	if ( g_WcmConfig.systemAutoSaveSetup ) g_WcmConfig.Save( this );
 
 	switch ( _mode )
 	{
@@ -1526,7 +1526,7 @@ void NCWin::QuitQuestion()
 {
 	if ( NCMessageBox( this, _LT( "Quit" ), _LT( "Do you want to quit?" ), false, bListOkCancel ) == CMD_OK )
 	{
-		g_WcmConfig.Save( this );
+		if ( g_WcmConfig.systemAutoSaveSetup ) g_WcmConfig.Save( this );
 		AppExit();
 	}
 }
