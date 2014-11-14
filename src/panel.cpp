@@ -27,6 +27,7 @@
 #include "icons/monitor.xpm"
 #include "icons/workgroup.xpm"
 #include "icons/run.xpm"
+#include "icons/link.xpm"
 
 #include "vfs-smb.h"
 #include "ltext.h"
@@ -408,6 +409,7 @@ int PanelWin::UiGetClassId() { return uiClassPanel; }
 
 unicode_t PanelWin::dirPrefix[] = {'/', 0};
 unicode_t PanelWin::exePrefix[] = {'*', 0};
+unicode_t PanelWin::linkPrefix[] = {'^', 0};
 
 inline int GetTextW( wal::GC& gc, unicode_t* txt )
 {
@@ -780,6 +782,7 @@ static const int accessWidth = 13;
 cicon folderIcon( xpm16x16_Folder, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
 cicon folderIconHi( xpm16x16_Folder_HI, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
 
+static cicon linkIcon( xpm16x16_Link, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
 static cicon executableIcon( xpm16x16_Executable, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
 static cicon serverIcon( xpm16x16_Monitor, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
 static cicon workgroupIcon( xpm16x16_Workgroup, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
@@ -790,6 +793,7 @@ bool panelIconsEnabled = true;
 static int uiDir = GetUiID( "dir" );
 static int uiExe = GetUiID( "exe" );
 static int uiBad = GetUiID( "bad" );
+static int uiLink = GetUiID( "link" );
 static int uiSelectedPanel = GetUiID( "selected-panel" );
 static int uiOperState = GetUiID( "oper-state" );
 static int uiHidden = GetUiID( "hidden" );
@@ -861,7 +865,7 @@ int PanelWin::GetXMargin() const
 {
 	int x = 0;
 
-	if ( g_WcmConfig.panelShowFolderIcons || g_WcmConfig.panelShowExecutableIcons )
+	if ( g_WcmConfig.panelShowFolderIcons || g_WcmConfig.panelShowExecutableIcons || g_WcmConfig.panelShowLinkIcons )
 	{
 		x += PANEL_ICON_SIZE;
 	}
@@ -889,6 +893,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	bool isBad = p && p->IsBad();
 	bool isSelected = p && p->IsSelected();
 	bool isHidden = p && p->IsHidden();
+	bool isLink = p && p->IsLnk();
 
 	/*
 	PanelItemColors color;
@@ -902,6 +907,8 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	if ( isExe ) { ucl.Set( uiExe, true ); }
 
 	if ( isBad ) { ucl.Set( uiBad, true ); }
+
+	if ( isLink ) { ucl.Set( uiLink, true ); }
 
 	if ( IsSelectedPanel() ) { ucl.Set( uiSelectedPanel, true ); }
 
@@ -985,7 +992,17 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 		else
 		{
 			gc.TextOutF( x, y, exePrefix );
-			//x += exePrefixW;
+		}
+	}
+	else if ( isLink )
+	{
+		if ( g_WcmConfig.panelShowLinkIcons )
+		{
+			linkIcon.DrawF( gc, x, y );
+		}
+		else
+		{
+			gc.TextOutF( x, y, linkPrefix );
 		}
 	}
 	else

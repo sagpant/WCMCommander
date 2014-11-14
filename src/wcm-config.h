@@ -19,7 +19,7 @@ enum ePanelSpacesMode
 	ePanelSpacesMode_Trailing = 2
 };
 
-struct WcmConfig
+class clWcmConfig
 {
 private:
 	enum eMapType { MT_BOOL, MT_INT, MT_STR };
@@ -98,6 +98,7 @@ public:
 	bool systemEscPanel;
 	bool systemBackSpaceUpDir;
 	bool systemAutoComplete;
+	bool systemAutoSaveSetup;
 	bool systemShowHostName;
 	std::vector<char> systemLang; //"+" - auto "-" -internal eng.
 #pragma endregion
@@ -109,6 +110,7 @@ public:
 	bool panelShowDotsInRoot;
 	bool panelShowFolderIcons;
 	bool panelShowExecutableIcons;
+	bool panelShowLinkIcons;
 	ePanelSpacesMode panelShowSpacesMode;
 	int panelModeLeft;
 	int panelModeRight;
@@ -158,7 +160,7 @@ public:
 	std::vector<char> rightPanelPath;
 #pragma endregion
 
-	WcmConfig();
+	clWcmConfig();
 	void Load( NCWin* nc );
 	void Save( NCWin* nc );
 

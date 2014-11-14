@@ -16,7 +16,7 @@
 // Unix
 #define UNIX_CONFIG_DIR_PATH  "/usr/share/wcm"
 
-extern WcmConfig g_WcmConfig;
+extern clWcmConfig g_WcmConfig;
 
 extern clPtr<cfont> g_PanelFont;
 extern clPtr<cfont> g_ViewerFont;

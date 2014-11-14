@@ -27,8 +27,6 @@
 
 #include <map>
 
-WcmConfig wcmConfig;
-
 #ifndef _WIN32
 
 #define DEFAULT_CONFIG_PATH UNIX_CONFIG_DIR_PATH "/config.default"
@@ -644,11 +642,16 @@ const char* sectionViewer = "viewer";
 const char* sectionTerminal = "terminal";
 const char* sectionFonts = "fonts";
 
-WcmConfig::WcmConfig()
+static const char* CommandsHistorySection = "CommandsHistory";
+static const char* FilesAssociationsSection = "FilesAssociations";
+static const char* HighlightingRulesSection = "HighlightingRules";
+
+clWcmConfig::clWcmConfig()
  : systemAskOpenExec( true )
  , systemEscPanel( true )
  , systemBackSpaceUpDir( false )
  , systemAutoComplete( true )
+ , systemAutoSaveSetup( true )
  , systemShowHostName( false )
  , systemLang( new_char_str( "+" ) )
 
@@ -658,6 +661,7 @@ WcmConfig::WcmConfig()
  , panelShowDotsInRoot( false )
  , panelShowFolderIcons( true )
  , panelShowExecutableIcons( true )
+ , panelShowLinkIcons( true )
  , panelShowSpacesMode( ePanelSpacesMode_Trailing )
  , panelModeLeft( 0 )
  , panelModeRight( 0 )
@@ -688,6 +692,7 @@ WcmConfig::WcmConfig()
 	MapBool( sectionSystem, "esc_panel", &systemEscPanel, systemEscPanel );
 	MapBool( sectionSystem, "back_updir", &systemBackSpaceUpDir, systemBackSpaceUpDir );
 	MapBool( sectionSystem, "auto_complete", &systemAutoComplete, systemAutoComplete );
+	MapBool( sectionSystem, "auto_save_setup", &systemAutoSaveSetup, systemAutoSaveSetup );
 	MapBool( sectionSystem, "show_hostname", &systemShowHostName, systemShowHostName );
 	MapStr( sectionSystem,  "lang", &systemLang );
 
@@ -702,6 +707,7 @@ WcmConfig::WcmConfig()
 	MapBool( sectionPanel, "show_dots",     &panelShowDotsInRoot, panelShowDotsInRoot );
 	MapBool( sectionPanel, "show_foldericons",     &panelShowFolderIcons, panelShowFolderIcons );
 	MapBool( sectionPanel, "show_executableicons",     &panelShowExecutableIcons, panelShowExecutableIcons );
+	MapBool( sectionPanel, "show_linkicons",     &panelShowLinkIcons, panelShowLinkIcons );
 	MapInt( sectionPanel,  "show_spaces_mode",     (int*)&panelShowSpacesMode, panelShowSpacesMode );
 	MapInt( sectionPanel,  "mode_left",     &panelModeLeft, panelModeLeft );
 	MapInt( sectionPanel,  "mode_right",    &panelModeRight, panelModeRight );
@@ -737,7 +743,7 @@ WcmConfig::WcmConfig()
 	MapInt( sectionSystem,  "windowHeight", &windowHeight, windowHeight );
 }
 
-void WcmConfig::ImpCurrentFonts()
+void clWcmConfig::ImpCurrentFonts()
 {
 	panelFontUri = new_char_str( g_PanelFont.ptr() ? g_PanelFont->uri() : "" );
 	viewerFontUri = new_char_str( g_ViewerFont.ptr() ? g_ViewerFont->uri() : "" );
@@ -749,27 +755,23 @@ void WcmConfig::ImpCurrentFonts()
 	helpHeadFontUri  = new_char_str( g_HelpHeadFont.ptr() ? g_HelpHeadFont->uri() : "" );
 }
 
-void WcmConfig::MapInt( const char* Section, const char* Name, int* pInt, int def )
+void clWcmConfig::MapInt( const char* Section, const char* Name, int* pInt, int def )
 {
 	sNode Node = sNode::CreateIntNode( Section, Name, pInt, def );
 	m_MapList.push_back( Node );
 }
 
-void WcmConfig::MapBool( const char* Section, const char* Name, bool* pBool, bool def )
+void clWcmConfig::MapBool( const char* Section, const char* Name, bool* pBool, bool def )
 {
 	sNode Node = sNode::CreateBoolNode( Section, Name, pBool, def );
 	m_MapList.push_back( Node );
 }
 
-void WcmConfig::MapStr( const char* Section, const char* Name, std::vector<char>* pStr, const char* def )
+void clWcmConfig::MapStr( const char* Section, const char* Name, std::vector<char>* pStr, const char* def )
 {
 	sNode Node = sNode::CreateStrNode( Section, Name, pStr, def );
 	m_MapList.push_back( Node );
 }
-
-static const char* CommandsHistorySection = "CommandsHistory";
-static const char* FilesAssociationsSection = "FilesAssociations";
-static const char* HighlightingRulesSection = "HighlightingRules";
 
 class clConfigHelper
 {
@@ -1209,7 +1211,7 @@ void LoadViewerPositions()
 	}
 }
 
-void WcmConfig::Load( NCWin* nc )
+void clWcmConfig::Load( NCWin* nc )
 {
 #ifdef _WIN32
 	for ( size_t i = 0; i < m_MapList.size(); i++ )
@@ -1323,7 +1325,7 @@ void SaveViewerPositions()
 	SaveStringList( "ViewerPositions", Positions );
 }
 
-void WcmConfig::Save( NCWin* nc )
+void clWcmConfig::Save( NCWin* nc )
 {
 	if ( nc )
 	{
@@ -1457,6 +1459,7 @@ public:
 	SButton  showDotsInRoot;
 	SButton  showFolderIcons;
 	SButton  showExecutableIcons;
+	SButton  showLinkIcons;
 
 	StaticLine showSpacesStatic;
 	SButton  showSpacesNoneButton;
@@ -1478,6 +1481,7 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
  , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the &root folder" ) ).data(), 0, g_WcmConfig.panelShowDotsInRoot )
  , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, g_WcmConfig.panelShowFolderIcons )
  , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, g_WcmConfig.panelShowExecutableIcons )
+ , showLinkIcons( 0, this, utf8_to_unicode( _LT( "Show &link icons" ) ).data(), 0, g_WcmConfig.panelShowLinkIcons )
  , showSpacesStatic( 0, this, utf8_to_unicode( _LT( "Show spaces as · in names:" ) ).data() )
  , showSpacesNoneButton( 0, this, utf8_to_unicode( _LT( "No" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode != 1 && g_WcmConfig.panelShowSpacesMode != 2 )
  , showSpacesAllButton( 0, this,  utf8_to_unicode( _LT( "All" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 1 )
@@ -1490,6 +1494,7 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	iL.AddWinAndEnable( &showDotsInRoot, 3, 0 );
 	iL.AddWinAndEnable( &showFolderIcons, 4, 0 );
 	iL.AddWinAndEnable( &showExecutableIcons, 5, 0 );
+	iL.AddWinAndEnable( &showLinkIcons, 6, 0 );
 	iL.AddWinAndEnable( &showSpacesStatic, 7, 0 );
 	iL.AddWinAndEnable( &showSpacesNoneButton, 8, 0 );
 	iL.AddWinAndEnable( &showSpacesAllButton, 9, 0 );
@@ -1506,6 +1511,7 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	order.append( &showDotsInRoot );
 	order.append( &showFolderIcons );
 	order.append( &showExecutableIcons );
+	order.append( &showLinkIcons );
 	order.append( &showSpacesNoneButton );
 	order.append( &showSpacesAllButton );
 	order.append( &showSpacesTrailingButton );
@@ -1524,6 +1530,7 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.panelShowDotsInRoot = dlg.showDotsInRoot.IsSet();
 		g_WcmConfig.panelShowFolderIcons  = dlg.showFolderIcons.IsSet();
 		g_WcmConfig.panelShowExecutableIcons  = dlg.showExecutableIcons.IsSet();
+		g_WcmConfig.panelShowLinkIcons  = dlg.showLinkIcons.IsSet();
 		if ( dlg.showSpacesTrailingButton.IsSet() )
 		{
 			g_WcmConfig.panelShowSpacesMode = ePanelSpacesMode_Trailing;
@@ -2130,21 +2137,22 @@ static bool LangListLoad( sys_char_t* fileName, ccollect<LangListNode>& list )
 
 class SysOptDialog: public NCVertDialog
 {
-	Layout iL;
+	Layout m_iL;
 public:
-	std::vector<char> curLangId;
-	ccollect<LangListNode> list;
+	std::vector<char> m_CurLangId;
+	ccollect<LangListNode> m_List;
 	void SetCurLang( const char* id );
 
-	SButton  askOpenExecButton;
-	SButton  escPanelButton;
-	SButton  backUpDirButton;
-	SButton  autoCompleteButton;
-	SButton  showHostNameButton;
+	SButton  m_AskOpenExecButton;
+	SButton  m_EscPanelButton;
+	SButton  m_BackUpDirButton;
+	SButton  m_AutoCompleteButton;
+	SButton  m_AutoSaveSetupButton;
+	SButton  m_ShowHostNameButton;
 
-	StaticLabel langStatic;
-	StaticLine langVal;
-	Button langButton;
+	StaticLabel m_LangStatic;
+	StaticLine m_LangVal;
+	Button m_LangButton;
 
 	SysOptDialog( NCDialogParent* parent );
 	virtual bool Command( int id, int subId, Win* win, void* data );
@@ -2154,83 +2162,85 @@ public:
 
 void SysOptDialog::SetCurLang( const char* id )
 {
-	curLangId = new_char_str( id );
+	m_CurLangId = new_char_str( id );
 
 	if ( id[0] == '-' )
 	{
-		langVal.SetText( utf8_to_unicode( _LT( "English" ) ).data() );
+		m_LangVal.SetText( utf8_to_unicode( _LT( "English" ) ).data() );
 	}
 	else if ( id[0] == '+' )
 	{
-		langVal.SetText( utf8_to_unicode( _LT( "Autodetect" ) ).data() );
+		m_LangVal.SetText( utf8_to_unicode( _LT( "Autodetect" ) ).data() );
 	}
 	else
 	{
-		for ( int i = 0; i < list.count(); i++ )
+		for ( int i = 0; i < m_List.count(); i++ )
 		{
-			if ( !strcmp( list[i].id.data(), id ) )
+			if ( !strcmp( m_List[i].id.data(), id ) )
 			{
-				langVal.SetText( utf8_to_unicode( list[i].name.data() ).data() );
+				m_LangVal.SetText( utf8_to_unicode( m_List[i].name.data( ) ).data( ) );
 				return;
 			}
 		}
 
-		langVal.SetText( utf8_to_unicode( id ).data() );
+		m_LangVal.SetText( utf8_to_unicode( id ).data( ) );
 	}
 }
 
 SysOptDialog::~SysOptDialog() {}
 
 SysOptDialog::SysOptDialog( NCDialogParent* parent )
-	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "System settings" ) ).data(), bListOkCancel ),
-	   iL( 16, 3 )
-
-	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, g_WcmConfig.systemAskOpenExec )
-	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, g_WcmConfig.systemEscPanel )
-	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, g_WcmConfig.systemBackSpaceUpDir )
-	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, g_WcmConfig.systemAutoComplete )
-	   , showHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, g_WcmConfig.systemShowHostName )
-	   , langStatic(0, this, utf8_to_unicode(_LT("&Language:")).data(), &langButton)
-	   , langVal( 0, this, utf8_to_unicode( "______________________" ).data() )
-	   , langButton( 0, this, utf8_to_unicode( ">" ).data(), 1000 )
+	: NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "System settings" ) ).data(), bListOkCancel )
+	, m_iL( 16, 3 )
+   , m_AskOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, g_WcmConfig.systemAskOpenExec )
+   , m_EscPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, g_WcmConfig.systemEscPanel )
+   , m_BackUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, g_WcmConfig.systemBackSpaceUpDir )
+   , m_AutoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, g_WcmConfig.systemAutoComplete )
+   , m_AutoSaveSetupButton( 0, this, utf8_to_unicode( _LT( "Auto &save setup" ) ).data(), 0, g_WcmConfig.systemAutoSaveSetup )
+   , m_ShowHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, g_WcmConfig.systemShowHostName )
+	, m_LangStatic( 0, this, utf8_to_unicode( _LT( "&Language:" ) ).data( ), &m_LangButton )
+	, m_LangVal( 0, this, utf8_to_unicode( "______________________" ).data( ) )
+	, m_LangButton( 0, this, utf8_to_unicode( ">" ).data( ), 1000 )
 {
 
 #ifndef _WIN32
-	iL.AddWinAndEnable( &askOpenExecButton, 0, 0, 0, 2 );
+	m_iL.AddWinAndEnable( &m_AskOpenExecButton, 0, 0, 0, 2 );
 #endif
-	iL.AddWinAndEnable( &escPanelButton, 1, 0, 1, 2 );
-	iL.AddWinAndEnable( &backUpDirButton, 2, 0, 2, 2 );
-	iL.AddWinAndEnable( &autoCompleteButton, 3, 0, 3, 2 );
-	iL.AddWinAndEnable( &showHostNameButton, 4, 0, 4, 2 );
+	m_iL.AddWinAndEnable( &m_EscPanelButton, 1, 0, 1, 2 );
+	m_iL.AddWinAndEnable( &m_BackUpDirButton, 2, 0, 2, 2 );
+	m_iL.AddWinAndEnable( &m_AutoCompleteButton, 3, 0, 3, 2 );
+	m_iL.AddWinAndEnable( &m_AutoSaveSetupButton, 4, 0, 4, 2 );
+	m_iL.AddWinAndEnable( &m_ShowHostNameButton, 5, 0, 5, 2 );
 
-	iL.AddWinAndEnable( &langStatic,     5, 0 );
-	iL.AddWinAndEnable( &langVal,     5, 2 );
-	iL.AddWinAndEnable( &langButton,     5, 1 );
+	m_iL.AddWinAndEnable( &m_LangStatic, 6, 0 );
+	m_iL.AddWinAndEnable( &m_LangVal, 6, 2 );
+	m_iL.AddWinAndEnable( &m_LangButton, 6, 1 );
 
-	iL.SetColGrowth( 2 );
+	m_iL.SetColGrowth( 2 );
 
-	AddLayout( &iL );
+	AddLayout( &m_iL );
 	SetEnterCmd( CMD_OK );
 
 #ifndef _WIN32
-	askOpenExecButton.SetFocus();
-	order.append( &askOpenExecButton );
+	m_AskOpenExecButton.SetFocus();
+	order.append( &m_AskOpenExecButton );
 #endif
-	order.append( &escPanelButton );
-	order.append( &backUpDirButton );
-	order.append( &autoCompleteButton );
-	order.append( &showHostNameButton );
-	order.append( &langButton );
+	order.append( &m_EscPanelButton );
+	order.append( &m_BackUpDirButton );
+	order.append( &m_AutoCompleteButton );
+	order.append( &m_AutoSaveSetupButton );
+	order.append( &m_ShowHostNameButton );
+	order.append( &m_LangButton );
 
 	SetPosition();
 
 #ifdef _WIN32
-	LangListLoad( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "\\lang\\list" ).data() ).data(), list );
+	LangListLoad( carray_cat<sys_char_t>( GetAppPath( ).data( ), utf8_to_sys( "\\lang\\list" ).data( ) ).data( ), m_List );
 #else
 
-	if ( !LangListLoad( utf8_to_sys( "install-files/share/wcm/lang/list" ).data(), list ) )
+	if ( !LangListLoad( utf8_to_sys( "install-files/share/wcm/lang/list" ).data(), m_List ) )
 	{
-		LangListLoad( utf8_to_sys( UNIX_CONFIG_DIR_PATH "/lang/list" ).data(), list );
+		LangListLoad( utf8_to_sys( UNIX_CONFIG_DIR_PATH "/lang/list" ).data(), m_List );
 	}
 
 #endif
@@ -2242,7 +2252,7 @@ bool SysOptDialog::Command( int id, int subId, Win* win, void* data )
 {
 	if ( id == 1000 )
 	{
-		CfgLangDialog dlg( ( NCDialogParent* )Parent(), curLangId.data(), &list );
+		CfgLangDialog dlg( ( NCDialogParent* )Parent(), m_CurLangId.data(), &m_List );
 
 		if ( dlg.DoModal() == CMD_OK )
 		{
@@ -2259,7 +2269,7 @@ bool SysOptDialog::EventChildKey( Win* child, cevent_key* pEvent )
 {
 	if ( pEvent->Type() == EV_KEYDOWN )
 	{
-		if ( pEvent->Key() == VK_RETURN && langButton.InFocus() ) //prevent autoenter
+		if ( pEvent->Key() == VK_RETURN && m_LangButton.InFocus() ) //prevent autoenter
 		{
 			return false;
 		}
@@ -2276,17 +2286,18 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		g_WcmConfig.systemAskOpenExec = dlg.askOpenExecButton.IsSet();
-		g_WcmConfig.systemEscPanel = dlg.escPanelButton.IsSet();
-		g_WcmConfig.systemBackSpaceUpDir = dlg.backUpDirButton.IsSet();
-		g_WcmConfig.systemAutoComplete = dlg.autoCompleteButton.IsSet();
-		g_WcmConfig.systemShowHostName = dlg.showHostNameButton.IsSet();
+		g_WcmConfig.systemAskOpenExec = dlg.m_AskOpenExecButton.IsSet();
+		g_WcmConfig.systemEscPanel = dlg.m_EscPanelButton.IsSet( );
+		g_WcmConfig.systemBackSpaceUpDir = dlg.m_BackUpDirButton.IsSet( );
+		g_WcmConfig.systemAutoComplete = dlg.m_AutoCompleteButton.IsSet( );
+		g_WcmConfig.systemAutoSaveSetup = dlg.m_AutoSaveSetupButton.IsSet( );
+		g_WcmConfig.systemShowHostName = dlg.m_ShowHostNameButton.IsSet( );
 		const char* s = g_WcmConfig.systemLang.data();
 
 		if ( !s ) { s = "+"; }
 
-		bool langChanged = strcmp( dlg.curLangId.data(), s ) != 0;
-		g_WcmConfig.systemLang = new_char_str( dlg.curLangId.data() );
+		bool langChanged = strcmp( dlg.m_CurLangId.data( ), s ) != 0;
+		g_WcmConfig.systemLang = new_char_str( dlg.m_CurLangId.data( ) );
 
 		if ( langChanged )
 		{

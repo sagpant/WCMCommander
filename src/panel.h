@@ -149,6 +149,7 @@ public:
 private:
 	static unicode_t dirPrefix[];
 	static unicode_t exePrefix[];
+	static unicode_t linkPrefix[];
 
 	int dirPrefixW;
 	int exePrefixW;
