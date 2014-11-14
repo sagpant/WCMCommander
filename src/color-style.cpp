@@ -76,6 +76,10 @@ static char uiDefaultWcmRules[] =
    "Panel@item:hidden:selected-panel:current-item { color: 0x808080 }"	// foreground color for "hidden" items under cursor - dark gray; RGB(128,128,182)
    "Panel@item:hidden:selected:current-item { color: 0x00FFFF }"		// foreground color for selected "hidden" items under cursor - light yellow
 
+   "Panel@item:link { color: 0x006400 }"									// foreground color for links - dark green
+   "Panel@item:link :selected-panel:current-item { color: 0x006400 }"    	// foreground color for links under cursor - dark green
+   "Panel@item:link:selected:current-item { color: 0x00FFFF }"    		// foreground color for selected links under cursor - light yellow
+
    "Panel@item:bad { color: 0xA0 }"
    "Panel@item:selected { color: 0x00FFFF }"
    "Panel@item:selected-panel:current-item { background: 0x808000 }"	// background color of cursor - dark cyan; RGB(0,128,128)

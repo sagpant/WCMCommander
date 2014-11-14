@@ -790,6 +790,7 @@ bool panelIconsEnabled = true;
 static int uiDir = GetUiID( "dir" );
 static int uiExe = GetUiID( "exe" );
 static int uiBad = GetUiID( "bad" );
+static int uiLink = GetUiID( "link" );
 static int uiSelectedPanel = GetUiID( "selected-panel" );
 static int uiOperState = GetUiID( "oper-state" );
 static int uiHidden = GetUiID( "hidden" );
@@ -889,6 +890,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	bool isBad = p && p->IsBad();
 	bool isSelected = p && p->IsSelected();
 	bool isHidden = p && p->IsHidden();
+	bool isLink = p && p->IsLnk();
 
 	/*
 	PanelItemColors color;
@@ -902,6 +904,8 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	if ( isExe ) { ucl.Set( uiExe, true ); }
 
 	if ( isBad ) { ucl.Set( uiBad, true ); }
+
+	if ( isLink ) { ucl.Set( uiLink, true ); }
 
 	if ( IsSelectedPanel() ) { ucl.Set( uiSelectedPanel, true ); }
 
