@@ -107,6 +107,7 @@ public:
 	bool panelShowDotsInRoot;
 	bool panelShowFolderIcons;
 	bool panelShowExecutableIcons;
+	bool panelShowLinkIcons;
 	ePanelSpacesMode panelShowSpacesMode;
 	int panelModeLeft;
 	int panelModeRight;
