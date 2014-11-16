@@ -687,6 +687,14 @@ namespace wal
 			case XK_KP_End:
 				ks = XK_End;
 				break;
+
+			case XK_KP_Insert:
+				ks = XK_Insert;
+				break;
+
+			case XK_KP_Delete:
+				ks = XK_Delete;
+				break;
 		}
 
 
