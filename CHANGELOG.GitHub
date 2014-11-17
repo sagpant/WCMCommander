@@ -1,6 +1,14 @@
 0.18.1 GitHub Edition
 	Added: speed indicator while copying
+	Added: color and icon (optional) for soft links
+	Added: option to disable setup auto saving
 	Hotkey: Ctrl+L to open info dialog
+	Hotkey: Ctrl+S to select file (same as Ins)
+	Fixed: hotkeys in the drive selection dialog
+	Fixed: up/down in Alt-search
+	Fixed: numpad Ins and numpad Del
+	Development: configs and makefiles moved to the root folder
+	Development: command line option --debug-keyboard to print keypresses
 
 0.18.0 GitHub Edition
 	Added: 'cls' command clears the whole terminal ('clear' still works as expected on Linux/OSX)
