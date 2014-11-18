@@ -394,6 +394,24 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 	}
 }
 
+bool IsRoot()
+{
+#if defined(_WIN32)
+	HANDLE Token = 0;
+	if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &Token))
+	{
+		TOKEN_ELEVATION TokenInfo;
+		TokenInfo.TokenIsElevated = 0;
+		DWORD ReturnLength = 0;
+		GetTokenInformation( Token, TokenElevation, &TokenInfo, sizeof(TokenInfo), &ReturnLength );
+		return TokenInfo.TokenIsElevated > 0;
+	}
+	return false;
+#else
+	return getuid() == 0;
+#endif
+}
+
 NCWin::NCWin()
  : NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect )
  , _lo( 5, 1 )
@@ -570,11 +588,7 @@ NCWin::NCWin()
 
 	m_Edit.SetFocus();
 
-#if defined( _WIN32 )
-	SetName( appName );
-#else
-	SetName( getuid() ? appName : appNameRoot );
-#endif
+	SetName( IsRoot() ? appNameRoot : appName );
 
 	this->AddLayout( &_lo );
 

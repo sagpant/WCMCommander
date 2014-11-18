@@ -32,7 +32,11 @@
 clPtr<wal::GC> defaultGC;
 
 const char* appName = "Wal Commander GitHub Edition";
+#if defined( _WIN32 )
+const char* appNameRoot = "Wal Commander GitHub Edition (Administrator)";
+#else
 const char* appNameRoot = "Wal Commander GitHub Edition (Root)";
+#endif
 
 cfont* ( *OldSysGetFont )( Win* w, int id ) = 0;
 
