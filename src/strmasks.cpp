@@ -134,6 +134,8 @@ std::vector<unicode_t> clMultimaskSplitter::GetNextMask()
 
 bool clMultimaskSplitter::CheckAndFetchAllMasks( const unicode_t* FileName )
 {
+	m_CurrentPos = 0;
+
 	while ( HasNextMask() )
 	{
 		if (
@@ -152,6 +154,8 @@ bool clMultimaskSplitter::CheckAndFetchAllMasks( const unicode_t* FileName )
 
 bool clMultimaskSplitter::CheckAndFetchAllMasks_NoCase( const unicode_t* FileName )
 {
+	m_CurrentPos = 0;
+
 	while ( HasNextMask() )
 	{
 		if ( accmask_nocase_begin( FileName, GetNextMask().data() ) ) return true;
@@ -161,6 +165,8 @@ bool clMultimaskSplitter::CheckAndFetchAllMasks_NoCase( const unicode_t* FileNam
 
 bool clMultimaskSplitter::CheckAndFetchAllMasks_Case( const unicode_t* FileName )
 {
+	m_CurrentPos = 0;
+
 	while ( HasNextMask() )
 	{
 		if ( accmask( FileName, GetNextMask().data() ) ) return true;
