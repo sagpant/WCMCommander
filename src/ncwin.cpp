@@ -3245,11 +3245,32 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				}
 				else
 				{
-					const unicode_t* p = GetCurrentFileName();
+					clPtr<FSList> list = _panel->GetSelectedList();
 
-					if ( p )
+					if (!list.ptr() || list->Count() <= 0)
 					{
-						ct.AppendUnicodeStr( p );
+						// copy a single file name to clipboard
+						const unicode_t* p = GetCurrentFileName();
+
+						if ( p )
+						{
+							ct.AppendUnicodeStr( p );
+							ClipboardSetText( this, ct );
+						}
+					}
+					else
+					{
+						// copy all selected file names
+						std::vector<FSNode*> Names = list->GetArray();
+
+						const unicode_t* NewLine = L"\n";
+
+						for ( size_t i = 0; i != Names.size(); i++ )
+						{
+							ct.AppendUnicodeStr( Names[i]->GetUnicodeName() );
+							ct.AppendUnicodeStr( NewLine );
+						}
+
 						ClipboardSetText( this, ct );
 					}
 				}
