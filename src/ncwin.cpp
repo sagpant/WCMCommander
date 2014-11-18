@@ -404,6 +404,7 @@ bool IsRoot()
 		TokenInfo.TokenIsElevated = 0;
 		DWORD ReturnLength = 0;
 		GetTokenInformation( Token, TokenElevation, &TokenInfo, sizeof(TokenInfo), &ReturnLength );
+		CloseHandle( Token );
 		return TokenInfo.TokenIsElevated > 0;
 	}
 	return false;
