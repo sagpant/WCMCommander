@@ -813,7 +813,7 @@ begin:
 	}
 
 
-	void Shl::Parze( ShlStream* stream, cstrhash<int>& colors )
+	void Shl::Parze( ShlStream* stream, std::unordered_map< std::string, int >& colors )
 	{
 		ShlParzer parzer( stream );
 
@@ -913,16 +913,16 @@ begin:
 							parzer.Syntax( "invalid color name" );
 						}
 
-						int* pColor = colors.exist( parzer.Str() );
+						auto pColor = colors.find( parzer.Str() );
 
-						if ( !pColor )
+						if ( pColor == colors.end() )
 						{
 							parzer.Syntax( "invalid color name" );
 						}
 
 						for ( int i = 0; i < list.count(); i++ )
 						{
-							list[i]->SetColor( *pColor );
+							list[i]->SetColor( pColor->second );
 						}
 
 						parzer.Next();
@@ -1052,14 +1052,15 @@ begin:
 								{
 									parzer.Next();
 									parzer.Skip( '=' );
-									int* pc = colors.exist( parzer.Str() );
 
-									if ( !pc )
+									auto pc = colors.find( parzer.Str() );
+
+									if ( pc == colors.end() )
 									{
 										parzer.Syntax( "color not found" );
 									}
 
-									rule->_color = *pc;
+									rule->_color = pc->second;
 									parzer.Next();
 								}
 								else if ( !strcmp( parzer.Str(), "words" ) || !strcmp( parzer.Str(), "ns_words" ) )
@@ -1078,14 +1079,14 @@ begin:
 											parzer.Syntax( "invalid color" );
 										}
 
-										int* pc = colors.exist( parzer.Str() );
-
-										if ( !pc )
+										auto pc = colors.find( parzer.Str() );
+										
+										if ( pc == colors.end() )
 										{
 											parzer.Syntax( "color not found" );
 										}
 
-										color = *pc;
+										color = pc->second;
 										parzer.Next();
 
 										parzer.Skip( ')' );
@@ -1215,7 +1216,7 @@ begin:
 	{
 	}
 
-	Shl* ShlConf::Get( const char* name, cstrhash<int>& colors )
+	Shl* ShlConf::Get( const char* name, std::unordered_map< std::string, int >& colors )
 	{
 		clPtr<Node>* p = hash.exist( name );
 
@@ -1246,7 +1247,7 @@ begin:
 		}
 	}
 
-	Shl* ShlConf::Get( const unicode_t* path, const unicode_t* firstLine, cstrhash<int>& colors )
+	Shl* ShlConf::Get( const unicode_t* path, const unicode_t* firstLine, std::unordered_map< std::string, int >& colors )
 	{
 		int count = ruleList.count();
 

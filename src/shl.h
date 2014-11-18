@@ -8,6 +8,8 @@
 
 #include <wal.h>
 
+#include <unordered_map>
+
 namespace SHL
 {
 	using namespace wal;
@@ -163,7 +165,7 @@ namespace SHL
 		void SetStartId( StateId id ) { _startState = id; }
 	public:
 		Shl();
-		void Parze( ShlStream* stream, cstrhash<int>& colors );
+		void Parze( ShlStream* stream, std::unordered_map< std::string, int >& colors );
 		StateId GetStartId() const { return _startState; }
 		StateId ScanLine( const unsigned  char* s, const unsigned  char* end, StateId state );
 		StateId ScanLine( const unsigned char* s, char* colors, int count, StateId state );
@@ -211,10 +213,10 @@ namespace SHL
 		cstrhash<clPtr<Node> > hash;
 		ccollect<clPtr<Rule> > ruleList;
 
-		Shl* Get( const char* name, cstrhash<int>& colors );
+		Shl* Get( const char* name, std::unordered_map< std::string, int >& colors );
 	public:
 		ShlConf();
-		Shl* Get( const unicode_t* path, const unicode_t* firstLine, cstrhash<int>& colors );
+		Shl* Get( const unicode_t* path, const unicode_t* firstLine, std::unordered_map< std::string, int >& colors );
 		void Parze( sys_char_t* filePath );
 		~ShlConf();
 	};

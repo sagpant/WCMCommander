@@ -1639,7 +1639,7 @@ void EditWin::EnableShl( bool on )
 			return;
 		}
 
-		cstrhash<int> colors;
+		std::unordered_map< std::string, int > colors;
 		colors["DEF"   ] = COLOR_DEF_ID;
 		colors["KEYWORD"] = COLOR_KEYWORD_ID;
 		colors["COMMENT"] = COLOR_COMMENT_ID;
