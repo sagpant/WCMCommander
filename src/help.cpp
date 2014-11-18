@@ -1319,7 +1319,7 @@ bool HelpFile::LoadFile( sys_char_t* name )
 	try
 	{
 		BFile f;
-		ccollect<char, 1000> collector;
+		std::vector<char> collector;
 //printf("file-'%s'\n", name);
 		f.Open( name );
 
@@ -1337,24 +1337,24 @@ bool HelpFile::LoadFile( sys_char_t* name )
 
 				while ( IsSpaceChar( *s ) ) { s++; }
 
-				ccollect<char> str;
+				std::vector<char> str;
 
-				while ( *s && *s != ']' && !IsSpaceChar( *s ) ) { str.append( *s ); s++; }
+				while ( *s && *s != ']' && !IsSpaceChar( *s ) ) { str.push_back( *s ); s++; }
 
 				while ( IsSpaceChar( *s ) ) { s++; }
 
-				if ( *s == ']' && str.count() > 0 ) //ok
+				if ( *s == ']' && str.size() > 0 ) //ok
 				{
 
-					str.append( 0 );
+					str.push_back( 0 );
 
 					if ( thName.data() )
 					{
-						collector.append( 0 );
-						hash[thName.data()] = collector.grab();
+						collector.push_back( 0 );
+						hash[ thName.data() ] = collector;
 					}
 
-					thName = str.grab();
+					thName = str;
 					continue;
 				}
 			}
@@ -1362,15 +1362,16 @@ bool HelpFile::LoadFile( sys_char_t* name )
 			if ( thName.data() )
 			{
 				int n = strlen( buf );
-				collector.append_list( buf, n );
+
+				std::copy( buf, buf+n, std::back_inserter(collector) );
 			}
 
 		}
 
 		if ( thName.data() )
 		{
-			collector.append( 0 );
-			hash[thName.data()] = collector.grab();
+			collector.push_back( 0 );
+			hash[ thName.data() ] = collector;
 		}
 
 		f.Close();

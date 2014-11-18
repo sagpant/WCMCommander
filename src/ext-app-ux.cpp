@@ -1172,7 +1172,7 @@ static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const
 {
 	if ( !exec || !uri ) { return std::vector<unicode_t>(); }
 
-	ccollect<unicode_t, 0x100> cmd;
+	std::vector<unicode_t> cmd;
 
 	const unicode_t* s = exec;
 
@@ -1181,7 +1181,7 @@ static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const
 
 	while ( *s )
 	{
-		for ( ; *s && *s != '%'; s++ ) { cmd.append( *s ); }
+		for ( ; *s && *s != '%'; s++ ) { cmd.push_back( *s ); }
 
 		if ( *s )
 		{
@@ -1192,11 +1192,11 @@ static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const
 				case 'u':
 				case 'U':
 				{
-					cmd.append( '"' );
+					cmd.push_back( '"' );
 
-					for ( const unicode_t* t = uri; *t; t++ ) { cmd.append( *t ); }
+					for ( const unicode_t* t = uri; *t; t++ ) { cmd.push_back( *t ); }
 
-					cmd.append( '"' );
+					cmd.push_back( '"' );
 					uriInserted++;
 				}
 
@@ -1204,7 +1204,7 @@ static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const
 				break;
 
 				default:
-					cmd.append( '%' );
+					cmd.push_back( '%' );
 					s++;
 			};
 		}
@@ -1212,16 +1212,16 @@ static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const
 
 	if ( !uriInserted ) //все равно добавим
 	{
-		cmd.append( ' ' );
-		cmd.append( '"' );
+		cmd.push_back( ' ' );
+		cmd.push_back( '"' );
 
-		for ( const unicode_t* t = uri; *t; t++ ) { cmd.append( *t ); }
+		for ( const unicode_t* t = uri; *t; t++ ) { cmd.push_back( *t ); }
 
-		cmd.append( '"' );
+		cmd.push_back( '"' );
 	}
 
-	cmd.append( 0 );
-	return cmd.grab();
+	cmd.push_back( 0 );
+	return cmd;
 }
 
 

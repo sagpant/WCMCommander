@@ -181,18 +181,18 @@ static void WritePipeStr( int fd, const char* s )
 
 static std::vector<char> ReadPipeStr( int fd )
 {
-	ccollect<char, 0x100> p;
+	std::vector<char> p;
 	char c;
 
 	while ( true )
 	{
 		c = ReadPipeChar( fd );
-		p.append( c );
+		p.push_back( c );
 
 		if ( !c ) { break; }
 	}
 
-	return p.grab();
+	return p;
 }
 
 static bool ReadCmd( int fd, int* pCmd, ccollect<std::vector<char> >& params )

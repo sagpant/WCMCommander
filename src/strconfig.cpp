@@ -75,7 +75,7 @@ bool StrConfig::Load( const char* s )
 
 		if ( *s == '\'' || *s == '"' ) { c1 = *s; s++; }
 
-		ccollect<char, 0x100> value;
+		std::vector<char> value;
 
 		while ( *s )
 		{
@@ -87,20 +87,20 @@ bool StrConfig::Load( const char* s )
 
 				if ( !*s ) { break; }
 
-				value.append( *s );
+				value.push_back( *s );
 				s++;
 				continue;
 			}
 
 			if ( !c1 && ( IsSpace( *s ) || *s == ';' ) ) { break; }
 
-			value.append( *s );
+			value.push_back( *s );
 			s++;
 		}
 
 		//if (c1 && *s !=c1) return false;
-		value.append( 0 );
-		varHash[var.ptr()] = value.grab();
+		value.push_back( 0 );
+		varHash[ var.ptr() ] = value;
 	}
 
 	return true;
@@ -108,7 +108,7 @@ bool StrConfig::Load( const char* s )
 
 std::vector<char> StrConfig::GetConfig()
 {
-	ccollect<char, 0x100> res;
+	std::vector<char> res;
 	std::vector<const char*> k = varHash.keys();
 	int count = varHash.count();
 
@@ -116,9 +116,9 @@ std::vector<char> StrConfig::GetConfig()
 	{
 		const char* s = k[i];
 
-		for ( ; *s; s++ ) { res.append( *s ); }
+		for ( ; *s; s++ ) { res.push_back( *s ); }
 
-		res.append( '=' );
+		res.push_back( '=' );
 		s = varHash[k[i]].data();
 
 		if ( s )
@@ -134,31 +134,31 @@ std::vector<char> StrConfig::GetConfig()
 
 			if ( simple )
 			{
-				for ( ; *s; s++ ) { res.append( *s ); }
+				for ( ; *s; s++ ) { res.push_back( *s ); }
 			}
 			else
 			{
-				res.append( '"' );
+				res.push_back('"');
 
 				for ( ; *s; s++ )
 				{
 					if ( *s == '\'' || *s == '"' || *s == '\\' )
 					{
-						res.append( '\\' );
+						res.push_back('\\');
 					}
 
-					res.append( *s );
+					res.push_back(*s);
 				}
 
-				res.append( '"' );
+				res.push_back('"');
 			}
 		}
 
-		res.append( ';' );
+		res.push_back(';');
 	}
 
-	res.append( 0 );
-	return res.grab();
+	res.push_back(0);
+	return res;
 }
 
 void StrConfig::Set( const char* name, const char* value )
