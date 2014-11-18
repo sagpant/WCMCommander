@@ -115,7 +115,7 @@ public:
 			}
 
 			char buf[0x100];
-			sprintf( buf, "%s (%i)", pt, int( si.dwNumberOfProcessors ) );
+			Lsnprintf( buf, sizeof(buf), "%s (%i)", pt, int(si.dwNumberOfProcessors) );
 			PutValue( _LT( "Processor:" ), buf );
 		}
 
