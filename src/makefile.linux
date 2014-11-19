@@ -4,6 +4,11 @@ INSTALL_TREE = cp -R
 BIN_DIR=$(DESTDIR)/usr/bin
 TARGET_DIR=$(DESTDIR)/usr/
 
+ifneq ($(INSTALL_TO),)
+BIN_DIR=$(INSTALL_TO)
+TARGET_DIR=$(INSTALL_TO)
+endif
+
 WCM_VERSION=$(shell ./get_wcm_version.sh)
 
 CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -Wall -Wextra -Wno-unknown-pragmas -Wno-unused-parameter -Wno-sign-compare -Wno-unused-variable -I wal -I swl $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
