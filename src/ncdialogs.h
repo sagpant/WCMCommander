@@ -130,27 +130,26 @@ public:
 	CmdHistoryDialog( int nId, NCDialogParent* parent, NCHistory& history );
 	const unicode_t* Get() { return _list.GetCurrentString(); }
 	virtual bool Command( int id, int subId, Win* win, void* data );
-	virtual ~CmdHistoryDialog();
 };
 
-class DlgMenuData
+class clSelectDriveMenuData
 {
-	friend class DlgMenu;
+	friend class clSelectDriveDlgMenu;
 	struct Node
 	{
 		std::vector<unicode_t> name;
-		std::vector<unicode_t> comment;
+		std::vector<unicode_t> comment1;
+		std::vector<unicode_t> comment2;
 		int cmd;
 	};
 	ccollect<Node> list;
 public:
-	DlgMenuData();
+	clSelectDriveMenuData() {};
 	int Count() const { return list.count(); }
-	void Add( const unicode_t* name, const unicode_t* coment, int cmd );
-	void Add( const char* utf8name, const char* utf8coment, int cmd );
+	void Add( const unicode_t* name, const unicode_t* comment1, const unicode_t* comment2, int cmd );
+	void Add( const char* utf8name, const char* utf8coment1, const char* utf8coment2, int cmd );
 	void AddSplitter();
-	~DlgMenuData();
 };
 
 
-int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, DlgMenuData* d );
+int RunSelectDriveDldMenu( int nUi, NCDialogParent* parent, const char* header, clSelectDriveMenuData* d );

@@ -1158,11 +1158,11 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	ccollect< MntListNode > mntList;
 	UxMntList( &mntList );
 #endif
-	DlgMenuData mData;
+	clSelectDriveMenuData mData;
 
 	FSString OtherPanelPath = OtherPanel->UriOfDir();
 
-	mData.Add( OtherPanelPath.GetUnicode(), 0, ID_DEV_OTHER_PANEL );
+	mData.Add( OtherPanelPath.GetUnicode(), nullptr, nullptr, ID_DEV_OTHER_PANEL );
 	mData.AddSplitter();
 
 #ifdef _WIN32
@@ -1183,7 +1183,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 	if ( homeUri.data() )
 	{
-		mData.Add( _LT( "Home" ), 0, ID_DEV_HOME );
+		mData.Add( _LT( "Home" ), nullptr, nullptr, ID_DEV_HOME );
 	}
 
 	DWORD drv = GetLogicalDrives();
@@ -1196,6 +1196,9 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			UINT driveType = GetDriveType( buf );
 			const char* typeStr = "";
 
+			char VolumeName[1024] = { 0 };
+			char FileSystemName[1024] = { 0 };
+
 			switch ( driveType )
 			{
 				case DRIVE_REMOVABLE:
@@ -1204,6 +1207,11 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 				case DRIVE_FIXED:
 					typeStr = "fixed";
+					{
+						char RootPath[0x100];
+						Lsnprintf( RootPath, sizeof(RootPath), "%c:\\", i + 'A');
+						GetVolumeInformation( RootPath, VolumeName, sizeof(VolumeName), nullptr, nullptr, nullptr, FileSystemName, sizeof(FileSystemName) );
+					}
 					break;
 
 				case DRIVE_REMOTE:
@@ -1219,20 +1227,20 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 					break;
 			}
 
-			mData.Add( buf, typeStr, ID_DEV_MS0 + i );
+			mData.Add( buf, typeStr, VolumeName, ID_DEV_MS0 + i );
 		}
 
 	mData.AddSplitter();
-	mData.Add( "1. NETWORK", 0, ID_DEV_SMB );
-	mData.Add( "2. FTP", 0, ID_DEV_FTP );
+	mData.Add( "1. NETWORK", nullptr, nullptr, ID_DEV_SMB );
+	mData.Add( "2. FTP", nullptr, nullptr, ID_DEV_FTP );
 #else
-	mData.Add( "1. /", 0,  ID_DEV_ROOT );
-	mData.Add( _LT( "2. Home" ), 0, ID_DEV_HOME );
-	mData.Add( "3. FTP", 0, ID_DEV_FTP );
+	mData.Add( "1. /", nullptr, nullptr,  ID_DEV_ROOT );
+	mData.Add( _LT( "2. Home" ), nullptr, nullptr, ID_DEV_HOME );
+	mData.Add( "3. FTP", nullptr, nullptr, ID_DEV_FTP );
 
 #ifdef LIBSMBCLIENT_EXIST
-	mData.Add( "4. Smb network", 0, ID_DEV_SMB );
-	mData.Add( "5. Smb server", 0, ID_DEV_SMB_SERVER );
+	mData.Add( "4. Smb network", nullptr, nullptr, ID_DEV_SMB );
+	mData.Add( "5. Smb server", nullptr, nullptr, ID_DEV_SMB_SERVER );
 #else
 
 #endif // LIBSMBCLIENT_EXIST
@@ -1240,7 +1248,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 #endif // _WIN32
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
-	mData.Add( "6. SFTP", 0, ID_DEV_SFTP );
+	mData.Add( "6. SFTP", nullptr, nullptr, ID_DEV_SFTP );
 #endif
 
 #ifndef _WIN32  //unix mounts
@@ -1284,12 +1292,12 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			char buf[64];
 			snprintf( buf, sizeof( buf ), "%i ", i + 1 );
 
-			mData.Add( carray_cat<unicode_t>( utf8_to_unicode( buf ).data(), un.data() ).data(), ut.data(), ID_MNT_UX0 + i );
+			mData.Add( carray_cat<unicode_t>( utf8_to_unicode( buf ).data(), un.data() ).data(), ut.data(), nullptr, ID_MNT_UX0 + i );
 		}
 	}
 #endif
 
-	int res = RunDldMenu( uiDriveDlg, p, "Drive", &mData );
+	int res = RunSelectDriveDldMenu( uiDriveDlg, p, "Drive", &mData );
 	m_Edit.SetFocus();
 
 	if ( res == ID_DEV_OTHER_PANEL )
