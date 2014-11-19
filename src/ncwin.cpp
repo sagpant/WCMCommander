@@ -1150,6 +1150,33 @@ void NCWin::StartExecute( const unicode_t* cmd, FS* fs,  FSPath& path )
 
 static int uiDriveDlg = GetUiID( "drive-dlg" );
 
+#if defined( _WIN32 )
+std::string GetVolumeName( int i )
+{
+	char VolumeName[1024] = { 0 };
+
+	char RootPath[0x100];
+	Lsnprintf( RootPath, sizeof(RootPath), "%c:\\", i + 'A' );
+	GetVolumeInformation( RootPath, VolumeName, sizeof(VolumeName), nullptr, nullptr, nullptr, nullptr, 0 );
+
+	return std::string( VolumeName );
+}
+
+std::string GetDriveTypeString( unsigned int Type )
+{
+	switch ( Type )
+	{
+	case DRIVE_REMOVABLE: return "removable";
+	case DRIVE_FIXED: return "fixed";
+	case DRIVE_REMOTE: return "remote";
+	case DRIVE_CDROM: return "CDROM";
+	case DRIVE_RAMDISK: return "RAM disk";
+	}
+
+	return std::string();
+}
+#endif
+
 void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 {
 	if ( _mode != PANEL ) { return; }
@@ -1189,46 +1216,21 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	DWORD drv = GetLogicalDrives();
 
 	for ( int i = 0, mask = 1; i < 'z' - 'a' + 1; i++, mask <<= 1 )
+	{
 		if ( drv & mask )
 		{
 			char buf[0x100];
 			Lsnprintf( buf, sizeof( buf ), "%c:", i + 'A' );
 			UINT driveType = GetDriveType( buf );
-			const char* typeStr = "";
 
-			char VolumeName[1024] = { 0 };
-			char FileSystemName[1024] = { 0 };
+			bool ShouldReadVolumeName = ( driveType == DRIVE_FIXED || driveType == DRIVE_RAMDISK );
+			
+			std::string DriveTypeStr = GetDriveTypeString( driveType );
+			std::string VolumeName = ShouldReadVolumeName ? GetVolumeName( i ) : std::string();
 
-			switch ( driveType )
-			{
-				case DRIVE_REMOVABLE:
-					typeStr = "removable";
-					break;
-
-				case DRIVE_FIXED:
-					typeStr = "fixed";
-					{
-						char RootPath[0x100];
-						Lsnprintf( RootPath, sizeof(RootPath), "%c:\\", i + 'A');
-						GetVolumeInformation( RootPath, VolumeName, sizeof(VolumeName), nullptr, nullptr, nullptr, FileSystemName, sizeof(FileSystemName) );
-					}
-					break;
-
-				case DRIVE_REMOTE:
-					typeStr = "remote";
-					break;
-
-				case DRIVE_CDROM:
-					typeStr = "CDROM";
-					break;
-
-				case DRIVE_RAMDISK:
-					typeStr = "RAM disk";
-					break;
-			}
-
-			mData.Add( buf, typeStr, VolumeName, ID_DEV_MS0 + i );
+			mData.Add( buf, DriveTypeStr.c_str(), VolumeName.c_str(), ID_DEV_MS0 + i );
 		}
+	}
 
 	mData.AddSplitter();
 	mData.Add( "1. NETWORK", nullptr, nullptr, ID_DEV_SMB );
