@@ -1,10 +1,11 @@
 INSTALL_DIR = install -d
 INSTALL_PROGRAM = install -c -m 755
 INSTALL_TREE = cp -R
+
+ifeq ($(INSTALL_TO),)
 BIN_DIR=$(DESTDIR)/usr/bin
 TARGET_DIR=$(DESTDIR)/usr/
-
-ifneq ($(INSTALL_TO),)
+else
 BIN_DIR=$(INSTALL_TO)
 TARGET_DIR=$(INSTALL_TO)
 endif
