@@ -302,6 +302,7 @@ private:
 	void CtrlL();
 	void HistoryDialog();
 	void SelectDrive( PanelWin* p, PanelWin* OtherPanel );
+	void SelectSortMode( PanelWin* p );
 	void SaveSetupDialog();
 	void SaveSetup();
 	void Search();

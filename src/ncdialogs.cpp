@@ -726,7 +726,7 @@ NCDialogParent::~NCDialogParent() {}
 
 ////////////////////////////////////////////  DlgMenu
 
-void clSelectDriveMenuData::Add( const unicode_t* name, const unicode_t* comment1, const unicode_t* comment2, int cmd )
+void clMenuData::Add( const unicode_t* name, const unicode_t* comment1, const unicode_t* comment2, int cmd, int icon )
 {
 	Node node;
 
@@ -736,20 +736,22 @@ void clSelectDriveMenuData::Add( const unicode_t* name, const unicode_t* comment
 	if ( comment2 ) { node.comment2 = new_unicode_str( comment2 ); }
 
 	node.cmd = cmd;
+	node.icon = icon;
 
 	list.append( node );
 }
 
-void clSelectDriveMenuData::Add( const char* utf8name, const char* utf8coment1, const char* utf8coment2, int cmd )
+void clMenuData::Add( const char* utf8name, const char* utf8coment1, const char* utf8coment2, int cmd, int icon )
 {
 	Add( utf8name ? utf8_to_unicode( utf8name ).data() : 0,
 		 utf8coment1 ? utf8_to_unicode( utf8coment1 ).data() : 0,
 		 utf8coment2 ? utf8_to_unicode( utf8coment2 ).data() : 0,
-		 cmd
+		 cmd,
+		 icon
 	);
 }
 
-void clSelectDriveMenuData::AddSplitter()
+void clMenuData::AddSplitter()
 {
 	Node node;
 	node.cmd = 0;
@@ -758,7 +760,7 @@ void clSelectDriveMenuData::AddSplitter()
 
 class clSelectDriveDlgMenu: public Win
 {
-	clSelectDriveMenuData* _data;
+	clMenuData* _data;
 	int _current;
 	int _itemH;
 	int _width;
@@ -766,7 +768,7 @@ class clSelectDriveDlgMenu: public Win
 	int _splitterH;
 	int _splitterW;
 public:
-	clSelectDriveDlgMenu( Win* parent, clSelectDriveMenuData* data );
+	clSelectDriveDlgMenu( Win* parent, clMenuData* data );
 
 	void SetCurrent( int n, bool searchUp );
 
@@ -814,7 +816,7 @@ bool clSelectDriveDlgMenu::EventShow( bool show )
 }
 
 
-clSelectDriveDlgMenu::clSelectDriveDlgMenu( Win* parent, clSelectDriveMenuData* data )
+clSelectDriveDlgMenu::clSelectDriveDlgMenu( Win* parent, clMenuData* data )
  : Win( Win::WT_CHILD, Win::WH_TABFOCUS | Win::WH_CLICKFOCUS, parent )
  , _data( data )
  , _current( 0 )
@@ -1079,7 +1081,14 @@ void clSelectDriveDlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 			gc.FillRect( crect( 0, y, _width, y + _itemH ) );
 
 			cicon icon;
-			icon.Load( _data->list[i].cmd, 16, 16 );
+			if ( _data->list[i].icon >= 0 )
+			{
+				icon.Load( _data->list[i].icon, 16, 16 );
+			}
+			else
+			{
+				icon.Load( _data->list[i].cmd, 16, 16 );
+			}
 			gc.DrawIcon( 0, y, &icon );
 			gc.SetTextColor( textColor );
 			int x = 16 + 5;
@@ -1119,7 +1128,7 @@ void clSelectDriveDlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 	}
 }
 
-int RunSelectDriveDldMenu( int nUi, NCDialogParent* parent, const char* header, clSelectDriveMenuData* data )
+int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, clMenuData* data )
 {
 	if ( !data || data->Count() <= 0 ) { return CMD_CANCEL; }
 

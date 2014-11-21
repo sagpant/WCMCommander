@@ -132,7 +132,7 @@ public:
 	virtual bool Command( int id, int subId, Win* win, void* data );
 };
 
-class clSelectDriveMenuData
+class clMenuData
 {
 	friend class clSelectDriveDlgMenu;
 	struct Node
@@ -141,15 +141,16 @@ class clSelectDriveMenuData
 		std::vector<unicode_t> comment1;
 		std::vector<unicode_t> comment2;
 		int cmd;
+		int icon;
 	};
 	ccollect<Node> list;
 public:
-	clSelectDriveMenuData() {};
+	clMenuData() {};
 	int Count() const { return list.count(); }
-	void Add( const unicode_t* name, const unicode_t* comment1, const unicode_t* comment2, int cmd );
-	void Add( const char* utf8name, const char* utf8coment1, const char* utf8coment2, int cmd );
+	void Add( const unicode_t* name, const unicode_t* comment1, const unicode_t* comment2, int cmd, int icon = -1 );
+	void Add( const char* utf8name, const char* utf8coment1, const char* utf8coment2, int cmd, int icon = -1 );
 	void AddSplitter();
 };
 
 
-int RunSelectDriveDldMenu( int nUi, NCDialogParent* parent, const char* header, clSelectDriveMenuData* d );
+int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, clMenuData* d );

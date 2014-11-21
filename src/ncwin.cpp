@@ -1185,7 +1185,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	ccollect< MntListNode > mntList;
 	UxMntList( &mntList );
 #endif
-	clSelectDriveMenuData mData;
+	clMenuData mData;
 
 	FSString OtherPanelPath = OtherPanel->UriOfDir();
 
@@ -1299,7 +1299,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	}
 #endif
 
-	int res = RunSelectDriveDldMenu( uiDriveDlg, p, "Drive", &mData );
+	int res = RunDldMenu( uiDriveDlg, p, "Drive", &mData );
 	m_Edit.SetFocus();
 
 	if ( res == ID_DEV_OTHER_PANEL )
@@ -1469,6 +1469,49 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 
 	};
+}
+
+void NCWin::SelectSortMode( PanelWin* p )
+{
+	if ( _mode != PANEL ) { return; }
+
+	clMenuData mData;
+	
+	PanelList::SORT_MODE Mode = p->GetSortMode();
+	bool IsAscending = p->IsAscendingSort();
+
+	const int CHECKED_ICON_ID = IsAscending ? ID_REDO : ID_UNDO;
+
+	mData.Add( _LT("Name"), nullptr, nullptr, ID_SORT_BY_NAME_R, Mode == PanelList::SORT_NAME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT("Extension"), nullptr, nullptr, ID_SORT_BY_EXT_R, Mode == PanelList::SORT_EXT ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT("Modification time"), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT("Size"), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT("Unsorted"), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
+	//mData.AddSplitter();
+
+	int res = RunDldMenu( uiDriveDlg, p, "Sort by", &mData );
+	m_Edit.SetFocus();
+
+	switch ( res )
+	{
+	case ID_SORT_BY_NAME_R:
+		p->SortByName();
+		break;
+	case ID_SORT_BY_EXT_R:
+		p->SortByExt();
+		break;
+	case ID_SORT_BY_MODIF_R:
+		p->SortByMTime();
+		break;
+	case ID_SORT_BY_SIZE_R:
+		p->SortBySize();
+		break;
+	case ID_UNSORT_R:
+		p->DisableSort();
+		break;
+	default:
+		break;
+	}
 }
 
 void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
@@ -3157,6 +3200,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				case FC( VK_F2, KM_SHIFT ):
 				case FC( VK_F2, KM_ALT ):
 					SelectDrive( &_rightPanel, &_leftPanel );
+					return true;
+
+				case FC( VK_F12, KM_CTRL ):
+					SelectSortMode( _panel );
 					return true;
 
 				case FC( VK_F7, KM_SHIFT ):
