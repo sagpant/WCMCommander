@@ -1473,6 +1473,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 void NCWin::SelectSortMode( PanelWin* p )
 {
+	if ( !p ) { return; }
 	if ( _mode != PANEL ) { return; }
 
 	clMenuData mData;
