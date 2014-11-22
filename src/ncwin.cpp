@@ -58,7 +58,7 @@ std::map<std::vector<unicode_t>, int> g_ViewPosHash;
 
 const int CMD_SWITCH = 32167;
 
-static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {0, 0}};
+static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {nullptr, 0}};
 
 ButtonWinData panelNormalButtons[] =
 {
@@ -72,7 +72,7 @@ ButtonWinData panelNormalButtons[] =
 	{"Delete", ID_DELETE},
 	{"Menu", ID_MENU},
 	{"Quit", ID_QUIT},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData panelControlButtons[] =
@@ -87,7 +87,7 @@ ButtonWinData panelControlButtons[] =
 	{"", 0},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData panelAltButtons[] =
@@ -102,7 +102,7 @@ ButtonWinData panelAltButtons[] =
 	{"History", ID_HISTORY},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData panelShiftButtons[] =
@@ -118,7 +118,7 @@ ButtonWinData panelShiftButtons[] =
 	{"Save", ID_CONFIG_SAVE},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 
@@ -134,7 +134,7 @@ ButtonWinData editNormalButtons[] =
 	{"Charset", ID_CHARSET},
 	{"", 0},
 	{"Exit", ID_QUIT},
-	{0, 0}
+	{nullptr, 0}
 };
 
 
@@ -150,7 +150,7 @@ ButtonWinData editShiftButtons[] =
 	{"Table", ID_CHARSET_TABLE},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData editCtrlButtons[] =
@@ -165,7 +165,7 @@ ButtonWinData editCtrlButtons[] =
 	{"", 0},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 
@@ -181,7 +181,7 @@ ButtonWinData viewNormalButtons[] =
 	{"Charset", ID_CHARSET},
 	{"", 0},
 	{"Exit", ID_QUIT},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData viewShiftButtons[] =
@@ -196,7 +196,7 @@ ButtonWinData viewShiftButtons[] =
 	{"Table", ID_CHARSET_TABLE},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 static const int CMD_OPEN_FILE = 1000;

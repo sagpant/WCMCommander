@@ -35,7 +35,7 @@
 int uiPanelSearchWin = GetUiID( "PanelSearchWin" );
 
 PanelSearchWin::PanelSearchWin( PanelWin* parent, cevent_key* key )
-	:  Win( Win::WT_CHILD, 0, parent, 0, uiPanelSearchWin ),
+	:  Win( Win::WT_CHILD, 0, parent, nullptr, uiPanelSearchWin ),
 	   _parent( parent ),
 	   _edit( 0, this, 0, 0, 16, true ),
 	   _static( 0, this, utf8_to_unicode( _LT( "Search:" ) ).data() ),
