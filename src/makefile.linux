@@ -111,6 +111,7 @@ OBJS = \
 	$(OBJDIR)/termwin.o \
 	$(OBJDIR)/toolbar.o \
 	$(OBJDIR)/unicode_lc.o \
+	$(OBJDIR)/usermenu.o \
 	$(OBJDIR)/ux_util.o\
 	$(OBJDIR)/vfs-ftp.o \
 	$(OBJDIR)/vfs-sftp2.o \
@@ -269,6 +270,9 @@ $(OBJDIR)/nchistory.o: $(HW) $(HS) $(HN) src/nchistory.cpp
 		
 $(OBJDIR)/unicode_lc.o: $(HW) $(HS) $(HN) src/unicode_lc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/unicode_lc.cpp -o $(OBJDIR)/unicode_lc.o
+
+$(OBJDIR)/usermenu.o: $(HW) $(HS) $(HN) src/usermenu.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/usermenu.cpp -o $(OBJDIR)/usermenu.o
 
 $(OBJDIR)/fileopers.o: $(HW) $(HS) $(HN) src/fileopers.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/fileopers.cpp -o $(OBJDIR)/fileopers.o

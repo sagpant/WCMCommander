@@ -233,6 +233,7 @@
     <ClCompile Include="src/termwin.cpp" />
     <ClCompile Include="src/toolbar.cpp" />
     <ClCompile Include="src/unicode_lc.cpp" />
+    <ClCompile Include="src/usermenu.cpp" />
     <ClCompile Include="src/vfs-ftp.cpp" />
     <ClCompile Include="src/vfs-sftp.cpp" />
     <ClCompile Include="src/vfs-sftp2.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="src/terminal.h" />
     <ClInclude Include="src/termwin.h" />
     <ClInclude Include="src/toolbar.h" />
+    <ClInclude Include="src/usermenu.h" />
     <ClInclude Include="src/vfs-ftp.h" />
     <ClInclude Include="src/vfs-sftp.h" />
     <ClInclude Include="src/vfs-smb.h" />
