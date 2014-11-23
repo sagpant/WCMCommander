@@ -645,6 +645,7 @@ const char* sectionFonts = "fonts";
 
 static const char* CommandsHistorySection = "CommandsHistory";
 static const char* FilesAssociationsSection = "FilesAssociations";
+static const char* UserMenuSection = "UserMenu";
 
 clWcmConfig::clWcmConfig()
  : systemAskOpenExec( true )
@@ -958,6 +959,75 @@ void LoadFilesAssociations( NCWin* nc
 	nc->SetFileAssociations( Assoc );
 }
 
+void SaveUserMenu( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigWriter Cfg;
+#else
+	clConfigWriter Cfg( hash );
+#endif
+	Cfg.SetSectionName( UserMenuSection );
+
+	const std::vector<clNCUserMenuItem>& Items = nc->GetUserMenuItems();
+
+	for ( size_t i = 0; i < Items.size(); i++ )
+	{
+		const clNCUserMenuItem& A = Items[i];
+
+		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
+		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetCommand().data() );
+
+		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
+		Cfg.Write( "Execute%i", i, Execute_utf8.data( ) );
+	}
+
+	// end marker
+	Cfg.Write( "Mask%i", Items.size(), "" );
+}
+
+void LoadUserMenu( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigReader Cfg;
+#else
+	clConfigReader Cfg( hash );
+#endif
+	Cfg.SetSectionName( UserMenuSection );
+
+	int i = 0;
+
+	std::vector<clNCUserMenuItem> Items;
+
+	while (true)
+	{
+		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
+		std::vector<unicode_t> Execute = Cfg.Read( "Execute%i", i );
+
+		if ( !Description.data() || !*Execute.data() ) break;
+
+		clNCUserMenuItem A;
+		A.SetDescription( Description );
+		A.SetCommand( Execute );
+		Items.push_back( A );
+
+		i++;
+	}
+
+	nc->SetUserMenuItems( Items );
+}
+
 void SaveCommandsHistory( NCWin* nc
 #ifndef _WIN32
 , IniHash& hash
@@ -1105,6 +1175,7 @@ void clWcmConfig::Load( NCWin* nc )
 
 	LoadCommandsHistory( nc );
 	LoadFilesAssociations( nc );
+	LoadUserMenu( nc );
 
 #else
 	IniHash hash;
@@ -1144,6 +1215,7 @@ void clWcmConfig::Load( NCWin* nc )
 
 	LoadCommandsHistory( nc, hash );
 	LoadFilesAssociations( nc, hash );
+	LoadUserMenu( nc, hash );
 
 #endif
 
@@ -1228,6 +1300,7 @@ void clWcmConfig::Save( NCWin* nc )
 
 	SaveCommandsHistory( nc );
 	SaveFileAssociations( nc );
+	SaveUserMenu( nc );
 
 #else
 	IniHash hash;
@@ -1255,6 +1328,7 @@ void clWcmConfig::Save( NCWin* nc )
 
 	SaveCommandsHistory( nc, hash );
 	SaveFileAssociations( nc, hash );
+	SaveUserMenu( nc, hash );
 
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
 #endif

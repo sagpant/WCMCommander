@@ -45,6 +45,7 @@
 #include "ltext.h"
 #include "strmasks.h"
 #include "dlg-ctrl-l.h"
+#include "usermenu.h"
 
 #ifndef _WIN32
 #  include "ux_util.h"
@@ -1515,6 +1516,30 @@ void NCWin::SelectSortMode( PanelWin* p )
 	}
 }
 
+void NCWin::UserMenu()
+{
+	UserMenuDlg( this, &m_UserMenuItems );
+
+	return;
+
+	clMenuData mData;
+	
+	//PanelList::SORT_MODE Mode = p->GetSortMode();
+	//bool IsAscending = p->IsAscendingSort();
+
+	//const int CHECKED_ICON_ID = IsAscending ? ID_REDO : ID_UNDO;
+
+	mData.Add( _LT("Name"), nullptr, nullptr, ID_SORT_BY_NAME_R );
+	mData.Add( _LT("Extension"), nullptr, nullptr, ID_SORT_BY_EXT_R );
+	//mData.Add( _LT("Modification time"), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
+	//mData.Add( _LT("Size"), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
+	//mData.Add( _LT("Unsorted"), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
+	//mData.AddSplitter();
+
+	int res = RunDldMenu( uiDriveDlg, this, "User menu (F4 edit)", &mData );
+	m_Edit.SetFocus();
+}
+
 void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
 {
 	if ( !cmd.data() ) { return; }
@@ -1534,8 +1559,6 @@ void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList>
 
 		StartExecute( Command.data( ), Panel->GetFS( ), Panel->GetPath( ) );
 	}
-
-	SetMode( PANEL );
 }
 
 void NCWin::ApplyCommand()
@@ -3486,6 +3509,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case VK_F1:
 				Help( this, "main" );
+				break;
+
+			case VK_F2:
+				UserMenu();
 				break;
 
 			case FC( VK_F3, KM_CTRL ):
