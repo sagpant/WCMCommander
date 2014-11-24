@@ -64,7 +64,7 @@ static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_
 ButtonWinData panelNormalButtons[] =
 {
 	{"Help", ID_HELP },
-	{"", 0}, //{"UserMn", ID_USER_MENU},
+	{"UserMn", ID_USER_MENU},
 	{"View", ID_VIEW},
 	{"Edit", ID_EDIT},
 	{"Copy", ID_COPY},
@@ -569,6 +569,7 @@ NCWin::NCWin()
 	_menu.Add( &_mdOptions, utf8_to_unicode( _LT( "&Options" ) ).data() );
 	_menu.Add( &_mdRight, utf8_to_unicode( _LT( "&Right" ) ).data() );
 
+	_mdFiles.AddCmd( ID_USER_MENU, _LT( "&User menu" ), "F2" );
 	_mdFiles.AddCmd( ID_VIEW, _LT( "&View" ),  "F3" );
 	_mdFiles.AddCmd( ID_EDIT, _LT( "&Edit" ),  "F4" );
 	_mdFiles.AddCmd( ID_COPY, _LT( "&Copy" ),  "F5" );
@@ -3863,6 +3864,10 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 		{
 			case ID_HELP:
 				Help( this, "main" );
+				return true;
+
+			case ID_USER_MENU:
+				UserMenu();
 				return true;
 
 			case ID_MKDIR:
