@@ -27,6 +27,7 @@ SOURCES += src/nc.cpp \
     src/charsetdlg.cpp \
     src/color-style.cpp \
     src/dircalc.cpp \
+    src/dlg-ctrl-l.cpp \
     src/globals.cpp \
     src/eloadsave.cpp \
     src/ext-app-ux.cpp \
@@ -66,6 +67,7 @@ SOURCES += src/nc.cpp \
     src/termwin.cpp \
     src/toolbar.cpp \
     src/unicode_lc.cpp \
+    src/usermenu.cpp \
     src/ux_util.cpp \
     src/vfs-ftp.cpp \
     src/vfs-sftp.cpp \
@@ -137,6 +139,7 @@ HEADERS += \
     src/termwin.h \
     src/toolbar.h \
     src/unicode_lc.h \
+    src/usermenu.cpp \
     src/ux_util.h \
     src/vfs-ftp.h \
     src/vfs-sftp.h \
