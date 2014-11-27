@@ -154,10 +154,15 @@ INCLUDEPATH += src/wal
 INCLUDEPATH += /opt/X11/include
 INCLUDEPATH += /usr/local/include
 
-QMAKE_MACOSX_DEPLOYMENT_TARGET=10.9
-QMAKE_CXXFLAGS += -mmacosx-version-min=10.9
-QMAKE_CFLAGS += -mmacosx-version-min=10.9
-QMAKE_LFLAGS += -mmacosx-version-min=10.9
+macx: {
+	QMAKE_MACOSX_DEPLOYMENT_TARGET=10.9
+	QMAKE_CXXFLAGS += -mmacosx-version-min=10.9
+	QMAKE_CFLAGS += -mmacosx-version-min=10.9
+	QMAKE_LFLAGS += -mmacosx-version-min=10.9
+	QMAKE_MAC_SDK = macosx10.9
+	CMAKE_OSX_SYSROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
+	CMAKE_SYSTEM_FRAMEWORK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
+}
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unknown-pragmas
 QMAKE_CXXFLAGS_WARN_ON += -Wno-reorder
@@ -169,7 +174,6 @@ QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-variable
 QMAKE_CXXFLAGS_WARN_ON += -Wno-logical-op-parentheses
 QMAKE_CXXFLAGS_WARN_ON += -Wno-bitwise-op-parentheses
 QMAKE_CFLAGS += -std=c99
-QMAKE_MAC_SDK = macosx10.9
 CONFIG += c++11
 QT += gui
 CFLAGS += -I /opt/X11/include/freetype2 -D USEFREETYPE
@@ -177,5 +181,3 @@ LIBS += -L/usr/local/lib
 LIBS += -L/usr/X11R6/lib
 LIBS += -lX11
 LIBS += -lfreetype
-CMAKE_OSX_SYSROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
-CMAKE_SYSTEM_FRAMEWORK_PATH = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
