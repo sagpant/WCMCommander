@@ -138,6 +138,7 @@ namespace wal
 			{
 				lastMouseSelect = -1;
 				SetSelect( -1 );
+				if (Parent()) { Parent()->Command(CMD_MENU_INFO, SCMD_MENU_CANCEL, this, 0); }
 				return true;
 			}
 
@@ -236,16 +237,23 @@ namespace wal
 
 	bool MenuBar::Command( int id, int subId, Win* win, void* d )
 	{
+		Win* P = Parent();
+
 		if ( id == CMD_CHECK )
 		{
-			return Parent() ? Parent()->Command( id, subId, this, d ) : false;
+			return P ? P->Command( id, subId, this, d ) : false;
 		}
 
 		SetSelect( -1 );
 
-		if ( IsModal() ) { EndModal( id ); }
+		if ( IsModal() )
+		{ 
+			EndModal( id );
+		}
 
-		return ( Parent() ) ?  Parent()->Command( id, subId, win, d ) : false;
+		if ( P ) P->Command( CMD_MENU_INFO, SCMD_MENU_SELECT, this, nullptr );
+
+		return P ? P->Command( id, subId, win, d ) : false;
 	}
 
 

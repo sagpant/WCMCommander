@@ -130,6 +130,7 @@ public:
 	int styleColorMode;
 	bool styleShowToolBar;
 	bool styleShowButtonBar;
+	bool styleShowMenuBar;
 #pragma endregion 
 
 #pragma region Window position and size to be restored on the next startup

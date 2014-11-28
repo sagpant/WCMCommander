@@ -439,7 +439,8 @@ namespace wal
 	enum CmdMenuInfo
 	{
 	   //subcommands of CMD_MENU_INFO
-	   SCMD_MENU_CANCEL = 0
+	   SCMD_MENU_CANCEL = 0,
+	   SCMD_MENU_SELECT = 1
 	};
 
 	class PopupMenu;

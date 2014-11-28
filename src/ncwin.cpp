@@ -473,8 +473,12 @@ NCWin::NCWin()
 	_leftPanel.Enable();
 	_rightPanel.Show();
 	_rightPanel.Enable();
-	_menu.Show();
-	_menu.Enable();
+
+	if ( g_WcmConfig.styleShowMenuBar )
+	{
+		_menu.Show();
+		_menu.Enable();
+	}
 
 	SetToolbarPanel();
 	_toolBar.Enable();
@@ -3612,6 +3616,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			}
 
 			case VK_F9:
+				_menu.Show();
+				_menu.Enable();
+				this->RecalcLayouts();
 				_menu.SetFocus();
 				break;
 
@@ -3852,9 +3859,15 @@ void NCWin::ThreadStopped( int id, void* data )
 	_rightPanel.Reread();
 }
 
-bool NCWin::Command( int id, int subId, Win* win, void* data )
+bool NCWin::Command(int id, int subId, Win* win, void* data)
 {
-	if ( id == 0 ) { return true; }
+	if (id == 0) { return true; }
+
+	if ( id == CMD_MENU_INFO && ( subId == SCMD_MENU_CANCEL || subId == SCMD_MENU_SELECT ) )
+	{
+		if ( g_WcmConfig.styleShowMenuBar ) _menu.Show(); else _menu.Hide();
+		this->RecalcLayouts();
+	}
 
 	if ( _mode == PANEL )
 	{

@@ -678,6 +678,7 @@ clWcmConfig::clWcmConfig()
  , styleColorMode( 0 )
  , styleShowToolBar( true )
  , styleShowButtonBar( true )
+ , styleShowMenuBar( true )
 
  , windowX(0)
  , windowY(0)
@@ -699,6 +700,7 @@ clWcmConfig::clWcmConfig()
 
 	MapBool( sectionSystem, "show_toolbar", &styleShowToolBar, styleShowToolBar );
 	MapBool( sectionSystem, "show_buttonbar", &styleShowButtonBar, styleShowButtonBar );
+	MapBool( sectionSystem, "show_menubar", &styleShowMenuBar, styleShowMenuBar );
 	MapBool( sectionPanel, "show_3d_ui", &styleShow3DUI, styleShow3DUI );
 	MapInt( sectionPanel, "color_mode", &styleColorMode, styleColorMode );
 
@@ -1619,6 +1621,7 @@ public:
 	StaticLine showStatic;
 	SButton  showToolbarButton;
 	SButton  showButtonbarButton;
+	SButton  showMenubarButton;
 
 	StaticLine fontsStatic;
 	TextList fontList;
@@ -1675,6 +1678,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
 	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, g_WcmConfig.styleShowToolBar ),
 	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar" ) ).data(), 0, g_WcmConfig.styleShowButtonBar ),
+	   showMenubarButton( 0, this, utf8_to_unicode( _LT( "Show &menubar" ) ).data(), 0, g_WcmConfig.styleShowMenuBar ),
 
 	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
 	   fontList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
@@ -1690,9 +1694,10 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	iL.AddWinAndEnable( &showStatic,  5, 0 );
 	iL.AddWinAndEnable( &showToolbarButton, 6, 1 );
 	iL.AddWinAndEnable( &showButtonbarButton,  7, 1 );
-	iL.LineSet( 8, 10 );
-	iL.AddWinAndEnable( &fontsStatic, 9, 0 );
-	iL.ColSet( 0, 10, 10, 10 );
+	iL.AddWinAndEnable( &showMenubarButton,  8, 1 );
+	iL.LineSet( 9, 10 );
+	iL.AddWinAndEnable( &fontsStatic, 10, 0 );
+	iL.ColSet( 0, 11, 11, 11 );
 	iL.SetColGrowth( 1 );
 
 	for ( int i = 0; i < pList->count(); i++ )
@@ -1710,7 +1715,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	lsize.x.maximal = 1000;
 	fontList.SetLSize( lsize );
 
-	iL.AddWinAndEnable( &fontList, 9, 1 );
+	iL.AddWinAndEnable( &fontList, 10, 1 );
 
 	fontNameStatic.Enable();
 	fontNameStatic.Show();
@@ -1720,16 +1725,16 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	lsize.x.maximal = 1000;
 	fontNameStatic.SetLSize( lsize );
 
-	iL.AddWin( &fontNameStatic, 10, 1 );
+	iL.AddWin( &fontNameStatic, 11, 1 );
 #ifdef USEFREETYPE
-	iL.AddWinAndEnable( &changeButton, 11, 1 );
+	iL.AddWinAndEnable( &changeButton, 12, 1 );
 #endif
 
 #ifdef _WIN32
-	iL.AddWinAndEnable( &changeButton, 11, 1 );
+	iL.AddWinAndEnable( &changeButton, 12, 1 );
 #else
-	iL.AddWinAndEnable( &changeX11Button, 12, 1 );
-	iL.LineSet( 12, 10 );
+	iL.AddWinAndEnable( &changeX11Button, 13, 1 );
+	iL.LineSet( 13, 10 );
 #endif
 
 #ifdef USEFREETYPE
@@ -1754,6 +1759,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	order.append( &styleWhiteButton );
 	order.append( &showToolbarButton );
 	order.append( &showButtonbarButton );
+	order.append( &showMenubarButton );
 	order.append( &fontList );
 	order.append( &changeButton );
 	order.append( &changeX11Button );
@@ -1905,12 +1911,15 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.styleShow3DUI = dlg.styleShow3DUIButton.IsSet();
 		g_WcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );
 		g_WcmConfig.styleShowButtonBar = dlg.showButtonbarButton.IsSet( );
+		g_WcmConfig.styleShowMenuBar = dlg.showMenubarButton.IsSet( );
 
 		for ( int i = 0; i < list.count(); i++ )
 			if ( list[i].newFont.ptr() && list[i].newFont->uri()[0] && list[i].pUri )
 			{
 				*( list[i].pUri ) = new_char_str( list[i].newFont->uri() );
 			}
+
+		if ( parent ) parent->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, nullptr, nullptr );
 
 		return true;
 	}
