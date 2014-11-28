@@ -121,13 +121,17 @@ bool PanelSearchWin::EventKey( cevent_key* pEvent )
 	return EventChildKey( 0, pEvent );
 }
 
-void PanelSearchWin::EndSearch( cevent_key* pEvent )
+void PanelSearchWin::EndSearch(cevent_key* pEvent)
 {
-	EndModal( 0 );
+	EndModal(0);
 
-//	if ( pEvent )
+	if (pEvent)
 	{
 		ret_key = *pEvent;
+	}
+	else
+	{
+		ret_key = cevent_key(0, 0, 0, 0, 0, false);
 	}
 }
 
