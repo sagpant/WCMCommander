@@ -287,12 +287,13 @@ namespace wal
 		gc.SetFillColor( color_bg );
 
 		if ( n == select && InFocus() ) { gc.FillRect( itemRect ); }
-
+		/*
+		// https://github.com/corporateshark/WalCommander/issues/223
 		if ( n == select )
 		{
 			DrawBorder( gc, itemRect, UiGetColor( uiCurrentItemFrame, uiItem, &ucl, 0xFFFFFF ) );
 		}
-
+		*/
 		gc.SetTextColor( color_text );
 
 		MenuTextInfo& mt = list[n].text;
