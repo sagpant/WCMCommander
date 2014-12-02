@@ -286,10 +286,26 @@ namespace wal
 
 	struct ScrollInfo
 	{
-		seek_t size, pageSize, pos;
-		ScrollInfo(): size( 0 ), pageSize( 0 ), pos( 0 ) {}
+		seek_t m_Size;
+		seek_t m_PageSize;
+		seek_t m_Pos;
+		bool   m_AlwaysHidden;
+		ScrollInfo()
+		 : m_Size( 0 )
+		 , m_PageSize( 0 )
+		 , m_Pos( 0 )
+		 , m_AlwaysHidden( false )
+		{}
 		ScrollInfo( seek_t _size, seek_t _pageSize, seek_t _pos )
-			: size( _size ), pageSize( _pageSize ), pos( _pos ) {}
+		 : m_Size( _size )
+		 , m_PageSize( _pageSize )
+		 , m_Pos( _pos )
+		 , m_AlwaysHidden( false )
+		{}
+		bool operator==( const ScrollInfo& o )
+		{
+			return m_Size == o.m_Size && m_PageSize == o.m_PageSize && m_Pos == o.m_Pos && m_AlwaysHidden == o.m_AlwaysHidden;
+		}
 	};
 
 	class ScrollBar: public Win

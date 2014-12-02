@@ -663,6 +663,7 @@ clWcmConfig::clWcmConfig()
  , panelShowFolderIcons( true )
  , panelShowExecutableIcons( true )
  , panelShowLinkIcons( true )
+ , panelShowScrollbar( true )
  , panelShowSpacesMode( ePanelSpacesMode_Trailing )
  , panelModeLeft( 0 )
  , panelModeRight( 0 )
@@ -713,6 +714,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionPanel, "show_foldericons",     &panelShowFolderIcons, panelShowFolderIcons );
 	MapBool( sectionPanel, "show_executableicons",     &panelShowExecutableIcons, panelShowExecutableIcons );
 	MapBool( sectionPanel, "show_linkicons",     &panelShowLinkIcons, panelShowLinkIcons );
+	MapBool( sectionPanel, "show_scrollbar",     &panelShowScrollbar, panelShowScrollbar );
 	MapInt( sectionPanel,  "show_spaces_mode",     (int*)&panelShowSpacesMode, panelShowSpacesMode );
 	MapInt( sectionPanel,  "mode_left",     &panelModeLeft, panelModeLeft );
 	MapInt( sectionPanel,  "mode_right",    &panelModeRight, panelModeRight );
@@ -1404,6 +1406,7 @@ public:
 	SButton  showFolderIcons;
 	SButton  showExecutableIcons;
 	SButton  showLinkIcons;
+	SButton  showScrollbar;
 
 	StaticLine showSpacesStatic;
 	SButton  showSpacesNoneButton;
@@ -1426,6 +1429,7 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
  , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, g_WcmConfig.panelShowFolderIcons )
  , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, g_WcmConfig.panelShowExecutableIcons )
  , showLinkIcons( 0, this, utf8_to_unicode( _LT( "Show &link icons" ) ).data(), 0, g_WcmConfig.panelShowLinkIcons )
+ , showScrollbar( 0, this, utf8_to_unicode( _LT( "Show &scrollbar" ) ).data(), 0, g_WcmConfig.panelShowScrollbar )
  , showSpacesStatic( 0, this, utf8_to_unicode( _LT( "Show spaces as · in names:" ) ).data() )
  , showSpacesNoneButton( 0, this, utf8_to_unicode( _LT( "No" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode != 1 && g_WcmConfig.panelShowSpacesMode != 2 )
  , showSpacesAllButton( 0, this,  utf8_to_unicode( _LT( "All" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 1 )
@@ -1439,10 +1443,11 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	iL.AddWinAndEnable( &showFolderIcons, 4, 0 );
 	iL.AddWinAndEnable( &showExecutableIcons, 5, 0 );
 	iL.AddWinAndEnable( &showLinkIcons, 6, 0 );
-	iL.AddWinAndEnable( &showSpacesStatic, 7, 0 );
-	iL.AddWinAndEnable( &showSpacesNoneButton, 8, 0 );
-	iL.AddWinAndEnable( &showSpacesAllButton, 9, 0 );
-	iL.AddWinAndEnable( &showSpacesTrailingButton, 10, 0 );
+	iL.AddWinAndEnable( &showScrollbar, 7, 0 );
+	iL.AddWinAndEnable( &showSpacesStatic, 8, 0 );
+	iL.AddWinAndEnable( &showSpacesNoneButton, 9, 0 );
+	iL.AddWinAndEnable( &showSpacesAllButton, 10, 0 );
+	iL.AddWinAndEnable( &showSpacesTrailingButton, 11, 0 );
 
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
@@ -1456,6 +1461,7 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	order.append( &showFolderIcons );
 	order.append( &showExecutableIcons );
 	order.append( &showLinkIcons );
+	order.append( &showScrollbar );
 	order.append( &showSpacesNoneButton );
 	order.append( &showSpacesAllButton );
 	order.append( &showSpacesTrailingButton );
@@ -1475,6 +1481,7 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.panelShowFolderIcons  = dlg.showFolderIcons.IsSet();
 		g_WcmConfig.panelShowExecutableIcons  = dlg.showExecutableIcons.IsSet();
 		g_WcmConfig.panelShowLinkIcons  = dlg.showLinkIcons.IsSet();
+		g_WcmConfig.panelShowScrollbar = dlg.showScrollbar.IsSet();
 		if ( dlg.showSpacesTrailingButton.IsSet() )
 		{
 			g_WcmConfig.panelShowSpacesMode = ePanelSpacesMode_Trailing;

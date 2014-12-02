@@ -567,9 +567,10 @@ void PanelWin::SelectPanel()
 void PanelWin::SetScroll()
 {
 	ScrollInfo si;
-	si.pageSize = _rectList.count();
-	si.size = _list.Count( HideDotsInDir() );
-	si.pos = _first;
+	si.m_PageSize = _rectList.count();
+	si.m_Size = _list.Count( HideDotsInDir() );
+	si.m_Pos = _first;
+	si.m_AlwaysHidden = !g_WcmConfig.panelShowScrollbar;
 	bool visible = _scroll.IsVisible();
 	_scroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &si );
 
@@ -644,6 +645,7 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 		_list.SetCase( g_WcmConfig.panelCaseSensitive );
 
 		SetCurrent( _list.Find( s, HideDotsInDir() ) );
+		SetScroll();
 		Invalidate();
 
 		GetNCWin()->NotifyCurrentPathInfo();

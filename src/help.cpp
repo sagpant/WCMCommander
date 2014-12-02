@@ -1581,13 +1581,13 @@ void HelpWin::CalcScroll()
 	if ( dataWidth <= 0 ) { dataWidth = 1; }
 
 	ScrollInfo vsi, hsi;
-	vsi.pageSize = helpRect.Height();
-	vsi.size = dataHeight;
-	vsi.pos = yOffset;
+	vsi.m_PageSize = helpRect.Height();
+	vsi.m_Size = dataHeight;
+	vsi.m_Pos = yOffset;
 
-	hsi.pageSize = helpRect.Width();
-	hsi.size = dataWidth;
-	hsi.pos = xOffset;
+	hsi.m_PageSize = helpRect.Width();
+	hsi.m_Size = dataWidth;
+	hsi.m_Pos = xOffset;
 
 	bool vVisible = vScroll.IsVisible();
 	vScroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &vsi );

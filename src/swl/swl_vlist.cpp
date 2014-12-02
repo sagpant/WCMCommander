@@ -62,13 +62,13 @@ namespace wal
 		int n = listRect.Height() / itemHeight;
 		pageSize = n;
 		ScrollInfo vsi, hsi;
-		vsi.pageSize = pageSize;
-		vsi.size = count;
-		vsi.pos = first;
+		vsi.m_PageSize = pageSize;
+		vsi.m_Size = count;
+		vsi.m_Pos = first;
 
-		hsi.pageSize = listRect.Width();
-		hsi.size = itemWidth;
-		hsi.pos = xOffset;
+		hsi.m_PageSize = listRect.Width();
+		hsi.m_Size = itemWidth;
+		hsi.m_Pos = xOffset;
 
 		bool vVisible = vScroll.IsVisible();
 		vScroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &vsi );

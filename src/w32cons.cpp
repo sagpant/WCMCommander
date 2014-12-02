@@ -390,17 +390,17 @@ void W32Cons::CalcScroll()
 	{
 		if ( !visible ) { return; }
 
-		si.pageSize = 1;
-		si.size = 0;
-		si.pos = 0;
+		si.m_PageSize = 1;
+		si.m_Size = 0;
+		si.m_Pos = 0;
 		_scroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &si );
 		this->RecalcLayouts();
 		return;
 	}
 
-	si.pageSize = screen.Rows();
-	si.size = consLastInfo.dwSize.Y;
-	si.pos = _firstRow;
+	si.m_PageSize = screen.Rows();
+	si.m_Size = consLastInfo.dwSize.Y;
+	si.m_Pos = _firstRow;
 
 	_scroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &si );
 

@@ -129,7 +129,7 @@ namespace wal
 		}
 
 		SetLSize( ls );
-		SetScrollInfo( 0 );
+		SetScrollInfo( nullptr );
 //	crect r = ClientRect();
 //	EventSize(&cevent_size(cpoint(r.Width(),r.Height())));
 	}
@@ -157,26 +157,31 @@ namespace wal
 		if ( s ) { ns = *s; }
 		else
 		{
-			ns.size = ns.pageSize = ns.pos = 0;
+			ns.m_Size = ns.m_PageSize = ns.m_Pos = 0;
 		}
 
-		if ( ns.size < 0 ) { ns.size = 0; }
+		if ( ns.m_Size < 0 ) { ns.m_Size = 0; }
 
-		if ( ns.pageSize < 0 ) { ns.pageSize = 0; }
+		if ( ns.m_PageSize < 0 ) { ns.m_PageSize = 0; }
 
-		if ( ns.pos < 0 ) { ns.pos = 0; }
+		if ( ns.m_Pos < 0 ) { ns.m_Pos = 0; }
 
-		if ( si.size == ns.size && si.pageSize == ns.pageSize && si.pos == ns.pos ) { return; }
+		if ( si == ns ) { return; }
 
 		si = ns;
 
 		Recalc();
 
-		if ( autoHide )
+		if ( si.m_AlwaysHidden )
+		{
+			Hide();
+			if (Parent()) { Parent()->RecalcLayouts(); }
+		}
+		else if ( autoHide )
 		{
 			bool v = IsVisible();
 
-			if ( si.size <= si.pageSize && si.pos <= 0 )
+			if ( si.m_Size <= si.m_PageSize && si.m_Pos <= 0 )
 			{
 				if ( v )
 				{
@@ -194,6 +199,11 @@ namespace wal
 					if ( Parent() ) { Parent()->RecalcLayouts(); }
 				}
 			}
+		}
+		else
+		{
+			Show();
+			if (Parent()) { Parent()->RecalcLayouts(); }
 		}
 
 		Invalidate();
@@ -230,11 +240,11 @@ namespace wal
 
 		if ( len <= 0 ) { return; }
 
-		if ( si.size <= 0 ) { return; }
+		if ( si.m_Size <= 0 ) { return; }
 
-		if ( si.pageSize <= 0 || si.pageSize >= si.size ) { return; }
+		if ( si.m_PageSize <= 0 || si.m_PageSize >= si.m_Size ) { return; }
 
-		bsize = int( ( int64_t( len ) * si.pageSize ) / si.size );
+		bsize = int( ( int64_t( len ) * si.m_PageSize ) / si.m_Size );
 
 		if ( bsize < 5 ) { bsize = 5; }
 
@@ -242,7 +252,7 @@ namespace wal
 
 		int space = ( len - bsize );
 
-		bpos = int( ( int64_t( space ) * si.pos ) / ( si.size - si.pageSize ) );
+		bpos = int( ( int64_t( space ) * si.m_Pos ) / ( si.m_Size - si.m_PageSize ) );
 
 		if ( bpos > space ) { bpos = space; }
 
@@ -308,7 +318,7 @@ namespace wal
 					//if (p>=n) p = n-1;
 					//if (p<0) p = 0;
 
-					int n1 = int( si.size - si.pageSize );
+					int n1 = int( si.m_Size - si.m_PageSize );
 					int x = ( int64_t( p ) * n1 ) / n;
 
 					if ( x >= n1 ) { x = n1; }

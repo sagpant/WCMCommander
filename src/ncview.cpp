@@ -2363,26 +2363,26 @@ void ViewWin::CalcScroll()
 	{
 		MutexLock lock( &threadData->mutex );
 		ScrollInfo hsi;
-		hsi.pageSize = threadData->ret.size.cols;
+		hsi.m_PageSize = threadData->ret.size.cols;
 
 		if ( threadData->ret.mode.wrap || threadData->ret.mode.hex )
 		{
-			hsi.size = 0;
-			hsi.pos = 0;
+			hsi.m_Size = 0;
+			hsi.m_Pos = 0;
 		}
 		else
 		{
-			hsi.size = threadData->pos.maxLine;
-			hsi.pos = threadData->pos.col;
+			hsi.m_Size = threadData->pos.maxLine;
+			hsi.m_Pos = threadData->pos.col;
 		}
 
 		bool hVisible = hscroll.IsVisible();
 		hscroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_HCHANGE, this, &hsi );
 
 		ScrollInfo vsi;
-		vsi.pageSize = int( threadData->pos.end - threadData->pos.begin );
-		vsi.size = threadData->pos.size;
-		vsi.pos = threadData->pos.begin;
+		vsi.m_PageSize = int( threadData->pos.end - threadData->pos.begin );
+		vsi.m_Size = threadData->pos.size;
+		vsi.m_Pos = threadData->pos.begin;
 		bool vVisible = vscroll.IsVisible();
 		vscroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &vsi );
 
