@@ -650,6 +650,7 @@ static const char* UserMenuSection = "UserMenu";
 clWcmConfig::clWcmConfig()
  : systemAskOpenExec( true )
  , systemEscPanel( true )
+ , systemEscCommandLine( true )
  , systemBackSpaceUpDir( false )
  , systemAutoComplete( true )
  , systemAutoSaveSetup( true )
@@ -694,6 +695,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionSystem, "ask_open_exec", &systemAskOpenExec, systemAskOpenExec );
 #endif
 	MapBool( sectionSystem, "esc_panel", &systemEscPanel, systemEscPanel );
+	MapBool( sectionSystem, "esc_panel", &systemEscCommandLine, systemEscCommandLine );
 	MapBool( sectionSystem, "back_updir", &systemBackSpaceUpDir, systemBackSpaceUpDir );
 	MapBool( sectionSystem, "auto_complete", &systemAutoComplete, systemAutoComplete );
 	MapBool( sectionSystem, "auto_save_setup", &systemAutoSaveSetup, systemAutoSaveSetup );
@@ -2110,6 +2112,7 @@ public:
 
 	SButton  m_AskOpenExecButton;
 	SButton  m_EscPanelButton;
+	SButton  m_EscCommandLineButton;
 	SButton  m_BackUpDirButton;
 	SButton  m_AutoCompleteButton;
 	SButton  m_AutoSaveSetupButton;
@@ -2159,6 +2162,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	, m_iL( 16, 3 )
    , m_AskOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, g_WcmConfig.systemAskOpenExec )
    , m_EscPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, g_WcmConfig.systemEscPanel )
+   , m_EscCommandLineButton(0, this, utf8_to_unicode(_LT("Enable &ESC key to clear the command line")).data(), 0, g_WcmConfig.systemEscCommandLine )
    , m_BackUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, g_WcmConfig.systemBackSpaceUpDir )
    , m_AutoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, g_WcmConfig.systemAutoComplete )
    , m_AutoSaveSetupButton( 0, this, utf8_to_unicode( _LT( "Auto &save setup" ) ).data(), 0, g_WcmConfig.systemAutoSaveSetup )
@@ -2172,14 +2176,15 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	m_iL.AddWinAndEnable( &m_AskOpenExecButton, 0, 0, 0, 2 );
 #endif
 	m_iL.AddWinAndEnable( &m_EscPanelButton, 1, 0, 1, 2 );
-	m_iL.AddWinAndEnable( &m_BackUpDirButton, 2, 0, 2, 2 );
-	m_iL.AddWinAndEnable( &m_AutoCompleteButton, 3, 0, 3, 2 );
-	m_iL.AddWinAndEnable( &m_AutoSaveSetupButton, 4, 0, 4, 2 );
-	m_iL.AddWinAndEnable( &m_ShowHostNameButton, 5, 0, 5, 2 );
+	m_iL.AddWinAndEnable( &m_EscCommandLineButton, 2, 0, 2, 2 );
+	m_iL.AddWinAndEnable( &m_BackUpDirButton, 3, 0, 3, 2 );
+	m_iL.AddWinAndEnable( &m_AutoCompleteButton, 4, 0, 4, 2 );
+	m_iL.AddWinAndEnable( &m_AutoSaveSetupButton, 5, 0, 5, 2 );
+	m_iL.AddWinAndEnable( &m_ShowHostNameButton, 6, 0, 6, 2 );
 
-	m_iL.AddWinAndEnable( &m_LangStatic, 6, 0 );
-	m_iL.AddWinAndEnable( &m_LangVal, 6, 2 );
-	m_iL.AddWinAndEnable( &m_LangButton, 6, 1 );
+	m_iL.AddWinAndEnable( &m_LangStatic, 7, 0 );
+	m_iL.AddWinAndEnable( &m_LangVal, 7, 2 );
+	m_iL.AddWinAndEnable( &m_LangButton, 7, 1 );
 
 	m_iL.SetColGrowth( 2 );
 
@@ -2191,6 +2196,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	order.append( &m_AskOpenExecButton );
 #endif
 	order.append( &m_EscPanelButton );
+	order.append( &m_EscCommandLineButton );
 	order.append( &m_BackUpDirButton );
 	order.append( &m_AutoCompleteButton );
 	order.append( &m_AutoSaveSetupButton );
@@ -2252,7 +2258,8 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		g_WcmConfig.systemAskOpenExec = dlg.m_AskOpenExecButton.IsSet();
-		g_WcmConfig.systemEscPanel = dlg.m_EscPanelButton.IsSet( );
+		g_WcmConfig.systemEscPanel = dlg.m_EscPanelButton.IsSet();
+		g_WcmConfig.systemEscCommandLine = dlg.m_EscCommandLineButton.IsSet();
 		g_WcmConfig.systemBackSpaceUpDir = dlg.m_BackUpDirButton.IsSet( );
 		g_WcmConfig.systemAutoComplete = dlg.m_AutoCompleteButton.IsSet( );
 		g_WcmConfig.systemAutoSaveSetup = dlg.m_AutoSaveSetupButton.IsSet( );

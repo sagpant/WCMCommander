@@ -94,6 +94,7 @@ public:
 #pragma region System settings
 	bool systemAskOpenExec;
 	bool systemEscPanel;
+	bool systemEscCommandLine;
 	bool systemBackSpaceUpDir;
 	bool systemAutoComplete;
 	bool systemAutoSaveSetup;

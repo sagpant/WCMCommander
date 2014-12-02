@@ -3374,9 +3374,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				{
 					HideAutoComplete();
 				}
-				else if ( g_WcmConfig.systemEscPanel )
+				else
 				{
-					if ( m_Edit.IsVisible() && !m_Edit.IsEmpty() )
+					if ( m_Edit.IsVisible() && !m_Edit.IsEmpty() &&  g_WcmConfig.systemEscCommandLine )
 					{
 						// if the command line is not empty - clear it
 						m_Edit.Clear();
