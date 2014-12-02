@@ -151,10 +151,12 @@ void TerminalWin::Reread()
 void TerminalWin::CalcScroll()
 {
 	ScrollInfo si;
-	si.pageSize = screen.rows;
-	si.size = _currentRows;
-	si.pos = _currentRows - _firstRow - screen.rows;
+	si.m_PageSize = screen.rows;
+	si.m_Size = _currentRows;
+	si.m_Pos = _currentRows - _firstRow - screen.rows;
+
 	bool visible = _scroll.IsVisible();
+
 	_scroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &si );
 
 	if ( visible != _scroll.IsVisible() )

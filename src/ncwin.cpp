@@ -4333,8 +4333,8 @@ void ButtonWin::OnChangeStyles()
 
 ButtonWin::ButtonWin( Win* parent )
  : Win( WT_CHILD, 0, parent )
- , m_Buttons( 10 )
  , m_Lo( 1, 20 )
+ , m_Buttons( 10 )
 {
 	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
