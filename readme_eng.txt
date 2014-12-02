@@ -18,7 +18,7 @@ Build (FreeBSD, Linux, OS X, MinGW):
 	UNIX builds run smooth on Ubuntu 14.04LTS, on amd64, and i386 architectures. Required libraries:
 
 		libX11-dev
-		libfreetype-dev			
+		libfreetype6-dev			
 		libssh2-1-dev
 		libsmbclient-dev
 
