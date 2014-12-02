@@ -4297,11 +4297,9 @@ static unicode_t* BWNums[] = {NN1, NN2, NN3, NN4, NN5, NN6, NN7, NN8, NN9, NN10,
 
 void ButtonWin::OnChangeStyles()
 {
-	int i;
-
-	for ( i = 0; i < 10; i++ )
+	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
-		Win* w = _buttons[i].ptr();
+		Win* w = m_Buttons[i].ptr();
 
 		LSize ls = w->GetLSize();
 		ls.x.maximal = 1000;
@@ -4309,48 +4307,47 @@ void ButtonWin::OnChangeStyles()
 		w->SetLSize( ls );
 	}
 
-	wal::GC gc( ( Win* )0 );
+	wal::GC gc( (Win*)nullptr );
 	gc.Set( g_DialogFont.ptr() );
 	cpoint maxW( 1, 1 );
 
-	for ( i = 0; i < 10 && BWNums[i]; i++ )
+	for ( size_t i = 0; i < m_Buttons.size() && BWNums[i]; i++ )
 	{
-		cpoint pt = _nSizes[i] = gc.GetTextExtents( BWNums[i] );
+		cpoint pt = m_nSizes[i] = gc.GetTextExtents( BWNums[i] );
 
 		if ( maxW.x < pt.x ) { maxW.x = pt.x; }
 
 		if ( maxW.y < pt.y ) { maxW.y = pt.y; }
 
-		_nSizes[i] = pt;
+		m_nSizes[i] = pt;
 	}
 
-	for ( i = 0; i < 10; i++ )
+	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
-		_lo.AddRect( &( _rects[i] ), 0, i * 2 );
-		_lo.ColSet( i * 2, maxW.x + 2 );
+		m_Lo.AddRect( &( m_Rects[i] ), 0, i * 2 );
+		m_Lo.ColSet( i * 2, maxW.x + 2 );
 	}
 
-	SetLSize( _lo.GetLSize() );
+	SetLSize( m_Lo.GetLSize() );
 }
 
 ButtonWin::ButtonWin( Win* parent )
-	:  Win( WT_CHILD, 0, parent ),
-	   _lo( 1, 20 )
+ : Win( WT_CHILD, 0, parent )
+ , m_Buttons( 10 )
+ , m_Lo( 1, 20 )
 {
-	int i;
-
-	for ( i = 0; i < 10; i++ )
+	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
-		static unicode_t emptyStr[] = {' ', 0};
-		_buttons[i] = new Button( 0, this, emptyStr, 0, 0 ); //, 12, 12);
-		Win* w = _buttons[i].ptr();
+		static unicode_t emptyStr[] = { ' ', 0 };
+		m_Buttons[i] = new Button( 0, this, emptyStr, 0, 0 ); //, 12, 12);
+		Win* w = m_Buttons[i].ptr();
 		w->SetTabFocusFlag( false );
 		w->SetClickFocusFlag( false );
 		w->Show();
-		_lo.AddWin( w, 0, i * 2 + 1 );
+		m_Lo.AddWin( w, 0, i * 2 + 1 );
 	}
 
-	SetLayout( &_lo );
+	SetLayout( &m_Lo );
 	OnChangeStyles();
 };
 
@@ -4363,16 +4360,16 @@ void ButtonWin::Set( ButtonWinData* list )
 		for ( int i = 0; i < 10; i++ )
 		{
 			static unicode_t s[] = {' ', 0};
-			_buttons[i]->Set( s, 0 );
-			_buttons[i]->Enable( false );
+			m_Buttons[i]->Set( s, 0 );
+			m_Buttons[i]->Enable( false );
 		}
 	}
 	else
 	{
 		for ( int i = 0; i < 10 && list->txt; i++, list++ )
 		{
-			_buttons[i]->Set( utf8_to_unicode( _LT( carray_cat<char>( "BB>", list->txt ).data(), list->txt ) ).data(), list->commandId ); //, 12, 12);
-			_buttons[i]->Enable( list->commandId != 0 );
+			m_Buttons[i]->Set( utf8_to_unicode( _LT( carray_cat<char>( "BB>", list->txt ).data(), list->txt ) ).data(), list->commandId ); //, 12, 12);
+			m_Buttons[i]->Enable( list->commandId != 0 );
 		}
 	}
 }
@@ -4386,6 +4383,11 @@ int ButtonWin::UiGetClassId()
 
 void ButtonWin::Paint( wal::GC& gc, const crect& paintRect )
 {
+	for ( size_t i = 0; i != m_Buttons.size(); i++ )
+	{
+		if ( m_Buttons[i] ) m_Buttons[i]->SetShowIcon( g_WcmConfig.styleShowButtonBarIcons );
+	}
+
 	crect r = ClientRect();
 	gc.SetFillColor( UiGetColor( uiBackground, 0, 0, 0xFFFFFF ) );
 	gc.FillRect( r );
@@ -4396,8 +4398,8 @@ void ButtonWin::Paint( wal::GC& gc, const crect& paintRect )
 	for ( int i = 0; i < 10; i++ )
 	{
 		gc.TextOutF(
-		   _rects[i].left + ( _rects[i].Width() - _nSizes[i].x ) / 2,
-		   _rects[i].top + ( _rects[i].Height() - _nSizes[i].y ) / 2,
+		   m_Rects[i].left + ( m_Rects[i].Width()  - m_nSizes[i].x ) / 2,
+		   m_Rects[i].top  + ( m_Rects[i].Height() - m_nSizes[i].y ) / 2,
 		   BWNums[i] );
 	}
 }

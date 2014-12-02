@@ -49,10 +49,10 @@ struct ButtonWinData
 
 class ButtonWin: public Win
 {
-	Layout _lo;
-	clPtr<Button> _buttons[10];
-	crect _rects[10];
-	cpoint _nSizes[10];
+	Layout m_Lo;
+	std::vector< clPtr<Button> > m_Buttons;
+	crect m_Rects[10];
+	cpoint m_nSizes[10];
 
 	ButtonWinData* lastData;
 public:

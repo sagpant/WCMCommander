@@ -69,22 +69,26 @@ namespace wal
 
 	class Button: public Win
 	{
-		bool pressed;
-		MenuTextInfo text;
-		clPtr<cicon> icon;
-		int commandId;
+	private:
+		bool         m_Pressed;
+		MenuTextInfo m_Text;
+		clPtr<cicon> m_Icon;
+		int          m_CommandId;
+		bool         m_ShowIcon;
 		
-		void SendCommand() { Command( commandId, 0, this, 0 ); }
+		bool HasIcon() const { return m_Icon.ptr() && m_ShowIcon; }
+		void SendCommand() { Command( m_CommandId, 0, this, 0 ); }
 	public:
 		Button( int nId, Win* parent, const unicode_t* txt,  int id, crect* rect = 0, int iconX = 16, int iconY = 16 );
 		void Set( const unicode_t* txt, int id, int iconX = 16, int iconY = 16 );
-		int CommandId() const { return commandId; }
+		int CommandId() const { return m_CommandId; }
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventFocus( bool recv );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
 		virtual Win* IsHisHotKey(cevent_key* pEvent);
 		virtual void OnChangeStyles();
+		virtual void SetShowIcon( bool Show ) { m_ShowIcon = Show; }
 		virtual int UiGetClassId();
 		virtual ~Button();
 	};

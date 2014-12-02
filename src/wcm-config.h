@@ -130,6 +130,7 @@ public:
 	int styleColorMode;
 	bool styleShowToolBar;
 	bool styleShowButtonBar;
+	bool styleShowButtonBarIcons;
 	bool styleShowMenuBar;
 #pragma endregion 
 
