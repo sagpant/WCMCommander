@@ -134,6 +134,7 @@ SET(wcm_COMMON_SOURCES
 	termwin.cpp
 	toolbar.cpp
 	unicode_lc.cpp
+	usermenu.cpp
 	ux_util.cpp
 	vfs-ftp.cpp
 	vfs-sftp2.cpp
@@ -199,6 +200,7 @@ SET(wcm_HEADERS
 	terminal.h
 	termwin.h
 	toolbar.h
+	usermenu.h
 	ux_util.h
 	vfs-ftp.h
 	vfs-sftp.h

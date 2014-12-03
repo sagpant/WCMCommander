@@ -372,13 +372,14 @@ namespace wal
 					{
 						int id = list[selected].data->id;
 
-						if ( IsModal() ) { EndModal( id ); }
+						if ( IsModal() )
+						{
+							EndModal( id );
+						}
 						else if ( Parent() )
 						{
 							Parent()->Command( id, 0, this, 0 );
 						}
-
-						else {/* Botva */}
 
 						return true;
 					}
@@ -386,9 +387,11 @@ namespace wal
 					return OpenSubmenu();
 
 				case VK_ESCAPE:
-					if ( IsModal() ) { EndModal( 0 ); }
+					if ( IsModal() )
+					{
+						EndModal( 0 );
+					}
 					else if ( Parent() )
-
 					{
 						Parent()->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, this, 0 );
 					}

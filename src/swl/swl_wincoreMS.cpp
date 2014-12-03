@@ -1185,8 +1185,8 @@ namespace wal
 
 	std::vector<char> cfont::LogFontToUru( LOGFONT& lf )
 	{
-		ccollect<char, 0x100> uri;
-		uri.append( '-' );
+		std::vector<char> uri;
+		uri.push_back( '-' );
 
 		GC gc( ( Win* )0 );
 
@@ -1204,40 +1204,40 @@ namespace wal
 
 		char* s;
 
-		for ( s = buf; *s; s++ ) { uri.append( *s ); }
+		for ( s = buf; *s; s++ ) { uri.push_back( *s ); }
 
-		uri.append( ':' );
+		uri.push_back( ':' );
 		int i;
 
 		for ( i = 0, s = lf.lfFaceName; *s && i < sizeof( lf.lfFaceName ); i++, s++ )
 		{
-			uri.append( *s );
+			uri.push_back( *s );
 		}
 
-		uri.append( ':' );
+		uri.push_back( ':' );
 
-		if ( lf.lfPitchAndFamily & FIXED_PITCH ) { uri.append( 'F' ); }
+		if ( lf.lfPitchAndFamily & FIXED_PITCH ) { uri.push_back( 'F' ); }
 
-		if ( lf.lfItalic == TRUE ) { uri.append( 'I' ); }
+		if ( lf.lfItalic == TRUE ) { uri.push_back('I'); }
 
 		switch ( lf.lfWeight )
 		{
 			case FW_BOLD:
-				uri.append( 'B' );
+				uri.push_back('B');
 				break;
 
 			case FW_NORMAL:
-				uri.append( 'N' );
+				uri.push_back('N');
 				break;
 
 			case FW_LIGHT:
-				uri.append( 'L' );
+				uri.push_back('L');
 				break;
 		};
 
-		uri.append( 0 );
+		uri.push_back(0);
 
-		return uri.grab();
+		return uri;
 	}
 
 	void cfont::UriToLogFont( LOGFONT* plf, const char* uri )

@@ -709,8 +709,6 @@ bool CmdHistoryDialog::Command( int id, int subId, Win* win, void* data )
 	return NCDialog::Command( id, subId, win, data );
 }
 
-CmdHistoryDialog::~CmdHistoryDialog() {}
-
 ////////////////////////////////////////////////////////////////////////////
 NCDialogParent::NCDialogParent( Win::WTYPE t, unsigned hints, int nId , Win* _parent , const crect* rect )
 	:  OperThreadWin( t, hints, nId, _parent, rect ), _layout( 1, 1 )
@@ -728,48 +726,49 @@ NCDialogParent::~NCDialogParent() {}
 
 ////////////////////////////////////////////  DlgMenu
 
-
-
-DlgMenuData::DlgMenuData() {}
-
-void DlgMenuData::Add( const unicode_t* name, const unicode_t* comment, int cmd )
+void clMenuData::Add( const unicode_t* name, const unicode_t* comment1, const unicode_t* comment2, int cmd, int icon )
 {
 	Node node;
 
 	if ( name ) { node.name = new_unicode_str( name ); }
 
-	if ( comment ) { node.comment = new_unicode_str( comment ); }
+	if ( comment1 ) { node.comment1 = new_unicode_str( comment1 ); }
+	if ( comment2 ) { node.comment2 = new_unicode_str( comment2 ); }
 
 	node.cmd = cmd;
+	node.icon = icon;
 
 	list.append( node );
 }
 
-void DlgMenuData::Add( const char* utf8name, const char* utf8coment, int cmd )
+void clMenuData::Add( const char* utf8name, const char* utf8coment1, const char* utf8coment2, int cmd, int icon )
 {
-	Add( utf8name ? utf8_to_unicode( utf8name ).data() : 0, utf8coment ? utf8_to_unicode( utf8coment ).data() : 0, cmd );
+	Add( utf8name ? utf8_to_unicode( utf8name ).data() : 0,
+		 utf8coment1 ? utf8_to_unicode( utf8coment1 ).data() : 0,
+		 utf8coment2 ? utf8_to_unicode( utf8coment2 ).data() : 0,
+		 cmd,
+		 icon
+	);
 }
 
-void DlgMenuData::AddSplitter()
+void clMenuData::AddSplitter()
 {
 	Node node;
 	node.cmd = 0;
 	list.append( node );
 }
 
-DlgMenuData::~DlgMenuData() {}
-
-
-class DlgMenu: public Win
+class clSelectDriveDlgMenu: public Win
 {
-	DlgMenuData* _data;
+	clMenuData* _data;
 	int _current;
 	int _itemH;
 	int _width;
-	int _nameW, _commentW;
+	int _nameW, _comment1W, _comment2W;
 	int _splitterH;
+	int _splitterW;
 public:
-	DlgMenu( Win* parent, DlgMenuData* data );
+	clSelectDriveDlgMenu( Win* parent, clMenuData* data );
 
 	void SetCurrent( int n, bool searchUp );
 
@@ -778,11 +777,10 @@ public:
 	virtual bool EventMouse( cevent_mouse* pEvent );
 	virtual bool EventShow( bool show );
 	virtual int UiGetClassId();
-	virtual ~DlgMenu();
 };
 
 
-void DlgMenu::SetCurrent( int n, bool searchUp )
+void clSelectDriveDlgMenu::SetCurrent( int n, bool searchUp )
 {
 	int count = _data->Count();
 
@@ -803,10 +801,13 @@ void DlgMenu::SetCurrent( int n, bool searchUp )
 }
 
 //int uiDlgMenu = GetUiID("DlgMenu");
-int DlgMenu::UiGetClassId() {  return uiClassButton/*DlgMenu*/; } //чтоб диалог его востринимал как кнопку
+int clSelectDriveDlgMenu::UiGetClassId()
+{
+	return uiClassButton/*DlgMenu*/;
+} //чтоб диалог его востринимал как кнопку
 
 
-bool DlgMenu::EventShow( bool show )
+bool clSelectDriveDlgMenu::EventShow( bool show )
 {
 	if ( show ) { SetCapture(); }
 	else { ReleaseCapture(); }
@@ -815,14 +816,17 @@ bool DlgMenu::EventShow( bool show )
 }
 
 
-DlgMenu::DlgMenu( Win* parent, DlgMenuData* data )
-	:  Win( Win::WT_CHILD, Win::WH_TABFOCUS | Win::WH_CLICKFOCUS, parent ),
-	   _data( data ),
-	   _current( 0 ),
-	   _itemH( 16 ),
-	   _width( 50 ),
-	   _nameW( 10 ), _commentW( 0 ),
-	   _splitterH( 5 )
+clSelectDriveDlgMenu::clSelectDriveDlgMenu( Win* parent, clMenuData* data )
+ : Win( Win::WT_CHILD, Win::WH_TABFOCUS | Win::WH_CLICKFOCUS, parent )
+ , _data( data )
+ , _current( 0 )
+ , _itemH( 16 )
+ , _width( 50 )
+ , _nameW( 10 )
+ , _comment1W( 0 )
+ , _comment2W( 0 )
+ , _splitterH( 5 )
+ , _splitterW( 1 )
 {
 	wal::GC gc( this );
 	gc.Set( GetFont() );
@@ -853,13 +857,21 @@ DlgMenu::DlgMenu( Win* parent, DlgMenuData* data )
 				if ( _nameW < p.x ) { _nameW = p.x; }
 			}
 
-			unicode_t* comment = _data->list[i].comment.data();
+			unicode_t* comment1 = _data->list[i].comment1.data();
+			unicode_t* comment2 = _data->list[i].comment2.data();
 
-			if ( comment )
+			if ( comment1 )
 			{
-				cpoint p = gc.GetTextExtents( comment );
+				cpoint p = gc.GetTextExtents( comment1 );
 
-				if ( _commentW < p.x ) { _commentW = p.x; }
+				if ( _comment1W < p.x ) { _comment1W = p.x; }
+			}
+
+			if ( comment2 )
+			{
+				cpoint p = gc.GetTextExtents( comment2 );
+
+				if ( _comment2W < p.x ) { _comment2W = p.x; }
 			}
 
 			height += _itemH;
@@ -870,7 +882,7 @@ DlgMenu::DlgMenu( Win* parent, DlgMenuData* data )
 		}
 	}
 
-	w =  16 + 5 + _nameW + 5 + _commentW;
+	w =  16 + 5 + _nameW + 5 + _comment1W + 30 + _comment2W;
 
 	if ( _width < w ) { _width = w; }
 
@@ -882,7 +894,7 @@ inline bool EqFirst( const unicode_t* s, int c )
 	return s && UnicodeLC( *s ) == c;
 }
 
-bool DlgMenu::EventKey( cevent_key* pEvent )
+bool clSelectDriveDlgMenu::EventKey( cevent_key* pEvent )
 {
 	if ( _data->Count() && pEvent->Type() == EV_KEYDOWN )
 	{
@@ -965,7 +977,7 @@ t:
 }
 
 
-bool DlgMenu::EventMouse( cevent_mouse* pEvent )
+bool clSelectDriveDlgMenu::EventMouse( cevent_mouse* pEvent )
 {
 	switch ( pEvent->Type() )
 	{
@@ -1022,7 +1034,7 @@ bool DlgMenu::EventMouse( cevent_mouse* pEvent )
 static int uiFcColor = GetUiID( "first-char-color" );
 static int uiCommentColor = GetUiID( "comment-color" );
 
-void DlgMenu::Paint( wal::GC& gc, const crect& paintRect )
+void clSelectDriveDlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 {
 	cfont* font = GetFont();
 	gc.Set( font );
@@ -1032,10 +1044,14 @@ void DlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 
 	int count = _data->Count();
 
+	int Splitters = 0;
+	int SplitterTop = 0;
+	int SplitterBottom = 0;
+
 	for ( int i = 0; i < count; i++ )
 	{
 		if ( _data->list[i].cmd == 0 )
-		{
+		{			
 			gc.SetFillColor( bgColor );
 			gc.FillRect( crect( 0, y, _width, y + _splitterH ) );
 			crect rect( 0, y + 1, 0 + _width, y + 2 );
@@ -1046,6 +1062,9 @@ void DlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 			gc.SetFillColor( ColorTone( bgColor, +50 ) );
 			gc.FillRect( rect );
 			y += _splitterH;
+			Splitters++;
+			if ( Splitters == 1 ) SplitterTop = y;
+			if ( Splitters == 2 ) SplitterBottom = y - _splitterH;
 		}
 		else
 		{
@@ -1062,13 +1081,21 @@ void DlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 			gc.FillRect( crect( 0, y, _width, y + _itemH ) );
 
 			cicon icon;
-			icon.Load( _data->list[i].cmd, 16, 16 );
+			if ( _data->list[i].icon >= 0 )
+			{
+				icon.Load( _data->list[i].icon, 16, 16 );
+			}
+			else
+			{
+				icon.Load( _data->list[i].cmd, 16, 16 );
+			}
 			gc.DrawIcon( 0, y, &icon );
 			gc.SetTextColor( textColor );
 			int x = 16 + 5;
 
 			const unicode_t* name = _data->list[i].name.data();
-			const unicode_t* comment = _data->list[i].comment.data();
+			const unicode_t* comment1 = _data->list[i].comment1.data();
+			const unicode_t* comment2 = _data->list[i].comment2.data();
 
 			if ( name )
 			{
@@ -1077,26 +1104,36 @@ void DlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 				gc.TextOutF( x, y, name, 1 );
 			}
 
-			if ( comment )
+			if ( comment1 )
 			{
 				gc.SetTextColor( commentColor );
-				gc.TextOutF( x + _nameW + 5, y, comment );
+				gc.TextOutF( x + _nameW + 5, y, comment1 );
+			}
+
+			if ( comment2 )
+			{
+				gc.SetTextColor( commentColor );
+				gc.TextOutF( x + _nameW + 5 + _comment1W + 30, y, comment2 );
 			}
 
 			y += _itemH;
 		}
 	}
+
+	if ( _comment2W && SplitterTop && SplitterBottom )
+	{
+		int cx = _nameW + 5 + _comment1W + 30;
+		gc.SetFillColor( ColorTone( bgColor, -150 ) );
+		gc.FillRect( crect(cx, SplitterTop, cx + _splitterW, SplitterBottom) );
+	}
 }
 
-DlgMenu::~DlgMenu() {}
-
-
-int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, DlgMenuData* data )
+int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, clMenuData* data )
 {
 	if ( !data || data->Count() <= 0 ) { return CMD_CANCEL; }
 
 	NCDialog dlg( true, nUi, parent, utf8_to_unicode( header ).data(), 0 ); //, ::g_WcmConfig.whiteStyle ? 0xD8E9EC : 0xB0B000, 0xFFFFFF);
-	DlgMenu mtable( &dlg, data );
+	clSelectDriveDlgMenu mtable( &dlg, data );
 	mtable.Show();
 	mtable.Enable();
 	mtable.SetFocus();

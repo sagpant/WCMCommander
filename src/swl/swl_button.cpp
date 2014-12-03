@@ -26,20 +26,20 @@ namespace wal
 	{
 		GC gc( this );
 		gc.Set( GetFont() );
-		cpoint p = text.GetTextExtents(gc);
+		cpoint p = m_Text.GetTextExtents(gc);
 
-		if ( icon.ptr() )
+		if ( HasIcon() )
 		{
 			if ( p.y < 12 )
 			{
 				p.y = 12;
 			}
 
-			p.x += ICONX_RIGHTSPACE + icon->Width();
+			p.x += ICONX_RIGHTSPACE + m_Icon->Width();
 
-			if ( icon->Width() > p.y + 4 )
+			if ( m_Icon->Width() > p.y + 4 )
 			{
-				p.y = icon->Width() - 4;
+				p.y = m_Icon->Width() - 4;
 			}
 		}
 
@@ -53,14 +53,15 @@ namespace wal
 
 	Button::Button( int nId, Win* parent, const unicode_t* txt, int id, crect* rect, int iconX, int iconY )
 		:  Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId ),
-		   pressed( false ),
-		   text(txt && txt[0] ? txt : spaceUnicodeStr),
-		   icon( new cicon( id, iconX, iconY ) ),
-		   commandId( id )
+		   m_Pressed( false ),
+		   m_Text(txt && txt[0] ? txt : spaceUnicodeStr),
+		   m_Icon( new cicon( id, iconX, iconY ) ),
+		   m_CommandId( id ),
+		   m_ShowIcon( true )
 	{
-		if ( !icon->Valid() )
+		if ( !m_Icon->Valid() )
 		{
-			icon.clear();
+			m_Icon.clear();
 		}
 
 		if ( !rect )
@@ -71,14 +72,14 @@ namespace wal
 
 	void Button::Set( const unicode_t* txt, int id, int iconX, int iconY )
 	{
-		text.SetText( txt && txt[0] ? txt : spaceUnicodeStr );
+		m_Text.SetText( txt && txt[0] ? txt : spaceUnicodeStr );
 
-		commandId = id;
-		icon = new cicon( id, iconX, iconY );
+		m_CommandId = id;
+		m_Icon = new cicon( id, iconX, iconY );
 
-		if ( !icon->Valid() )
+		if ( !m_Icon->Valid() )
 		{
-			icon.clear();
+			m_Icon.clear();
 		}
 	}
 
@@ -92,11 +93,11 @@ namespace wal
 					crect r = ClientRect();
 					cpoint p = pEvent->Point();
 
-					if ( pressed )
+					if ( m_Pressed )
 					{
 						if ( p.x < 0 || p.y < 0 || p.x >= r.right || p.y >= r.bottom )
 						{
-							pressed = false;
+							m_Pressed = false;
 							Invalidate();
 						}
 					}
@@ -104,7 +105,7 @@ namespace wal
 					{
 						if ( p.x >= 0 && p.y >= 0 && p.x < r.right && p.y < r.bottom )
 						{
-							pressed = true;
+							m_Pressed = true;
 							Invalidate();
 						}
 					}
@@ -117,7 +118,7 @@ namespace wal
 				if ( pEvent->Button() != MB_L ) { break; }
 
 				SetCapture();
-				pressed = true;
+				m_Pressed = true;
 				Invalidate();
 				break;
 
@@ -126,9 +127,9 @@ namespace wal
 
 				ReleaseCapture();
 
-				if ( pressed ) { SendCommand(); }
+				if ( m_Pressed ) { SendCommand(); }
 
-				pressed = false;
+				m_Pressed = false;
 				Invalidate();
 				break;
 		};
@@ -140,9 +141,9 @@ namespace wal
 	{
 		bool ret = Win::EventFocus( recv );
 
-		if ( !recv && pressed )
+		if ( !recv && m_Pressed )
 		{
-			pressed = false;
+			m_Pressed = false;
 		}
 
 		Invalidate();
@@ -151,15 +152,18 @@ namespace wal
 
 	bool Button::EventKey( cevent_key* pEvent )
 	{
-		if ((pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN) || text.isHotkeyMatching(UnicodeUC(pEvent->Char())))
+		bool IsReturn = pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN;
+		bool IsHotkey = m_Text.isHotkeyMatching(UnicodeUC(pEvent->Char()));
+
+		if ( IsReturn || IsHotkey )
 		{
 			if (pEvent->Type() == EV_KEYDOWN)
 			{
-				pressed = true;
+				m_Pressed = true;
 			}
-			else if (pressed && pEvent->Type() == EV_KEYUP)
+			else if ( m_Pressed && pEvent->Type() == EV_KEYUP )
 			{
-				pressed = false;
+				m_Pressed = false;
 				SendCommand();
 			}
 			else
@@ -173,7 +177,7 @@ namespace wal
 
 	Win*  Button::IsHisHotKey(cevent_key* pEvent)
 	{
-		return text.isHotkeyMatching(UnicodeUC(pEvent->Char()))? this:0;
+		return m_Text.isHotkeyMatching( UnicodeUC(pEvent->Char()) ) ? this : nullptr;
 	}
 
 	void Button::Paint( GC& gc, const crect& paintRect )
@@ -189,7 +193,7 @@ namespace wal
 		gc.SetFillColor( colorBg );
 		gc.FillRect( rect );
 
-		if ( pressed )
+		if ( m_Pressed )
 		{
 			if ( g_WcmConfig.styleShow3DUI )
 			{
@@ -212,15 +216,11 @@ namespace wal
 			{
 				DrawBorder( gc, rect, /*GetColor(IC_FOCUS_MARK)*/ UiGetColor( uiFocusFrameColor, 0, 0, 0 ) );
 			}
-
-#if USE_3D_BUTTONS
-			rect.Dec();
-#endif
 		}
 
 		//gc.SetTextColor( /*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ UiGetColor( uiColor, 0, 0, 0 ) );
 		gc.Set( GetFont() );
-		cpoint tsize = text.GetTextExtents(gc);
+		cpoint tsize = m_Text.GetTextExtents( gc );
 
 		/*
 		int l = tsize.x + (icon.ptr() ? icon->Width() + ICONX_RIGHTSPACE : 0);
@@ -233,21 +233,25 @@ namespace wal
 		int x = rect.left + LEFTSPACE + (w-l)/2 +(pressed?2:0);
 		*/
 
-		int l = tsize.x + ( icon.ptr() ? icon->Width() + ICONX_RIGHTSPACE : 0 );
+		bool HasIcon = m_Icon.ptr() && m_ShowIcon;
+
+		int l = tsize.x + ( HasIcon ? m_Icon->Width() + ICONX_RIGHTSPACE : 0 );
 		int w = rect.Width();
-		int x = rect.left + ( w > l ? ( w - l ) / 2 : 0 ) + ( pressed ? 2 : 0 );
+		int x = rect.left + ( w > l ? ( w - l ) / 2 : 0 ) + ( m_Pressed ? 2 : 0 );
 
 
-		if ( icon.ptr() )
+		if ( HasIcon )
 		{
-			gc.DrawIcon( x, rect.top + ( rect.Height() - icon->Height() ) / 2 + ( pressed ? 2 : 0 ), icon.ptr() );
-			x += icon->Width() + ICONX_RIGHTSPACE;
+			gc.DrawIcon( x, rect.top + ( rect.Height() - m_Icon->Height() ) / 2 + ( m_Pressed ? 2 : 0 ), m_Icon.ptr() );
+			x += m_Icon->Width() + ICONX_RIGHTSPACE;
 		}
 
 		gc.SetClipRgn( &rect );
-		text.DrawItem(gc, x, rect.top + (rect.Height() - tsize.y) / 2 + (pressed ? 2 : 0), 
+		m_Text.DrawItem(
+			gc, x, rect.top + (rect.Height() - tsize.y) / 2 + (m_Pressed ? 2 : 0), 
 			UiGetColor(uiColor, uiClassButton, 0, 0), 
-			UiGetColor(uiHotkeyColor, uiClassButton, 0, 0));
+			UiGetColor(uiHotkeyColor, uiClassButton, 0, 0)
+		);
 	}
 
 	Button::~Button() {}

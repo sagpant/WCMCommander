@@ -1491,9 +1491,9 @@ void EditWin::SetScrollCtx( const sEditorScrollCtx& Ctx )
 void EditWin::CalcScroll()
 {
 	ScrollInfo vsi;
-	vsi.pageSize = rows;
-	vsi.size = text.Count();
-	vsi.pos = firstLine;
+	vsi.m_PageSize = rows;
+	vsi.m_Size = text.Count();
+	vsi.m_Pos = firstLine;
 	bool vVisible = vscroll.IsVisible();
 	vscroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &vsi );
 
@@ -1639,7 +1639,7 @@ void EditWin::EnableShl( bool on )
 			return;
 		}
 
-		cstrhash<int> colors;
+		std::unordered_map< std::string, int > colors;
 		colors["DEF"   ] = COLOR_DEF_ID;
 		colors["KEYWORD"] = COLOR_KEYWORD_ID;
 		colors["COMMENT"] = COLOR_COMMENT_ID;

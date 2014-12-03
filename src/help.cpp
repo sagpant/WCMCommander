@@ -1317,7 +1317,7 @@ bool HelpFile::LoadFile( sys_char_t* name )
 	try
 	{
 		BFile f;
-		ccollect<char, 1000> collector;
+		std::vector<char> collector;
 //printf("file-'%s'\n", name);
 		f.Open( name );
 
@@ -1335,24 +1335,24 @@ bool HelpFile::LoadFile( sys_char_t* name )
 
 				while ( IsSpace( *s ) ) { s++; }
 
-				ccollect<char> str;
+				std::vector<char> str;
 
-				while ( *s && *s != ']' && !IsSpace( *s ) ) { str.append( *s ); s++; }
+				while ( *s && *s != ']' && !IsSpace( *s ) ) { str.push_back( *s ); s++; }
 
 				while ( IsSpace( *s ) ) { s++; }
 
-				if ( *s == ']' && str.count() > 0 ) //ok
+				if ( *s == ']' && str.size() > 0 ) //ok
 				{
 
-					str.append( 0 );
+					str.push_back( 0 );
 
 					if ( thName.data() )
 					{
-						collector.append( 0 );
-						hash[thName.data()] = collector.grab();
+						collector.push_back( 0 );
+						hash[ thName.data() ] = collector;
 					}
 
-					thName = str.grab();
+					thName = str;
 					continue;
 				}
 			}
@@ -1360,15 +1360,16 @@ bool HelpFile::LoadFile( sys_char_t* name )
 			if ( thName.data() )
 			{
 				int n = strlen( buf );
-				collector.append_list( buf, n );
+
+				std::copy( buf, buf+n, std::back_inserter(collector) );
 			}
 
 		}
 
 		if ( thName.data() )
 		{
-			collector.append( 0 );
-			hash[thName.data()] = collector.grab();
+			collector.push_back( 0 );
+			hash[ thName.data() ] = collector;
 		}
 
 		f.Close();
@@ -1578,13 +1579,13 @@ void HelpWin::CalcScroll()
 	if ( dataWidth <= 0 ) { dataWidth = 1; }
 
 	ScrollInfo vsi, hsi;
-	vsi.pageSize = helpRect.Height();
-	vsi.size = dataHeight;
-	vsi.pos = yOffset;
+	vsi.m_PageSize = helpRect.Height();
+	vsi.m_Size = dataHeight;
+	vsi.m_Pos = yOffset;
 
-	hsi.pageSize = helpRect.Width();
-	hsi.size = dataWidth;
-	hsi.pos = xOffset;
+	hsi.m_PageSize = helpRect.Width();
+	hsi.m_Size = dataWidth;
+	hsi.m_Pos = xOffset;
 
 	bool vVisible = vScroll.IsVisible();
 	vScroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &vsi );

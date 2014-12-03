@@ -47,13 +47,11 @@ namespace wal
 		const T& const_item( int n ) const;
 		const T* const_ptr() const;
 		T* ptr();
-		const std::vector<T>& grab() const;
 		T& operator [] ( int n );
 		void insert( int n );
 		void insert( int n, const T& a );
 		void insert( int n, int count );
 		void append ( const T& a );
-		void append_list ( const T* list, int number );
 		void append_n ( const T& p, int number );
 		void clear();
 		int count() const;
@@ -112,11 +110,6 @@ namespace wal
 		return m_data.data();
 	}
 
-	template <class T, size_t Step> const std::vector<T>& ccollect<T, Step>::grab() const
-	{
-		return m_data;
-	}
-
 	template <class T, size_t Step> inline const T& ccollect<T, Step>::const_item( int n ) const
 	{
 		ASSERT( n >= 0 && n < ( int )m_data.size( ) );
@@ -137,16 +130,6 @@ namespace wal
 	template <class T, size_t Step> inline void ccollect<T, Step>::append ( const T& a )
 	{
 		m_data.push_back( a );
-	}
-	
-	template <class T, size_t Step> void ccollect<T, Step>::append_list ( const T* p, int number )
-	{
-		m_data.reserve( m_data.size( ) + number );
-
-		for ( int i = 0; i < number; i++, p++ )
-		{
-			m_data.push_back( *p );
-		}
 	}
 
 	template <class T, size_t Step> void ccollect<T, Step>::append_n( const T& p, int number )

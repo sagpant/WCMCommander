@@ -32,7 +32,11 @@
 clPtr<wal::GC> defaultGC;
 
 const char* appName = "Wal Commander GitHub Edition";
+#if defined( _WIN32 )
+const char* appNameRoot = "Wal Commander GitHub Edition (Administrator)";
+#else
 const char* appNameRoot = "Wal Commander GitHub Edition (Root)";
+#endif
 
 cfont* ( *OldSysGetFont )( Win* w, int id ) = 0;
 
@@ -296,6 +300,34 @@ bool ParseCommandLine( int argc, char** argv, NCWin* NcWin )
 	return true;
 }
 
+#if defined( _WIN32 )
+#pragma warning( disable:4996 ) // 'GetVersion' was declared deprecated
+void SetHighDPIAware()
+{
+	DWORD dwVersion = 0;
+	DWORD dwMajorVersion = 0;
+
+	dwVersion = GetVersion();
+
+	// Get the Windows version.
+	dwMajorVersion = ( DWORD )( LOBYTE( LOWORD( dwVersion ) ) );
+
+	if ( dwMajorVersion > 5 )
+	{
+		/// Anything below WinXP without SP3 does not support High DPI, so we do not enable it on WinXP at all.
+		HMODULE Lib = ::LoadLibrary( "user32.dll" );
+
+		typedef BOOL ( *SetProcessDPIAwareFunc )();
+
+		SetProcessDPIAwareFunc SetDPIAware = ( SetProcessDPIAwareFunc )::GetProcAddress( Lib, "SetProcessDPIAware" );
+
+		if ( SetDPIAware ) SetDPIAware();
+
+		FreeLibrary( Lib );
+	}
+}
+#endif
+
 #ifdef _WIN32
 int APIENTRY _tWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int       nCmdShow )
 #else
@@ -305,6 +337,7 @@ int main( int argc, char** argv )
 	try
 	{
 #ifdef _WIN32
+		SetHighDPIAware();
 		//disable system critical messageboxes (for example: no floppy disk :) )
 		SetErrorMode( SEM_FAILCRITICALERRORS );
 #endif

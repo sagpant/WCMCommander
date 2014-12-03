@@ -1017,7 +1017,7 @@ namespace wal
 	protected:
 		void UiSetNameId( int id ) { uiNameId = id; }
 	public:
-		Win( WTYPE t, unsigned hints = 0, Win* _parent = 0, const crect* rect = 0, int uiNId = 0 );
+		Win( WTYPE t, unsigned hints = 0, Win* _parent = nullptr, const crect* rect = nullptr, int uiNId = 0 );
 
 		WinID GetID() { return handle; }
 		Win* Parent() { return parent; }

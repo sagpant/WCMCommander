@@ -4,7 +4,6 @@
     <ClCompile Include="src/charsetdlg.cpp" />
     <ClCompile Include="src/color-style.cpp" />
     <ClCompile Include="src/dircalc.cpp" />
-    <ClInclude Include="src/dlg-ctrl-l.cpp" />
     <ClCompile Include="src/eloadsave.cpp" />
     <ClCompile Include="src/ext-app.cpp" />
     <ClCompile Include="src/globals.cpp" />
@@ -73,6 +72,8 @@
     <ClCompile Include="src/wcm-config.cpp" />
     <ClCompile Include="src/wal\IntrusivePtr.h" />
     <ClCompile Include="src/strmasks.cpp" />
+    <ClCompile Include="src/dlg-ctrl-l.cpp" />
+    <ClCompile Include="src/usermenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/charsetdlg.h" />
@@ -140,10 +141,9 @@
     <ClInclude Include="src/wal\wal_tmpls.h" />
     <ClInclude Include="src/wcm-config.h" />
     <ClInclude Include="src/strmasks.h" />
+    <ClInclude Include="src/usermenu.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="src/wcm.rc">
-      <Filter>resources</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="src/wcm.rc" />
   </ItemGroup>
 </Project>

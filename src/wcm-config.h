@@ -96,6 +96,7 @@ public:
 #pragma region System settings
 	bool systemAskOpenExec;
 	bool systemEscPanel;
+	bool systemEscCommandLine;
 	bool systemBackSpaceUpDir;
 	bool systemAutoComplete;
 	bool systemAutoSaveSetup;
@@ -111,6 +112,7 @@ public:
 	bool panelShowFolderIcons;
 	bool panelShowExecutableIcons;
 	bool panelShowLinkIcons;
+	bool panelShowScrollbar;
 	ePanelSpacesMode panelShowSpacesMode;
 	int panelModeLeft;
 	int panelModeRight;
@@ -132,6 +134,8 @@ public:
 	int styleColorMode;
 	bool styleShowToolBar;
 	bool styleShowButtonBar;
+	bool styleShowButtonBarIcons;
+	bool styleShowMenuBar;
 #pragma endregion 
 
 #pragma region Window position and size to be restored on the next startup

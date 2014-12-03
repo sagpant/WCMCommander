@@ -19,12 +19,16 @@ class clMultimaskSplitter
 public:
 	explicit clMultimaskSplitter( const std::vector<unicode_t>& MultiMask );
 
+	/// this is OS-specific: case insensitive on Win/Mac, case sensitive on Linux/FreeBSD
+	bool CheckAndFetchAllMasks( const unicode_t* FileName );
+
+	bool CheckAndFetchAllMasks_NoCase( const unicode_t* FileName );
+
+	bool CheckAndFetchAllMasks_Case( const unicode_t* FileName );
+
+protected:
 	bool HasNextMask() const;
 	std::vector<unicode_t> GetNextMask();
-
-	bool CheckAndFetchAllMasks( const unicode_t* FileName );
-	bool CheckAndFetchAllMasks_NoCase( const unicode_t* FileName );
-	bool CheckAndFetchAllMasks_Case( const unicode_t* FileName );
 
 private:
 	const std::vector<unicode_t>& m_MultiMask;

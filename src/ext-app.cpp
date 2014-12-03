@@ -35,7 +35,7 @@ static std::vector<wchar_t> GetOpenApp( wchar_t* ext )
 
 static std::vector<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const unicode_t* uri )
 {
-	ccollect<unicode_t, 0x100> res;
+	std::vector<unicode_t> res;
 	int insCount = 0;
 
 	int prev = 0;
@@ -44,31 +44,31 @@ static std::vector<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const u
 	{
 		if ( *s == '%' && ( s[1] == '1' || s[1] == 'l' || s[1] == 'L' ) )
 		{
-			if ( prev != '"' && prev != '\'' ) { res.append( '"' ); }
+			if ( prev != '"' && prev != '\'' ) { res.push_back( '"' ); }
 
-			for ( const unicode_t* t = uri; *t; t++ ) { res.append( *t ); }
+			for ( const unicode_t* t = uri; *t; t++ ) { res.push_back( *t ); }
 
-			if ( prev != '"' && prev != '\'' ) { res.append( '"' ); }
+			if ( prev != '"' && prev != '\'' ) { res.push_back( '"' ); }
 
 			s++;
 			insCount++;
 		}
-		else { res.append( *s ); }
+		else { res.push_back( *s ); }
 	}
 
 	if ( !insCount )
 	{
-		res.append( ' ' );
-		res.append( '"' );
+		res.push_back( ' ' );
+		res.push_back( '"' );
 
-		for ( const unicode_t* t = uri; *t; t++ ) { res.append( *t ); }
+		for ( const unicode_t* t = uri; *t; t++ ) { res.push_back( *t ); }
 
-		res.append( '"' );
+		res.push_back( '"' );
 	}
 
-	res.append( 0 );
+	res.push_back( 0 );
 
-	return res.grab();
+	return res;
 }
 
 static std::vector<wchar_t> GetFileExt( const unicode_t* uri )

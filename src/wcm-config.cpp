@@ -645,10 +645,12 @@ const char* sectionFonts = "fonts";
 static const char* CommandsHistorySection = "CommandsHistory";
 static const char* FilesAssociationsSection = "FilesAssociations";
 static const char* HighlightingRulesSection = "HighlightingRules";
+static const char* UserMenuSection = "UserMenu";
 
 clWcmConfig::clWcmConfig()
  : systemAskOpenExec( true )
  , systemEscPanel( true )
+ , systemEscCommandLine( true )
  , systemBackSpaceUpDir( false )
  , systemAutoComplete( true )
  , systemAutoSaveSetup( true )
@@ -662,6 +664,7 @@ clWcmConfig::clWcmConfig()
  , panelShowFolderIcons( true )
  , panelShowExecutableIcons( true )
  , panelShowLinkIcons( true )
+ , panelShowScrollbar( true )
  , panelShowSpacesMode( ePanelSpacesMode_Trailing )
  , panelModeLeft( 0 )
  , panelModeRight( 0 )
@@ -677,6 +680,8 @@ clWcmConfig::clWcmConfig()
  , styleColorMode( 0 )
  , styleShowToolBar( true )
  , styleShowButtonBar( true )
+ , styleShowButtonBarIcons( true )
+ , styleShowMenuBar( true )
 
  , windowX(0)
  , windowY(0)
@@ -690,6 +695,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionSystem, "ask_open_exec", &systemAskOpenExec, systemAskOpenExec );
 #endif
 	MapBool( sectionSystem, "esc_panel", &systemEscPanel, systemEscPanel );
+	MapBool( sectionSystem, "esc_panel", &systemEscCommandLine, systemEscCommandLine );
 	MapBool( sectionSystem, "back_updir", &systemBackSpaceUpDir, systemBackSpaceUpDir );
 	MapBool( sectionSystem, "auto_complete", &systemAutoComplete, systemAutoComplete );
 	MapBool( sectionSystem, "auto_save_setup", &systemAutoSaveSetup, systemAutoSaveSetup );
@@ -698,6 +704,8 @@ clWcmConfig::clWcmConfig()
 
 	MapBool( sectionSystem, "show_toolbar", &styleShowToolBar, styleShowToolBar );
 	MapBool( sectionSystem, "show_buttonbar", &styleShowButtonBar, styleShowButtonBar );
+	MapBool( sectionSystem, "show_buttonbaricons", &styleShowButtonBarIcons, styleShowButtonBarIcons );
+	MapBool( sectionSystem, "show_menubar", &styleShowMenuBar, styleShowMenuBar );
 	MapBool( sectionPanel, "show_3d_ui", &styleShow3DUI, styleShow3DUI );
 	MapInt( sectionPanel, "color_mode", &styleColorMode, styleColorMode );
 
@@ -708,6 +716,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionPanel, "show_foldericons",     &panelShowFolderIcons, panelShowFolderIcons );
 	MapBool( sectionPanel, "show_executableicons",     &panelShowExecutableIcons, panelShowExecutableIcons );
 	MapBool( sectionPanel, "show_linkicons",     &panelShowLinkIcons, panelShowLinkIcons );
+	MapBool( sectionPanel, "show_scrollbar",     &panelShowScrollbar, panelShowScrollbar );
 	MapInt( sectionPanel,  "show_spaces_mode",     (int*)&panelShowSpacesMode, panelShowSpacesMode );
 	MapInt( sectionPanel,  "mode_left",     &panelModeLeft, panelModeLeft );
 	MapInt( sectionPanel,  "mode_right",    &panelModeRight, panelModeRight );
@@ -978,6 +987,75 @@ void LoadFileAssociations( NCWin* nc
 	nc->SetFileAssociations( Assoc );
 }
 
+void SaveUserMenu( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigWriter Cfg;
+#else
+	clConfigWriter Cfg( hash );
+#endif
+	Cfg.SetSectionName( UserMenuSection );
+
+	const std::vector<clNCUserMenuItem>& Items = nc->GetUserMenuItems();
+
+	for ( size_t i = 0; i < Items.size(); i++ )
+	{
+		const clNCUserMenuItem& A = Items[i];
+
+		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
+		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetCommand().data() );
+
+		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
+		Cfg.Write( "Execute%i", i, Execute_utf8.data( ) );
+	}
+
+	// end marker
+	Cfg.Write( "Mask%i", Items.size(), "" );
+}
+
+void LoadUserMenu( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigReader Cfg;
+#else
+	clConfigReader Cfg( hash );
+#endif
+	Cfg.SetSectionName( UserMenuSection );
+
+	int i = 0;
+
+	std::vector<clNCUserMenuItem> Items;
+
+	while (true)
+	{
+		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
+		std::vector<unicode_t> Execute = Cfg.Read( "Execute%i", i );
+
+		if ( !Description.data() || !*Execute.data() ) break;
+
+		clNCUserMenuItem A;
+		A.SetDescription( Description );
+		A.SetCommand( Execute );
+		Items.push_back( A );
+
+		i++;
+	}
+
+	nc->SetUserMenuItems( Items );
+}
+
 void SaveFileHighlightingRules( NCWin* nc
 #ifndef _WIN32
 , IniHash& hash
@@ -1236,6 +1314,7 @@ void clWcmConfig::Load( NCWin* nc )
 	LoadCommandsHistory( nc );
 	LoadFileAssociations( nc );
 	LoadFileHighlightingRules( nc );
+	LoadUserMenu( nc );
 
 #else
 	IniHash hash;
@@ -1276,6 +1355,7 @@ void clWcmConfig::Load( NCWin* nc )
 	LoadCommandsHistory( nc, hash );
 	LoadFileAssociations( nc, hash );
 	LoadFileHighlightingRules( nc, hash );
+	LoadUserMenu( nc, hash );
 
 #endif
 
@@ -1361,6 +1441,7 @@ void clWcmConfig::Save( NCWin* nc )
 	SaveCommandsHistory( nc );
 	SaveFileAssociations( nc );
 	SaveFileHighlightingRules( nc );
+	SaveUserMenu( nc );
 
 #else
 	IniHash hash;
@@ -1389,6 +1470,7 @@ void clWcmConfig::Save( NCWin* nc )
 	SaveCommandsHistory( nc, hash );
 	SaveFileAssociations( nc, hash );
 	SaveFileHighlightingRules( nc, hash );
+	SaveUserMenu( nc, hash );
 
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
 #endif
@@ -1460,6 +1542,7 @@ public:
 	SButton  showFolderIcons;
 	SButton  showExecutableIcons;
 	SButton  showLinkIcons;
+	SButton  showScrollbar;
 
 	StaticLine showSpacesStatic;
 	SButton  showSpacesNoneButton;
@@ -1482,6 +1565,7 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
  , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, g_WcmConfig.panelShowFolderIcons )
  , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, g_WcmConfig.panelShowExecutableIcons )
  , showLinkIcons( 0, this, utf8_to_unicode( _LT( "Show &link icons" ) ).data(), 0, g_WcmConfig.panelShowLinkIcons )
+ , showScrollbar( 0, this, utf8_to_unicode( _LT( "Show &scrollbar" ) ).data(), 0, g_WcmConfig.panelShowScrollbar )
  , showSpacesStatic( 0, this, utf8_to_unicode( _LT( "Show spaces as · in names:" ) ).data() )
  , showSpacesNoneButton( 0, this, utf8_to_unicode( _LT( "No" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode != 1 && g_WcmConfig.panelShowSpacesMode != 2 )
  , showSpacesAllButton( 0, this,  utf8_to_unicode( _LT( "All" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 1 )
@@ -1495,10 +1579,11 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	iL.AddWinAndEnable( &showFolderIcons, 4, 0 );
 	iL.AddWinAndEnable( &showExecutableIcons, 5, 0 );
 	iL.AddWinAndEnable( &showLinkIcons, 6, 0 );
-	iL.AddWinAndEnable( &showSpacesStatic, 7, 0 );
-	iL.AddWinAndEnable( &showSpacesNoneButton, 8, 0 );
-	iL.AddWinAndEnable( &showSpacesAllButton, 9, 0 );
-	iL.AddWinAndEnable( &showSpacesTrailingButton, 10, 0 );
+	iL.AddWinAndEnable( &showScrollbar, 7, 0 );
+	iL.AddWinAndEnable( &showSpacesStatic, 8, 0 );
+	iL.AddWinAndEnable( &showSpacesNoneButton, 9, 0 );
+	iL.AddWinAndEnable( &showSpacesAllButton, 10, 0 );
+	iL.AddWinAndEnable( &showSpacesTrailingButton, 11, 0 );
 
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
@@ -1512,6 +1597,7 @@ PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
 	order.append( &showFolderIcons );
 	order.append( &showExecutableIcons );
 	order.append( &showLinkIcons );
+	order.append( &showScrollbar );
 	order.append( &showSpacesNoneButton );
 	order.append( &showSpacesAllButton );
 	order.append( &showSpacesTrailingButton );
@@ -1531,6 +1617,7 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.panelShowFolderIcons  = dlg.showFolderIcons.IsSet();
 		g_WcmConfig.panelShowExecutableIcons  = dlg.showExecutableIcons.IsSet();
 		g_WcmConfig.panelShowLinkIcons  = dlg.showLinkIcons.IsSet();
+		g_WcmConfig.panelShowScrollbar = dlg.showScrollbar.IsSet();
 		if ( dlg.showSpacesTrailingButton.IsSet() )
 		{
 			g_WcmConfig.panelShowSpacesMode = ePanelSpacesMode_Trailing;
@@ -1679,6 +1766,8 @@ public:
 	StaticLine showStatic;
 	SButton  showToolbarButton;
 	SButton  showButtonbarButton;
+	SButton  showButtonbarIconsButton;
+	SButton  showMenubarButton;
 
 	StaticLine fontsStatic;
 	TextList fontList;
@@ -1735,6 +1824,8 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
 	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, g_WcmConfig.styleShowToolBar ),
 	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar" ) ).data(), 0, g_WcmConfig.styleShowButtonBar ),
+	   showButtonbarIconsButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar icons" ) ).data(), 0, g_WcmConfig.styleShowButtonBarIcons ),
+	   showMenubarButton( 0, this, utf8_to_unicode( _LT( "Show &menubar" ) ).data(), 0, g_WcmConfig.styleShowMenuBar ),
 
 	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
 	   fontList( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
@@ -1750,9 +1841,11 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	iL.AddWinAndEnable( &showStatic,  5, 0 );
 	iL.AddWinAndEnable( &showToolbarButton, 6, 1 );
 	iL.AddWinAndEnable( &showButtonbarButton,  7, 1 );
-	iL.LineSet( 8, 10 );
-	iL.AddWinAndEnable( &fontsStatic, 9, 0 );
-	iL.ColSet( 0, 10, 10, 10 );
+	iL.AddWinAndEnable( &showButtonbarIconsButton,  8, 1 );
+	iL.AddWinAndEnable( &showMenubarButton,  9, 1 );
+	iL.LineSet( 10, 10 );
+	iL.AddWinAndEnable( &fontsStatic, 11, 0 );
+	iL.ColSet( 0, 12, 12, 12 );
 	iL.SetColGrowth( 1 );
 
 	for ( int i = 0; i < pList->count(); i++ )
@@ -1770,7 +1863,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	lsize.x.maximal = 1000;
 	fontList.SetLSize( lsize );
 
-	iL.AddWinAndEnable( &fontList, 9, 1 );
+	iL.AddWinAndEnable( &fontList, 11, 1 );
 
 	fontNameStatic.Enable();
 	fontNameStatic.Show();
@@ -1780,16 +1873,16 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	lsize.x.maximal = 1000;
 	fontNameStatic.SetLSize( lsize );
 
-	iL.AddWin( &fontNameStatic, 10, 1 );
+	iL.AddWin( &fontNameStatic, 12, 1 );
 #ifdef USEFREETYPE
-	iL.AddWinAndEnable( &changeButton, 11, 1 );
+	iL.AddWinAndEnable( &changeButton, 13, 1 );
 #endif
 
 #ifdef _WIN32
-	iL.AddWinAndEnable( &changeButton, 11, 1 );
+	iL.AddWinAndEnable( &changeButton, 13, 1 );
 #else
-	iL.AddWinAndEnable( &changeX11Button, 12, 1 );
-	iL.LineSet( 12, 10 );
+	iL.AddWinAndEnable( &changeX11Button, 14, 1 );
+	iL.LineSet( 13, 10 );
 #endif
 
 #ifdef USEFREETYPE
@@ -1814,6 +1907,8 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	order.append( &styleWhiteButton );
 	order.append( &showToolbarButton );
 	order.append( &showButtonbarButton );
+	order.append( &showButtonbarIconsButton );
+	order.append( &showMenubarButton );
 	order.append( &fontList );
 	order.append( &changeButton );
 	order.append( &changeX11Button );
@@ -1965,12 +2060,18 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.styleShow3DUI = dlg.styleShow3DUIButton.IsSet();
 		g_WcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );
 		g_WcmConfig.styleShowButtonBar = dlg.showButtonbarButton.IsSet( );
+		g_WcmConfig.styleShowButtonBarIcons = dlg.showButtonbarIconsButton.IsSet( );
+		g_WcmConfig.styleShowMenuBar = dlg.showMenubarButton.IsSet( );
 
 		for ( int i = 0; i < list.count(); i++ )
+		{
 			if ( list[i].newFont.ptr() && list[i].newFont->uri()[0] && list[i].pUri )
 			{
 				*( list[i].pUri ) = new_char_str( list[i].newFont->uri() );
 			}
+		}
+
+		if ( parent ) parent->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, nullptr, nullptr );
 
 		return true;
 	}
@@ -2145,6 +2246,7 @@ public:
 
 	SButton  m_AskOpenExecButton;
 	SButton  m_EscPanelButton;
+	SButton  m_EscCommandLineButton;
 	SButton  m_BackUpDirButton;
 	SButton  m_AutoCompleteButton;
 	SButton  m_AutoSaveSetupButton;
@@ -2194,6 +2296,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	, m_iL( 16, 3 )
    , m_AskOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, g_WcmConfig.systemAskOpenExec )
    , m_EscPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, g_WcmConfig.systemEscPanel )
+   , m_EscCommandLineButton(0, this, utf8_to_unicode(_LT("Enable &ESC key to clear the command line")).data(), 0, g_WcmConfig.systemEscCommandLine )
    , m_BackUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, g_WcmConfig.systemBackSpaceUpDir )
    , m_AutoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, g_WcmConfig.systemAutoComplete )
    , m_AutoSaveSetupButton( 0, this, utf8_to_unicode( _LT( "Auto &save setup" ) ).data(), 0, g_WcmConfig.systemAutoSaveSetup )
@@ -2207,14 +2310,15 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	m_iL.AddWinAndEnable( &m_AskOpenExecButton, 0, 0, 0, 2 );
 #endif
 	m_iL.AddWinAndEnable( &m_EscPanelButton, 1, 0, 1, 2 );
-	m_iL.AddWinAndEnable( &m_BackUpDirButton, 2, 0, 2, 2 );
-	m_iL.AddWinAndEnable( &m_AutoCompleteButton, 3, 0, 3, 2 );
-	m_iL.AddWinAndEnable( &m_AutoSaveSetupButton, 4, 0, 4, 2 );
-	m_iL.AddWinAndEnable( &m_ShowHostNameButton, 5, 0, 5, 2 );
+	m_iL.AddWinAndEnable( &m_EscCommandLineButton, 2, 0, 2, 2 );
+	m_iL.AddWinAndEnable( &m_BackUpDirButton, 3, 0, 3, 2 );
+	m_iL.AddWinAndEnable( &m_AutoCompleteButton, 4, 0, 4, 2 );
+	m_iL.AddWinAndEnable( &m_AutoSaveSetupButton, 5, 0, 5, 2 );
+	m_iL.AddWinAndEnable( &m_ShowHostNameButton, 6, 0, 6, 2 );
 
-	m_iL.AddWinAndEnable( &m_LangStatic, 6, 0 );
-	m_iL.AddWinAndEnable( &m_LangVal, 6, 2 );
-	m_iL.AddWinAndEnable( &m_LangButton, 6, 1 );
+	m_iL.AddWinAndEnable( &m_LangStatic, 7, 0 );
+	m_iL.AddWinAndEnable( &m_LangVal, 7, 2 );
+	m_iL.AddWinAndEnable( &m_LangButton, 7, 1 );
 
 	m_iL.SetColGrowth( 2 );
 
@@ -2226,6 +2330,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	order.append( &m_AskOpenExecButton );
 #endif
 	order.append( &m_EscPanelButton );
+	order.append( &m_EscCommandLineButton );
 	order.append( &m_BackUpDirButton );
 	order.append( &m_AutoCompleteButton );
 	order.append( &m_AutoSaveSetupButton );
@@ -2287,7 +2392,8 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		g_WcmConfig.systemAskOpenExec = dlg.m_AskOpenExecButton.IsSet();
-		g_WcmConfig.systemEscPanel = dlg.m_EscPanelButton.IsSet( );
+		g_WcmConfig.systemEscPanel = dlg.m_EscPanelButton.IsSet();
+		g_WcmConfig.systemEscCommandLine = dlg.m_EscCommandLineButton.IsSet();
 		g_WcmConfig.systemBackSpaceUpDir = dlg.m_BackUpDirButton.IsSet( );
 		g_WcmConfig.systemAutoComplete = dlg.m_AutoCompleteButton.IsSet( );
 		g_WcmConfig.systemAutoSaveSetup = dlg.m_AutoSaveSetupButton.IsSet( );

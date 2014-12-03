@@ -142,7 +142,7 @@ class CharsetListWin: public VListWin
 	int fontH;
 public:
 	CharsetListWin( Win* parent, int H )
-		:  VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
+		:  VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, nullptr ),
 		   cList( 0 ),
 		   cCount( 0 )
 	{

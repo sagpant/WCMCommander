@@ -22,6 +22,7 @@
 #include "toolbar.h"
 #include "fileassociations.h"
 #include "filehighlighting.h"
+#include "usermenu.h"
 
 using namespace wal;
 
@@ -49,10 +50,10 @@ struct ButtonWinData
 
 class ButtonWin: public Win
 {
-	Layout _lo;
-	clPtr<Button> _buttons[10];
-	crect _rects[10];
-	cpoint _nSizes[10];
+	Layout m_Lo;
+	std::vector< clPtr<Button> > m_Buttons;
+	crect m_Rects[10];
+	cpoint m_nSizes[10];
 
 	ButtonWinData* lastData;
 public:
@@ -246,6 +247,9 @@ private:
 
 	NCHistory _history;
 
+	/// F2 user menu
+	std::vector<clNCUserMenuItem> m_UserMenuItems;
+
 	/// currently active file associations
 	std::vector<clNCFileAssociation> m_FileAssociations;
 
@@ -306,6 +310,7 @@ private:
 	void CtrlL();
 	void HistoryDialog();
 	void SelectDrive( PanelWin* p, PanelWin* OtherPanel );
+	void SelectSortMode( PanelWin* p );
 	void SaveSetupDialog();
 	void SaveSetup();
 	void Search();
@@ -315,6 +320,7 @@ private:
 	void FileAssociations();
 	void FileHighlighting();
 	void OnOffShl();
+	void UserMenu();
 
 	void SetToolbarPanel();
 	void SetToolbarEdit();
@@ -353,7 +359,6 @@ private:
 	unicode_t _execSN[64];
 
 	std::vector<unicode_t> FetchAndClearCommandLine();
-	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal );
 
 public:
 	NCWin();
@@ -383,6 +388,7 @@ public:
 
 	EditWin* GetEditor() { return &_editor; }
 	NCHistory* GetHistory() { return &_history; }
+
 	const std::vector<clNCFileAssociation>& GetFileAssociations() const { return m_FileAssociations; }
 	void SetFileAssociations( const std::vector<clNCFileAssociation>& Assoc ) { m_FileAssociations = Assoc; }
 
@@ -391,6 +397,11 @@ public:
 
 	const std::vector<clNCFileHighlightingRule>& GetFileHighlightingRules() const { return m_FileHighlightingRules; }
 	void SetFileHighlightingRules( const std::vector<clNCFileHighlightingRule>& Rules ) { m_FileHighlightingRules = Rules; }
+
+	const std::vector<clNCUserMenuItem>& GetUserMenuItems() const { return m_UserMenuItems; }
+	void SetUserMenuItems( const std::vector<clNCUserMenuItem>& Items ) { m_UserMenuItems = Items; }
+
+	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal );
 
 private:
 	bool ProcessCommand_CD( const unicode_t* cmd );

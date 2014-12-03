@@ -45,6 +45,7 @@
 #include "ltext.h"
 #include "strmasks.h"
 #include "dlg-ctrl-l.h"
+#include "usermenu.h"
 
 #ifndef _WIN32
 #  include "ux_util.h"
@@ -58,12 +59,12 @@ std::map<std::vector<unicode_t>, int> g_ViewPosHash;
 
 const int CMD_SWITCH = 32167;
 
-static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {0, 0}};
+static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {nullptr, 0}};
 
 ButtonWinData panelNormalButtons[] =
 {
 	{"Help", ID_HELP },
-	{"", 0}, //{"UserMn", ID_USER_MENU},
+	{"UserMn", ID_USER_MENU},
 	{"View", ID_VIEW},
 	{"Edit", ID_EDIT},
 	{"Copy", ID_COPY},
@@ -72,7 +73,7 @@ ButtonWinData panelNormalButtons[] =
 	{"Delete", ID_DELETE},
 	{"Menu", ID_MENU},
 	{"Quit", ID_QUIT},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData panelControlButtons[] =
@@ -87,7 +88,7 @@ ButtonWinData panelControlButtons[] =
 	{"", 0},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData panelAltButtons[] =
@@ -102,7 +103,7 @@ ButtonWinData panelAltButtons[] =
 	{"History", ID_HISTORY},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData panelShiftButtons[] =
@@ -118,7 +119,7 @@ ButtonWinData panelShiftButtons[] =
 	{"Save", ID_CONFIG_SAVE},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 
@@ -134,7 +135,7 @@ ButtonWinData editNormalButtons[] =
 	{"Charset", ID_CHARSET},
 	{"", 0},
 	{"Exit", ID_QUIT},
-	{0, 0}
+	{nullptr, 0}
 };
 
 
@@ -150,7 +151,7 @@ ButtonWinData editShiftButtons[] =
 	{"Table", ID_CHARSET_TABLE},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData editCtrlButtons[] =
@@ -165,7 +166,7 @@ ButtonWinData editCtrlButtons[] =
 	{"", 0},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 
@@ -181,7 +182,7 @@ ButtonWinData viewNormalButtons[] =
 	{"Charset", ID_CHARSET},
 	{"", 0},
 	{"Exit", ID_QUIT},
-	{0, 0}
+	{nullptr, 0}
 };
 
 ButtonWinData viewShiftButtons[] =
@@ -196,7 +197,7 @@ ButtonWinData viewShiftButtons[] =
 	{"Table", ID_CHARSET_TABLE},
 	{"", 0},
 	{"", 0},
-	{0, 0}
+	{nullptr, 0}
 };
 
 static const int CMD_OPEN_FILE = 1000;
@@ -394,6 +395,25 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 	}
 }
 
+bool IsRoot()
+{
+#if defined(_WIN32)
+	HANDLE Token = 0;
+	if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &Token))
+	{
+		TOKEN_ELEVATION TokenInfo;
+		TokenInfo.TokenIsElevated = 0;
+		DWORD ReturnLength = 0;
+		GetTokenInformation( Token, TokenElevation, &TokenInfo, sizeof(TokenInfo), &ReturnLength );
+		CloseHandle( Token );
+		return TokenInfo.TokenIsElevated > 0;
+	}
+	return false;
+#else
+	return getuid() == 0;
+#endif
+}
+
 NCWin::NCWin()
  : NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect )
  , _lo( 5, 1 )
@@ -453,8 +473,12 @@ NCWin::NCWin()
 	_leftPanel.Enable();
 	_rightPanel.Show();
 	_rightPanel.Enable();
-	_menu.Show();
-	_menu.Enable();
+
+	if ( g_WcmConfig.styleShowMenuBar )
+	{
+		_menu.Show();
+		_menu.Enable();
+	}
 
 	SetToolbarPanel();
 	_toolBar.Enable();
@@ -551,6 +575,7 @@ NCWin::NCWin()
 	_menu.Add( &_mdOptions, utf8_to_unicode( _LT( "&Options" ) ).data() );
 	_menu.Add( &_mdRight, utf8_to_unicode( _LT( "&Right" ) ).data() );
 
+	_mdFiles.AddCmd( ID_USER_MENU, _LT( "&User menu" ), "F2" );
 	_mdFiles.AddCmd( ID_VIEW, _LT( "&View" ),  "F3" );
 	_mdFiles.AddCmd( ID_EDIT, _LT( "&Edit" ),  "F4" );
 	_mdFiles.AddCmd( ID_COPY, _LT( "&Copy" ),  "F5" );
@@ -572,11 +597,7 @@ NCWin::NCWin()
 
 	m_Edit.SetFocus();
 
-#if defined( _WIN32 )
-	SetName( appName );
-#else
-	SetName( getuid() ? appName : appNameRoot );
-#endif
+	SetName( IsRoot() ? appNameRoot : appName );
 
 	this->AddLayout( &_lo );
 
@@ -1137,6 +1158,33 @@ void NCWin::StartExecute( const unicode_t* cmd, FS* fs,  FSPath& path )
 
 static int uiDriveDlg = GetUiID( "drive-dlg" );
 
+#if defined( _WIN32 )
+std::string GetVolumeName( int i )
+{
+	char VolumeName[1024] = { 0 };
+
+	char RootPath[0x100];
+	Lsnprintf( RootPath, sizeof(RootPath), "%c:\\", i + 'A' );
+	GetVolumeInformation( RootPath, VolumeName, sizeof(VolumeName), nullptr, nullptr, nullptr, nullptr, 0 );
+
+	return std::string( VolumeName );
+}
+
+std::string GetDriveTypeString( unsigned int Type )
+{
+	switch ( Type )
+	{
+	case DRIVE_REMOVABLE: return "removable";
+	case DRIVE_FIXED: return "fixed";
+	case DRIVE_REMOTE: return "remote";
+	case DRIVE_CDROM: return "CDROM";
+	case DRIVE_RAMDISK: return "RAM disk";
+	}
+
+	return std::string();
+}
+#endif
+
 void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 {
 	if ( _mode != PANEL ) { return; }
@@ -1145,11 +1193,11 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	ccollect< MntListNode > mntList;
 	UxMntList( &mntList );
 #endif
-	DlgMenuData mData;
+	clMenuData mData;
 
 	FSString OtherPanelPath = OtherPanel->UriOfDir();
 
-	mData.Add( OtherPanelPath.GetUnicode(), 0, ID_DEV_OTHER_PANEL );
+	mData.Add( OtherPanelPath.GetUnicode(), nullptr, nullptr, ID_DEV_OTHER_PANEL );
 	mData.AddSplitter();
 
 #ifdef _WIN32
@@ -1170,56 +1218,39 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 
 	if ( homeUri.data() )
 	{
-		mData.Add( _LT( "Home" ), 0, ID_DEV_HOME );
+		mData.Add( _LT( "Home" ), nullptr, nullptr, ID_DEV_HOME );
 	}
 
 	DWORD drv = GetLogicalDrives();
 
 	for ( int i = 0, mask = 1; i < 'z' - 'a' + 1; i++, mask <<= 1 )
+	{
 		if ( drv & mask )
 		{
 			char buf[0x100];
 			Lsnprintf( buf, sizeof( buf ), "%c:", i + 'A' );
 			UINT driveType = GetDriveType( buf );
-			const char* typeStr = "";
 
-			switch ( driveType )
-			{
-				case DRIVE_REMOVABLE:
-					typeStr = "removable";
-					break;
+			bool ShouldReadVolumeName = ( driveType == DRIVE_FIXED || driveType == DRIVE_RAMDISK );
+			
+			std::string DriveTypeStr = GetDriveTypeString( driveType );
+			std::string VolumeName = ShouldReadVolumeName ? GetVolumeName( i ) : std::string();
 
-				case DRIVE_FIXED:
-					typeStr = "fixed";
-					break;
-
-				case DRIVE_REMOTE:
-					typeStr = "remote";
-					break;
-
-				case DRIVE_CDROM:
-					typeStr = "CDROM";
-					break;
-
-				case DRIVE_RAMDISK:
-					typeStr = "RAM disk";
-					break;
-			}
-
-			mData.Add( buf, typeStr, ID_DEV_MS0 + i );
+			mData.Add( buf, DriveTypeStr.c_str(), VolumeName.c_str(), ID_DEV_MS0 + i );
 		}
+	}
 
 	mData.AddSplitter();
-	mData.Add( "1. NETWORK", 0, ID_DEV_SMB );
-	mData.Add( "2. FTP", 0, ID_DEV_FTP );
+	mData.Add( "1. NETWORK", nullptr, nullptr, ID_DEV_SMB );
+	mData.Add( "2. FTP", nullptr, nullptr, ID_DEV_FTP );
 #else
-	mData.Add( "1. /", 0,  ID_DEV_ROOT );
-	mData.Add( _LT( "2. Home" ), 0, ID_DEV_HOME );
-	mData.Add( "3. FTP", 0, ID_DEV_FTP );
+	mData.Add( "1. /", nullptr, nullptr,  ID_DEV_ROOT );
+	mData.Add( _LT( "2. Home" ), nullptr, nullptr, ID_DEV_HOME );
+	mData.Add( "3. FTP", nullptr, nullptr, ID_DEV_FTP );
 
 #ifdef LIBSMBCLIENT_EXIST
-	mData.Add( "4. Smb network", 0, ID_DEV_SMB );
-	mData.Add( "5. Smb server", 0, ID_DEV_SMB_SERVER );
+	mData.Add( "4. Smb network", nullptr, nullptr, ID_DEV_SMB );
+	mData.Add( "5. Smb server", nullptr, nullptr, ID_DEV_SMB_SERVER );
 #else
 
 #endif // LIBSMBCLIENT_EXIST
@@ -1227,7 +1258,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 #endif // _WIN32
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
-	mData.Add( "6. SFTP", 0, ID_DEV_SFTP );
+	mData.Add( "6. SFTP", nullptr, nullptr, ID_DEV_SFTP );
 #endif
 
 #ifndef _WIN32  //unix mounts
@@ -1271,7 +1302,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			char buf[64];
 			snprintf( buf, sizeof( buf ), "%i ", i + 1 );
 
-			mData.Add( carray_cat<unicode_t>( utf8_to_unicode( buf ).data(), un.data() ).data(), ut.data(), ID_MNT_UX0 + i );
+			mData.Add( carray_cat<unicode_t>( utf8_to_unicode( buf ).data(), un.data() ).data(), ut.data(), nullptr, ID_MNT_UX0 + i );
 		}
 	}
 #endif
@@ -1448,6 +1479,74 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	};
 }
 
+void NCWin::SelectSortMode( PanelWin* p )
+{
+	if ( !p ) { return; }
+	if ( _mode != PANEL ) { return; }
+
+	clMenuData mData;
+	
+	PanelList::SORT_MODE Mode = p->GetSortMode();
+	bool IsAscending = p->IsAscendingSort();
+
+	const int CHECKED_ICON_ID = IsAscending ? ID_REDO : ID_UNDO;
+
+	mData.Add( _LT("Name"), nullptr, nullptr, ID_SORT_BY_NAME_R, Mode == PanelList::SORT_NAME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT("Extension"), nullptr, nullptr, ID_SORT_BY_EXT_R, Mode == PanelList::SORT_EXT ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT("Modification time"), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT("Size"), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT("Unsorted"), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
+	//mData.AddSplitter();
+
+	int res = RunDldMenu( uiDriveDlg, p, "Sort by", &mData );
+	m_Edit.SetFocus();
+
+	switch ( res )
+	{
+	case ID_SORT_BY_NAME_R:
+		p->SortByName();
+		break;
+	case ID_SORT_BY_EXT_R:
+		p->SortByExt();
+		break;
+	case ID_SORT_BY_MODIF_R:
+		p->SortByMTime();
+		break;
+	case ID_SORT_BY_SIZE_R:
+		p->SortBySize();
+		break;
+	case ID_UNSORT_R:
+		p->DisableSort();
+		break;
+	default:
+		break;
+	}
+}
+
+void NCWin::UserMenu()
+{
+	UserMenuDlg( this, &m_UserMenuItems );
+
+	return;
+
+	clMenuData mData;
+	
+	//PanelList::SORT_MODE Mode = p->GetSortMode();
+	//bool IsAscending = p->IsAscendingSort();
+
+	//const int CHECKED_ICON_ID = IsAscending ? ID_REDO : ID_UNDO;
+
+	mData.Add( _LT("Name"), nullptr, nullptr, ID_SORT_BY_NAME_R );
+	mData.Add( _LT("Extension"), nullptr, nullptr, ID_SORT_BY_EXT_R );
+	//mData.Add( _LT("Modification time"), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
+	//mData.Add( _LT("Size"), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
+	//mData.Add( _LT("Unsorted"), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
+	//mData.AddSplitter();
+
+	int res = RunDldMenu( uiDriveDlg, this, "User menu (F4 edit)", &mData );
+	m_Edit.SetFocus();
+}
+
 void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
 {
 	if ( !cmd.data() ) { return; }
@@ -1467,8 +1566,6 @@ void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList>
 
 		StartExecute( Command.data( ), Panel->GetFS( ), Panel->GetPath( ) );
 	}
-
-	SetMode( PANEL );
 }
 
 void NCWin::ApplyCommand()
@@ -3147,6 +3244,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					SelectDrive( &_rightPanel, &_leftPanel );
 					return true;
 
+				case FC( VK_F12, KM_CTRL ):
+					SelectSortMode( _panel );
+					return true;
+
 				case FC( VK_F7, KM_SHIFT ):
 				case FC( VK_F7, KM_ALT ):
 					Search();
@@ -3243,11 +3344,32 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				}
 				else
 				{
-					const unicode_t* p = GetCurrentFileName();
+					clPtr<FSList> list = _panel->GetSelectedList();
 
-					if ( p )
+					if (!list.ptr() || list->Count() <= 0)
 					{
-						ct.AppendUnicodeStr( p );
+						// copy a single file name to clipboard
+						const unicode_t* p = GetCurrentFileName();
+
+						if ( p )
+						{
+							ct.AppendUnicodeStr( p );
+							ClipboardSetText( this, ct );
+						}
+					}
+					else
+					{
+						// copy all selected file names
+						std::vector<FSNode*> Names = list->GetArray();
+
+						const unicode_t* NewLine = L"\n";
+
+						for ( size_t i = 0; i != Names.size(); i++ )
+						{
+							ct.AppendUnicodeStr( Names[i]->GetUnicodeName() );
+							ct.AppendUnicodeStr( NewLine );
+						}
+
 						ClipboardSetText( this, ct );
 					}
 				}
@@ -3265,9 +3387,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				{
 					HideAutoComplete();
 				}
-				else if ( g_WcmConfig.systemEscPanel )
+				else
 				{
-					if ( m_Edit.IsVisible() && !m_Edit.IsEmpty() )
+					if ( m_Edit.IsVisible() && !m_Edit.IsEmpty() &&  g_WcmConfig.systemEscCommandLine )
 					{
 						// if the command line is not empty - clear it
 						m_Edit.Clear();
@@ -3407,6 +3529,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				Help( this, "main" );
 				break;
 
+			case VK_F2:
+				UserMenu();
+				break;
+
 			case FC( VK_F3, KM_CTRL ):
 				_panel->SortByName();
 				break;
@@ -3503,6 +3629,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			}
 
 			case VK_F9:
+				_menu.Show();
+				_menu.Enable();
+				this->RecalcLayouts();
 				_menu.SetFocus();
 				break;
 
@@ -3743,9 +3872,15 @@ void NCWin::ThreadStopped( int id, void* data )
 	_rightPanel.Reread();
 }
 
-bool NCWin::Command( int id, int subId, Win* win, void* data )
+bool NCWin::Command(int id, int subId, Win* win, void* data)
 {
-	if ( id == 0 ) { return true; }
+	if (id == 0) { return true; }
+
+	if ( id == CMD_MENU_INFO && ( subId == SCMD_MENU_CANCEL || subId == SCMD_MENU_SELECT ) )
+	{
+		if ( g_WcmConfig.styleShowMenuBar ) _menu.Show(); else _menu.Hide();
+		this->RecalcLayouts();
+	}
 
 	if ( _mode == PANEL )
 	{
@@ -3755,6 +3890,10 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 		{
 			case ID_HELP:
 				Help( this, "main" );
+				return true;
+
+			case ID_USER_MENU:
+				UserMenu();
 				return true;
 
 			case ID_MKDIR:
@@ -4175,11 +4314,9 @@ static unicode_t* BWNums[] = {NN1, NN2, NN3, NN4, NN5, NN6, NN7, NN8, NN9, NN10,
 
 void ButtonWin::OnChangeStyles()
 {
-	int i;
-
-	for ( i = 0; i < 10; i++ )
+	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
-		Win* w = _buttons[i].ptr();
+		Win* w = m_Buttons[i].ptr();
 
 		LSize ls = w->GetLSize();
 		ls.x.maximal = 1000;
@@ -4187,48 +4324,47 @@ void ButtonWin::OnChangeStyles()
 		w->SetLSize( ls );
 	}
 
-	wal::GC gc( ( Win* )0 );
+	wal::GC gc( (Win*)nullptr );
 	gc.Set( g_DialogFont.ptr() );
 	cpoint maxW( 1, 1 );
 
-	for ( i = 0; i < 10 && BWNums[i]; i++ )
+	for ( size_t i = 0; i < m_Buttons.size() && BWNums[i]; i++ )
 	{
-		cpoint pt = _nSizes[i] = gc.GetTextExtents( BWNums[i] );
+		cpoint pt = m_nSizes[i] = gc.GetTextExtents( BWNums[i] );
 
 		if ( maxW.x < pt.x ) { maxW.x = pt.x; }
 
 		if ( maxW.y < pt.y ) { maxW.y = pt.y; }
 
-		_nSizes[i] = pt;
+		m_nSizes[i] = pt;
 	}
 
-	for ( i = 0; i < 10; i++ )
+	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
-		_lo.AddRect( &( _rects[i] ), 0, i * 2 );
-		_lo.ColSet( i * 2, maxW.x + 2 );
+		m_Lo.AddRect( &( m_Rects[i] ), 0, i * 2 );
+		m_Lo.ColSet( i * 2, maxW.x + 2 );
 	}
 
-	SetLSize( _lo.GetLSize() );
+	SetLSize( m_Lo.GetLSize() );
 }
 
 ButtonWin::ButtonWin( Win* parent )
-	:  Win( WT_CHILD, 0, parent ),
-	   _lo( 1, 20 )
+ : Win( WT_CHILD, 0, parent )
+ , m_Lo( 1, 20 )
+ , m_Buttons( 10 )
 {
-	int i;
-
-	for ( i = 0; i < 10; i++ )
+	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
-		static unicode_t emptyStr[] = {' ', 0};
-		_buttons[i] = new Button( 0, this, emptyStr, 0, 0 ); //, 12, 12);
-		Win* w = _buttons[i].ptr();
+		static unicode_t emptyStr[] = { ' ', 0 };
+		m_Buttons[i] = new Button( 0, this, emptyStr, 0, 0 ); //, 12, 12);
+		Win* w = m_Buttons[i].ptr();
 		w->SetTabFocusFlag( false );
 		w->SetClickFocusFlag( false );
 		w->Show();
-		_lo.AddWin( w, 0, i * 2 + 1 );
+		m_Lo.AddWin( w, 0, i * 2 + 1 );
 	}
 
-	SetLayout( &_lo );
+	SetLayout( &m_Lo );
 	OnChangeStyles();
 };
 
@@ -4241,16 +4377,16 @@ void ButtonWin::Set( ButtonWinData* list )
 		for ( int i = 0; i < 10; i++ )
 		{
 			static unicode_t s[] = {' ', 0};
-			_buttons[i]->Set( s, 0 );
-			_buttons[i]->Enable( false );
+			m_Buttons[i]->Set( s, 0 );
+			m_Buttons[i]->Enable( false );
 		}
 	}
 	else
 	{
 		for ( int i = 0; i < 10 && list->txt; i++, list++ )
 		{
-			_buttons[i]->Set( utf8_to_unicode( _LT( carray_cat<char>( "BB>", list->txt ).data(), list->txt ) ).data(), list->commandId ); //, 12, 12);
-			_buttons[i]->Enable( list->commandId != 0 );
+			m_Buttons[i]->Set( utf8_to_unicode( _LT( carray_cat<char>( "BB>", list->txt ).data(), list->txt ) ).data(), list->commandId ); //, 12, 12);
+			m_Buttons[i]->Enable( list->commandId != 0 );
 		}
 	}
 }
@@ -4264,6 +4400,11 @@ int ButtonWin::UiGetClassId()
 
 void ButtonWin::Paint( wal::GC& gc, const crect& paintRect )
 {
+	for ( size_t i = 0; i != m_Buttons.size(); i++ )
+	{
+		if ( m_Buttons[i] ) m_Buttons[i]->SetShowIcon( g_WcmConfig.styleShowButtonBarIcons );
+	}
+
 	crect r = ClientRect();
 	gc.SetFillColor( UiGetColor( uiBackground, 0, 0, 0xFFFFFF ) );
 	gc.FillRect( r );
@@ -4274,8 +4415,8 @@ void ButtonWin::Paint( wal::GC& gc, const crect& paintRect )
 	for ( int i = 0; i < 10; i++ )
 	{
 		gc.TextOutF(
-		   _rects[i].left + ( _rects[i].Width() - _nSizes[i].x ) / 2,
-		   _rects[i].top + ( _rects[i].Height() - _nSizes[i].y ) / 2,
+		   m_Rects[i].left + ( m_Rects[i].Width()  - m_nSizes[i].x ) / 2,
+		   m_Rects[i].top  + ( m_Rects[i].Height() - m_nSizes[i].y ) / 2,
 		   BWNums[i] );
 	}
 }

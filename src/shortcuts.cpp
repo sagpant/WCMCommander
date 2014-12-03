@@ -511,7 +511,7 @@ bool ShortcutWin::Key( cevent_key* pEvent )
 			Selected();
 			return true;
 		}
-
+/*
 		unicode_t c = UnicodeLC( pEvent->Char() );
 
 		if ( c > 32 )
@@ -519,6 +519,7 @@ bool ShortcutWin::Key( cevent_key* pEvent )
 			listWin.Next( c );
 			return true;
 		}
+*/
 	}
 
 	return false;

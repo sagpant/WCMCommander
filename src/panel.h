@@ -234,6 +234,8 @@ public:
 	void SortBySize();
 	void SortByMTime();
 	void DisableSort();
+	PanelList::SORT_MODE GetSortMode() const { return _list.SortMode(); }
+	bool IsAscendingSort() const { return _list.AscSort(); }
 
 	cevent_key QuickSearch( cevent_key* key );
 	bool Search( unicode_t* s, bool SearchForNext );

@@ -35,7 +35,7 @@
 int uiPanelSearchWin = GetUiID( "PanelSearchWin" );
 
 PanelSearchWin::PanelSearchWin( PanelWin* parent, cevent_key* key )
-	:  Win( Win::WT_CHILD, 0, parent, 0, uiPanelSearchWin ),
+	:  Win( Win::WT_CHILD, 0, parent, nullptr, uiPanelSearchWin ),
 	   _parent( parent ),
 	   _edit( 0, this, 0, 0, 16, true ),
 	   _static( 0, this, utf8_to_unicode( _LT( "Search:" ) ).data() ),
@@ -121,13 +121,17 @@ bool PanelSearchWin::EventKey( cevent_key* pEvent )
 	return EventChildKey( 0, pEvent );
 }
 
-void PanelSearchWin::EndSearch( cevent_key* pEvent )
+void PanelSearchWin::EndSearch(cevent_key* pEvent)
 {
-	EndModal( 0 );
+	EndModal(0);
 
-//	if ( pEvent )
+	if (pEvent)
 	{
 		ret_key = *pEvent;
+	}
+	else
+	{
+		ret_key = cevent_key(0, 0, 0, 0, 0, false);
 	}
 }
 
@@ -563,9 +567,10 @@ void PanelWin::SelectPanel()
 void PanelWin::SetScroll()
 {
 	ScrollInfo si;
-	si.pageSize = _rectList.count();
-	si.size = _list.Count( HideDotsInDir() );
-	si.pos = _first;
+	si.m_PageSize = _rectList.count();
+	si.m_Size = _list.Count( HideDotsInDir() );
+	si.m_Pos = _first;
+	si.m_AlwaysHidden = !g_WcmConfig.panelShowScrollbar;
 	bool visible = _scroll.IsVisible();
 	_scroll.Command( CMD_SCROLL_INFO, SCMD_SCROLL_VCHANGE, this, &si );
 
@@ -640,6 +645,7 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 		_list.SetCase( g_WcmConfig.panelCaseSensitive );
 
 		SetCurrent( _list.Find( s, HideDotsInDir() ) );
+		SetScroll();
 		Invalidate();
 
 		GetNCWin()->NotifyCurrentPathInfo();

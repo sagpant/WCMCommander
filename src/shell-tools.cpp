@@ -523,33 +523,33 @@ std::vector<unicode_t> ShellTabKey( NCDialogParent* par, clPtr<FS> fs, FSPath& p
 
 			int nLen = unicode_strlen( name );
 
-			ccollect<unicode_t, 0x100> buf;
+			std::vector<unicode_t> buf;
 
 			for ( i = 0; i < b; i++ )
 			{
-				buf.append( str[i] );
+				buf.push_back( str[i] );
 			}
 
 			for ( i = b; i <= ds; i++ )
 			{
-				buf.append( str[i] );
+				buf.push_back( str[i] );
 			}
 
 			for ( ; *name; name++ )
 			{
-				buf.append( *name );
+				buf.push_back( *name );
 			}
 
 			if ( cursor ) { *cursor = i + nLen; }
 
 			for ( i = e; i < len; i++ )
 			{
-				buf.append( str[i] );
+				buf.push_back( str[i] );
 			}
 
-			buf.append( 0 );
+			buf.push_back( 0 );
 
-			return buf.grab();
+			return buf;
 		}
 	}
 
