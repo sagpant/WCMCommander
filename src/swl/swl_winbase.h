@@ -188,6 +188,16 @@ namespace wal
 
 	class EditLine: public Win
 	{
+	public:
+		enum FLAGS {
+			USEPARENTFOCUS = 1,
+			READONLY = 2
+		};
+
+	private:
+		bool _use_alt_symbols;
+		unsigned _flags;
+		bool RO() const { return (_flags & READONLY) != 0; }
 		EditBuf text;
 		int _chars;
 		bool cursorVisible;
@@ -199,6 +209,8 @@ namespace wal
 		bool frame3d;
 		int charH;
 		int charW;
+		CaptureSD captureSD;
+
 		void DrawCursor( GC& gc );
 		bool CheckCursorPos(); //true -если нужна перерисовка
 		void ClipboardCopy();
@@ -207,7 +219,7 @@ namespace wal
 		int GetCharPos( cpoint p );
 		void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
 	public:
-		EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true );
+		EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true, unsigned flags = 0 );
 		void SetAcceptAltKeys(){ doAcceptAltKeys = true; }
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
@@ -227,6 +239,7 @@ namespace wal
 		void SetShowSpaces( bool enable = true ) { showSpaces = enable; Invalidate(); }
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();
+		void EnableAltSymbols(bool e){ _use_alt_symbols = e; }
 		virtual ~EditLine();
 	};
 
@@ -329,6 +342,8 @@ namespace wal
 
 		Win* managedWin;
 
+		CaptureSD captureSD;
+
 		void Recalc( cpoint* newSize = 0 );
 		void SendManagedCmd( int subId, void* data );
 	public:
@@ -367,6 +382,8 @@ namespace wal
 		unsigned borderColor; //used only for SINGLE_BORDER
 		unsigned bgColor; //for 3d border and scroll block
 
+		CaptureSD captureSD;
+
 		ScrollBar vScroll;
 		ScrollBar hScroll;
 
@@ -396,6 +413,7 @@ namespace wal
 		void MoveCurrent( int n, bool mustVisible = true );
 		void MoveFirst( int n );
 		void MoveXOffset( int n );
+		void SetNoCurrent();
 
 		int GetCurrent() const { return current; }
 		int GetPageFirstItem() const { return first; }
@@ -583,6 +601,72 @@ namespace wal
 		virtual ~MenuBar();
 	};
 
+////////////////////////// ComboBox
+
+class ComboBox:public Win {
+public:
+	enum FLAGS {
+		MODE_UP  = 1,
+		READONLY = 2,
+		FRAME3D  = 4,
+		NOFOCUSFRAME = 8
+	};
+private:
+	unsigned _flags;
+	CaptureSD captureSD;
+	Layout _lo;
+	struct Node {
+		std::vector<unicode_t> text;
+		void *data;
+	};
+	EditLine _edit;
+	crect _buttonRect;
+	ccollect<Node, 0x100> _list;
+	clPtr<TextList> _box;
+	int _cols;
+	int _rows;
+	int _current;
+
+protected:
+	void OpenBox();
+	void RefreshBox();
+	
+	bool IsEditLine(Win *w) const { return w == &_edit; }
+
+public:
+	ComboBox(int nId, Win *parent, int cols, int rows, unsigned flags = 0,  crect *rect = 0);
+	virtual void Paint(GC &gc, const crect &paintRect);
+	virtual bool EventMouse(cevent_mouse* pEvent);
+	virtual bool EventKey(cevent_key* pEvent);
+	virtual bool EventFocus(bool recv);
+	virtual bool Command(int id, int subId, Win *win, void *d);
+	virtual void OnChangeStyles();
+	virtual int UiGetClassId();
+	void Clear();
+	void Append(const unicode_t *text, void *data = 0);
+	void Append(const char *text, void *data = 0);
+
+	std::vector<unicode_t> GetText() const;
+	void SetText(const unicode_t *txt, bool mark = false);
+	void InsertText(unicode_t t);
+	void InsertText(const unicode_t *txt);
+	int GetCursorPos(){ return _edit.GetCursorPos(); }
+	void SetCursorPos(int c, bool mark = false){ _edit.SetCursorPos(c, mark); }
+
+
+	int Count() const { return _list.count(); }
+	int Current() const { return _current; }
+	const unicode_t* ItemText(int n);
+	
+	void * ItemData(int n);
+	void MoveCurrent(int n);
+	bool IsBoxOpened(){ return _box.ptr()!=0; }
+	void CloseBox();
+	virtual bool OnOpenBox();
+	virtual void OnCloseBox();
+	
+	virtual ~ComboBox();
+};
 
 //ToolTip один на все приложение, поэтому установка нового, удаляет предыдущий
 	void ToolTipShow( Win* w, int x, int y, const unicode_t* s );
@@ -591,4 +675,3 @@ namespace wal
 
 
 }; // namespace wal
-

@@ -217,6 +217,7 @@
     <ClCompile Include="src/strmasks.cpp" />
     <ClCompile Include="src/swl\swl_button.cpp" />
     <ClCompile Include="src/swl\swl_editline.cpp" />
+    <ClCompile Include="src/swl\swl_combobox.cpp" />
     <ClCompile Include="src/swl\swl_layout.cpp" />
     <ClCompile Include="src/swl\swl_menubox.cpp" />
     <ClCompile Include="src/swl\swl_menutextinfo.cpp" />

@@ -117,6 +117,7 @@ SET(wcm_COMMON_SOURCES
 	strmasks.cpp
 	swl/swl_button.cpp
 	swl/swl_editline.cpp
+	swl/swl_combobox.cpp
 	swl/swl_layout.cpp
 	swl/swl_menubox.cpp
 	swl/swl_menutextinfo.cpp

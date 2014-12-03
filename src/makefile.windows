@@ -59,6 +59,7 @@ OBJS = \
 	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/strmasks.o \
 	$(OBJDIR)/swl_button.o \
+	$(OBJDIR)/swl_combobox.o \
 	$(OBJDIR)/swl_editline.o  \
 	$(OBJDIR)/swl_layout.o    \
 	$(OBJDIR)/swl_menubox.o    \
@@ -282,12 +283,14 @@ $(OBJDIR)/wal_exceptions.o: $(HW) src/wal/wal_exceptions.cpp
 $(OBJDIR)/wal_files.o: $(HW) src/wal/wal_files.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/wal/wal_files.cpp -o $(OBJDIR)/wal_files.o
 
-
 $(OBJDIR)/swl_button.o: $(HW) $(HS) src/swl/swl_button.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_button.cpp -o $(OBJDIR)/swl_button.o
 
 $(OBJDIR)/swl_editline.o: $(HW) $(HS) src/swl/swl_editline.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_editline.cpp -o $(OBJDIR)/swl_editline.o
+
+$(OBJDIR)/swl_combobox.o: $(HW) $(HS) src/swl/swl_combobox.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_combobox.cpp -o $(OBJDIR)/swl_combobox.o
 
 $(OBJDIR)/swl_layout.o: $(HW) $(HS) src/swl/swl_layout.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/swl/swl_layout.cpp -o $(OBJDIR)/swl_layout.o
