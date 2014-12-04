@@ -167,9 +167,6 @@ $(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) src/fileassociations.cpp
 $(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) src/filehighlighting.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/filehighlighting.cpp -o $(OBJDIR)/filehighlighting.o
 
-$(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) src/filehighlighting.cpp
-	$(CC) $(COPTS) -c $(CFLAGS) src/filehighlighting.cpp -o $(OBJDIR)/filehighlighting.o
-
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) src/strconfig.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/strconfig.cpp -o $(OBJDIR)/strconfig.o
 
