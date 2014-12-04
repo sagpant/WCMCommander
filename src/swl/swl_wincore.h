@@ -1016,6 +1016,23 @@ namespace wal
 #endif
 	protected:
 		void UiSetNameId( int id ) { uiNameId = id; }
+
+#ifdef _WIN32
+	class CaptureSD {
+		friend class Win;
+		HWND h;
+	public:
+		CaptureSD():h(0){};
+	};
+#else
+	class CaptureSD {
+		friend class Win;
+		Window h;
+	public:
+		CaptureSD():h(None){};
+	};
+#endif
+
 	public:
 		Win( WTYPE t, unsigned hints = 0, Win* _parent = nullptr, const crect* rect = nullptr, int uiNId = 0 );
 
@@ -1074,8 +1091,8 @@ namespace wal
 		bool IsVisible();
 		void Enable( bool en = true );
 		void Activate();
-		void SetCapture();
-		void ReleaseCapture();
+		bool SetCapture( CaptureSD *sd = nullptr );
+		void ReleaseCapture( CaptureSD *sd = nullptr );
 		void OnTop();
 		bool IsCaptured() { return captured; }
 		void Invalidate();

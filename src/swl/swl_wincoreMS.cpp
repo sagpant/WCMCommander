@@ -709,23 +709,47 @@ namespace wal
 		::MoveWindow( handle, rect.left, rect.top, rect.Width(), rect.Height(), repaint ? TRUE : FALSE );
 	}
 
-	void Win::SetCapture()
+/*
+void Win::SetCapture()
+{
+	if (!captured)
 	{
-		if ( !captured )
-		{
-			::SetCapture( handle );
-			captured = true;
-		}
+		::SetCapture(handle); 
+		captured = true; 
 	}
+}
 
-	void Win::ReleaseCapture()
+void Win::ReleaseCapture()
+{
+	if (captured && GetCapture() == handle) 
 	{
-		if ( captured && GetCapture() == handle )
-		{
-			::ReleaseCapture();
-			captured = false;
-		}
-	}
+		::ReleaseCapture(); 
+		captured = false;
+	} 
+}
+*/
+
+bool Win::SetCapture(CaptureSD *sd)
+{
+	if (captured) return false;
+
+	HWND h = ::SetCapture(handle); 
+	captured = true;
+	if (sd) sd->h = h;
+
+	return true;
+}
+
+void Win::ReleaseCapture(CaptureSD *sd)
+{
+	if (!captured || GetCapture() != handle) return;
+
+	captured = false;
+	if (sd && sd->h) {
+		::SetCapture(sd->h);
+	} else
+		::ReleaseCapture(); 
+}
 
 	void Win::Activate()
 	{

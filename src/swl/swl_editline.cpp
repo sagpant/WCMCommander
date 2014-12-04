@@ -282,8 +282,10 @@ namespace wal
 		SetLSize( ls );
 	}
 
-	EditLine::EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars, bool frame )
+	EditLine::EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars, bool frame, unsigned flags )
 	 : Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId )
+	 , _use_alt_symbols( false )
+	 , _flags( flags )
 	 , text( txt )
 	 , _chars( chars > 0 ? chars : 10 )
 	 , cursorVisible( false )
@@ -599,7 +601,7 @@ namespace wal
 				CheckCursorPos();
 				Invalidate();
 
-				SetCapture();
+				SetCapture(&captureSD);
 			}
 			break;
 
@@ -609,7 +611,7 @@ namespace wal
 					break;
 				}
 
-				ReleaseCapture();
+				ReleaseCapture(&captureSD);
 				break;
 		};
 
@@ -628,7 +630,8 @@ namespace wal
 		{
 
 			bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
-			bool ctrl = ( pEvent->Mod() & KM_CTRL ) != 0;
+			bool ctrl  = ( pEvent->Mod() & KM_CTRL ) != 0;
+			bool alt   = ( pEvent->Mod() & KM_ALT ) !=0;
 
 			if ( ctrl )
 			{
@@ -649,11 +652,11 @@ namespace wal
 						return true;
 
 					case VK_V:
-						ClipboardPaste();
+						if ( !RO() ) ClipboardPaste();
 						return true;
 
 					case VK_X:
-						ClipboardCut();
+						if ( !RO() ) ClipboardCut();
 						return true;
 				}
 			}
@@ -662,8 +665,8 @@ namespace wal
 			{
 				case VK_BACK:
 				{
+					if ( RO() ) return true;
 					if ( text.Cursor() == 0 ) { return true; }
-
 					text.Backspace( ctrl );
 					Changed();
 				}
@@ -671,6 +674,7 @@ namespace wal
 
 				case VK_DELETE:
 				{
+					if ( RO() ) return true;
 					if ( text.Cursor() > text.Count() ) { return true; }
 
 					text.Del( ctrl );
@@ -727,7 +731,7 @@ namespace wal
 				break;
 
 				case VK_INSERT:
-					if ( shift ) { ClipboardPaste(); }
+					if ( shift ) { if ( RO() ) return true; ClipboardPaste(); }
 					else if ( ctrl && text.Marked() ) { ClipboardCopy(); }
 
 					break;
@@ -735,9 +739,10 @@ namespace wal
 				default:
 					wchar_t c = pEvent->Char();
 
-					if ( c && c >= 0x20 )
+					if ( c && c >= 0x20 && (!alt || _use_alt_symbols) )
 					{
 						std::vector<unicode_t> oldtext = GetText();
+						if ( RO() ) return true;
 						if ( m_ReplaceMode ) text.Del( false );
 						text.Insert( c );
 						if ( m_Validator && !m_Validator->IsValid( GetText() ) )

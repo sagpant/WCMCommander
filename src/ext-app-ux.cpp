@@ -272,7 +272,7 @@ bool ExeFileExist( const char* name )
 }
 
 
-#define MIMEDEBUG
+//#define MIMEDEBUG
 
 #ifdef MIMEDEBUG
 static std::unordered_map<int, std::vector<char> > mimeIdToNameHash;

@@ -263,7 +263,7 @@ namespace wal
 		{
 			captureDelta = 0;
 			MoveCurrent( n );
-			this->SetCapture();
+			this->SetCapture(&captureSD);
 			this->SetTimer( 0, 100 );
 			return true;
 		}
@@ -292,7 +292,7 @@ namespace wal
 
 		if ( pEvent->Type() == EV_MOUSE_RELEASE && pEvent->Button() == MB_L )
 		{
-			this->ReleaseCapture();
+			this->ReleaseCapture(&captureSD);
 			this->DelTimer( 0 );
 			return true;
 		}
@@ -422,6 +422,14 @@ namespace wal
 		{
 			Command( CMD_ITEM_CHANGED, GetCurrent(), this, 0 );
 		}
+	}
+
+	void VListWin::SetNoCurrent()
+	{
+		if ( current == -1 ) return;
+		current = -1;
+		Command( CMD_ITEM_CHANGED, GetCurrent(), this, 0 );
+		if ( IsVisible() ) Invalidate();
 	}
 
 	void VListWin::SetItemSize( int h, int w )

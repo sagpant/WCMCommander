@@ -44,7 +44,8 @@ namespace wal
 	static Atom       atom_WM_DELETE_WINDOW = 0; //Атом, чтоб window manager не закрывал окна самостоятельно
 
 //WinID     Win::focusWinId =0;
-	static WinID      activeWinId = 0;
+	static WinID		activeWinId = 0;
+	static WinID		captureWinId = 0;
 
 //static SCImage winIcon;
 	static Pixmap winIconPixmap = None;
@@ -2624,31 +2625,50 @@ stopped:
 		if ( repaint ) { Invalidate(); }
 	}
 
-	void Win::SetCapture()
+	static bool GrabPointer(Window handle)
 	{
-		if ( !captured )
+		return 	::XGrabPointer(display, handle, False, 
+				ButtonPressMask 	|	
+				ButtonReleaseMask 	|	
+				PointerMotionMask,
+				GrabModeAsync, GrabModeAsync,
+				None, None, CurrentTime) == GrabSuccess;
+	}
+
+	bool Win::SetCapture(CaptureSD *sd)
+	{
+		if (!captured)
 		{
-			if ( ::XGrabPointer( display, handle, False,
-			                     ButtonPressMask   |
-			                     ButtonReleaseMask    |
-			                     PointerMotionMask,
-			                     GrabModeAsync, GrabModeAsync,
-			                     None, None, CurrentTime ) == GrabSuccess )
+			if (captureWinId) 
+			{
+				if (sd) sd->h = captureWinId;
+				::XUngrabPointer(display, CurrentTime);
+				captureWinId = 0;
+			}
+		
+			if (GrabPointer(handle))
 			{
 				//dbg_printf("Captured %p\n", this);
 				captured = true;
+				captureWinId = handle;
+				return true;
 			}
 		}
+		return false;
 	}
 
-	void Win::ReleaseCapture()
+	void Win::ReleaseCapture(CaptureSD *sd)
 	{
-		if ( captured )
+		if (captured)
 		{
-			::XUngrabPointer( display, CurrentTime );
+			::XUngrabPointer(display, CurrentTime);
 			//dbg_printf("UnCaptured %p\n", this);
 			captured = false;
-		}
+			if (sd && sd->h && GrabPointer(sd->h))
+				captureWinId = sd->h;
+			else 
+				captureWinId = 0;
+		} 
 	}
 
 	void Win::Activate()
@@ -2859,6 +2879,9 @@ stopped:
 
 	Win::~Win()
 	{
+		if (captureWinId == handle)
+			captureWinId = 0;	
+
 		wth_DropWindow( this );
 
 		if ( modal ) // ???? может и не надо

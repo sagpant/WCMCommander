@@ -354,7 +354,7 @@ namespace wal
 					{
 						traceBPoint = ( vertical ) ? ( pEvent->Point().y - b3Rect.top ) : ( pEvent->Point().x - b3Rect.left );
 						trace = true;
-						SetCapture();
+						SetCapture(&captureSD);
 						break;
 					}
 					else if ( !b3Rect.IsEmpty() )
@@ -385,7 +385,7 @@ namespace wal
 
 					if ( subId != 0 )
 					{
-						SetCapture();
+						SetCapture(&captureSD);
 						SendManagedCmd( subId, 0 );
 						SetTimer( subId, 100 );
 					}
@@ -404,7 +404,7 @@ namespace wal
 				{
 					b1Pressed = false ;
 					b2Pressed = false ;
-					ReleaseCapture();
+					ReleaseCapture(&captureSD);
 					DelAllTimers();
 					Invalidate();
 					trace = false;
