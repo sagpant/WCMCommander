@@ -44,7 +44,8 @@ namespace wal
 	static Atom       atom_WM_DELETE_WINDOW = 0; //Атом, чтоб window manager не закрывал окна самостоятельно
 
 //WinID     Win::focusWinId =0;
-	static WinID      activeWinId = 0;
+	static WinID		activeWinId = 0;
+	static WinID		captureWinId = 0;
 
 //static SCImage winIcon;
 	static Pixmap winIconPixmap = None;
@@ -2868,6 +2869,9 @@ void Win::ReleaseCapture(CaptureSD *sd)
 
 	Win::~Win()
 	{
+		if (captureWinId == handle)
+			captureWinId = 0;	
+
 		wth_DropWindow( this );
 
 		if ( modal ) // ???? может и не надо
