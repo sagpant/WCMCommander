@@ -2625,41 +2625,51 @@ stopped:
 		if ( repaint ) { Invalidate(); }
 	}
 
-bool Win::SetCapture(CaptureSD *sd)
-{
-	if (!captured)
+	static bool GrabPointer(Window handle)
 	{
-		if (captureWinId) 
-		{
-			if (sd) sd->h = captureWinId;
-			::XUngrabPointer(display, CurrentTime);
-			captureWinId = 0;
-		}
-		
-		if (GrabPointer(handle))
-		{
-			//dbg_printf("Captured %p\n", this);
-			captured = true;
-			captureWinId = handle;
-			return true;
-		}
+		return 	::XGrabPointer(display, handle, False, 
+				ButtonPressMask 	|	
+				ButtonReleaseMask 	|	
+				PointerMotionMask,
+				GrabModeAsync, GrabModeAsync,
+				None, None, CurrentTime) == GrabSuccess;
 	}
-	return false;
-}
 
-void Win::ReleaseCapture(CaptureSD *sd)
-{
-	if (captured)
+	bool Win::SetCapture(CaptureSD *sd)
 	{
-		::XUngrabPointer(display, CurrentTime);
-		//dbg_printf("UnCaptured %p\n", this);
-		captured = false;
-		if (sd && sd->h && GrabPointer(sd->h))
-			captureWinId = sd->h;
-		else 
-			captureWinId = 0;
-	} 
-}
+		if (!captured)
+		{
+			if (captureWinId) 
+			{
+				if (sd) sd->h = captureWinId;
+				::XUngrabPointer(display, CurrentTime);
+				captureWinId = 0;
+			}
+		
+			if (GrabPointer(handle))
+			{
+				//dbg_printf("Captured %p\n", this);
+				captured = true;
+				captureWinId = handle;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Win::ReleaseCapture(CaptureSD *sd)
+	{
+		if (captured)
+		{
+			::XUngrabPointer(display, CurrentTime);
+			//dbg_printf("UnCaptured %p\n", this);
+			captured = false;
+			if (sd && sd->h && GrabPointer(sd->h))
+				captureWinId = sd->h;
+			else 
+				captureWinId = 0;
+		} 
+	}
 
 	void Win::Activate()
 	{
