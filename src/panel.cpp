@@ -934,6 +934,23 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	int color_bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 	int color_shadow = UiGetColor( uiBackground, uiItem, &ucl, 0 );
 
+	NCWin* w = GetNCWin();
+
+	if ( w )
+	{
+		const auto& Rules = w->GetFileHighlightingRules();
+
+		for ( const auto& r : Rules )
+		{
+			if ( r.IsRulePassed( p->GetUnicodeName(), p->Size(), 0 ) )
+			{
+				color_bg = r.GetColorNormalBackground();
+				color_text = r.GetColorNormal();
+				break;
+			}
+		}
+	}
+
 	gc.SetFillColor( color_bg );
 
 	crect rect = _rectList[pos];

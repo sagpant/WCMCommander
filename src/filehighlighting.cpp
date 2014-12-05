@@ -734,11 +734,11 @@ clFileHighlightingWin::~clFileHighlightingWin()
 {
 }
 
-bool clNCFileHighlightingRule::IsRulePassed( const std::vector<unicode_t>& FileName, uint64_t FileSize, uint64_t Attributes ) const
+bool clNCFileHighlightingRule::IsRulePassed( const unicode_t* FileName, uint64_t FileSize, uint64_t Attributes ) const
 {
 	clMultimaskSplitter Splitter( m_Mask );
 
-	if ( Splitter.CheckAndFetchAllMasks( FileName.data() ) ) return true;
+	if ( Splitter.CheckAndFetchAllMasks( FileName ) ) return true;
 
 	return false;
 }

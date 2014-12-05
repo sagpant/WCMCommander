@@ -47,7 +47,7 @@ public:
 	void SetColorUnderCursorSelected( uint32_t c ) { m_ColorUnderCursorSelected = c; }
 	void SetColorUnderCursorSelectedBackground( uint32_t c ) { m_ColorUnderCursorSelectedBackground = c; }
 
-	bool IsRulePassed( const std::vector<unicode_t>& FileName, uint64_t FileSize, uint64_t Attributes ) const;
+	bool IsRulePassed( const unicode_t* FileName, uint64_t FileSize, uint64_t Attributes ) const;
 
 private:
 	std::vector<unicode_t> m_Mask;
