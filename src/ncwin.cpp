@@ -2205,7 +2205,8 @@ void NCWin::FileHighlighting()
 
 	if ( FileHighlightingDlg( this, g_Env.GetFileHighlightingRulesPtr() ) )
 	{
-		// do nothing
+		SendConfigChanged();
+		StylesChanged( this );
 	}
 }
 
