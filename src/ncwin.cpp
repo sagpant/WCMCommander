@@ -1022,20 +1022,6 @@ void NCWin::RightButtonPressed( cpoint point )
 	return;
 }
 
-const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
-{
-	for ( auto i = m_FileAssociations.begin(); i != m_FileAssociations.end(); i++ )
-	{
-		std::vector<unicode_t> Mask = i->GetMask();
-
-		clMultimaskSplitter Splitter( Mask );
-
-		if ( Splitter.CheckAndFetchAllMasks( FileName ) ) return &(*i);
-	}
-
-	return NULL;
-}
-
 void NCWin::ReturnToDefaultSysDir()
 {
 #ifdef _WIN32
@@ -1525,7 +1511,7 @@ void NCWin::SelectSortMode( PanelWin* p )
 
 void NCWin::UserMenu()
 {
-	UserMenuDlg( this, &m_UserMenuItems );
+	UserMenuDlg( this, g_Env.GetUserMenuItemsPtr() );
 
 	return;
 
@@ -2056,7 +2042,21 @@ void NCWin::Copy( bool shift )
 	_rightPanel.Reread();
 }
 
+const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
+{
+	const auto& Assoc = g_Env.GetFileAssociations();
 
+	for ( const auto& i : Assoc )
+	{
+		std::vector<unicode_t> Mask = i.GetMask();
+
+		clMultimaskSplitter Splitter( Mask );
+
+		if ( Splitter.CheckAndFetchAllMasks( FileName ) ) return &i;
+	}
+
+	return NULL;
+}
 
 void NCWin::Move( bool shift )
 {
@@ -2193,7 +2193,7 @@ void NCWin::FileAssociations()
 {
 	if ( _mode != PANEL ) { return; }
 
-	if ( FileAssociationsDlg( this, &m_FileAssociations ) )
+	if ( FileAssociationsDlg( this, g_Env.GetFileAssociationsPtr() ) )
 	{
 		// do nothing
 	}
@@ -2203,7 +2203,7 @@ void NCWin::FileHighlighting()
 {
 	if ( _mode != PANEL ) { return; }
 
-	if ( FileHighlightingDlg( this, &m_FileHighlightingRules ) )
+	if ( FileHighlightingDlg( this, g_Env.GetFileHighlightingRulesPtr() ) )
 	{
 		// do nothing
 	}

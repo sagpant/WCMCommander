@@ -906,7 +906,7 @@ void SaveFileAssociations( NCWin* nc
 #endif
 	Cfg.SetSectionName( FilesAssociationsSection );
 
-	const std::vector<clNCFileAssociation>& Assoc = nc->GetFileAssociations();
+	const std::vector<clNCFileAssociation>& Assoc = g_Env.GetFileAssociations();
 
 	for ( size_t i = 0; i < Assoc.size(); i++ )
 	{
@@ -984,7 +984,7 @@ void LoadFileAssociations( NCWin* nc
 		i++;
 	}
 
-	nc->SetFileAssociations( Assoc );
+	g_Env.SetFileAssociations( Assoc );
 }
 
 void SaveUserMenu( NCWin* nc
@@ -1002,7 +1002,7 @@ void SaveUserMenu( NCWin* nc
 #endif
 	Cfg.SetSectionName( UserMenuSection );
 
-	const std::vector<clNCUserMenuItem>& Items = nc->GetUserMenuItems();
+	const std::vector<clNCUserMenuItem>& Items = g_Env.GetUserMenuItems();
 
 	for ( size_t i = 0; i < Items.size(); i++ )
 	{
@@ -1053,7 +1053,7 @@ void LoadUserMenu( NCWin* nc
 		i++;
 	}
 
-	nc->SetUserMenuItems( Items );
+	g_Env.SetUserMenuItems( Items );
 }
 
 void SaveFileHighlightingRules( NCWin* nc
@@ -1071,7 +1071,7 @@ void SaveFileHighlightingRules( NCWin* nc
 #endif
 	Cfg.SetSectionName( HighlightingRulesSection );
 
-	const std::vector<clNCFileHighlightingRule>& Rules = nc->GetFileHighlightingRules();
+	const std::vector<clNCFileHighlightingRule>& Rules = g_Env.GetFileHighlightingRules();
 
 	for ( size_t i = 0; i < Rules.size(); i++ )
 	{
@@ -1167,7 +1167,7 @@ void LoadFileHighlightingRules( NCWin* nc
 		i++;
 	}
 
-	nc->SetFileHighlightingRules( Rules );
+	g_Env.SetFileHighlightingRules( Rules );
 }
 
 void SaveCommandsHistory( NCWin* nc
