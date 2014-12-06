@@ -6,21 +6,21 @@ rem
 
 rem Prepare binaries
 
-cd ..\wcm
+cd ..
 make all -j5 -B WINDOWS_TARGET=-m64
 if ERRORLEVEL 1 exit 1
 strip wcm.exe
-cd ..\install-windows
+cd install-windows
 
 rem Prepare SDK directory structure
 
 md Temp
-copy ..\wcm\wcm.exe Temp\wcm.exe
-copy ..\wcm\small.ico Temp\small.ico
+copy ..\wcm.exe Temp\wcm.exe
+copy ..\src\small.ico Temp\small.ico
 copy ..\LICENSE Temp\LICENSE
 copy ..\CHANGELOG.GitHub Temp\CHANGELOG.GitHub
 copy ..\readme_eng.txt Temp\readme_eng.txt
-xcopy ..\wcm\install-files\share\wcm Temp /S /Y
+xcopy ..\install-files\share\wcm Temp /S /Y
 
 "D:\Program Files (x86)\NSIS\makensis.exe" installer64.nsi
 

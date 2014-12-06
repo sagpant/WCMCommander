@@ -11,14 +11,14 @@ InstallDir "D:\Program Files\WalCommander"
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
-Icon ..\wcm\small.ico
+Icon ..\src\small.ico
 
 LicenseText "License Agreement"
 LicenseData ..\LICENSE
 
 !include "MUI2.nsh"
 !define MUI_ABORTWARNING
-!define MUI_ICON "..\wcm\small.ico"
+!define MUI_ICON "..\src\small.ico"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADER_TRANSPARENT_TEXT
