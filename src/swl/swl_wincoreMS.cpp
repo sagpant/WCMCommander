@@ -844,7 +844,7 @@ void Win::ReleaseCapture(CaptureSD *sd)
 		p.y = 0;
 		::ClientToScreen( ( HWND )this->handle, &p );
 
-		if ( type != WS_POPUP && this->parent )
+		if ( type != WT_POPUP && this->parent )
 		{
 			ScreenToClient( parent->handle, &p );
 		}
