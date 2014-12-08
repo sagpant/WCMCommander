@@ -542,7 +542,8 @@ namespace wal
 		modal( 0 ),
 
 		upLayout( 0 ),
-		layout( 0 )
+		layout( 0 ),
+		uiNameId( uiNId )
 	{
 
 		DWORD st = WS_CLIPSIBLINGS | WS_CLIPCHILDREN  ;
