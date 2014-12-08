@@ -15,6 +15,8 @@
 
 #include <limits.h>
 
+static const int CMD_RESETCOLORS = 1003;
+
 clNCFileHighlightingRule::clNCFileHighlightingRule()
  : m_Mask()
  , m_Description()
@@ -186,6 +188,9 @@ private:
 	eColorEditLineType m_Type;
 };
 
+static int uiSelected = GetUiID("selected");
+static int uiSelectedPanel = GetUiID("selected-panel");
+
 /// dialog to edit a single file highlighting rule
 class clEditFileHighlightingWin: public NCVertDialog
 {
@@ -228,6 +233,7 @@ public:
 	 , m_ColorSelectedUnderCursorLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
 	//
 	 , m_HasMaskButton( 0, this, utf8_to_unicode( _LT( "Mask" ) ).data(), 0, true )
+	 , m_ResetToDefaultButton( 0, this, utf8_to_unicode( _LT( "Reset to default colors" ) ).data(), CMD_RESETCOLORS )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
 
@@ -236,27 +242,7 @@ public:
 		m_SizeMinEdit.SetValidator( Validator );
 		m_SizeMaxEdit.SetValidator( Validator );
 
-		if ( Rule )
-		{
-			m_MaskEdit.SetText( Rule->GetMask().data(), false );
-			m_DescriptionEdit.SetText( Rule->GetDescription().data(), false );
-			m_SizeMinEdit.SetText( std::to_wstring( Rule->GetSizeMin() ).c_str(), false );
-			m_SizeMaxEdit.SetText( std::to_wstring( Rule->GetSizeMax() ).c_str(), false );
-
-			const size_t Padding = 6;
-
-			m_ColorNormalFGEdit.SetText( IntToHexStr( Rule->GetColorNormal( ), Padding ).c_str( ) );
-			m_ColorNormalBGEdit.SetText( IntToHexStr( Rule->GetColorNormalBackground( ), Padding ).c_str( ) );
-
-			m_ColorSelectedFGEdit.SetText( IntToHexStr( Rule->GetColorSelected( ), Padding ).c_str( ) );
-			m_ColorSelectedBGEdit.SetText( IntToHexStr( Rule->GetColorSelectedBackground( ), Padding ).c_str( ) );
-
-			m_ColorNormalUnderCursorFGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorNormal( ), Padding ).c_str( ) );
-			m_ColorNormalUnderCursorBGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorNormalBackground( ), Padding ).c_str( ) );
-
-			m_ColorSelectedUnderCursorFGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorSelected( ), Padding ).c_str( ) );
-			m_ColorSelectedUnderCursorBGEdit.SetText( IntToHexStr( Rule->GetColorUnderCursorSelectedBackground( ), Padding ).c_str( ) );
-		}
+		SetRule( Rule ? *Rule : GetDefaultColors() );
 
 		m_ColorNormalLabel.SetColors( 0x800000, 0xFFFF00 );
 		m_ColorSelectedLabel.SetColors( 0x800000, 0xFFFF00 );
@@ -309,6 +295,7 @@ public:
 		m_Layout.AddWinAndEnable( &m_ColorSelectedUnderCursorBGEdit, 19, 1 );
 		m_Layout.AddWinAndEnable( &m_ColorSelectedUnderCursorLabel, 19, 2 );
 		//
+		m_Layout.AddWinAndEnable( &m_ResetToDefaultButton, 20, 0 );
 
 		AddLayout( &m_Layout );
 
@@ -325,6 +312,7 @@ public:
 		order.append( &m_ColorNormalUnderCursorBGEdit );
 		order.append( &m_ColorSelectedUnderCursorFGEdit );
 		order.append( &m_ColorSelectedUnderCursorBGEdit );
+		order.append( &m_ResetToDefaultButton );
 
 		m_ColorNormalFGEdit.Notify();
 		m_ColorNormalBGEdit.Notify();
@@ -336,6 +324,96 @@ public:
 		m_ColorSelectedUnderCursorBGEdit.Notify();
 
 		SetPosition();
+	}
+
+	clNCFileHighlightingRule GetDefaultColors()
+	{
+		clNCFileHighlightingRule R;
+
+		{
+			UiCondList ucl;
+
+			ucl.Set(uiSelectedPanel, true);
+			ucl.Set(uiOdd, true);
+
+//			ucl.Set(uiCurrentItem, false);
+//			ucl.Set(uiSelected, false);
+
+			R.SetColorNormal(UiGetColor(uiColor, uiItem, &ucl, 0x0));
+			R.SetColorNormalBackground(UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF));
+		}
+
+		{
+			UiCondList ucl;
+
+			ucl.Set(uiSelectedPanel, true);
+			ucl.Set(uiOdd, true);
+
+			ucl.Set(uiCurrentItem, true);
+//			ucl.Set(uiSelected, false);
+
+			R.SetColorUnderCursorNormal(UiGetColor(uiColor, uiItem, &ucl, 0x0));
+			R.SetColorUnderCursorNormalBackground(UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF));
+		}
+
+		{
+			UiCondList ucl;
+
+			ucl.Set(uiSelectedPanel, true);
+			ucl.Set(uiOdd, true);
+
+//			ucl.Set(uiCurrentItem, false);
+			ucl.Set(uiSelected, true);
+
+			R.SetColorSelected(UiGetColor(uiColor, uiItem, &ucl, 0x0));
+			R.SetColorSelectedBackground(UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF));
+		}
+
+		{
+			UiCondList ucl;
+
+			ucl.Set(uiSelectedPanel, true);
+			ucl.Set(uiOdd, true);
+
+			ucl.Set(uiCurrentItem, true);
+			ucl.Set(uiSelected, true);
+
+			R.SetColorUnderCursorSelected(UiGetColor(uiColor, uiItem, &ucl, 0x0));
+			R.SetColorUnderCursorSelectedBackground(UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF));
+		}
+
+		return R;
+	}
+
+	void SetRule( const clNCFileHighlightingRule& Rule )
+	{
+		m_MaskEdit.SetText( Rule.GetMask().data(), false );
+		m_DescriptionEdit.SetText( Rule.GetDescription().data(), false );
+		m_SizeMinEdit.SetText( std::to_wstring(Rule.GetSizeMin()).c_str(), false );
+		m_SizeMaxEdit.SetText( std::to_wstring(Rule.GetSizeMax()).c_str(), false );
+
+		const size_t Padding = 6;
+
+		m_ColorNormalFGEdit.SetText( IntToHexStr(Rule.GetColorNormal(), Padding).c_str() );
+		m_ColorNormalBGEdit.SetText( IntToHexStr(Rule.GetColorNormalBackground(), Padding).c_str() );
+
+		m_ColorSelectedFGEdit.SetText( IntToHexStr(Rule.GetColorSelected(), Padding).c_str() );
+		m_ColorSelectedBGEdit.SetText( IntToHexStr(Rule.GetColorSelectedBackground(), Padding).c_str() );
+
+		m_ColorNormalUnderCursorFGEdit.SetText( IntToHexStr(Rule.GetColorUnderCursorNormal(), Padding).c_str() );
+		m_ColorNormalUnderCursorBGEdit.SetText( IntToHexStr(Rule.GetColorUnderCursorNormalBackground(), Padding).c_str() );
+
+		m_ColorSelectedUnderCursorFGEdit.SetText( IntToHexStr(Rule.GetColorUnderCursorSelected(), Padding).c_str() );
+		m_ColorSelectedUnderCursorBGEdit.SetText( IntToHexStr(Rule.GetColorUnderCursorSelectedBackground(), Padding).c_str() );
+
+		m_ColorNormalFGEdit.Notify();
+		m_ColorNormalBGEdit.Notify();
+		m_ColorSelectedFGEdit.Notify();
+		m_ColorSelectedBGEdit.Notify();
+		m_ColorNormalUnderCursorFGEdit.Notify();
+		m_ColorNormalUnderCursorBGEdit.Notify();
+		m_ColorSelectedUnderCursorFGEdit.Notify();
+		m_ColorSelectedUnderCursorBGEdit.Notify();
 	}
 
 	std::vector<unicode_t> GetMask() const { return m_MaskEdit.GetText(); }
@@ -373,6 +451,19 @@ public:
 		m_Result.SetColorUnderCursorSelectedBackground( ( uint32_t )HexStrToInt( m_ColorSelectedUnderCursorBGEdit.GetText( ).data( ) ) );
 
 		return m_Result;
+	}
+	virtual bool Command(int id, int subId, Win* win, void* data) override
+	{
+		if (id == CMD_RESETCOLORS)
+		{
+			clNCFileHighlightingRule Rule = GetDefaultColors();
+
+			this->SetRule( Rule );
+
+			return true;
+		}
+
+		return NCDialog::Command( id, subId, win, data );
 	}
 
 private:
@@ -416,8 +507,8 @@ public:
 	clColorEditLine m_ColorSelectedUnderCursorBGEdit;
 	clColorLabel    m_ColorSelectedUnderCursorLabel;
 
-
 	SButton m_HasMaskButton;
+	Button m_ResetToDefaultButton;
 
 	mutable clNCFileHighlightingRule m_Result;
 
