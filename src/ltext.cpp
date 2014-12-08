@@ -6,20 +6,32 @@
 
 #include "ltext.h"
 
+#include <unordered_map>
+
 using namespace wal;
 
-static cstrhash< std::vector<char> > lText;
+static std::unordered_map< std::string, std::vector<char> > lText;
 
 const char* LText( const char* index )
 {
-	std::vector<char>* p = lText.exist( index );
-	return ( p && p->data() ) ? p->data() : index;
+	const auto i = lText.find( index );
+
+	if ( i == lText.end() ) return index;
+	
+	std::vector<char>* p = &( i->second );
+
+	return p->data() ? p->data() : index;
 }
 
 const char* LText( const char* index, const char* def )
 {
-	std::vector<char>* p = lText.exist( index );
-	return ( p && p->data() ) ? p->data() : def;
+	const auto i = lText.find( index );
+
+	if ( i == lText.end() ) return def;
+
+	std::vector<char>* p = &( i->second );
+
+	return p->data() ? p->data() : def;
 }
 
 inline char* SS( char* s )
