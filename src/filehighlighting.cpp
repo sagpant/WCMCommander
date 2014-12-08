@@ -12,6 +12,7 @@
 #include "ltext.h"
 #include "unicode_lc.h"
 #include "strmasks.h"
+#include "panel.h"
 
 #include <limits.h>
 
@@ -195,8 +196,9 @@ static int uiSelectedPanel = GetUiID("selected-panel");
 class clEditFileHighlightingWin: public NCVertDialog
 {
 public:
-	clEditFileHighlightingWin( NCDialogParent* parent, const clNCFileHighlightingRule* Rule )
+	clEditFileHighlightingWin( NCDialogParent* parent, const clNCFileHighlightingRule* Rule, PanelWin* Panel )
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file highlighting" ) ).data(), bListOkCancel )
+	 , m_Panel( Panel )
 	 , m_Layout( 21, 3 )
 	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several masks (separated with commas)")).data(), &m_MaskEdit)
 	 , m_MaskEdit( 0, this, nullptr, nullptr, 16 )
@@ -243,9 +245,6 @@ public:
 		m_SizeMaxEdit.SetValidator( Validator );
 
 		SetRule( Rule ? *Rule : GetDefaultColors() );
-
-		m_ColorNormalLabel.SetColors( 0x800000, 0xFFFF00 );
-		m_ColorSelectedLabel.SetColors( 0x800000, 0xFFFF00 );
 
 		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
 
@@ -334,52 +333,44 @@ public:
 			UiCondList ucl;
 
 			ucl.Set(uiSelectedPanel, true);
-			ucl.Set(uiOdd, true);
+			ucl.Set(uiCurrentItem, false);
+			ucl.Set(uiSelected, false);
 
-//			ucl.Set(uiCurrentItem, false);
-//			ucl.Set(uiSelected, false);
-
-			R.SetColorNormal(UiGetColor(uiColor, uiItem, &ucl, 0x0));
-			R.SetColorNormalBackground(UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF));
+			R.SetColorNormal( m_Panel->UiGetColor(uiColor, uiItem, &ucl, 0x0) );
+			R.SetColorNormalBackground( m_Panel->UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF) );
 		}
 
 		{
 			UiCondList ucl;
 
 			ucl.Set(uiSelectedPanel, true);
-			ucl.Set(uiOdd, true);
-
 			ucl.Set(uiCurrentItem, true);
-//			ucl.Set(uiSelected, false);
+			ucl.Set(uiSelected, false);
 
-			R.SetColorUnderCursorNormal(UiGetColor(uiColor, uiItem, &ucl, 0x0));
-			R.SetColorUnderCursorNormalBackground(UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF));
+			R.SetColorUnderCursorNormal( m_Panel->UiGetColor(uiColor, uiItem, &ucl, 0x0) );
+			R.SetColorUnderCursorNormalBackground( m_Panel->UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF) );
 		}
 
 		{
 			UiCondList ucl;
 
 			ucl.Set(uiSelectedPanel, true);
-			ucl.Set(uiOdd, true);
-
-//			ucl.Set(uiCurrentItem, false);
+			ucl.Set(uiCurrentItem, false);
 			ucl.Set(uiSelected, true);
 
-			R.SetColorSelected(UiGetColor(uiColor, uiItem, &ucl, 0x0));
-			R.SetColorSelectedBackground(UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF));
+			R.SetColorSelected( m_Panel->UiGetColor(uiColor, uiItem, &ucl, 0x0) );
+			R.SetColorSelectedBackground( m_Panel->UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF) );
 		}
 
 		{
 			UiCondList ucl;
 
 			ucl.Set(uiSelectedPanel, true);
-			ucl.Set(uiOdd, true);
-
 			ucl.Set(uiCurrentItem, true);
 			ucl.Set(uiSelected, true);
 
-			R.SetColorUnderCursorSelected(UiGetColor(uiColor, uiItem, &ucl, 0x0));
-			R.SetColorUnderCursorSelectedBackground(UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF));
+			R.SetColorUnderCursorSelected( m_Panel->UiGetColor(uiColor, uiItem, &ucl, 0x0) );
+			R.SetColorUnderCursorSelectedBackground( m_Panel->UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF) );
 		}
 
 		return R;
@@ -467,6 +458,7 @@ public:
 	}
 
 private:
+	PanelWin* m_Panel;
 	Layout m_Layout;
 
 public:
@@ -570,8 +562,10 @@ class clFileHighlightingWin: public NCDialog
 	Button m_DelButton;
 	Button m_EditButton;
 	bool   m_Saved;
+	PanelWin* m_Panel;
+
 public:
-	clFileHighlightingWin( NCDialogParent* parent, std::vector<clNCFileHighlightingRule>* Rules )
+	clFileHighlightingWin( NCDialogParent* parent, std::vector<clNCFileHighlightingRule>* Rules, PanelWin* Panel )
 	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Files highlighting" ) ).data(), bListOkCancel )
 	 , m_ListWin( this, Rules )
 	 , m_Layout( 10, 10 )
@@ -579,6 +573,7 @@ public:
 	 , m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
 	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )
 	 , m_Saved( true )
+	 , m_Panel( Panel )
 	{
 		m_AddCurrentButton.Enable();
 		m_AddCurrentButton.Show();
@@ -660,7 +655,7 @@ bool clFileHighlightingWin::Command( int id, int subId, Win* win, void* data )
 
 		if ( !ValueToEdit ) return true;
 
-		clEditFileHighlightingWin Dialog( ( NCDialogParent* )Parent(), ValueToEdit );
+		clEditFileHighlightingWin Dialog( ( NCDialogParent* )Parent(), ValueToEdit, m_Panel );
 		Dialog.SetEnterCmd( 0 );
 
 		if ( Dialog.DoModal( ) == CMD_OK )
@@ -674,7 +669,7 @@ bool clFileHighlightingWin::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_PLUS )
 	{
-		clEditFileHighlightingWin Dialog( ( NCDialogParent* )Parent(), NULL );
+		clEditFileHighlightingWin Dialog( ( NCDialogParent* )Parent(), nullptr, m_Panel );
 		Dialog.SetEnterCmd( 0 );
 
 		if ( Dialog.DoModal( ) == CMD_OK )
@@ -760,12 +755,12 @@ bool clNCFileHighlightingRule::IsRulePassed( const unicode_t* FileName, uint64_t
 	return false;
 }
 
-bool FileHighlightingDlg( NCDialogParent* Parent, std::vector<clNCFileHighlightingRule>* HighlightingRules )
+bool FileHighlightingDlg( NCDialogParent* Parent, std::vector<clNCFileHighlightingRule>* HighlightingRules, PanelWin* Panel )
 {
 	// make an editable copy
 	std::vector<clNCFileHighlightingRule> LocalRules( *HighlightingRules );
 
-	clFileHighlightingWin Dialog( Parent, &LocalRules );
+	clFileHighlightingWin Dialog( Parent, &LocalRules, Panel );
 	Dialog.SetEnterCmd( 0 );
 
 	if ( Dialog.DoModal( ) == CMD_OK )

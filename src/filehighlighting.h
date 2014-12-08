@@ -11,6 +11,8 @@
 
 #include <vector>
 
+class PanelWin;
+
 class clNCFileHighlightingRule
 {
 public:
@@ -73,4 +75,4 @@ private:
 	uint32_t m_ColorUnderCursorSelectedBackground;
 };
 
-bool FileHighlightingDlg( NCDialogParent* Parent, std::vector<clNCFileHighlightingRule>* HighlightingRules );
+bool FileHighlightingDlg( NCDialogParent* Parent, std::vector<clNCFileHighlightingRule>* HighlightingRules, PanelWin* Panel );

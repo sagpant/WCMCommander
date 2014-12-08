@@ -2203,7 +2203,7 @@ void NCWin::FileHighlighting()
 {
 	if ( _mode != PANEL ) { return; }
 
-	if ( FileHighlightingDlg( this, g_Env.GetFileHighlightingRulesPtr() ) )
+	if ( FileHighlightingDlg( this, g_Env.GetFileHighlightingRulesPtr(), _panel ) )
 	{
 		SendConfigChanged();
 		StylesChanged( this );
