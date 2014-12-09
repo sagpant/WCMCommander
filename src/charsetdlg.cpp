@@ -35,11 +35,11 @@ void InitOperCharsets()
 		hash[list[i]->name] = list[i];
 	}
 
-	ccollect< std::vector<char> > stringList;
+	std::vector< std::string > stringList;
 
 	if ( LoadStringList( charsetSection, stringList ) )
 	{
-		for ( i = 0; i < stringList.count(); i++ )
+		for ( i = 0; i < (int)stringList.size(); i++ )
 		{
 			auto iter = hash.find( stringList[i].data() );
 
@@ -77,11 +77,11 @@ void InitOperCharsets()
 
 void SaveOperCharsets()
 {
-	ccollect< std::vector<char> > stringList;
+	std::vector< std::string > stringList;
 
 	for ( int i = 0; i < csList.count(); i++ )
 	{
-		stringList.append( new_char_str( csList[i]->name ) );
+		stringList.push_back( std::string( csList[i]->name ) );
 	}
 
 	SaveStringList( charsetSection, stringList );

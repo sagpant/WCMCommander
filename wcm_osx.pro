@@ -33,6 +33,7 @@ SOURCES += src/nc.cpp \
     src/ext-app-ux.cpp \
     src/ext-app.cpp \
     src/fileassociations.cpp \
+    src/filehighlighting.cpp \
     src/fileopers.cpp \
     src/filesearch.cpp \
     src/fontdlg.cpp \
@@ -98,6 +99,7 @@ HEADERS += \
     src/eloadsave.h \
     src/ext-app.h \
     src/fileassociations.h \
+    src/filehighlighting.h \
     src/fileopers.h \
     src/filesearch.h \
     src/fontdlg.h \

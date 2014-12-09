@@ -279,7 +279,7 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 	{
 		const unicode_t* name = _list.GetFileName( i, RootDir );
 
-		if ( name && accmask_nocase_begin( name, mask ) )
+		if ( name && accmask_nocase( name, mask ) )
 		{
 			SetCurrent( i );
 			return true;
@@ -290,7 +290,7 @@ bool PanelWin::Search( unicode_t* mask, bool SearchForNext )
 	{
 		const unicode_t* name = _list.GetFileName( i, HideDotsInDir() );
 
-		if ( name && accmask_nocase_begin( name, mask ) )
+		if ( name && accmask_nocase( name, mask ) )
 		{
 			SetCurrent( i );
 			return true;
@@ -525,7 +525,6 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	_lo.AddRect( &_footRect, 5, 1, 5, 2 );
 
 	_lo.AddWin( &_scroll, 3, 2 );
-
 
 	OnChangeStyles();
 
@@ -933,6 +932,29 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	int color_text = UiGetColor( uiColor, uiItem, &ucl, 0x0 );
 	int color_bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 	int color_shadow = UiGetColor( uiBackground, uiItem, &ucl, 0 );
+
+	const auto& Rules = g_Env.GetFileHighlightingRules();
+
+	if ( p )
+	{
+		for (const auto& i : Rules)
+		{
+			if ( i.IsRulePassed(p->GetUnicodeName(), p->Size(), 0) )
+			{
+				if ( active )
+				{
+					color_bg = i.GetColorUnderCursorNormalBackground();
+					color_text = i.GetColorUnderCursorNormal();
+				}
+				else
+				{
+					color_bg = i.GetColorNormalBackground();
+					color_text = i.GetColorNormal();
+				}
+				break;
+			}
+		}
+	}
 
 	gc.SetFillColor( color_bg );
 

@@ -63,6 +63,7 @@ OBJS = \
 	$(OBJDIR)/eloadsave.o \
 	$(OBJDIR)/ext-app-ux.o \
 	$(OBJDIR)/fileassociations.o \
+	$(OBJDIR)/filehighlighting.o \
 	$(OBJDIR)/fileopers.o \
 	$(OBJDIR)/filesearch.o\
 	$(OBJDIR)/fontdlg.o \
@@ -212,6 +213,9 @@ $(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) src/shortcuts.cpp
 
 $(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) src/fileassociations.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/fileassociations.cpp -o $(OBJDIR)/fileassociations.o
+
+$(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) src/filehighlighting.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/filehighlighting.cpp -o $(OBJDIR)/filehighlighting.o
 
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) src/strconfig.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/strconfig.cpp -o $(OBJDIR)/strconfig.o

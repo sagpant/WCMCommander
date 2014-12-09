@@ -4,6 +4,7 @@
  * walcommander@linderdaum.com
  */
 
+#include "swl.h"
 #include "shl.h"
 #include "strmasks.h"
 
@@ -11,8 +12,6 @@ namespace SHL
 {
 	using namespace wal;
 
-	inline bool IsAlpha( int c ) { return ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ); }
-	inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
 	inline int ToUpper( int c ) { return  ( c >= 'a' && c <= 'z' ) ? c - 'a' + 'A' : c; }
 	inline int ToLower( int c ) { return  ( c >= 'A' && c <= 'Z' ) ? c - 'A' + 'a' : c; }
 

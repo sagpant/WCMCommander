@@ -181,6 +181,7 @@
 		<Unit filename="src/ext-app.cpp" />
 		<Unit filename="src/ext-app.h" />
 		<Unit filename="src/fileassociations.cpp" />
+		<Unit filename="src/filehighlighting.cpp" />
 		<Unit filename="src/fileopers.cpp" />
 		<Unit filename="src/fileopers.h" />
 		<Unit filename="src/filesearch.cpp" />

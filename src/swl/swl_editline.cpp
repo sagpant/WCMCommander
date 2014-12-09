@@ -296,6 +296,7 @@ namespace wal
 	 , frame3d( frame )
 	 , charH( 0 )
 	 , charW( 0 )
+	 , m_ReplaceMode( false )
 	{
 		text.End();
 
@@ -620,7 +621,6 @@ namespace wal
 
 	bool EditLine::EventKey( cevent_key* pEvent )
 	{
-
 		if (!doAcceptAltKeys && (pEvent->Mod() & KM_ALT) != 0)
 		{
 			return false;
@@ -741,8 +741,14 @@ namespace wal
 
 					if ( c && c >= 0x20 && (!alt || _use_alt_symbols) )
 					{
+						std::vector<unicode_t> oldtext = GetText();
 						if ( RO() ) return true;
+						if ( m_ReplaceMode ) text.Del( false );
 						text.Insert( c );
+						if ( m_Validator && !m_Validator->IsValid( GetText() ) )
+						{
+							SetText( oldtext.data(), false );
+						}
 						Changed();
 					}
 					else { return false; }

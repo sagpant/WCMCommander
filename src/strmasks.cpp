@@ -6,7 +6,7 @@
 
 #include "strmasks.h"
 
-bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
+bool accmask_nocase( const unicode_t* name, const unicode_t* mask )
 {
 	if ( !*mask )
 	{
@@ -29,7 +29,7 @@ bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask )
 				if ( !*mask ) { return true; }
 
 				for ( ; *name; name++ )
-					if ( accmask_nocase_begin( name, mask ) )
+					if ( accmask_nocase( name, mask ) )
 					{
 						return true;
 					}
@@ -140,7 +140,7 @@ bool clMultimaskSplitter::CheckAndFetchAllMasks( const unicode_t* FileName )
 	{
 		if (
 #if defined( _WIN32 ) || defined( __APPLE__ )
-			accmask_nocase_begin
+			accmask_nocase
 #else
 			accmask
 #endif
@@ -158,7 +158,7 @@ bool clMultimaskSplitter::CheckAndFetchAllMasks_NoCase( const unicode_t* FileNam
 
 	while ( HasNextMask() )
 	{
-		if ( accmask_nocase_begin( FileName, GetNextMask().data() ) ) return true;
+		if ( accmask_nocase( FileName, GetNextMask().data() ) ) return true;
 	}
 	return false;
 }

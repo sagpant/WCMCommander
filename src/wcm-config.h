@@ -8,6 +8,8 @@
 
 #include "ncdialogs.h"
 
+#include <string>
+
 class NCWin;
 
 enum ePanelSpacesMode
@@ -183,5 +185,5 @@ bool DoStyleConfigDialog( NCDialogParent* parent );
 bool DoSystemConfigDialog( NCDialogParent* parent );
 bool DoTerminalConfigDialog( NCDialogParent* parent );
 
-bool LoadStringList( const char* section, ccollect< std::vector<char> >& list );
-void SaveStringList( const char* section, ccollect< std::vector<char> >& list );
+bool LoadStringList( const char* section, std::vector< std::string >& list );
+void SaveStringList( const char* section, std::vector< std::string >& list );

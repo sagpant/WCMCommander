@@ -11,10 +11,8 @@
 #include "ltext.h"
 #include "strconfig.h"
 #include "unicode_lc.h"
-
-static const int CMD_PLUS  = 1000;
-static const int CMD_MINUS = 1001;
-static const int CMD_EDIT  = 1002;
+#include "dialog_enums.h"
+#include "dialog_helpers.h"
 
 /// dialog to edit a single file association
 class clEditFileAssociationsWin: public NCVertDialog
@@ -148,88 +146,15 @@ public:
 	bool m_Saved;
 };
 
-class clFileAssociationsListWin: public VListWin
+class clFileAssociationsListWin: public iContainerListWin<clNCFileAssociation>
 {
 public:
-	clFileAssociationsListWin( Win* parent, std::vector<clNCFileAssociation>* Associations )
-	 : VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
-	 , m_ItemList( Associations )
+	clFileAssociationsListWin( Win* Parent, std::vector<clNCFileAssociation>* Associations )
+	 : iContainerListWin<clNCFileAssociation>( Parent, Associations )
 	{
-		wal::GC gc( this );
-		gc.Set( GetFont() );
-		cpoint ts = gc.GetTextExtents( ABCString );
-//		int fontW = ( ts.x / ABCStringLen );
-		int fontH = ts.y + 2;
-
-		this->SetItemSize( ( fontH > 16 ? fontH : 16 ) + 1, 100 );
-
-		SetCount( m_ItemList->size() );
-		SetCurrent( 0 );
-
-		LSize ls;
-		ls.x.maximal = 10000;
-		ls.x.ideal = 500;
-		ls.x.minimal = 300;
-
-		ls.y.maximal = 10000;
-		ls.y.ideal = 300;
-		ls.y.minimal = 200;
-
-		SetLSize( ls );
-	}
-	virtual ~clFileAssociationsListWin();
-
-	const clNCFileAssociation* GetCurrentData() const
-	{
-		int n = GetCurrent( );
-		if ( n < 0 || n >= (int)m_ItemList->size() ) { return NULL; }
-		return &( m_ItemList->at(n) );
 	}
 
-	clNCFileAssociation* GetCurrentData()
-	{
-		int n = GetCurrent( );
-		if ( n < 0 || n >= (int)m_ItemList->size() ) { return NULL; }
-		return &( m_ItemList->at(n) );
-	}
-
-	void Ins( const clNCFileAssociation& p )
-	{
-		m_ItemList->push_back( p );
-		SetCount( m_ItemList->size( ) );
-		SetCurrent( ( int )m_ItemList->size() - 1 );
-		CalcScroll();
-		Invalidate();
-	}
-
-	void Del()
-	{
-		int n = GetCurrent();
-
-		if ( n < 0 || n >= ( int )m_ItemList->size( ) ) { return; }
-
-		m_ItemList->erase( m_ItemList->begin( ) + n );
-
-		SetCount( m_ItemList->size( ) );
-		CalcScroll();
-		Invalidate();
-	}
-
-	void Rename( const clNCFileAssociation& p )
-	{
-		int n = GetCurrent();
-
-		if ( n < 0 || n >= ( int )m_ItemList->size( ) ) { return; }
-
-		m_ItemList->at(n) = p;
-		CalcScroll();
-		Invalidate();
-	}
-
-	virtual void DrawItem( wal::GC& gc, int n, crect rect );
-
-private:
-	std::vector<clNCFileAssociation>* m_ItemList;
+	virtual void DrawItem( wal::GC& gc, int n, crect rect ) override;
 };
 
 static int uiFcColor = GetUiID( "first-char-color" );
@@ -267,8 +192,6 @@ void clFileAssociationsListWin::DrawItem( wal::GC& gc, int n, crect rect )
 		gc.TextOutF( rect.left + 10, rect.top + 1, p->GetMask().data(), 1 );
 	}
 }
-
-clFileAssociationsListWin::~clFileAssociationsListWin() {};
 
 class clFileAssociationsWin: public NCDialog
 {

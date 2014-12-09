@@ -11,7 +11,7 @@
 
 #include <vector>
 
-bool accmask_nocase_begin( const unicode_t* name, const unicode_t* mask );
+bool accmask_nocase( const unicode_t* name, const unicode_t* mask );
 bool accmask( const unicode_t* name, const unicode_t* mask );
 
 class clMultimaskSplitter

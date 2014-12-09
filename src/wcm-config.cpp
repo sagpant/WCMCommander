@@ -19,6 +19,12 @@
 #  include "w32util.h"
 #endif
 
+#define __STDC_FORMAT_MACROS
+#include <stdint.h>
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
+#	include <inttypes.h>
+#endif
+
 #include <map>
 
 #ifndef _WIN32
@@ -163,13 +169,6 @@ void SysTextFileOut::Write( char* buf, int size ) {  f.Write( buf, size ); }
 
 
 static FSPath configDirPath( CS_UTF8, "???" );
-
-inline bool IsSpace( int c ) { return c > 0 && c <= 32; }
-inline bool IsLatinChar( int c ) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
-inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
-
-
-
 
 class IniHash
 {
@@ -338,7 +337,7 @@ void IniHash::Save( const sys_char_t* fileName )
 
 IniHash::~IniHash() {}
 
-bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
+bool LoadStringList( const char* section, std::vector< std::string >& list )
 {
 	try
 	{
@@ -356,7 +355,7 @@ bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 
 			while ( *s > 0 && *s <= ' ' ) { s++; }
 
-			if ( *s ) { list.append( new_char_str( s ) ); }
+			if ( *s ) { list.push_back( std::string( new_char_str( s ).data() ) ); }
 		}
 	}
 	catch ( cexception* ex )
@@ -369,7 +368,7 @@ bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 }
 
 
-void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
+void SaveStringList( const char* section, std::vector< std::string >& list )
 {
 	try
 	{
@@ -379,11 +378,11 @@ void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).data() );
 		out.Open( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
-		for ( int i = 0; i < list.count(); i++ )
+		for ( int i = 0; i < (int)list.size(); i++ )
 		{
-			if ( list[i].data() && list[i][0] )
+			if ( list[i].c_str() && list[i][0] )
 			{
-				out.Put( list[i].data() );
+				out.Put( list[i].c_str() );
 				out.PutC( '\n' );
 			}
 		}
@@ -591,7 +590,7 @@ bool RegWriteBin( const char* sect, const char* what, const void* data, int size
 	return lResult == ERROR_SUCCESS;
 }
 
-bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
+bool LoadStringList( const char* section, std::vector< std::string >& list )
 {
 	char name[64];
 	list.clear();
@@ -603,18 +602,18 @@ bool LoadStringList( const char* section, ccollect< std::vector<char> >& list )
 
 		if ( !s.data() || !s[0] ) { break; }
 
-		list.append( s );
+		list.push_back( std::string( s.data() ) );
 	}
 
 	return true;
 }
 
-void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
+void SaveStringList( const char* section, std::vector< std::string >& list )
 {
 	int n = 1;
 	char name[64];
 
-	for ( int i = 0; i < list.count(); i++ )
+	for ( size_t i = 0; i < list.size(); i++ )
 	{
 		if ( list[i].data() && list[i][0] )
 		{
@@ -645,6 +644,7 @@ const char* sectionFonts = "fonts";
 
 static const char* CommandsHistorySection = "CommandsHistory";
 static const char* FilesAssociationsSection = "FilesAssociations";
+static const char* HighlightingRulesSection = "HighlightingRules";
 static const char* UserMenuSection = "UserMenu";
 
 clWcmConfig::clWcmConfig()
@@ -825,7 +825,16 @@ public:
 		m_Hash.SetBoolValue( m_SectionName, Buf, Data );
 #endif
 	}
-
+	void WriteInt( const char* KeyNamePattern, int i, int Data )
+	{
+		char Buf[4096];
+		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+#ifdef _WIN32
+		RegWriteInt( m_SectionName, Buf, Data );
+#else
+		m_Hash.SetIntValue( m_SectionName, Buf, Data );
+#endif
+	}
 
 private:
 #if !defined(_WIN32)
@@ -864,6 +873,17 @@ public:
 #endif
 		return Result;
 	}
+	int ReadInt( const char* KeyNamePattern, int i, int DefaultValue )
+	{
+		char Buf[4096];
+		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
+#ifdef _WIN32
+		int Result = RegReadInt( m_SectionName, Buf, DefaultValue );
+#else
+		int Result = m_Hash.GetIntValue( m_SectionName, Buf, DefaultValue );
+#endif
+		return Result;
+	}
 
 private:
 #if !defined(_WIN32)
@@ -886,7 +906,7 @@ void SaveFileAssociations( NCWin* nc
 #endif
 	Cfg.SetSectionName( FilesAssociationsSection );
 
-	const std::vector<clNCFileAssociation>& Assoc = nc->GetFileAssociations();
+	const std::vector<clNCFileAssociation>& Assoc = g_Env.GetFileAssociations();
 
 	for ( size_t i = 0; i < Assoc.size(); i++ )
 	{
@@ -916,7 +936,7 @@ void SaveFileAssociations( NCWin* nc
 	Cfg.Write( "Mask%i", Assoc.size(), "" );
 }
 
-void LoadFilesAssociations( NCWin* nc
+void LoadFileAssociations( NCWin* nc
 #ifndef _WIN32
 , IniHash& hash
 #endif
@@ -964,7 +984,7 @@ void LoadFilesAssociations( NCWin* nc
 		i++;
 	}
 
-	nc->SetFileAssociations( Assoc );
+	g_Env.SetFileAssociations( Assoc );
 }
 
 void SaveUserMenu( NCWin* nc
@@ -982,7 +1002,7 @@ void SaveUserMenu( NCWin* nc
 #endif
 	Cfg.SetSectionName( UserMenuSection );
 
-	const std::vector<clNCUserMenuItem>& Items = nc->GetUserMenuItems();
+	const std::vector<clNCUserMenuItem>& Items = g_Env.GetUserMenuItems();
 
 	for ( size_t i = 0; i < Items.size(); i++ )
 	{
@@ -1033,7 +1053,121 @@ void LoadUserMenu( NCWin* nc
 		i++;
 	}
 
-	nc->SetUserMenuItems( Items );
+	g_Env.SetUserMenuItems( Items );
+}
+
+void SaveFileHighlightingRules( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigWriter Cfg;
+#else
+	clConfigWriter Cfg( hash );
+#endif
+	Cfg.SetSectionName( HighlightingRulesSection );
+
+	const std::vector<clNCFileHighlightingRule>& Rules = g_Env.GetFileHighlightingRules();
+
+	for ( size_t i = 0; i < Rules.size(); i++ )
+	{
+		const clNCFileHighlightingRule& A = Rules[i];
+
+		std::vector<char> Mask_utf8 = unicode_to_utf8( A.GetMask().data() );
+		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
+
+		char Buf[0xFFFF];
+		Lsnprintf( Buf, sizeof( Buf ) - 1, "Min = %" PRIu64 " Max = %" PRIu64 " Attribs = %" PRIu64, A.GetSizeMin(), A.GetSizeMax(), A.GetAttributesMask() );
+
+		Cfg.Write( "Mask%i", i, Mask_utf8.data( ) );
+		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
+		Cfg.Write( "SizeAttribs%i", i, Buf );
+		Cfg.WriteInt( "ColorNormal%i", i, A.GetColorNormal() );
+		Cfg.WriteInt( "ColorNormalBackground%i", i, A.GetColorNormalBackground() );
+		Cfg.WriteInt( "ColorSelected%i", i, A.GetColorSelected() );
+		Cfg.WriteInt( "ColorSelectedBackground%i", i, A.GetColorSelectedBackground() );
+		Cfg.WriteInt( "ColorUnderCursorNormal%i", i, A.GetColorUnderCursorNormal() );
+		Cfg.WriteInt( "ColorUnderCursorNormalBackground%i", i, A.GetColorUnderCursorNormalBackground() );
+		Cfg.WriteInt( "ColorUnderCursorSelected%i", i, A.GetColorUnderCursorSelected() );
+		Cfg.WriteInt( "ColorUnderCursorSelectedBackground%i", i, A.GetColorUnderCursorSelectedBackground() );
+		Cfg.WriteBool( "MaskEnabled%i", i, A.IsMaskEnabled() );
+	}
+
+	// end marker
+	Cfg.Write( "Mask%i", Rules.size(), "" );
+}
+
+void LoadFileHighlightingRules( NCWin* nc
+#ifndef _WIN32
+, IniHash& hash
+#endif
+)
+{
+	if ( !nc ) return;
+
+#if defined(_WIN32)
+	clConfigReader Cfg;
+#else
+	clConfigReader Cfg( hash );
+#endif
+	Cfg.SetSectionName( HighlightingRulesSection );
+
+	int i = 0;
+
+	std::vector<clNCFileHighlightingRule> Rules;
+
+	while (true)
+	{
+		std::vector<unicode_t> Mask = Cfg.Read( "Mask%i", i );
+		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
+
+		std::vector<unicode_t> Line = Cfg.Read( "SizeAttribs%i", i );
+
+		std::vector<char> Line_utf8 = unicode_to_utf8( Line.data() );
+
+		uint64_t SizeMin, SizeMax, AttribsMask;
+
+		int NumRead = 0;
+
+		if ( Line.data() && *Line.data( ) )
+		{
+			NumRead = Lsscanf( Line_utf8.data(), "Min = %" PRIu64 " Max = %" PRIu64 " Attribs = %" PRIu64, &SizeMin, &SizeMax, &AttribsMask );
+		}
+
+		if ( NumRead != 3 )
+		{
+			SizeMin = 0;
+			SizeMax = 0;
+			AttribsMask = 0;
+		}
+
+		if ( !Mask.data() || !*Mask.data() ) break;
+
+		clNCFileHighlightingRule R;
+		R.SetMask( Mask );
+		R.SetDescription( Description );
+		R.SetSizeMin( SizeMin );
+		R.SetSizeMax( SizeMax );
+		R.SetAttributesMask( AttribsMask );
+		R.SetColorNormal( Cfg.ReadInt( "ColorNormal%i", i, R.GetColorNormal() ) );
+		R.SetColorNormalBackground( Cfg.ReadInt( "ColorNormalBackground%i", i, R.GetColorNormalBackground() ) );
+		R.SetColorSelected( Cfg.ReadInt( "ColorSelected%i", i, R.GetColorSelected() ) );
+		R.SetColorSelectedBackground( Cfg.ReadInt( "ColorSelectedBackground%i", i, R.GetColorSelectedBackground() ) );
+		R.SetColorUnderCursorNormal( Cfg.ReadInt( "ColorUnderCursorNormal%i", i, R.GetColorUnderCursorNormal() ) );
+		R.SetColorUnderCursorNormalBackground( Cfg.ReadInt( "ColorUnderCursorNormalBackground%i", i, R.GetColorUnderCursorNormalBackground( ) ) );
+		R.SetColorUnderCursorSelected( Cfg.ReadInt( "ColorUnderCursorSelected%i", i, R.GetColorUnderCursorSelected() ) );
+		R.SetColorUnderCursorSelectedBackground( Cfg.ReadInt( "ColorUnderCursorSelectedBackground%i", i, R.GetColorUnderCursorSelectedBackground() ) );
+
+		Rules.push_back( R );
+
+		i++;
+	}
+
+	g_Env.SetFileHighlightingRules( Rules );
 }
 
 void SaveCommandsHistory( NCWin* nc
@@ -1097,17 +1231,15 @@ extern std::map<std::vector<unicode_t>, int> g_ViewPosHash;
 
 void LoadEditorPositions()
 {
-	ccollect< std::vector<char> > Positions;
+	std::vector< std::string > Positions;
 
 	LoadStringList( "EditorPositions", Positions );
 
 	g_EditPosHash.clear();
 
-	for ( int i = 0; i != Positions.count(); i++ )
+	for ( size_t i = 0; i != Positions.size(); i++ )
 	{
-		std::vector<char> Line = Positions[i];
-
-		if ( !Line.data() ) break;
+		std::string Line = Positions[i];
 
 		int FL, L, P;
 		char Buf[0xFFFF];
@@ -1133,17 +1265,15 @@ void LoadEditorPositions()
 
 void LoadViewerPositions()
 {
-	ccollect< std::vector<char> > Positions;
+	std::vector< std::string > Positions;
 
 	LoadStringList( "ViewerPositions", Positions );
 
 	g_ViewPosHash.clear();
 
-	for ( int i = 0; i != Positions.count(); i++ )
+	for ( size_t i = 0; i != Positions.size(); i++ )
 	{
-		std::vector<char> Line = Positions[i];
-
-		if ( !Line.data() ) break;
+		std::string Line = Positions[i];
 
 		int L;
 		char Buf[0xFFFF];
@@ -1182,7 +1312,8 @@ void clWcmConfig::Load( NCWin* nc )
 
 
 	LoadCommandsHistory( nc );
-	LoadFilesAssociations( nc );
+	LoadFileAssociations( nc );
+	LoadFileHighlightingRules( nc );
 	LoadUserMenu( nc );
 
 #else
@@ -1222,7 +1353,8 @@ void clWcmConfig::Load( NCWin* nc )
 	}
 
 	LoadCommandsHistory( nc, hash );
-	LoadFilesAssociations( nc, hash );
+	LoadFileAssociations( nc, hash );
+	LoadFileHighlightingRules( nc, hash );
 	LoadUserMenu( nc, hash );
 
 #endif
@@ -1235,7 +1367,7 @@ void clWcmConfig::Load( NCWin* nc )
 
 void SaveEditorPositions()
 {
-	ccollect< std::vector<char> > Positions;
+	std::vector< std::string > Positions;
 
 	for ( auto i = g_EditPosHash.begin(); i != g_EditPosHash.end(); i++ )
 	{
@@ -1247,7 +1379,7 @@ void SaveEditorPositions()
 		char Buf[0xFFFF];
 		Lsnprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
 
-		Positions.append( new_char_str( Buf ) );
+		Positions.push_back( std::string( Buf ) );
 	}
 
 	SaveStringList( "EditorPositions", Positions );
@@ -1255,7 +1387,7 @@ void SaveEditorPositions()
 
 void SaveViewerPositions()
 {
-	ccollect< std::vector<char> > Positions;
+	std::vector< std::string > Positions;
 
 	for ( auto i = g_ViewPosHash.begin(); i != g_ViewPosHash.end(); i++ )
 	{
@@ -1267,7 +1399,7 @@ void SaveViewerPositions()
 		char Buf[0xFFFF];
 		Lsnprintf( Buf, sizeof( Buf ) - 1, "L = %i FN = %s", Line, FileName_utf8.data() );
 
-		Positions.append( new_char_str( Buf ) );
+		Positions.push_back( std::string( Buf ) );
 	}
 
 	SaveStringList( "ViewerPositions", Positions );
@@ -1308,6 +1440,7 @@ void clWcmConfig::Save( NCWin* nc )
 
 	SaveCommandsHistory( nc );
 	SaveFileAssociations( nc );
+	SaveFileHighlightingRules( nc );
 	SaveUserMenu( nc );
 
 #else
@@ -1336,6 +1469,7 @@ void clWcmConfig::Save( NCWin* nc )
 
 	SaveCommandsHistory( nc, hash );
 	SaveFileAssociations( nc, hash );
+	SaveFileHighlightingRules( nc, hash );
 	SaveUserMenu( nc, hash );
 
 	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );

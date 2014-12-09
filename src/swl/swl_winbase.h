@@ -2,7 +2,6 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
 #pragma once
 
 namespace wal
@@ -173,6 +172,9 @@ namespace wal
 
 		void  Clear() { marker = cursor = count = 0; }
 
+		const std::vector<unicode_t>& GetText() const { return data; }
+		void SetText( const std::vector<unicode_t>& t ) { Set( t.data(), false ); }
+
 		EditBuf( const unicode_t* s ): size( 0 ), count( 0 ) { Set( s );}
 		EditBuf(): size( 0 ), count( 0 ), cursor( 0 ), marker( 0 ) {}
 
@@ -185,6 +187,18 @@ namespace wal
 	   SCMD_EDITLINE_CHANGED = 100
 	};
 
+	class clValidator: public iIntrusiveCounter
+	{
+	public:
+		virtual ~clValidator() {};
+		virtual bool IsValid( const std::vector<unicode_t>& Str ) const = 0;
+	};
+
+	class clUnsignedInt64Validator: public clValidator
+	{
+	public:
+		virtual bool IsValid( const std::vector<unicode_t>& Str ) const;
+	};
 
 	class EditLine: public Win
 	{
@@ -209,6 +223,10 @@ namespace wal
 		bool frame3d;
 		int charH;
 		int charW;
+		bool m_ReplaceMode;
+
+		clPtr<clValidator> m_Validator;
+
 		CaptureSD captureSD;
 
 		void DrawCursor( GC& gc );
@@ -217,7 +235,8 @@ namespace wal
 		void ClipboardPaste();
 		void ClipboardCut();
 		int GetCharPos( cpoint p );
-		void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
+	protected:
+		virtual void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
 	public:
 		EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true, unsigned flags = 0 );
 		void SetAcceptAltKeys(){ doAcceptAltKeys = true; }
@@ -234,6 +253,7 @@ namespace wal
 		bool IsEmpty() const;
 		int GetCursorPos() { return text.Cursor(); }
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
+		void SetReplaceMode( bool ReplaceMode ) { m_ReplaceMode = ReplaceMode; }
 		std::vector<unicode_t> GetText() const;
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
 		void SetShowSpaces( bool enable = true ) { showSpaces = enable; Invalidate(); }
@@ -241,6 +261,7 @@ namespace wal
 		virtual void OnChangeStyles();
 		void EnableAltSymbols(bool e){ _use_alt_symbols = e; }
 		virtual ~EditLine();
+		void SetValidator( clPtr<clValidator> Validator ) { m_Validator = Validator; }
 	};
 
 	extern cpoint GetStaticTextExtent( GC& gc, const unicode_t* s, cfont* font );

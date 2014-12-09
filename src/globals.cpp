@@ -18,3 +18,5 @@ clPtr<cfont> g_HelpBoldFont;
 clPtr<cfont> g_HelpHeadFont;
 
 bool g_DebugKeyboard = false;
+
+clEnvironment g_Env;

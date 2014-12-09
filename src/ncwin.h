@@ -21,7 +21,6 @@
 #include "ext-app.h"
 #include "toolbar.h"
 #include "fileassociations.h"
-#include "usermenu.h"
 
 using namespace wal;
 
@@ -246,12 +245,6 @@ private:
 
 	NCHistory _history;
 
-	/// F2 user menu
-	std::vector<clNCUserMenuItem> m_UserMenuItems;
-
-	/// currently active file associations
-	std::vector<clNCFileAssociation> m_FileAssociations;
-
 	LPanelSelectionType _shiftSelectType;
 
 	void SetMode( MODE m );
@@ -314,6 +307,7 @@ private:
 	void PanelEqual();
 	void Shortcuts();
 	void FileAssociations();
+	void FileHighlighting();
 	void OnOffShl();
 	void UserMenu();
 
@@ -384,14 +378,8 @@ public:
 	EditWin* GetEditor() { return &_editor; }
 	NCHistory* GetHistory() { return &_history; }
 
-	const std::vector<clNCFileAssociation>& GetFileAssociations() const { return m_FileAssociations; }
-	void SetFileAssociations( const std::vector<clNCFileAssociation>& Assoc ) { m_FileAssociations = Assoc; }
-
 	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
 	bool StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode );
-
-	const std::vector<clNCUserMenuItem>& GetUserMenuItems() const { return m_UserMenuItems; }
-	void SetUserMenuItems( const std::vector<clNCUserMenuItem>& Items ) { m_UserMenuItems = Items; }
 
 	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal );
 

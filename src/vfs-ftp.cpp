@@ -6,6 +6,7 @@
 
 #include "vfs-ftp.h"
 
+#include "swl.h"
 #include "string-util.h"
 
 #ifdef _WIN32
@@ -1170,7 +1171,6 @@ static time_t GetFtpFTime( const char* p1, const char* p2, const char* p3 )
 
 }
 
-inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }
 inline unsigned GetUnsigned( const char* s )
 {
 	unsigned n = 0;
@@ -1256,15 +1256,12 @@ inline   long long ParzeFileSize( const char* s )
 	return size;
 }
 
-inline bool IsSpace( int c ) { return c > 0 && c <= 32; }
-
 inline char* SkipSpace( char* s )
 {
 	while ( IsSpace( *s ) ) { s++; }
 
 	return s;
 }
-
 
 inline char* ReadWord( char*& s )
 {

@@ -32,6 +32,7 @@ OBJS = \
 	$(OBJDIR)/eloadsave.o \
 	$(OBJDIR)/ext-app.o \
 	$(OBJDIR)/fileassociations.o \
+	$(OBJDIR)/filehighlighting.o \
 	$(OBJDIR)/fileopers.o \
 	$(OBJDIR)/filesearch.o\
 	$(OBJDIR)/ftplogon.o \

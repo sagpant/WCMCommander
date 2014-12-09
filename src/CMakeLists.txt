@@ -90,6 +90,7 @@ SET(wcm_COMMON_SOURCES
 	eloadsave.cpp
 	globals.cpp
 	fileassociations.cpp
+	filehighlighting.cpp
 	fileopers.cpp
 	filesearch.cpp
 	ftplogon.cpp
@@ -159,6 +160,8 @@ SET(wcm_HEADERS
 	eloadsave.h
 	ext-app.h
 	globals.h
+	fileassociations.h
+	filehighlighting.h
 	fileopers.h
 	filesearch.h
 	fontdlg.h
