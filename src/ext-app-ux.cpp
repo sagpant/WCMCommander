@@ -206,16 +206,8 @@ static void SearchExe( const char* dirName, cstrhash<bool>& hash )
 				hash[ent.d_name] = true;
 			}
 		};
-
-		closedir( d );
-
-		return;
-
 err:
 		closedir( d );
-
-		return;
-
 	}
 	catch ( ... )
 	{
@@ -845,15 +837,8 @@ AppDB::AppDB( const char* prefix )
 			ReadAppDesctopFile( ent.d_name );
 		};
 
-		closedir( d );
-
-		return;
-
 err:
 		closedir( d );
-
-		return;
-
 	}
 	catch ( cexception* ex )
 	{

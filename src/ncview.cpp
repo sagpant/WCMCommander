@@ -728,7 +728,7 @@ bool VFile::ReadString( seek_t offset, ViewerString& str, charset_struct* charse
 			for ( int n = tabSize - ( str.Len() % tabSize ); n > 0; n-- )
 				if ( !str.Add( ' ', cp ) )
 				{
-					goto end;
+					return true;
 				}
 
 			continue;
@@ -744,8 +744,6 @@ bool VFile::ReadString( seek_t offset, ViewerString& str, charset_struct* charse
 	}
 
 	str.bytes = lbPos + pos;
-end:
-
 
 	return true;
 }

@@ -45,16 +45,14 @@ bool W32Cons::NewConsole()
 
 	if ( !GetConsoleScreenBufferInfo( outHandle, &consLastInfo ) )
 	{
-		goto err;
+		outHandle = 0;
+		FreeConsole();
+		return false;
 	}
 
 	::ShowWindow( ::GetConsoleWindow(), SW_HIDE );
 
 	return 0;
-err:
-	outHandle = 0;
-	FreeConsole();
-	return false;
 }
 
 void W32Cons::DetachConsole()
