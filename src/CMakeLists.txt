@@ -90,6 +90,7 @@ SET(wcm_COMMON_SOURCES
 	eloadsave.cpp
 	globals.cpp
 	fileassociations.cpp
+	fileattributes.cpp
 	filehighlighting.cpp
 	fileopers.cpp
 	filesearch.cpp
@@ -161,6 +162,7 @@ SET(wcm_HEADERS
 	ext-app.h
 	globals.h
 	fileassociations.h
+	fileattributes.h
 	filehighlighting.h
 	fileopers.h
 	filesearch.h
