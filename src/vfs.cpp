@@ -1267,7 +1267,12 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 				return -2;
 			}
 
-			if ( readdir_r( d, &ent, &pEnt ) ) { goto err; }
+			if ( readdir_r( d, &ent, &pEnt ) )
+			{
+				SetError( err, errno );
+				closedir( d );
+				return -1;
+			}
 
 			if ( !pEnt ) { break; }
 
@@ -1287,15 +1292,6 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 		closedir( d );
 
 		return 0;
-
-err:
-		SetError( err, errno );
-
-		closedir( d );
-
-		return -1;
-
-
 	}
 	catch ( ... )
 	{

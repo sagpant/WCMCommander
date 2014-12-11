@@ -396,7 +396,7 @@ namespace wal
 			size -= ( list[i].size = list[i].range.minimal );
 		}
 
-		if ( size <= 0 ) { return; } //goto ret;
+		if ( size <= 0 ) { return; }
 
 		n = 0;
 

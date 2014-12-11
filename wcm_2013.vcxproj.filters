@@ -74,6 +74,7 @@
     <ClCompile Include="src/strmasks.cpp" />
     <ClCompile Include="src/dlg-ctrl-l.cpp" />
     <ClCompile Include="src/usermenu.cpp" />
+    <ClCompile Include="src/swl\swl_combobox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/charsetdlg.h" />
