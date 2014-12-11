@@ -611,7 +611,7 @@ class InputStrDialog: public NCVertDialog
 public:
 	InputStrDialog( NCDialogParent* parent, const unicode_t* message, const unicode_t* str )
 		:  NCVertDialog( ::createDialogAsChild, 0, parent, message, bListOkCancel ), // 0xD8E9EC, 0),
-		   edit( 0, ( Win* )this, 0, 0, 50 )
+		   edit( 0, ( Win* )this, 0, 0, 100 )
 	{
 		edit.Enable();
 		edit.Show();
