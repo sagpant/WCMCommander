@@ -14,7 +14,7 @@ wal::unicode_t UnicodeLC( wal::unicode_t ch );
 /// convert a single UCS-2 character to uppercase
 wal::unicode_t UnicodeUC( wal::unicode_t ch );
 
-#if defined(__GNUC__) && defined(_WIN32)
+#if defined(__GNUC__) && defined(_WIN32) && !defined(_WIN64)
 #include <string>
 
 // MinGW
