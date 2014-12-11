@@ -295,6 +295,7 @@ private:
 	void Move( bool shift );
 	void Mark( bool enable );
 	void CtrlEnter();
+	void CtrlA();
 	void CtrlF();
 	void CtrlL();
 	void HistoryDialog();

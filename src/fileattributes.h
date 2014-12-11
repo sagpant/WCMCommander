@@ -7,3 +7,8 @@
 #pragma once
 
 #include "types.h"
+
+class NCDialogParent;
+class PanelWin;
+
+bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel );

@@ -6,3 +6,8 @@
 
 #include "fileattributes.h"
 
+bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel )
+{
+	return true;
+}
+
