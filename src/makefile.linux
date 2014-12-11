@@ -27,6 +27,7 @@ CFLAGS_FREETYPE = -I /opt/X11/include/freetype2 -D USEFREETYPE
 LIBFREETYPE = -l freetype
 else
 CFLAGS += -pthread
+CFLAGS += -Wno-unused-parameter
 LIBSMB = -l smbclient
 LIBSSH = -l ssh2 
 LIBFREETYPE = -l freetype
