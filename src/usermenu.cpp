@@ -46,7 +46,17 @@ public:
 		order.append( &m_DescriptionEdit );
 		order.append( &m_CommandEdit );
 
-		SetPosition();
+		LSize ls;
+		ls.x.maximal = 10000;
+		ls.x.ideal = 500;
+		ls.x.minimal = 500;
+
+		ls.y.maximal = 10000;
+		ls.y.ideal = 400;
+		ls.y.minimal = 400;
+
+		SetLSize(ls);
+	//	SetPosition();
 	}
 
 	std::vector<unicode_t> GetDescription() const { return m_DescriptionEdit.GetText(); }
@@ -94,12 +104,12 @@ public:
 
 		LSize ls;
 		ls.x.maximal = 10000;
-		ls.x.ideal = 500;
-		ls.x.minimal = 300;
+		ls.x.ideal = 600;
+		ls.x.minimal = 600;
 
 		ls.y.maximal = 10000;
-		ls.y.ideal = 300;
-		ls.y.minimal = 200;
+		ls.y.ideal = 500;
+		ls.y.minimal = 500;
 
 		SetLSize( ls );
 	}
