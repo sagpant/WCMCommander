@@ -169,6 +169,20 @@ ButtonWinData editCtrlButtons[] =
 	{nullptr, 0}
 };
 
+ButtonWinData editAltButtons[] =
+{
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"", 0},
+	{"Goto", ID_GOTO_LINE},
+	{"", 0},
+	{"", 0},
+	{nullptr, 0}
+};
 
 ButtonWinData viewNormalButtons[] =
 {
@@ -2612,7 +2626,7 @@ void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
 			}
 			else if ( alt )
 			{
-				data = 0;
+				data = editAltButtons;
 			}
 			else if ( shift )
 			{
