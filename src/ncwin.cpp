@@ -1529,7 +1529,7 @@ void NCWin::UserMenu()
 	//mData.Add( _LT("Unsorted"), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
 	//mData.AddSplitter();
 
-	int res = RunDldMenu( uiDriveDlg, this, "User menu (F4 edit)", &mData );
+	(void)RunDldMenu( uiDriveDlg, this, "User menu (F4 edit)", &mData );
 	m_Edit.SetFocus();
 }
 

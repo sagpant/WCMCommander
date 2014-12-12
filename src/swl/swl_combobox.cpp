@@ -377,7 +377,7 @@ void ComboBox::Paint(GC &gc, const crect &paintRect)
 {
 	crect cr = ClientRect();
 	unsigned bgColor = UiGetColor(uiBackground, 0, 0, 0xD8E9EC);
-	unsigned btnColor = UiGetColor(uiButtonColor, 0, 0, 0xD8E9EC); 
+//	unsigned btnColor = UiGetColor(uiButtonColor, 0, 0, 0xD8E9EC); 
 
 	gc.SetFillColor(bgColor);
 

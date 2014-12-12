@@ -1071,7 +1071,7 @@ void Win::ReleaseCapture(CaptureSD *sd)
 
 	void GC::FillRectXor( crect r )
 	{
-		RECT rect = {r.left, r.top, r.right, r.bottom};
+		//RECT rect = {r.left, r.top, r.right, r.bottom};
 		::PatBlt( handle, r.left, r.top, r.Width(), r.Height(), PATINVERT );
 	};
 
@@ -1435,7 +1435,7 @@ void Win::ReleaseCapture(CaptureSD *sd)
 		{
 			if ( !EmptyClipboard() || SetClipboardData( CF_UNICODETEXT, h ) == NULL )
 			{
-				DWORD e = GetLastError();
+				(void)GetLastError();
 				GlobalFree( h );
 			}
 
