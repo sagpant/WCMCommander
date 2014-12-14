@@ -979,6 +979,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	int x = rect.left + 7; //5;
 	int y = rect.top;
+	int IconY = y + (rect.Height() - folderIcon.Height()) / 2;
 
 	gc.SetTextColor( color_text );
 
@@ -989,21 +990,21 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 			switch ( p->extType )
 			{
 				case FSNode::SERVER:
-					serverIcon.DrawF( gc, x, y );
+					serverIcon.DrawF( gc, x, IconY );
 					break;
 
 				case FSNode::WORKGROUP:
-					workgroupIcon.DrawF( gc, x, y );
+					workgroupIcon.DrawF( gc, x, IconY );
 					break;
 
 				default:
 					if ( ( ( ( color_bg >> 16 ) & 0xFF ) + ( ( color_bg >> 8 ) & 0xFF ) + ( color_bg & 0xFF ) ) < 0x80 * 3 )
 					{
-						folderIcon.DrawF( gc, x, y );
+						folderIcon.DrawF( gc, x, IconY );
 					}
 					else
 					{
-						folderIconHi.DrawF( gc, x, y );
+						folderIconHi.DrawF( gc, x, IconY );
 					}
 			};
 		}
@@ -1017,7 +1018,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	{
 		if ( g_WcmConfig.panelShowExecutableIcons )
 		{
-			executableIcon.DrawF( gc, x, y );
+			executableIcon.DrawF( gc, x, IconY );
 		}
 		else
 		{
@@ -1028,7 +1029,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	{
 		if ( g_WcmConfig.panelShowLinkIcons )
 		{
-			linkIcon.DrawF( gc, x, y );
+			linkIcon.DrawF( gc, x, IconY );
 		}
 		else
 		{
