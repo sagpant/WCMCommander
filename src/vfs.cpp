@@ -1063,10 +1063,9 @@ FSString FSWin32Net::Uri( FSPath& path )
 	return FSString( "Network" );
 }
 
-FSWin32Net::~FSWin32Net() {}
-
-
-
+FSWin32Net::~FSWin32Net()
+{
+}
 
 #else
 
@@ -1100,7 +1099,6 @@ FSString FSSys::StrError( int err )
 {
 	sys_char_t buf[1024] = "";
 	FSString ret( sys_charset_id, ( char* )sys_error_str( err, buf, sizeof( buf ) ) );
-//printf("ERR: '%s', '%s'\n", buf, ret.GetUtf8());
 	return ret;
 }
 
@@ -1439,7 +1437,7 @@ int FSSys::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 	}
 
 	vst->size = int64_t( st.f_blocks ) * st.f_frsize;
-	vst->avail = int64_t( st.f_bavail ) * st.f_frsize; //косяк st.f_bsize;
+	vst->avail = int64_t( st.f_bavail ) * st.f_frsize;
 
 	return 0;
 }
