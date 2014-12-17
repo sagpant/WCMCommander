@@ -436,7 +436,7 @@ public:
 			path.SetItemStr( path.Count(), t->fsNode->Name() );
 		}
 
-		FSPath CurrentURI = m_FileSystem->Uri( path );
+		FSString CurrentURI = m_FileSystem->Uri( path );
 
 		if ( uri ) { *uri = new_unicode_str( CurrentURI.GetUnicode() ); }
 
@@ -481,10 +481,10 @@ public:
 			{
 			case VK_F4:
 			{
-				FSPath Path;
-				if ( this->GetCurrentPath( &Path ) )
+				std::vector<unicode_t> URI;
+				if ( this->GetCurrentURI( &URI ) )
 				{
-					p->StartEditor( new_unicode_str( Path.GetUnicode() ), 0, 0 );
+//					p->StartEditor( URI, 0, 0 );
 				}
 				break;
 			}
