@@ -171,15 +171,15 @@ public:
 
 		std::vector<unicode_t> uri = utf8_to_unicode( m_FileName );
 
-        bool Result = m_NCWin->StartEditor( uri, m_Line, m_Pos );
+		bool Result = m_NCWin->StartEditor( uri, m_Line, m_Pos );
 
-        if ( !Result )
-        {
+		if ( !Result )
+		{
 			printf( "Failed to start editor for %s\n", m_FileName );
 			return false;
 		}
 
-        return Result;
+		return Result;
 	}
 
 private:
