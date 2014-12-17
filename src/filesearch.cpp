@@ -11,6 +11,7 @@
 #include "ltext.h"
 #include "unicode_lc.h"
 #include "strmasks.h"
+#include "ncwin.h"
 
 #include <unordered_map>
 
@@ -352,9 +353,12 @@ class SearchListWin: public VListWin
 	std::vector<SearchItemNode> m_ItemList;
 	int fontW;
 	int fontH;
+	clPtr<FS> m_FileSystem;
+
 public:
-	SearchListWin( Win* parent )
-		:  VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
+	SearchListWin( Win* parent, const clPtr<FS>& FileSystem )
+		: VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
+		, m_FileSystem( FileSystem )
 	{
 		wal::GC gc( this );
 		gc.Set( GetFont() );
@@ -411,6 +415,34 @@ public:
 		Invalidate();
 	}
 
+	bool GetCurrentURI( std::vector<unicode_t>* uri )
+	{
+		if ( GetCurrent() < 0 || GetCurrent() > GetCount() ) { return false; }
+
+		SearchItemNode* t = &( m_ItemList[GetCurrent()] );
+
+		auto i = m_DirHash.find( t->dirId );
+
+		if ( i == m_DirHash.end() ) return false;
+
+		clPtr<SearchDirNode> d = i->second;
+
+		if ( !d ) return false;
+
+		FSPath path = d->path;
+
+		if ( t->fsNode.ptr() )
+		{
+			path.SetItemStr( path.Count(), t->fsNode->Name() );
+		}
+
+		FSPath CurrentURI = m_FileSystem->Uri( path );
+
+		if ( uri ) { *uri = new_unicode_str( CurrentURI.GetUnicode() ); }
+
+		return true;
+	}
+
 	bool GetCurrentPath( FSPath* p )
 	{
 		if ( GetCurrent() < 0 || GetCurrent() > GetCount() ) { return false; }
@@ -435,6 +467,33 @@ public:
 		if ( p ) { *p = path; }
 
 		return true;
+	}
+
+	bool EventKey( cevent_key* pEvent ) override
+	{
+		NCWin* p = (NCWin*)Parent();
+
+		bool Pressed = pEvent->Type() == EV_KEYDOWN;
+
+		if (Pressed)
+		{
+			switch (pEvent->Key())
+			{
+			case VK_F4:
+			{
+				FSPath Path;
+				if ( this->GetCurrentPath( &Path ) )
+				{
+					p->StartEditor( new_unicode_str( Path.GetUnicode() ), 0, 0 );
+				}
+				break;
+			}
+			default:
+				break;
+			}
+		}
+
+		return VListWin::EventKey(pEvent);
 	}
 
 	virtual void DrawItem( wal::GC& gc, int n, crect rect );
@@ -573,7 +632,7 @@ public:
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListOkCancel ),
 		   pData( pD ),
 		   lo( 10, 10 ),
-		   listWin( this ),
+		   listWin( this, pD->searchFs ),
 		   cPathWin( this ),
 		   curFound( -1 ),
 		   curBadDirs( -1 ),
