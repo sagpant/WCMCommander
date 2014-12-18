@@ -1,4 +1,5 @@
 0.18.1 GitHub Edition
+	Added: file highlighting
 	Added: speed indicator while copying
 	Added: color and icon (optional) for soft links
 	Added: copy multiple selected file names to the clipboard
@@ -7,10 +8,12 @@
 	Added: show '(Administrator)' in the window caption while running with admin privileges on Windows
 	Added: show volume label in the drive selection dialog
 	Added: user menu (F2)
+	Added: status bar for Alt+... keys in the aditor
 	Hotkey: Ctrl+L to open info dialog
 	Hotkey: Ctrl+S to select file (same as Ins)
 	Hotkey: Ctrl+F12 to select sorting mode
 	Improved: eye-gouging borders in the main menu
+	Improved: icons centering in the panels
 	Fixed: hotkeys in the drive selection dialog
 	Fixed: up/down in Alt-search
 	Fixed: numpad Ins and numpad Del
