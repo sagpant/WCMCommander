@@ -354,11 +354,13 @@ class SearchListWin: public VListWin
 	int fontW;
 	int fontH;
 	clPtr<FS> m_FileSystem;
+	NCWin* m_NCWin;
 
 public:
-	SearchListWin( Win* parent, const clPtr<FS>& FileSystem )
+	SearchListWin( Win* parent, const clPtr<FS>& FileSystem, NCWin* ncwin )
 		: VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
 		, m_FileSystem( FileSystem )
+		, m_NCWin( ncwin )
 	{
 		wal::GC gc( this );
 		gc.Set( GetFont() );
@@ -471,28 +473,30 @@ public:
 
 	bool EventKey( cevent_key* pEvent ) override
 	{
-		NCWin* p = (NCWin*)Parent();
-
+/*
 		bool Pressed = pEvent->Type() == EV_KEYDOWN;
 
-		if (Pressed)
+		if ( Pressed && m_NCWin )
 		{
-			switch (pEvent->Key())
+			std::vector<unicode_t> URI;
+			
+			switch ( pEvent->Key() )
 			{
+			case VK_F3:
+			{
+				if ( this->GetCurrentURI( &URI ) )m_NCWin->StartViewer( URI, 0 );
+				break;
+			}
 			case VK_F4:
 			{
-				std::vector<unicode_t> URI;
-				if ( this->GetCurrentURI( &URI ) )
-				{
-//					p->StartEditor( URI, 0, 0 );
-				}
+				if ( this->GetCurrentURI( &URI ) ) m_NCWin->StartEditor( URI, 0, 0 );
 				break;
 			}
 			default:
 				break;
 			}
 		}
-
+*/
 		return VListWin::EventKey(pEvent);
 	}
 
@@ -632,7 +636,7 @@ public:
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListOkCancel ),
 		   pData( pD ),
 		   lo( 10, 10 ),
-		   listWin( this, pD->searchFs ),
+		   listWin( this, pD->searchFs, dynamic_cast<NCWin*>(parent) ),
 		   cPathWin( this ),
 		   curFound( -1 ),
 		   curBadDirs( -1 ),
