@@ -23,7 +23,7 @@ namespace wal
 		if ( w->upLayout ) { w->upLayout->DelObj( w ); }
 
 		w->upLayout = this;
-		objList.append( new LItemWin( w, r1, r2, c1, c2, al ) );
+		objList.emplace_back( new LItemWin( w, r1, r2, c1, c2, al ) );
 	}
 
 	void Layout::AddWinAndEnable( Win* w, int r1, int c1, int r2, int c2, int al )
@@ -46,7 +46,7 @@ namespace wal
 		if ( r1 < 0 || c1 < 0 || r2 >= lines.count() || c2 >= columns.count() ) { return; }
 
 //??? if (w->layout) w->layout->DelObj(w);
-		objList.append( new LItemLayout( l, r1, r2, c1, c2, al ) );
+		objList.emplace_back( new LItemLayout( l, r1, r2, c1, c2, al ) );
 	}
 
 	void Layout::AddRect( crect* rect, int r1, int c1, int r2, int c2 )
@@ -61,7 +61,7 @@ namespace wal
 
 		if ( r1 < 0 || c1 < 0 || r2 >= lines.count() || c2 >= columns.count() ) { return; }
 
-		objList.append( new LItemRect( rect, r1, r2, c1, c2 ) );
+		objList.emplace_back( new LItemRect( rect, r1, r2, c1, c2 ) );
 	}
 
 
@@ -113,7 +113,7 @@ namespace wal
 		valid = false;
 		this->Recalc();
 
-		for ( int i = 0; i < objList.count(); i++ )
+		for ( int i = 0; i < (int)objList.size(); i++ )
 		{
 			int j;
 			crect r( rect.left, rect.top, 0, 0 );
@@ -136,14 +136,15 @@ namespace wal
 
 	void Layout::DelObj( void* p )
 	{
-		for ( int i = 0; i < objList.count(); i++ )
-			if ( objList[i]->ObjPtr() == p )
+		for (int i = 0; i < (int)objList.size(); i++)
+		{
+			if (objList[i]->ObjPtr() == p)
 			{
 				valid = false;
-				objList[i] = 0; ///из-за недочета ccollect.del :(
-				objList.del( i );
+				objList.erase(objList.begin() + i);
 				return;
 			}
+		}
 	}
 
 
@@ -474,14 +475,14 @@ namespace wal
 		}
 
 
-		wal::ccollect<LSize> lSize( objList.count() );
+		wal::ccollect<LSize> lSize( (int)objList.size() );
 
-		for ( i = 0; i < objList.count(); i++ )
+		for ( i = 0; i < (int)objList.size(); i++ )
 		{
 			objList[i]->GetLSize( lSize.ptr() + i );
 		}
 
-		for ( i = 0; i < objList.count(); i++ )
+		for ( i = 0; i < (int)objList.size(); i++ )
 		{
 			LItem* p = objList[i].ptr();
 			LSize* ls = lSize.ptr() + i;
@@ -528,7 +529,7 @@ namespace wal
 		}
 
 
-		for ( i = 0; i < objList.count(); i++ )
+		for ( i = 0; i < (int)objList.size(); i++ )
 		{
 			LItem* p = objList[i].ptr();
 			LSize* ls = lSize.ptr() + i;

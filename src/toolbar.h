@@ -33,7 +33,7 @@ class ToolBar: public Win
 
 	void DrawNode( wal::GC& gc, Node* pNode, int state );
 	int _iconSize;
-	ccollect<clPtr<Node> > _list; //null node is splitter
+	std::vector< clPtr<Node> > _list; //null node is splitter
 	Node* _pressed;
 
 	int _ticks;

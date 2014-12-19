@@ -116,7 +116,7 @@ namespace wal
 	{
 		friend class Win;
 		friend struct LItemLayout;
-		wal::ccollect< clPtr<LItem> > objList;
+		std::vector< clPtr<LItem> > objList;
 		wal::ccollect< SpaceStruct > lines;
 		wal::ccollect< SpaceStruct > columns;
 		crect currentRect;

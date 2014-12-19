@@ -35,7 +35,7 @@ void ToolBar::RecalcItems()
 	wal::GC gc( this );
 	gc.Set( GetFont() );
 
-	for ( int i = 0; i < _list.count(); i++ )
+	for ( size_t i = 0; i < _list.size(); i++ )
 	{
 		Node* p = _list[i].ptr();
 
@@ -82,7 +82,7 @@ void ToolBar::AddCmd( int cmd, const char* tipText )
 		if ( tipText && tipText[0] ) { p->tipText = utf8_to_unicode( tipText ); }
 
 		p->icon = new cicon( cmd, _iconSize, _iconSize );
-		_list.append( p );
+		_list.push_back( p );
 		RecalcItems();
 	}
 }
@@ -90,9 +90,9 @@ void ToolBar::AddCmd( int cmd, const char* tipText )
 
 void ToolBar::AddSplitter()
 {
-	if ( _list.count() > 0 && _list[_list.count() - 1].ptr() )
+	if ( _list.size() > 0 && _list.back().ptr() )
 	{
-		_list.append( clPtr<Node>( 0 ) );
+		_list.emplace_back( clPtr<Node>() );
 	}
 }
 
@@ -111,7 +111,7 @@ void ToolBar::OnChangeStyles()
 
 ToolBar::Node* ToolBar::GetNodeByPos( int x, int y )
 {
-	for ( int i = 0; i < _list.count(); i++ )
+	for ( size_t i = 0; i < _list.size(); i++ )
 	{
 		Node* p = _list[i].ptr();
 
@@ -186,7 +186,7 @@ void ToolBar::Paint( wal::GC& gc, const crect& paintRect )
 	gc.Set( GetFont() );
 	int x = 2;
 
-	for ( int i = 0; i < _list.count(); i++ )
+	for ( size_t i = 0; i < _list.size(); i++ )
 	{
 		Node* p = _list[i].ptr();
 
