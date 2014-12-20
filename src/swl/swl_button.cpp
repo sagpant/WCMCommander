@@ -6,7 +6,7 @@
 #include "swl.h"
 #include "../globals.h"
 // XXX: refactor to move the header to .
-#include "../unicode_lc.h" 
+#include "../unicode_lc.h"
 
 namespace wal
 {
@@ -26,7 +26,7 @@ namespace wal
 	{
 		GC gc( this );
 		gc.Set( GetFont() );
-		cpoint p = m_Text.GetTextExtents(gc);
+		cpoint p = m_Text.GetTextExtents( gc );
 
 		if ( HasIcon() )
 		{
@@ -54,7 +54,7 @@ namespace wal
 	Button::Button( int nId, Win* parent, const unicode_t* txt, int id, crect* rect, int iconX, int iconY )
 		:  Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId ),
 		   m_Pressed( false ),
-		   m_Text(txt && txt[0] ? txt : spaceUnicodeStr),
+		   m_Text( txt && txt[0] ? txt : spaceUnicodeStr ),
 		   m_Icon( new cicon( id, iconX, iconY ) ),
 		   m_CommandId( id ),
 		   m_ShowIcon( true )
@@ -153,11 +153,11 @@ namespace wal
 	bool Button::EventKey( cevent_key* pEvent )
 	{
 		bool IsReturn = pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN;
-		bool IsHotkey = m_Text.isHotkeyMatching(UnicodeUC(pEvent->Char()));
+		bool IsHotkey = m_Text.isHotkeyMatching( UnicodeUC( pEvent->Char() ) );
 
 		if ( IsReturn || IsHotkey )
 		{
-			if (pEvent->Type() == EV_KEYDOWN)
+			if ( pEvent->Type() == EV_KEYDOWN )
 			{
 				m_Pressed = true;
 			}
@@ -171,18 +171,19 @@ namespace wal
 				return false;
 			}
 		}
+
 		Invalidate();
 		return true;
 	}
 
-	Win*  Button::IsHisHotKey(cevent_key* pEvent)
+	Win*  Button::IsHisHotKey( cevent_key* pEvent )
 	{
-		return m_Text.isHotkeyMatching( UnicodeUC(pEvent->Char()) ) ? this : nullptr;
+		return m_Text.isHotkeyMatching( UnicodeUC( pEvent->Char() ) ) ? this : nullptr;
 	}
 
 	void Button::Paint( GC& gc, const crect& paintRect )
 	{
-		unsigned colorBg = UiGetColor(uiBackground, uiClassButton, 0, 0x808080); //GetColor(0);
+		unsigned colorBg = UiGetColor( uiBackground, uiClassButton, 0, 0x808080 ); //GetColor(0);
 		crect cr = this->ClientRect();
 		crect rect = cr;
 		DrawBorder( gc, rect, ColorTone( colorBg, +20 ) );
@@ -248,9 +249,9 @@ namespace wal
 
 		gc.SetClipRgn( &rect );
 		m_Text.DrawItem(
-			gc, x, rect.top + (rect.Height() - tsize.y) / 2 + (m_Pressed ? 2 : 0), 
-			UiGetColor(uiColor, uiClassButton, 0, 0), 
-			UiGetColor(uiHotkeyColor, uiClassButton, 0, 0)
+		   gc, x, rect.top + ( rect.Height() - tsize.y ) / 2 + ( m_Pressed ? 2 : 0 ),
+		   UiGetColor( uiColor, uiClassButton, 0, 0 ),
+		   UiGetColor( uiHotkeyColor, uiClassButton, 0, 0 )
 		);
 	}
 

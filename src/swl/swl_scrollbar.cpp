@@ -175,7 +175,8 @@ namespace wal
 		if ( si.m_AlwaysHidden )
 		{
 			Hide();
-			if (Parent()) { Parent()->RecalcLayouts(); }
+
+			if ( Parent() ) { Parent()->RecalcLayouts(); }
 		}
 		else if ( autoHide )
 		{
@@ -203,7 +204,8 @@ namespace wal
 		else
 		{
 			Show();
-			if (Parent()) { Parent()->RecalcLayouts(); }
+
+			if ( Parent() ) { Parent()->RecalcLayouts(); }
 		}
 
 		Invalidate();
@@ -354,7 +356,7 @@ namespace wal
 					{
 						traceBPoint = ( vertical ) ? ( pEvent->Point().y - b3Rect.top ) : ( pEvent->Point().x - b3Rect.left );
 						trace = true;
-						SetCapture(&captureSD);
+						SetCapture( &captureSD );
 						break;
 					}
 					else if ( !b3Rect.IsEmpty() )
@@ -385,7 +387,7 @@ namespace wal
 
 					if ( subId != 0 )
 					{
-						SetCapture(&captureSD);
+						SetCapture( &captureSD );
 						SendManagedCmd( subId, 0 );
 						SetTimer( subId, 100 );
 					}
@@ -404,7 +406,7 @@ namespace wal
 				{
 					b1Pressed = false ;
 					b2Pressed = false ;
-					ReleaseCapture(&captureSD);
+					ReleaseCapture( &captureSD );
 					DelAllTimers();
 					Invalidate();
 					trace = false;

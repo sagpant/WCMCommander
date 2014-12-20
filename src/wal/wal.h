@@ -221,7 +221,7 @@ namespace wal
 
 			*s = 0;
 
-			for (;;) { int c = GetC(); if ( c == '\n' || c == EOF ) { break; } }
+			for ( ;; ) { int c = GetC(); if ( c == '\n' || c == EOF ) { break; } }
 
 			return b;
 		}

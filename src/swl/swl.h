@@ -11,7 +11,7 @@
 #include "swl_winbase.h"
 
 #ifndef EMPTY_OPER
-#	define EMPTY_OPER
+#  define EMPTY_OPER
 #endif
 
 #if defined(_MSC_VER)
@@ -19,6 +19,6 @@
 #endif
 
 inline bool IsSpace( int c ) { return c > 0 && c <= 32; }
-inline bool IsAlpha( int c ) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
+inline bool IsAlpha( int c ) { return ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ); }
 inline bool IsAlphaHex( int c ) { return ( c >= 'a' && c <= 'f' ) || ( c >= 'A' && c <= 'F' ); }
 inline bool IsDigit( int c ) { return c >= '0' && c <= '9'; }

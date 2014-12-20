@@ -15,7 +15,7 @@ namespace wal
 	public:
 		CP8( unsigned short* p );
 		~CP8();
-		
+
 		unsigned ToUnicode( char c ) { return _toUnicode[( ( unsigned char )c )]; }
 
 		void AddCh( char c, unsigned n );
@@ -52,7 +52,7 @@ namespace wal
 	CP8::CP8( unsigned short* p )
 	{
 		_toUnicode = new unsigned short[0x100]();
-		_fromUnicode = new unsigned char*[0x100]();
+		_fromUnicode = new unsigned char* [0x100]();
 		_fromUnicode[0] = new unsigned char[0x100];
 		int i;
 
@@ -78,14 +78,17 @@ namespace wal
 			}
 		}
 	}
-	
+
 	CP8::~CP8()
 	{
-		for(int i=0;i<0x100;i++)
+		for ( int i = 0; i < 0x100; i++ )
 		{
-			if(_fromUnicode[i]!=0)
+			if ( _fromUnicode[i] != 0 )
+			{
 				delete[] _fromUnicode[i];
+			}
 		}
+
 		delete[] _fromUnicode;
 		delete[] _toUnicode;
 	}
@@ -188,20 +191,20 @@ namespace wal
 		{
 			if ( c < 0x10000 ) //1110xxxx 10xxxxxx 10xxxxxx
 			{
-				s[2] = 0x80 | (c & 0x3F);
+				s[2] = 0x80 | ( c & 0x3F );
 				c >>= 6;
-				s[1] = 0x80 | (c & 0x3F);
+				s[1] = 0x80 | ( c & 0x3F );
 				c >>= 6;
 				s[0] = ( c & 0x0F ) | 0xE0;
 				s += 3;
 			}
 			else     //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 			{
-				s[3] = 0x80 | (c & 0x3F);
+				s[3] = 0x80 | ( c & 0x3F );
 				c >>= 6;
-				s[2] = 0x80 | (c & 0x3F);
+				s[2] = 0x80 | ( c & 0x3F );
 				c >>= 6;
-				s[1] = 0x80 | (c & 0x3F);
+				s[1] = 0x80 | ( c & 0x3F );
 				c >>= 6;
 				s[0] = ( c & 0x7 ) | 0xF0;
 				s += 4;
@@ -563,20 +566,20 @@ namespace wal
 		{
 			if ( c < 0x10000 ) //1110xxxx 10xxxxxx 10xxxxxx
 			{
-				s[2] = 0x80 | (c & 0x3F);
+				s[2] = 0x80 | ( c & 0x3F );
 				c >>= 6;
-				s[1] = 0x80 | (c & 0x3F);
+				s[1] = 0x80 | ( c & 0x3F );
 				c >>= 6;
 				s[0] = ( c & 0x0F ) | 0xE0;
 				s += 3;
 			}
 			else     //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 			{
-				s[3] = 0x80 | (c & 0x3F);
+				s[3] = 0x80 | ( c & 0x3F );
 				c >>= 6;
-				s[2] = 0x80 | (c & 0x3F);
+				s[2] = 0x80 | ( c & 0x3F );
 				c >>= 6;
-				s[1] = 0x80 | (c & 0x3F);
+				s[1] = 0x80 | ( c & 0x3F );
 				c >>= 6;
 				s[0] = ( c & 0x7 ) | 0xF0;
 				s += 4;
@@ -719,8 +722,8 @@ int SetChar_##CPNAME(char *buf, unicode_t ch)\
 	struct charset_8bit : public charset_struct
 	{
 		charset_8bit( int _id, const char* _name, const char* _comment,
-		              unicode_t * ( *to_unicode )( unicode_t* buf, const char* s, int size, int* badCount ),
-		              char * ( *from_unicode )( char* s, const unicode_t* buf, int usize, int* badCount ),
+		              unicode_t* ( *to_unicode )( unicode_t* buf, const char* s, int size, int* badCount ),
+		              char* ( *from_unicode )( char* s, const unicode_t* buf, int usize, int* badCount ),
 		              unicode_t ( *get )( char* s, char* endLine ),
 		              int ( *set )( char* buf, unicode_t ch )
 		            ): charset_struct( _id, _name, _comment )
@@ -735,8 +738,8 @@ int SetChar_##CPNAME(char *buf, unicode_t ch)\
 	struct charset_8bit_ebcdic : public charset_struct
 	{
 		charset_8bit_ebcdic( int _id, const char* _name, const char* _comment,
-		                     unicode_t * ( *to_unicode )( unicode_t* buf, const char* s, int size, int* badCount ),
-		                     char * ( *from_unicode )( char* s, const unicode_t* buf, int usize, int* badCount ),
+		                     unicode_t* ( *to_unicode )( unicode_t* buf, const char* s, int size, int* badCount ),
+		                     char* ( *from_unicode )( char* s, const unicode_t* buf, int usize, int* badCount ),
 		                     unicode_t ( *get )( char* s, char* endLine ),
 		                     int ( *set )( char* buf, unicode_t ch )
 		                   ): charset_struct( _id, _name, _comment )

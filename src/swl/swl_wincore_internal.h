@@ -19,7 +19,7 @@ namespace wal
 	{
 		WinID handle;
 		WINID( WinID h ): handle( h ) {}
-		operator size_t () const { return (size_t)( handle ); }
+		operator size_t () const { return ( size_t )( handle ); }
 
 		//описание самой ф-ции как константной обязательно, иначе пиздец!!!
 		bool operator == ( const WINID& a ) const { return handle == a.handle; }
@@ -103,7 +103,7 @@ namespace wal
 	extern WthInternalEvent wthInternalEvent;
 
 
-	void wth_CreateThread( Win* w, int id, void * ( *f )( void* ), void* d );
+	void wth_CreateThread( Win* w, int id, void* ( *f )( void* ), void* d );
 	bool WinThreadSignal( int data );
 	void wth_DropWindow( Win* w );
 	void wth_DoEvents();

@@ -9,8 +9,8 @@
 //Created by Wal (Krasnoyarsk)
 
 #if defined( _MSC_VER )
-#	pragma warning( disable:4127 ) // warning C4127: conditional expression is constant (ext-app.cpp)
-#	pragma warning( disable:4512 ) // warning C4512: assignment operator could not be generated
+#  pragma warning( disable:4127 ) // warning C4127: conditional expression is constant (ext-app.cpp)
+#  pragma warning( disable:4512 ) // warning C4512: assignment operator could not be generated
 #endif
 
 #include <stdlib.h>
@@ -62,13 +62,13 @@ namespace wal
 /// ccollect //////////////////////////////////////////////////////////
 
 	template <class T, size_t Step> ccollect<T, Step>::ccollect()
-	 : m_data()
+		: m_data()
 	{
 		m_data.reserve( Step );
 	}
 
 	template <class T, size_t Step> ccollect<T, Step>::ccollect( size_t n )
-	 : m_data( n )
+		: m_data( n )
 	{
 	}
 
@@ -95,7 +95,7 @@ namespace wal
 
 	template <class T, size_t Step> inline void ccollect<T, Step>::set( int n, const T& a )
 	{
-		ASSERT( n >= 0 && n < (int)m_data.size() );
+		ASSERT( n >= 0 && n < ( int )m_data.size() );
 		m_data[n] = a;
 	}
 
@@ -123,7 +123,7 @@ namespace wal
 
 	template <class T, size_t Step> T& ccollect<T, Step>::operator [] ( int n )
 	{
-		ASSERT( n >= 0 && n < (int)m_data.size() );
+		ASSERT( n >= 0 && n < ( int )m_data.size() );
 		return m_data[ n ];
 	}
 
@@ -136,19 +136,19 @@ namespace wal
 	{
 		m_data.insert( m_data.end(), number, p );
 	}
-	
+
 	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n )
 	{
-		ASSERT( n >= 0 && n <= (int)m_data.size() );
+		ASSERT( n >= 0 && n <= ( int )m_data.size() );
 
-		m_data.insert( m_data.begin()+n, T() );
+		m_data.insert( m_data.begin() + n, T() );
 	}
 
 	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n, const T& a )
 	{
 		ASSERT( n >= 0 && n <= ( int )m_data.size() );
 
-		m_data.insert( m_data.begin()+n, a );
+		m_data.insert( m_data.begin() + n, a );
 	}
 
 	template <class T, size_t Step> inline void ccollect<T, Step>::clear()
@@ -158,7 +158,7 @@ namespace wal
 
 	template <class T, size_t Step> inline int ccollect<T, Step>::count() const
 	{
-		return int(m_data.size());
+		return int( m_data.size() );
 	}
 
 /// hash tables ////////////////////////////////////////////////////////////////////////////
@@ -592,7 +592,7 @@ namespace wal
 
 			Node( const T& d, unsigned k ) : hashKey( k ), m_data( d ) {}
 			Node( const Node& a ): m_data( a.m_data ), hashKey( a.hashKey ) {}
-			Node& operator=(const Node& a) = delete;
+			Node& operator=( const Node& a ) = delete;
 			const KT& key() { return m_data.key(); }
 			unsigned intKey() { return hashKey; }
 			Node* next;
@@ -681,7 +681,7 @@ namespace wal
 
 		static void cp( T* d, const T* s )
 		{
-			while ( (*( d++ ) = *( s++ )) );
+			while ( ( *( d++ ) = *( s++ ) ) );
 		}
 
 		static T* newstr( const T* s, int size )

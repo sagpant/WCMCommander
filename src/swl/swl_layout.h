@@ -128,7 +128,8 @@ namespace wal
 
 		void Recalc();
 	public:
-		enum {
+		enum
+		{
 			LEFT = 1,
 			RIGHT = 2,
 			TOP = 4,

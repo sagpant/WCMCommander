@@ -4,7 +4,7 @@
 
 #include "swl.h"
 // XXX: refactor to move the header to .
-#include "../unicode_lc.h" 
+#include "../unicode_lc.h"
 
 #include <unordered_map>
 
@@ -21,7 +21,7 @@ namespace wal
 		{
 			auto i = iconList.find( cmd );
 
-			if ( i != iconList.end() ) return i->second.ptr();
+			if ( i != iconList.end() ) { return i->second.ptr(); }
 		}
 
 		clPtr<cicon> pic = new cicon( cmd, 16, 16 );
@@ -57,7 +57,7 @@ namespace wal
 		if ( n == selected ) { ucl.Set( uiCurrentItem, true ); }
 
 		int color_text = UiGetColor( uiColor, uiItem, &ucl, 0x0 );
-		int color_hotkey = UiGetColor(uiHotkeyColor, uiItem, &ucl, 0x0);
+		int color_hotkey = UiGetColor( uiHotkeyColor, uiItem, &ucl, 0x0 );
 		int color_bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 		int color_left = UiGetColor( uiBackground, 0, 0, 0xFFFFFF );
 
@@ -86,20 +86,20 @@ namespace wal
 		else
 		{
 			gc.Set( GetFont() );
-			MenuTextInfo& lText = (list[n].data->leftText);
+			MenuTextInfo& lText = ( list[n].data->leftText );
 			//unicode_t* lText = list[n].data->leftText.data();
 			unicode_t* rText = list[n].data->rightText.data();
 
 			//if ( lText ) { gc.TextOutF( MENU_LEFT_BLOCK + MENU_TEXT_OFFSET, r.top + ( height - fontHeight ) / 2, lText ); }
-			if (!lText.isEmpty()) 
+			if ( !lText.isEmpty() )
 			{
-				lText.DrawItem(gc, MENU_LEFT_BLOCK + MENU_TEXT_OFFSET, r.top + (height - fontHeight) / 2, color_text, color_hotkey); 
+				lText.DrawItem( gc, MENU_LEFT_BLOCK + MENU_TEXT_OFFSET, r.top + ( height - fontHeight ) / 2, color_text, color_hotkey );
 			}
 
-			if ( rText ) 
-			{ 
-				gc.SetTextColor(color_text);
-				gc.TextOutF(MENU_LEFT_BLOCK + MENU_TEXT_OFFSET + leftWidth + fontHeight, r.top + (height - fontHeight) / 2, rText);
+			if ( rText )
+			{
+				gc.SetTextColor( color_text );
+				gc.TextOutF( MENU_LEFT_BLOCK + MENU_TEXT_OFFSET + leftWidth + fontHeight, r.top + ( height - fontHeight ) / 2, rText );
 			}
 
 			if ( IsSub( n ) )
@@ -157,9 +157,10 @@ namespace wal
 			{
 				cpoint p;
 				MenuTextInfo& leftText = node.data->leftText;
+
 				if ( !node.data->leftText.isEmpty() )
 				{
-					p = leftText.GetTextExtents(gc);
+					p = leftText.GetTextExtents( gc );
 
 					if ( leftWidth < p.x ) { leftWidth = p.x; }
 				}
@@ -363,8 +364,9 @@ namespace wal
 					if ( OpenSubmenu() ) { return true; };
 
 					break;
+
 				//case VK_LEFT:
-				//	return false; // to prevent grabbing default case
+				// return false; // to prevent grabbing default case
 
 				case VK_NUMPAD_RETURN:
 				case VK_RETURN:
@@ -398,42 +400,47 @@ namespace wal
 					else {/* Botva */}
 
 					return true;
-				
+
 				default:
+				{
+					// check if hotkey matches, and process
+					// XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
+					unicode_t c = UnicodeUC( pEvent->Char() );
+
+					for ( int i = 0; i < list.count(); i++ )
 					{
-						   // check if hotkey matches, and process
-						   // XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
-						   unicode_t c = UnicodeUC(pEvent->Char());
-						   for (int i = 0; i < list.count(); i++)
-						   {
-							   MenuData::Node* node = list[i].data;
-							   if (node->leftText.isHotkeyMatching(c))
-							   {
-								   if (node->id != 0) // menu command
-								   {
-									   if (Parent())
-									   {
-										   Parent()->Command(node->id, 0, this, 0);
-									   }
-									   return true;
-								   }
-								   else // sumbenu
-								   {
-									   SetSelected(i);
-									   OpenSubmenu();
-									   return true;
-								   }
-							   }
-						   }
-						   return false;
+						MenuData::Node* node = list[i].data;
+
+						if ( node->leftText.isHotkeyMatching( c ) )
+						{
+							if ( node->id != 0 ) // menu command
+							{
+								if ( Parent() )
+								{
+									Parent()->Command( node->id, 0, this, 0 );
+								}
+
+								return true;
+							}
+							else // sumbenu
+							{
+								SetSelected( i );
+								OpenSubmenu();
+								return true;
+							}
+						}
 					}
+
+					return false;
+				}
 
 			}
 		}
+
 		return false;
 	}
 
-	
+
 	void PopupMenu::Paint( GC& gc, const crect& paintRect )
 	{
 		crect rect = ClientRect();

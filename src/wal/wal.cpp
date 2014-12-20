@@ -8,7 +8,7 @@
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
 #if !defined(_MSC_VER) || _MSC_VER >= 1700
-#	include <inttypes.h>
+#  include <inttypes.h>
 #endif
 
 #include <string>
@@ -125,98 +125,106 @@ namespace wal
 
 	bool unicode_is_equal( const unicode_t* s, const unicode_t* ss )
 	{
-		if ( !s || !ss ) return false;
+		if ( !s || !ss ) { return false; }
 
 		while ( *ss != 0 ) if ( *s++ != *ss++ )
-		{
-			return false;
-		}
+			{
+				return false;
+			}
 
-		if ( *ss == 0 && *s == 0 ) return true;
+		if ( *ss == 0 && *s == 0 ) { return true; }
 
 		return false;
 	}
 
 	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr )
 	{
-		if ( !Str || !SubStr ) return false;
+		if ( !Str || !SubStr ) { return false; }
 
 		const unicode_t* S = Str;
 		const unicode_t* SS = SubStr;
 
 		while ( *SS != 0 ) if ( *S++ != *SS++ )
-		{
-			return false;
-		}
+			{
+				return false;
+			}
 
-		if ( *SS == 0 && *S == 0 ) return false;
+		if ( *SS == 0 && *S == 0 ) { return false; }
 
 		return true;
 	}
 
-	int unicode_strlen(const unicode_t* s)
+	int unicode_strlen( const unicode_t* s )
 	{
-		if ( !s ) return 0;
+		if ( !s ) { return 0; }
 
 		const unicode_t* p = s;
 
-		while (*p) { p++; }
+		while ( *p ) { p++; }
 
 		return p - s;
 	}
 
-	unicode_t* unicode_strchr(const unicode_t* s, unicode_t c)
+	unicode_t* unicode_strchr( const unicode_t* s, unicode_t c )
 	{
-		while (*s != c && *s) { s++; }
+		while ( *s != c && *s ) { s++; }
 
-		return (unicode_t*)(*s ? s : 0);
+		return ( unicode_t* )( *s ? s : 0 );
 	}
 
-	unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s)
+	unicode_t* unicode_strcpy( unicode_t* d, const unicode_t* s )
 	{
-		if ( !d || !s ) return NULL;
+		if ( !d || !s ) { return NULL; }
 
 		unicode_t* ret = d;
-		while ((*d++ = *s++) != 0)
+
+		while ( ( *d++ = *s++ ) != 0 )
 			;
+
 		return ret;
 	}
 
-	// copy unlit end of string, or when n chars copid, whichever comes first. 
+	// copy unlit end of string, or when n chars copid, whichever comes first.
 	// d is always 0-ended
-	unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n)
+	unicode_t* unicode_strncpy0( unicode_t* d, const unicode_t* s, int n )
 	{
-		if ( !d || !s ) return NULL;
+		if ( !d || !s ) { return NULL; }
 
 		unicode_t* ret = d;
-		for (;;)
+
+		for ( ;; )
 		{
-			if (n-- == 0)
+			if ( n-- == 0 )
 			{
 				*d = 0;
 				break;
 			}
-			if ((*d++ = *s++) == 0)
+
+			if ( ( *d++ = *s++ ) == 0 )
 			{
 				break;
 			}
 		}
+
 		return ret;
 	}
 
-	void unicode_strcat(unicode_t* d, const unicode_t* s)
+	void unicode_strcat( unicode_t* d, const unicode_t* s )
 	{
-		if ( !d || !s ) return;
+		if ( !d || !s ) { return; }
 
-		while (*d)
+		while ( *d )
+		{
 			d++;
-		while ((*d++ = *s++) != 0)
+		}
+
+		while ( ( *d++ = *s++ ) != 0 )
 			;
 	}
 
-	unicode_t* unicode_strdup(const unicode_t* s)
+	unicode_t* unicode_strdup( const unicode_t* s )
 	{
-		return unicode_strcpy(new unicode_t[unicode_strlen(s) + 1], s);
+		return unicode_strcpy( new unicode_t[unicode_strlen( s ) + 1], s );
 	}
 
 
@@ -234,27 +242,30 @@ namespace wal
 
 	bool LookAhead( const unicode_t* p, unicode_t* OutNextChar )
 	{
-		if ( !p ) return false;
-		if ( !*p ) return false;
-		if ( OutNextChar ) *OutNextChar = *(p+1);
+		if ( !p ) { return false; }
+
+		if ( !*p ) { return false; }
+
+		if ( OutNextChar ) { *OutNextChar = *( p + 1 ); }
+
 		return true;
 	}
 
 	void PopLastNull( std::vector<unicode_t>* S )
 	{
-		if ( S && !S->empty() && S->back() == 0 ) S->pop_back();
+		if ( S && !S->empty() && S->back() == 0 ) { S->pop_back(); }
 	}
 
 	bool LastCharEquals( const std::vector<unicode_t>& S, unicode_t Ch )
 	{
-		if ( S.empty() ) return false;
+		if ( S.empty() ) { return false; }
 
 		return S.back() == Ch;
 	}
 
 	bool LastCharEquals( const unicode_t* S, unicode_t Ch )
 	{
-		if ( !S ) return false;
+		if ( !S ) { return false; }
 
 		unicode_t PrevCh = *S;
 
@@ -274,31 +285,32 @@ namespace wal
 
 	void ReplaceSpaces( std::vector<unicode_t>* S )
 	{
-		if ( !S ) return;
+		if ( !S ) { return; }
 
 		for ( auto i = 0; i != S->size(); i++ )
 		{
-			unicode_t Ch = S->at(i);
+			unicode_t Ch = S->at( i );
+
 			if ( Ch == 32 || Ch == 9 )
 			{
-				S->at(i) = 0x00B7;
+				S->at( i ) = 0x00B7;
 			}
 		}
 	}
 
 	void ReplaceTrailingSpaces( std::vector<unicode_t>* S )
 	{
-		if ( !S ) return;
+		if ( !S ) { return; }
 
-		for ( auto i = S->size(); i --> 0; )
+		for ( auto i = S->size(); i -- > 0; )
 		{
-			unicode_t Ch = S->at(i);
+			unicode_t Ch = S->at( i );
 
-			if ( !Ch ) continue;
+			if ( !Ch ) { continue; }
 
 			if ( Ch == 32 || Ch == 9 )
 			{
-				S->at(i) = 0x00B7;
+				S->at( i ) = 0x00B7;
 			}
 			else
 			{
@@ -309,9 +321,11 @@ namespace wal
 
 	bool IsEqual_Unicode_CStr( const unicode_t* U, const char* S, bool CaseSensitive )
 	{
-		if ( !U && !S ) return true;
-		if ( !U ) return false;
-		if ( !S ) return false;
+		if ( !U && !S ) { return true; }
+
+		if ( !U ) { return false; }
+
+		if ( !S ) { return false; }
 
 		const unicode_t* UPtr = U;
 		const char*      SPtr = S;
@@ -321,7 +335,7 @@ namespace wal
 			unicode_t ChU = CaseSensitive ? *UPtr : UnicodeLC( *UPtr );
 			char      ChS = CaseSensitive ? *SPtr : tolower( *SPtr );
 
-			if ( ChU != ChS ) return false;
+			if ( ChU != ChS ) { return false; }
 
 			UPtr++;
 			SPtr++;
@@ -344,11 +358,11 @@ namespace wal
 		char buf[BUFFER];
 
 #if defined( _WIN32 )
-#	if _MSC_VER >= 1400
+#  if _MSC_VER >= 1400
 		_ui64toa_s( Value, buf, BUFFER - 1, 16 );
-#	else
+#  else
 		_ui64toa( Value, buf, 16 );
-#	endif
+#  endif
 #else
 		Lsnprintf( buf, BUFFER - 1, "%" PRIu64 "x", Value );
 #endif

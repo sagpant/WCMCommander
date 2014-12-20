@@ -44,8 +44,8 @@ namespace wal
 	static Atom       atom_WM_DELETE_WINDOW = 0; //Атом, чтоб window manager не закрывал окна самостоятельно
 
 //WinID     Win::focusWinId =0;
-	static WinID		activeWinId = 0;
-	static WinID		captureWinId = 0;
+	static WinID      activeWinId = 0;
+	static WinID      captureWinId = 0;
 
 //static SCImage winIcon;
 	static Pixmap winIconPixmap = None;
@@ -723,8 +723,11 @@ namespace wal
 
 		unsigned km = 0;
 #if defined( __APPLE__ )
+
 		if ( state & MetaMask ) { km |= KM_CTRL; }
+
 #endif
+
 		if ( state & ShiftMask ) { km |= KM_SHIFT; }
 
 		if ( state & ControlMask ) { km |= KM_CTRL; }
@@ -850,8 +853,11 @@ namespace wal
 				unsigned km = 0;
 				unsigned state = event->xbutton.state;
 #if defined( __APPLE__ )
+
 				if ( state & MetaMask ) { km |= KM_CTRL; }
+
 #endif
+
 				if ( state & ShiftMask ) { km |= KM_SHIFT; }
 
 				if ( state & ControlMask ) { km |= KM_CTRL; }
@@ -1293,11 +1299,11 @@ namespace wal
 				dbg_printf( "MappingNotify\n" );
 				break; //   34
 
-				/*
-				   case GenericEvent:
-				      dbg_printf("GenericEvent\n");
-				      break; //   35
-				*/
+			/*
+			   case GenericEvent:
+			      dbg_printf("GenericEvent\n");
+			      break; //   35
+			*/
 			case LASTEvent:
 				dbg_printf( "LASTEvent\n" );
 				break; //36
@@ -1618,20 +1624,20 @@ namespace wal
 
 				if ( c < 0x10000 ) //1110xxxx 10xxxxxx 10xxxxxx
 				{
-					s[2] = 0x80 | (c & 0x3F);
+					s[2] = 0x80 | ( c & 0x3F );
 					c >>= 6;
-					s[1] = 0x80 | (c & 0x3F);
+					s[1] = 0x80 | ( c & 0x3F );
 					c >>= 6;
 					s[0] = ( c & 0x0F ) | 0xE0;
 					q->Put( s, 3 );
 				}
 				else     //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 				{
-					s[3] = 0x80 | (c & 0x3F);
+					s[3] = 0x80 | ( c & 0x3F );
 					c >>= 6;
-					s[2] = 0x80 | (c & 0x3F);
+					s[2] = 0x80 | ( c & 0x3F );
 					c >>= 6;
-					s[1] = 0x80 | (c & 0x3F);
+					s[1] = 0x80 | ( c & 0x3F );
 					c >>= 6;
 					s[0] = ( c & 0x7 ) | 0xF0;
 					q->Put( s, 4 );
@@ -2505,7 +2511,7 @@ Nah:
 			Hint->res_name = ResName.data();
 			Hint->res_class = ResClass.data();
 			XSetClassHint( display, handle, Hint );
-			XFree(Hint);
+			XFree( Hint );
 		}
 	}
 
@@ -2625,28 +2631,29 @@ stopped:
 		if ( repaint ) { Invalidate(); }
 	}
 
-	static bool GrabPointer(Window handle)
+	static bool GrabPointer( Window handle )
 	{
-		return 	::XGrabPointer(display, handle, False, 
-				ButtonPressMask 	|	
-				ButtonReleaseMask 	|	
-				PointerMotionMask,
-				GrabModeAsync, GrabModeAsync,
-				None, None, CurrentTime) == GrabSuccess;
+		return   ::XGrabPointer( display, handle, False,
+		                         ButtonPressMask   |
+		                         ButtonReleaseMask    |
+		                         PointerMotionMask,
+		                         GrabModeAsync, GrabModeAsync,
+		                         None, None, CurrentTime ) == GrabSuccess;
 	}
 
-	bool Win::SetCapture(CaptureSD *sd)
+	bool Win::SetCapture( CaptureSD* sd )
 	{
-		if (!captured)
+		if ( !captured )
 		{
-			if (captureWinId) 
+			if ( captureWinId )
 			{
-				if (sd) sd->h = captureWinId;
-				::XUngrabPointer(display, CurrentTime);
+				if ( sd ) { sd->h = captureWinId; }
+
+				::XUngrabPointer( display, CurrentTime );
 				captureWinId = 0;
 			}
-		
-			if (GrabPointer(handle))
+
+			if ( GrabPointer( handle ) )
 			{
 				//dbg_printf("Captured %p\n", this);
 				captured = true;
@@ -2654,21 +2661,27 @@ stopped:
 				return true;
 			}
 		}
+
 		return false;
 	}
 
-	void Win::ReleaseCapture(CaptureSD *sd)
+	void Win::ReleaseCapture( CaptureSD* sd )
 	{
-		if (captured)
+		if ( captured )
 		{
-			::XUngrabPointer(display, CurrentTime);
+			::XUngrabPointer( display, CurrentTime );
 			//dbg_printf("UnCaptured %p\n", this);
 			captured = false;
-			if (sd && sd->h && GrabPointer(sd->h))
+
+			if ( sd && sd->h && GrabPointer( sd->h ) )
+			{
 				captureWinId = sd->h;
-			else 
+			}
+			else
+			{
 				captureWinId = 0;
-		} 
+			}
+		}
 	}
 
 	void Win::Activate()
@@ -2786,7 +2799,7 @@ stopped:
 		if ( type == WT_MAIN )
 		{
 			unicode_t u[100];
-			unicode_strncpy0(u, name, sizeof(u)/sizeof(u[0]));
+			unicode_strncpy0( u, name, sizeof( u ) / sizeof( u[0] ) );
 
 			char buf[400];
 			unicode_to_utf8( buf, u );
@@ -2879,8 +2892,10 @@ stopped:
 
 	Win::~Win()
 	{
-		if (captureWinId == handle)
-			captureWinId = 0;	
+		if ( captureWinId == handle )
+		{
+			captureWinId = 0;
+		}
 
 		wth_DropWindow( this );
 
@@ -3452,8 +3467,9 @@ stopped:
 		uint32_t* t = image.line( 0 );
 
 		uint32_t lastPixVal = 0;
-		uint32_t lastColor = CreateColor(lastPixVal);
+		uint32_t lastColor = CreateColor( lastPixVal );
 		int n;
+
 		for ( n = w * h; n > 0; n--, p++, t++ )
 		{
 			uint32_t pixVal = *t;

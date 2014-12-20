@@ -27,12 +27,12 @@ namespace wal
 		char s[1024];
 		va_list ap;
 		va_start( ap, format );
-		Lvsnprintf( s, sizeof(s), format, ap );
+		Lvsnprintf( s, sizeof( s ), format, ap );
 		va_end( ap );
 #ifdef _WIN32
-		OutputDebugString(s);
+		OutputDebugString( s );
 #else
-		printf("%s",s);
+		printf( "%s", s );
 #endif
 	}
 
@@ -78,7 +78,7 @@ namespace wal
 		return 0;
 	}
 
-	int thread_create( thread_t* th, void * ( *f )( void* ), void* arg, bool detached )
+	int thread_create( thread_t* th, void* ( *f )( void* ), void* arg, bool detached )
 	{
 		if ( tlsId == TLS_OUT_OF_INDEXES )
 		{
@@ -393,8 +393,8 @@ namespace wal
 
 
 #if defined(__APPLE__) || \
-	defined(__FreeBSD__) || \
-	defined(_POSIX_C_SOURCE) && defined(_XOPEN_SOURCE) && defined(_GNU_SOURCE) && (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+   defined(__FreeBSD__) || \
+   defined(_POSIX_C_SOURCE) && defined(_XOPEN_SOURCE) && defined(_GNU_SOURCE) && (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
 			strerror_r( err, buf, size );
 #else
 			return strerror_r( err, buf, size );

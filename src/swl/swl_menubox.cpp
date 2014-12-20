@@ -5,7 +5,7 @@
 
 #include "swl.h"
 // XXX: refactor to move the header to .
-#include "../unicode_lc.h" 
+#include "../unicode_lc.h"
 namespace wal
 {
 
@@ -138,7 +138,9 @@ namespace wal
 			{
 				lastMouseSelect = -1;
 				SetSelect( -1 );
-				if (Parent()) { Parent()->Command(CMD_MENU_INFO, SCMD_MENU_CANCEL, this, 0); }
+
+				if ( Parent() ) { Parent()->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, this, 0 ); }
+
 				return true;
 			}
 
@@ -188,24 +190,28 @@ namespace wal
 					}
 
 					return true;
-				default:
-					{
-						// check if hotkey matches, and process
-						 // XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
 
-						unicode_t c = UnicodeUC(pEvent->Char());
-						for (int i = 0; i < list.count(); i++)
+				default:
+				{
+					// check if hotkey matches, and process
+					// XXX: pEvent->Key() returns key (like Shift-F1, etc). isHotkeyMatching() expects unicode char, which is not the same
+
+					unicode_t c = UnicodeUC( pEvent->Char() );
+
+					for ( int i = 0; i < list.count(); i++ )
+					{
+						MenuBar::Node& node = list[i];
+
+						if ( node.text.isHotkeyMatching( c ) )
 						{
-						   MenuBar::Node& node = list[i];
-						   if (node.text.isHotkeyMatching(c))
-						   {
-							   SetSelect(i);
-							   OpenSub();
-							   return true;
-						   }
+							SetSelect( i );
+							OpenSub();
+							return true;
 						}
-						return false;
 					}
+
+					return false;
+				}
 			}
 		}
 
@@ -247,11 +253,11 @@ namespace wal
 		SetSelect( -1 );
 
 		if ( IsModal() )
-		{ 
+		{
 			EndModal( id );
 		}
 
-		if ( P ) P->Command( CMD_MENU_INFO, SCMD_MENU_SELECT, this, nullptr );
+		if ( P ) { P->Command( CMD_MENU_INFO, SCMD_MENU_SELECT, this, nullptr ); }
 
 		return P ? P->Command( id, subId, win, d ) : false;
 	}
@@ -259,7 +265,7 @@ namespace wal
 
 	void MenuBar::Add( MenuData* data, const unicode_t* text )
 	{
-		Node node(MenuTextInfo(text),data);
+		Node node( MenuTextInfo( text ), data );
 		//node.text = new_unicode_str( text );
 		//node.data = data;
 		list.append( node );
@@ -278,8 +284,8 @@ namespace wal
 		if ( n == select && InFocus() ) { ucl.Set( uiCurrentItem, true ); }
 
 		int color_text = UiGetColor( uiColor, uiItem, &ucl, 0x0 );
-		int color_hotkey = UiGetColor(uiHotkeyColor, uiItem, &ucl, 0x0);
-		int color_bg = UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF);
+		int color_hotkey = UiGetColor( uiHotkeyColor, uiItem, &ucl, 0x0 );
+		int color_bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 
 		gc.Set( GetFont() );
 		crect itemRect = ItemRect( n );
@@ -287,21 +293,22 @@ namespace wal
 		gc.SetFillColor( color_bg );
 
 		if ( n == select && InFocus() ) { gc.FillRect( itemRect ); }
+
 		/*
 		// https://github.com/corporateshark/WalCommander/issues/223
 		if ( n == select )
 		{
-			DrawBorder( gc, itemRect, UiGetColor( uiCurrentItemFrame, uiItem, &ucl, 0xFFFFFF ) );
+		   DrawBorder( gc, itemRect, UiGetColor( uiCurrentItemFrame, uiItem, &ucl, 0xFFFFFF ) );
 		}
 		*/
 		gc.SetTextColor( color_text );
 
 		MenuTextInfo& mt = list[n].text;
-		cpoint tsize = mt.GetTextExtents(gc);
+		cpoint tsize = mt.GetTextExtents( gc );
 		int x = itemRect.left + ( itemRect.Width() - tsize.x ) / 2;
 		int y = itemRect.top + ( itemRect.Height() - tsize.y ) / 2;
 
-		mt.DrawItem(gc, x, y, color_text, color_hotkey);
+		mt.DrawItem( gc, x, y, color_text, color_hotkey );
 	}
 
 
@@ -327,7 +334,7 @@ namespace wal
 
 			for ( int i = 0; i < list.count(); i++ )
 			{
-				cpoint textSize = list[i].text.GetTextExtents(gc);
+				cpoint textSize = list[i].text.GetTextExtents( gc );
 				int x2 = x + textSize.x + spaceWidth * 2 + 2 ;
 				crect itemRect( x, 1, x2 , wRect.bottom - 1 );
 				x = x2;

@@ -28,7 +28,7 @@ namespace wal
 
 	void Layout::AddWinAndEnable( Win* w, int r1, int c1, int r2, int c2, int al )
 	{
-		if ( !w ) return;
+		if ( !w ) { return; }
 
 		this->AddWin( w, r1, c1, r2, c2, al );
 		w->Enable();
@@ -113,7 +113,7 @@ namespace wal
 		valid = false;
 		this->Recalc();
 
-		for ( int i = 0; i < (int)objList.size(); i++ )
+		for ( int i = 0; i < ( int )objList.size(); i++ )
 		{
 			int j;
 			crect r( rect.left, rect.top, 0, 0 );
@@ -136,12 +136,12 @@ namespace wal
 
 	void Layout::DelObj( void* p )
 	{
-		for (int i = 0; i < (int)objList.size(); i++)
+		for ( int i = 0; i < ( int )objList.size(); i++ )
 		{
-			if (objList[i]->ObjPtr() == p)
+			if ( objList[i]->ObjPtr() == p )
 			{
 				valid = false;
-				objList.erase(objList.begin() + i);
+				objList.erase( objList.begin() + i );
 				return;
 			}
 		}
@@ -475,14 +475,14 @@ namespace wal
 		}
 
 
-		wal::ccollect<LSize> lSize( (int)objList.size() );
+		wal::ccollect<LSize> lSize( ( int )objList.size() );
 
-		for ( i = 0; i < (int)objList.size(); i++ )
+		for ( i = 0; i < ( int )objList.size(); i++ )
 		{
 			objList[i]->GetLSize( lSize.ptr() + i );
 		}
 
-		for ( i = 0; i < (int)objList.size(); i++ )
+		for ( i = 0; i < ( int )objList.size(); i++ )
 		{
 			LItem* p = objList[i].ptr();
 			LSize* ls = lSize.ptr() + i;
@@ -529,7 +529,7 @@ namespace wal
 		}
 
 
-		for ( i = 0; i < (int)objList.size(); i++ )
+		for ( i = 0; i < ( int )objList.size(); i++ )
 		{
 			LItem* p = objList[i].ptr();
 			LSize* ls = lSize.ptr() + i;
@@ -576,49 +576,56 @@ namespace wal
 		l->GetLSize( ls );
 	}
 
-	void LItemLayout::SetPos( crect rect, wal::ccollect<WSS> &wList )
+	void LItemLayout::SetPos( crect rect, wal::ccollect<WSS>& wList )
 	{
 		LSize ls;
 		l->GetLSize( &ls );
-		//	if (rect.Width() > ls.x.maximal) rect.right = rect.left + ls.x.maximal;
-		//	if (rect.Height() > ls.y.maximal) rect.bottom = rect.top + ls.y.maximal;
+		// if (rect.Width() > ls.x.maximal) rect.right = rect.left + ls.x.maximal;
+		// if (rect.Height() > ls.y.maximal) rect.bottom = rect.top + ls.y.maximal;
 
 		int width = rect.Width();
 
 		if ( width > ls.x.maximal )
 		{
-			switch ( align & ( Layout::LEFT + Layout::RIGHT ) )	{
-			case Layout::LEFT:
-				rect.right = rect.left + ls.x.maximal;
-				break;
-			case Layout::RIGHT:
-				rect.left = rect.right - ls.x.maximal;
-				break;
-			default:
+			switch ( align & ( Layout::LEFT + Layout::RIGHT ) )
 			{
-						 int n = ( width - ls.x.maximal ) / 2;
-						 rect.left += n;
-						 rect.right += n;
-			}
+				case Layout::LEFT:
+					rect.right = rect.left + ls.x.maximal;
+					break;
+
+				case Layout::RIGHT:
+					rect.left = rect.right - ls.x.maximal;
+					break;
+
+				default:
+				{
+					int n = ( width - ls.x.maximal ) / 2;
+					rect.left += n;
+					rect.right += n;
+				}
 			}
 		}
 
 		int height = rect.Height();
+
 		if ( rect.Height() > ls.y.maximal )
 		{
-			switch ( align & ( Layout::TOP + Layout::BOTTOM ) )	{
-			case Layout::TOP:
-				rect.bottom = rect.top + ls.y.maximal;
-				break;
-			case Layout::RIGHT:
-				rect.top = rect.bottom - ls.y.maximal;
-				break;
-			default:
+			switch ( align & ( Layout::TOP + Layout::BOTTOM ) )
 			{
-						 int n = ( height - ls.y.maximal ) / 2;
-						 rect.top += n;
-						 rect.bottom += n;
-			}
+				case Layout::TOP:
+					rect.bottom = rect.top + ls.y.maximal;
+					break;
+
+				case Layout::RIGHT:
+					rect.top = rect.bottom - ls.y.maximal;
+					break;
+
+				default:
+				{
+					int n = ( height - ls.y.maximal ) / 2;
+					rect.top += n;
+					rect.bottom += n;
+				}
 			}
 		};
 
@@ -635,10 +642,11 @@ namespace wal
 	}
 
 
-	void LItemWin::SetPos( crect rect, wal::ccollect<WSS> &wList )
+	void LItemWin::SetPos( crect rect, wal::ccollect<WSS>& wList )
 	{
 		LSize ls;
-		if ( !w->IsVisible() ) return;
+
+		if ( !w->IsVisible() ) { return; }
 
 		w->GetLSize( &ls );
 
@@ -646,38 +654,45 @@ namespace wal
 
 		if ( width > ls.x.maximal )
 		{
-			switch ( align & ( Layout::LEFT + Layout::RIGHT ) )	{
-			case Layout::LEFT:
-				rect.right = rect.left + ls.x.maximal;
-				break;
-			case Layout::RIGHT:
-				rect.left = rect.right - ls.x.maximal;
-				break;
-			default:
+			switch ( align & ( Layout::LEFT + Layout::RIGHT ) )
 			{
-						 int n = ( width - ls.x.maximal ) / 2;
-						 rect.left += n;
-						 rect.right = rect.left + ls.x.maximal;
-			}
+				case Layout::LEFT:
+					rect.right = rect.left + ls.x.maximal;
+					break;
+
+				case Layout::RIGHT:
+					rect.left = rect.right - ls.x.maximal;
+					break;
+
+				default:
+				{
+					int n = ( width - ls.x.maximal ) / 2;
+					rect.left += n;
+					rect.right = rect.left + ls.x.maximal;
+				}
 			}
 		}
 
 		int height = rect.Height();
+
 		if ( rect.Height() > ls.y.maximal )
 		{
-			switch ( align & ( Layout::TOP + Layout::BOTTOM ) )	{
-			case Layout::TOP:
-				rect.bottom = rect.top + ls.y.maximal;
-				break;
-			case Layout::RIGHT:
-				rect.top = rect.bottom - ls.y.maximal;
-				break;
-			default:
+			switch ( align & ( Layout::TOP + Layout::BOTTOM ) )
 			{
-						 int n = ( height - ls.y.maximal ) / 2;
-						 rect.top += n;
-						 rect.bottom = rect.top + ls.y.maximal;
-			}
+				case Layout::TOP:
+					rect.bottom = rect.top + ls.y.maximal;
+					break;
+
+				case Layout::RIGHT:
+					rect.top = rect.bottom - ls.y.maximal;
+					break;
+
+				default:
+				{
+					int n = ( height - ls.y.maximal ) / 2;
+					rect.top += n;
+					rect.bottom = rect.top + ls.y.maximal;
+				}
 			}
 		};
 

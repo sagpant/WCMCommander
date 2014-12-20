@@ -5,7 +5,7 @@
 
 #include "swl.h"
 // XXX: refactor to move the header to .
-#include "../unicode_lc.h" 
+#include "../unicode_lc.h"
 
 #define CBC_BOXFRAME 0
 #define CBC_BOX_BG 0xFFFFFF
@@ -122,16 +122,16 @@ namespace wal
 		}
 
 		gc.Set( GetFont() );
-		cpoint tsize = text.GetTextExtents(gc);
+		cpoint tsize = text.GetTextExtents( gc );
 
 		gc.SetFillColor( colorBg );
 		//gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 ) );
 
 		//gc.TextOutF( 14 + 1 + 1 + 1 , ( cr.Height() - tsize.y ) / 2, text.data() );
 		UiCondList ucl;
-		int color_text = UiGetColor(uiColor, uiClassSButton, &ucl, 0x0);
-		int color_hotkey = UiGetColor(uiHotkeyColor, uiClassSButton, &ucl, 0x0);
-		text.DrawItem(gc, 14 + 1 + 1 + 1, (cr.Height() - tsize.y) / 2, color_text, color_hotkey);
+		int color_text = UiGetColor( uiColor, uiClassSButton, &ucl, 0x0 );
+		int color_hotkey = UiGetColor( uiHotkeyColor, uiClassSButton, &ucl, 0x0 );
+		text.DrawItem( gc, 14 + 1 + 1 + 1, ( cr.Height() - tsize.y ) / 2, color_text, color_hotkey );
 
 		if ( InFocus() )
 		{
@@ -174,10 +174,10 @@ namespace wal
 
 	bool SButton::EventKey( cevent_key* pEvent )
 	{
-		if (IsEnabled() &&
-			pEvent->Type() == EV_KEYUP &&
-			(pEvent->Key() == VK_SPACE || text.isHotkeyMatching(UnicodeUC(pEvent->Char())))
-  			)
+		if ( IsEnabled() &&
+		     pEvent->Type() == EV_KEYUP &&
+		     ( pEvent->Key() == VK_SPACE || text.isHotkeyMatching( UnicodeUC( pEvent->Char() ) ) )
+		   )
 		{
 			if ( group > 0 )
 			{
@@ -194,9 +194,9 @@ namespace wal
 		return false;
 	}
 
-	Win* SButton::IsHisHotKey(cevent_key* pEvent)
+	Win* SButton::IsHisHotKey( cevent_key* pEvent )
 	{
-		return text.isHotkeyMatching(UnicodeUC(pEvent->Char())) ? this: 0;
+		return text.isHotkeyMatching( UnicodeUC( pEvent->Char() ) ) ? this : 0;
 	}
 
 	bool SButton::EventFocus( bool recv )
