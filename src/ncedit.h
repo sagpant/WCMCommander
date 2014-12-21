@@ -20,9 +20,9 @@ extern unsigned  UnicodeLC( unsigned ch );
 
 enum NCEditorInfo
 {
-   CMD_NCEDIT_INFO      = -100,
-   CMD_NCEDIT_CURSOR = 0,
-   CMD_NCEDIT_CHANGES   = 1
+	CMD_NCEDIT_INFO      = -100,
+	CMD_NCEDIT_CURSOR = 0,
+	CMD_NCEDIT_CHANGES   = 1
 };
 
 
@@ -244,8 +244,8 @@ struct EditPoint
 	EditPoint( int l, int p ): line( l ), pos( p ) {}
 	void Set( int l, int c ) { line = l; pos = c; }
 
-	bool operator < ( const EditPoint& a ) const { return line < a.line || (line == a.line && pos < a.pos); }
-	bool operator <= ( const EditPoint& a ) const { return line < a.line || (line == a.line && pos <= a.pos); }
+	bool operator < ( const EditPoint& a ) const { return line < a.line || ( line == a.line && pos < a.pos ); }
+	bool operator <= ( const EditPoint& a ) const { return line < a.line || ( line == a.line && pos <= a.pos ); }
 	bool operator != ( const EditPoint& a ) const { return line != a.line || pos != a.pos; }
 	bool operator == ( const EditPoint& a ) const { return line == a.line && pos == a.pos; }
 };
@@ -379,7 +379,7 @@ struct UndoList
 	int pos;
 
 	UndoList()
-	:m_Table( MAXSIZE ), count( 0 ), pos( 0 )
+		: m_Table( MAXSIZE ), count( 0 ), pos( 0 )
 	{};
 
 	void Append( clPtr<UndoBlock> p )
@@ -429,7 +429,7 @@ struct UndoList
 
 		return pos < count ? m_Table[pos++].ptr( ) : 0;
 	}
-		
+
 	void Clear() { while ( count > 0 ) { m_Table[--count] = clPtr<UndoBlock>(); } pos = 0; }
 };
 
@@ -540,7 +540,7 @@ class EditWin : public Win
 	unsigned ColorById( int id );
 	void RefreshShl( int n );
 
-	bool InMark( const EditPoint& p ) { return (cursor <= p && p < marker) || (marker <= p && p < cursor); }
+	bool InMark( const EditPoint& p ) { return ( cursor <= p && p < marker ) || ( marker <= p && p < cursor ); }
 	void SendChanges() { if ( Parent() ) { Parent()->SendBroadcast( CMD_NCEDIT_INFO, CMD_NCEDIT_CHANGES, this, 0, 2 ); } }
 
 	void CalcScroll();
@@ -626,14 +626,14 @@ class EditWin : public Win
 public:
 	enum COLOR_ID
 	{
-	   COLOR_DEF_ID = 0,
-	   COLOR_KEYWORD_ID,
-	   COLOR_COMMENT_ID,
-	   COLOR_STRING_ID,
-	   COLOR_PRE_ID,
-	   COLOR_NUM_ID,
-	   COLOR_OPER_ID,
-	   COLOR_ATTN_ID
+		COLOR_DEF_ID = 0,
+		COLOR_KEYWORD_ID,
+		COLOR_COMMENT_ID,
+		COLOR_STRING_ID,
+		COLOR_PRE_ID,
+		COLOR_NUM_ID,
+		COLOR_OPER_ID,
+		COLOR_ATTN_ID
 	};
 
 	EditWin( Win* parent );

@@ -97,8 +97,8 @@ bool accmask( const unicode_t* name, const unicode_t* mask )
 }
 
 clMultimaskSplitter::clMultimaskSplitter( const std::vector<unicode_t>& MultiMask )
- : m_MultiMask( MultiMask )
- , m_CurrentPos( 0 )
+	: m_MultiMask( MultiMask )
+	, m_CurrentPos( 0 )
 {}
 
 bool clMultimaskSplitter::HasNextMask() const
@@ -111,18 +111,19 @@ std::vector<unicode_t> clMultimaskSplitter::GetNextMask()
 	size_t Next = m_CurrentPos;
 
 	// find the nearest ','
-	while ( Next < m_MultiMask.size() && m_MultiMask[Next] != ',' ) Next++;
+	while ( Next < m_MultiMask.size() && m_MultiMask[Next] != ',' ) { Next++; }
 
-	if ( m_CurrentPos == Next ) return std::vector<unicode_t>();
+	if ( m_CurrentPos == Next ) { return std::vector<unicode_t>(); }
 
-	std::vector<unicode_t> Result( m_MultiMask.begin()+m_CurrentPos, m_MultiMask.begin()+Next );
+	std::vector<unicode_t> Result( m_MultiMask.begin() + m_CurrentPos, m_MultiMask.begin() + Next );
 
 	if ( Next < m_MultiMask.size() && m_MultiMask[Next] == ',' )
 	{
 		// skip ','
 		Next++;
+
 		// and trailing spaces
-		while ( Next < m_MultiMask.size() && m_MultiMask[Next] <= ' ' ) Next++;
+		while ( Next < m_MultiMask.size() && m_MultiMask[Next] <= ' ' ) { Next++; }
 	}
 
 	m_CurrentPos = Next;
@@ -140,15 +141,16 @@ bool clMultimaskSplitter::CheckAndFetchAllMasks( const unicode_t* FileName )
 	{
 		if (
 #if defined( _WIN32 ) || defined( __APPLE__ )
-			accmask_nocase
+		   accmask_nocase
 #else
-			accmask
+		   accmask
 #endif
-			( FileName, GetNextMask().data() ) )
+		   ( FileName, GetNextMask().data() ) )
 		{
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -158,8 +160,9 @@ bool clMultimaskSplitter::CheckAndFetchAllMasks_NoCase( const unicode_t* FileNam
 
 	while ( HasNextMask() )
 	{
-		if ( accmask_nocase( FileName, GetNextMask().data() ) ) return true;
+		if ( accmask_nocase( FileName, GetNextMask().data() ) ) { return true; }
 	}
+
 	return false;
 }
 
@@ -169,7 +172,8 @@ bool clMultimaskSplitter::CheckAndFetchAllMasks_Case( const unicode_t* FileName 
 
 	while ( HasNextMask() )
 	{
-		if ( accmask( FileName, GetNextMask().data() ) ) return true;
+		if ( accmask( FileName, GetNextMask().data() ) ) { return true; }
 	}
+
 	return false;
 }

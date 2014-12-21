@@ -29,9 +29,9 @@
 
 enum CMDS
 {
-   CMD_EXEC = 1,
-   CMD_WAIT = 2,
-   CMD_CD = 3
+	CMD_EXEC = 1,
+	CMD_WAIT = 2,
+	CMD_CD = 3
 };
 
 
@@ -218,19 +218,19 @@ static bool ReadCmd( int fd, int* pCmd, ccollect<std::vector<char> >& params )
 /*
 static bool WriteCmd( int fd, int cmd, ccollect<char*>& list )
 {
-	try
-	{
-		WritePipeChar( fd, cmd );
-		WritePipeChar( fd, list.count() );
+   try
+   {
+      WritePipeChar( fd, cmd );
+      WritePipeChar( fd, list.count() );
 
-		for ( int i = 0; i < list.count(); i++ ) { WritePipeStr( fd, list[i] ); }
-	}
-	catch ( int n )
-	{
-		return false;
-	}
+      for ( int i = 0; i < list.count(); i++ ) { WritePipeStr( fd, list[i] ); }
+   }
+   catch ( int n )
+   {
+      return false;
+   }
 
-	return true;
+   return true;
 }
 */
 static bool WriteCmd( int fd, int cmd, ccollect<std::vector<char> >& list )

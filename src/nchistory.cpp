@@ -22,8 +22,9 @@ void NCHistory::DeleteAll( const unicode_t* Str )
 			m_List.del( i );
 			continue;
 		}
+
 		i++;
-	}	
+	}
 }
 
 void NCHistory::Put( const unicode_t* str )
@@ -38,7 +39,9 @@ void NCHistory::Put( const unicode_t* str )
 		while ( *t && *s )
 		{
 			if ( *t != *s ) { break; }
-			s++; t++;
+
+			s++;
+			t++;
 		}
 
 		if ( *t == *s )

@@ -12,7 +12,7 @@
 #include "globals.h"
 #include "string-util.h"
 #ifdef _WIN32
-#	include "w32util.h"
+#  include "w32util.h"
 #endif
 
 using namespace wal;
@@ -38,23 +38,23 @@ using namespace wal;
 #elif defined(_WIN32)
 #  define BUILD_OS "Win32"
 #elif defined(__APPLE__)
-#	if __x86_64__ || __ppc64__
-#		define BUILD_OS "OS X 64"
-#	else
-#  	define BUILD_OS "OS X 32"
-#	endif
+#  if __x86_64__ || __ppc64__
+#     define BUILD_OS "OS X 64"
+#  else
+#     define BUILD_OS "OS X 32"
+#  endif
 #elif defined(__FreeBSD__)
-#	if __x86_64__ || __ppc64__
-#  	define BUILD_OS "FreeBSD 64"
-#	else
-#  	define BUILD_OS "FreeBSD 32"
-#	endif
+#  if __x86_64__ || __ppc64__
+#     define BUILD_OS "FreeBSD 64"
+#  else
+#     define BUILD_OS "FreeBSD 32"
+#  endif
 #else
-#	if __x86_64__ || __ppc64__
-#  	define BUILD_OS "Linux64"
-#	else
-#  	define BUILD_OS "Linux32"
-#	endif
+#  if __x86_64__ || __ppc64__
+#     define BUILD_OS "Linux64"
+#  else
+#     define BUILD_OS "Linux32"
+#  endif
 #endif
 
 #include "wcm-version.h"
@@ -1362,7 +1362,7 @@ bool HelpFile::LoadFile( sys_char_t* name )
 			{
 				int n = strlen( buf );
 
-				std::copy( buf, buf+n, std::back_inserter(collector) );
+				std::copy( buf, buf + n, std::back_inserter( collector ) );
 			}
 
 		}

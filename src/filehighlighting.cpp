@@ -19,24 +19,24 @@
 static const int CMD_RESETCOLORS = 1003;
 
 clNCFileHighlightingRule::clNCFileHighlightingRule()
- : m_Mask()
- , m_Description()
- , m_MaskEnabled( false )
- , m_SizeMin( 0 )
- , m_SizeMax( 0 )
- , m_AttributesMask( 0 )
+	: m_Mask()
+	, m_Description()
+	, m_MaskEnabled( false )
+	, m_SizeMin( 0 )
+	, m_SizeMax( 0 )
+	, m_AttributesMask( 0 )
 
- , m_ColorNormal( 0xFFFF00 )
- , m_ColorNormalBackground( 0x800000 )
+	, m_ColorNormal( 0xFFFF00 )
+	, m_ColorNormalBackground( 0x800000 )
 
- , m_ColorSelected( 0x00FFFF )
- , m_ColorSelectedBackground( 0x800000 )
+	, m_ColorSelected( 0x00FFFF )
+	, m_ColorSelectedBackground( 0x800000 )
 
- , m_ColorUnderCursorNormal( 0x000000 )
- , m_ColorUnderCursorNormalBackground( 0x808000 )
+	, m_ColorUnderCursorNormal( 0x000000 )
+	, m_ColorUnderCursorNormalBackground( 0x808000 )
 
- , m_ColorUnderCursorSelected( 0x00FFFF )
- , m_ColorUnderCursorSelectedBackground( 0x808000 )
+	, m_ColorUnderCursorSelected( 0x00FFFF )
+	, m_ColorUnderCursorSelectedBackground( 0x808000 )
 {
 }
 
@@ -45,17 +45,17 @@ class clColorValidator: public clValidator
 public:
 	virtual bool IsValid( const std::vector<unicode_t>& Str ) const
 	{
-		if ( Str.size() > 7 ) return false;
+		if ( Str.size() > 7 ) { return false; }
 
 		for ( size_t i = 0; i != Str.size(); i++ )
 		{
-			if ( !Str[i] ) break;
+			if ( !Str[i] ) { break; }
 
 			bool AlphaHex = IsAlphaHex( Str[i] );
 			bool Digit = IsDigit( Str[i] );
 			bool ValidChar = AlphaHex || Digit;
 
-			if ( !ValidChar ) return false;
+			if ( !ValidChar ) { return false; }
 		}
 
 		return true;
@@ -97,8 +97,9 @@ public:
 	}
 	virtual void SetColor( eColorEditLineType Type, uint32_t Color )
 	{
-		if ( Type == eColorEditLineType_Foreground ) m_FgColor = Color;
-		if ( Type == eColorEditLineType_Background ) m_BgColor = Color;
+		if ( Type == eColorEditLineType_Foreground ) { m_FgColor = Color; }
+
+		if ( Type == eColorEditLineType_Background ) { m_BgColor = Color; }
 	}
 
 private:
@@ -108,10 +109,10 @@ private:
 };
 
 clColorLabel::clColorLabel( int nId, Win* Parent, const unicode_t* Text, crect* Rect )
-: Win( Win::WT_CHILD, 0, Parent, Rect, nId )
- , m_BgColor( 0x800000 )
- , m_FgColor( 0xFFFF00 )
- , m_Text( new_unicode_str( Text ) )
+	: Win( Win::WT_CHILD, 0, Parent, Rect, nId )
+	, m_BgColor( 0x800000 )
+	, m_FgColor( 0xFFFF00 )
+	, m_Text( new_unicode_str( Text ) )
 {
 	if ( !Rect )
 	{
@@ -136,23 +137,23 @@ void clColorLabel::OnChangeStyles()
 	SetLSize( ls );
 }
 
-void clColorLabel::Paint(wal::GC& gc, const crect& PaintRect)
+void clColorLabel::Paint( wal::GC& gc, const crect& PaintRect )
 {
 	crect rect = ClientRect();
 	gc.SetFillColor( m_BgColor );
-	gc.FillRect( rect ); 
+	gc.FillRect( rect );
 	gc.Set( GetFont() );
 	gc.SetTextColor( m_FgColor );
-	gc.TextOutF( 0, 0, m_Text.data() );	
+	gc.TextOutF( 0, 0, m_Text.data() );
 }
 
 class clColorEditLine: public EditLine
 {
 public:
-	clColorEditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true, clColorLabel* Label = nullptr, eColorEditLineType Type = eColorEditLineType_Foreground)
-	 : EditLine( nId, parent, rect, txt, chars, frame )
-	 , m_Label( Label )
-	 , m_Type( Type )
+	clColorEditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true, clColorLabel* Label = nullptr, eColorEditLineType Type = eColorEditLineType_Foreground )
+		: EditLine( nId, parent, rect, txt, chars, frame )
+		, m_Label( Label )
+		, m_Type( Type )
 	{
 		this->SetValidator( new clColorValidator() );
 	}
@@ -162,7 +163,7 @@ public:
 		int64_t Color = HexStrToInt( GetText().data() );
 
 		// truncate
-		return uint32_t( uint64_t(Color) & 0xFFFFFFFF );
+		return uint32_t( uint64_t( Color ) & 0xFFFFFFFF );
 	}
 
 	void Notify()
@@ -189,53 +190,53 @@ private:
 	eColorEditLineType m_Type;
 };
 
-static int uiSelected = GetUiID("selected");
-static int uiSelectedPanel = GetUiID("selected-panel");
+static int uiSelected = GetUiID( "selected" );
+static int uiSelectedPanel = GetUiID( "selected-panel" );
 
 /// dialog to edit a single file highlighting rule
 class clEditFileHighlightingWin: public NCVertDialog
 {
 public:
 	clEditFileHighlightingWin( NCDialogParent* parent, const clNCFileHighlightingRule* Rule, PanelWin* Panel )
-	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file highlighting" ) ).data(), bListOkCancel )
-	 , m_Panel( Panel )
-	 , m_Layout( 21, 3 )
-	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several masks (separated with commas)")).data(), &m_MaskEdit)
-	 , m_MaskEdit( 0, this, nullptr, nullptr, 16 )
-	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description of the file highlighting")).data(), &m_DescriptionEdit)
-	 , m_DescriptionEdit( 0, this, nullptr, nullptr, 16 )
-	 , m_SizeMinText(0, this, utf8_to_unicode(_LT("Size >= (bytes)")).data(), &m_SizeMinEdit)
-	 , m_SizeMinEdit( 0, this, nullptr, nullptr, 16 )
-	 , m_SizeMaxText(0, this, utf8_to_unicode(_LT("Size <= (bytes)")).data(), &m_SizeMaxEdit)
-	 , m_SizeMaxEdit( 0, this, nullptr, nullptr, 16 )
-	 , m_ColorText(0, this, utf8_to_unicode(_LT("Colors (hexadecimal BGR)")).data(), nullptr)
-	// normal color
-	 , m_ColorNormalFGText( 0, this, utf8_to_unicode(_LT("Normal foreground")).data(), &m_ColorNormalFGEdit )
-	 , m_ColorNormalFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalLabel, eColorEditLineType_Foreground )
-	 , m_ColorNormalBGText( 0, this, utf8_to_unicode(_LT("Normal background")).data(), &m_ColorNormalBGEdit )
-	 , m_ColorNormalBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalLabel, eColorEditLineType_Background )
-	 , m_ColorNormalLabel( 0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
-	// selected color
-	 , m_ColorSelectedFGText(0, this, utf8_to_unicode(_LT("Selected foreground")).data(), &m_ColorNormalFGEdit )
-	 , m_ColorSelectedFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedLabel, eColorEditLineType_Foreground )
-	 , m_ColorSelectedBGText( 0, this, utf8_to_unicode(_LT("Selected background")).data(), &m_ColorNormalBGEdit )
-	 , m_ColorSelectedBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedLabel, eColorEditLineType_Background )
-	 , m_ColorSelectedLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
-	// normal color under cursor
-	 , m_ColorNormalUnderCursorFGText( 0, this, utf8_to_unicode(_LT("Cursor foreground")).data(), &m_ColorNormalUnderCursorFGEdit )
-	 , m_ColorNormalUnderCursorFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalUnderCursorLabel, eColorEditLineType_Foreground )
-	 , m_ColorNormalUnderCursorBGText( 0, this, utf8_to_unicode(_LT("Cursor background")).data(), &m_ColorNormalUnderCursorBGEdit )
-	 , m_ColorNormalUnderCursorBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalUnderCursorLabel, eColorEditLineType_Background )
-	 , m_ColorNormalUnderCursorLabel( 0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
-	// selected color under cursor
-	 , m_ColorSelectedUnderCursorFGText(0, this, utf8_to_unicode(_LT("Selected cursor foreground")).data(), &m_ColorNormalUnderCursorFGEdit )
-	 , m_ColorSelectedUnderCursorFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedUnderCursorLabel, eColorEditLineType_Foreground )
-	 , m_ColorSelectedUnderCursorBGText( 0, this, utf8_to_unicode(_LT("Selected cursor background")).data(), &m_ColorNormalUnderCursorBGEdit )
-	 , m_ColorSelectedUnderCursorBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedUnderCursorLabel, eColorEditLineType_Background )
-	 , m_ColorSelectedUnderCursorLabel(0, this, utf8_to_unicode( _LT("filename.ext") ).data() )
-	//
-	 , m_HasMaskButton( 0, this, utf8_to_unicode( _LT( "Mask" ) ).data(), 0, true )
-	 , m_ResetToDefaultButton( 0, this, utf8_to_unicode( _LT( "Reset to default colors" ) ).data(), CMD_RESETCOLORS )
+		: NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file highlighting" ) ).data(), bListOkCancel )
+		, m_Panel( Panel )
+		, m_Layout( 21, 3 )
+		, m_MaskText( 0, this, utf8_to_unicode( _LT( "A file &mask or several masks (separated with commas)" ) ).data(), &m_MaskEdit )
+		, m_MaskEdit( 0, this, nullptr, nullptr, 16 )
+		, m_DescriptionText( 0, this, utf8_to_unicode( _LT( "&Description of the file highlighting" ) ).data(), &m_DescriptionEdit )
+		, m_DescriptionEdit( 0, this, nullptr, nullptr, 16 )
+		, m_SizeMinText( 0, this, utf8_to_unicode( _LT( "Size >= (bytes)" ) ).data(), &m_SizeMinEdit )
+		, m_SizeMinEdit( 0, this, nullptr, nullptr, 16 )
+		, m_SizeMaxText( 0, this, utf8_to_unicode( _LT( "Size <= (bytes)" ) ).data(), &m_SizeMaxEdit )
+		, m_SizeMaxEdit( 0, this, nullptr, nullptr, 16 )
+		, m_ColorText( 0, this, utf8_to_unicode( _LT( "Colors (hexadecimal BGR)" ) ).data(), nullptr )
+		// normal color
+		, m_ColorNormalFGText( 0, this, utf8_to_unicode( _LT( "Normal foreground" ) ).data(), &m_ColorNormalFGEdit )
+		, m_ColorNormalFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalLabel, eColorEditLineType_Foreground )
+		, m_ColorNormalBGText( 0, this, utf8_to_unicode( _LT( "Normal background" ) ).data(), &m_ColorNormalBGEdit )
+		, m_ColorNormalBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalLabel, eColorEditLineType_Background )
+		, m_ColorNormalLabel( 0, this, utf8_to_unicode( _LT( "filename.ext" ) ).data() )
+		// selected color
+		, m_ColorSelectedFGText( 0, this, utf8_to_unicode( _LT( "Selected foreground" ) ).data(), &m_ColorNormalFGEdit )
+		, m_ColorSelectedFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedLabel, eColorEditLineType_Foreground )
+		, m_ColorSelectedBGText( 0, this, utf8_to_unicode( _LT( "Selected background" ) ).data(), &m_ColorNormalBGEdit )
+		, m_ColorSelectedBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedLabel, eColorEditLineType_Background )
+		, m_ColorSelectedLabel( 0, this, utf8_to_unicode( _LT( "filename.ext" ) ).data() )
+		// normal color under cursor
+		, m_ColorNormalUnderCursorFGText( 0, this, utf8_to_unicode( _LT( "Cursor foreground" ) ).data(), &m_ColorNormalUnderCursorFGEdit )
+		, m_ColorNormalUnderCursorFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalUnderCursorLabel, eColorEditLineType_Foreground )
+		, m_ColorNormalUnderCursorBGText( 0, this, utf8_to_unicode( _LT( "Cursor background" ) ).data(), &m_ColorNormalUnderCursorBGEdit )
+		, m_ColorNormalUnderCursorBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorNormalUnderCursorLabel, eColorEditLineType_Background )
+		, m_ColorNormalUnderCursorLabel( 0, this, utf8_to_unicode( _LT( "filename.ext" ) ).data() )
+		// selected color under cursor
+		, m_ColorSelectedUnderCursorFGText( 0, this, utf8_to_unicode( _LT( "Selected cursor foreground" ) ).data(), &m_ColorNormalUnderCursorFGEdit )
+		, m_ColorSelectedUnderCursorFGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedUnderCursorLabel, eColorEditLineType_Foreground )
+		, m_ColorSelectedUnderCursorBGText( 0, this, utf8_to_unicode( _LT( "Selected cursor background" ) ).data(), &m_ColorNormalUnderCursorBGEdit )
+		, m_ColorSelectedUnderCursorBGEdit( 0, this, nullptr, nullptr, 6, true, &m_ColorSelectedUnderCursorLabel, eColorEditLineType_Background )
+		, m_ColorSelectedUnderCursorLabel( 0, this, utf8_to_unicode( _LT( "filename.ext" ) ).data() )
+		//
+		, m_HasMaskButton( 0, this, utf8_to_unicode( _LT( "Mask" ) ).data(), 0, true )
+		, m_ResetToDefaultButton( 0, this, utf8_to_unicode( _LT( "Reset to default colors" ) ).data(), CMD_RESETCOLORS )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
 
@@ -332,45 +333,45 @@ public:
 		{
 			UiCondList ucl;
 
-			ucl.Set(uiSelectedPanel, true);
-			ucl.Set(uiCurrentItem, false);
-			ucl.Set(uiSelected, false);
+			ucl.Set( uiSelectedPanel, true );
+			ucl.Set( uiCurrentItem, false );
+			ucl.Set( uiSelected, false );
 
-			R.SetColorNormal( m_Panel->UiGetColor(uiColor, uiItem, &ucl, 0x0) );
-			R.SetColorNormalBackground( m_Panel->UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF) );
+			R.SetColorNormal( m_Panel->UiGetColor( uiColor, uiItem, &ucl, 0x0 ) );
+			R.SetColorNormalBackground( m_Panel->UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF ) );
 		}
 
 		{
 			UiCondList ucl;
 
-			ucl.Set(uiSelectedPanel, true);
-			ucl.Set(uiCurrentItem, true);
-			ucl.Set(uiSelected, false);
+			ucl.Set( uiSelectedPanel, true );
+			ucl.Set( uiCurrentItem, true );
+			ucl.Set( uiSelected, false );
 
-			R.SetColorUnderCursorNormal( m_Panel->UiGetColor(uiColor, uiItem, &ucl, 0x0) );
-			R.SetColorUnderCursorNormalBackground( m_Panel->UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF) );
+			R.SetColorUnderCursorNormal( m_Panel->UiGetColor( uiColor, uiItem, &ucl, 0x0 ) );
+			R.SetColorUnderCursorNormalBackground( m_Panel->UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF ) );
 		}
 
 		{
 			UiCondList ucl;
 
-			ucl.Set(uiSelectedPanel, true);
-			ucl.Set(uiCurrentItem, false);
-			ucl.Set(uiSelected, true);
+			ucl.Set( uiSelectedPanel, true );
+			ucl.Set( uiCurrentItem, false );
+			ucl.Set( uiSelected, true );
 
-			R.SetColorSelected( m_Panel->UiGetColor(uiColor, uiItem, &ucl, 0x0) );
-			R.SetColorSelectedBackground( m_Panel->UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF) );
+			R.SetColorSelected( m_Panel->UiGetColor( uiColor, uiItem, &ucl, 0x0 ) );
+			R.SetColorSelectedBackground( m_Panel->UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF ) );
 		}
 
 		{
 			UiCondList ucl;
 
-			ucl.Set(uiSelectedPanel, true);
-			ucl.Set(uiCurrentItem, true);
-			ucl.Set(uiSelected, true);
+			ucl.Set( uiSelectedPanel, true );
+			ucl.Set( uiCurrentItem, true );
+			ucl.Set( uiSelected, true );
 
-			R.SetColorUnderCursorSelected( m_Panel->UiGetColor(uiColor, uiItem, &ucl, 0x0) );
-			R.SetColorUnderCursorSelectedBackground( m_Panel->UiGetColor(uiBackground, uiItem, &ucl, 0xFFFFFF) );
+			R.SetColorUnderCursorSelected( m_Panel->UiGetColor( uiColor, uiItem, &ucl, 0x0 ) );
+			R.SetColorUnderCursorSelectedBackground( m_Panel->UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF ) );
 		}
 
 		return R;
@@ -380,22 +381,22 @@ public:
 	{
 		m_MaskEdit.SetText( Rule.GetMask().data(), false );
 		m_DescriptionEdit.SetText( Rule.GetDescription().data(), false );
-		m_SizeMinEdit.SetText( std::to_wstring(Rule.GetSizeMin()).c_str(), false );
-		m_SizeMaxEdit.SetText( std::to_wstring(Rule.GetSizeMax()).c_str(), false );
+		m_SizeMinEdit.SetText( std::to_wstring( Rule.GetSizeMin() ).c_str(), false );
+		m_SizeMaxEdit.SetText( std::to_wstring( Rule.GetSizeMax() ).c_str(), false );
 
 		const size_t Padding = 6;
 
-		m_ColorNormalFGEdit.SetText( IntToHexStr(Rule.GetColorNormal(), Padding).c_str() );
-		m_ColorNormalBGEdit.SetText( IntToHexStr(Rule.GetColorNormalBackground(), Padding).c_str() );
+		m_ColorNormalFGEdit.SetText( IntToHexStr( Rule.GetColorNormal(), Padding ).c_str() );
+		m_ColorNormalBGEdit.SetText( IntToHexStr( Rule.GetColorNormalBackground(), Padding ).c_str() );
 
-		m_ColorSelectedFGEdit.SetText( IntToHexStr(Rule.GetColorSelected(), Padding).c_str() );
-		m_ColorSelectedBGEdit.SetText( IntToHexStr(Rule.GetColorSelectedBackground(), Padding).c_str() );
+		m_ColorSelectedFGEdit.SetText( IntToHexStr( Rule.GetColorSelected(), Padding ).c_str() );
+		m_ColorSelectedBGEdit.SetText( IntToHexStr( Rule.GetColorSelectedBackground(), Padding ).c_str() );
 
-		m_ColorNormalUnderCursorFGEdit.SetText( IntToHexStr(Rule.GetColorUnderCursorNormal(), Padding).c_str() );
-		m_ColorNormalUnderCursorBGEdit.SetText( IntToHexStr(Rule.GetColorUnderCursorNormalBackground(), Padding).c_str() );
+		m_ColorNormalUnderCursorFGEdit.SetText( IntToHexStr( Rule.GetColorUnderCursorNormal(), Padding ).c_str() );
+		m_ColorNormalUnderCursorBGEdit.SetText( IntToHexStr( Rule.GetColorUnderCursorNormalBackground(), Padding ).c_str() );
 
-		m_ColorSelectedUnderCursorFGEdit.SetText( IntToHexStr(Rule.GetColorUnderCursorSelected(), Padding).c_str() );
-		m_ColorSelectedUnderCursorBGEdit.SetText( IntToHexStr(Rule.GetColorUnderCursorSelectedBackground(), Padding).c_str() );
+		m_ColorSelectedUnderCursorFGEdit.SetText( IntToHexStr( Rule.GetColorUnderCursorSelected(), Padding ).c_str() );
+		m_ColorSelectedUnderCursorBGEdit.SetText( IntToHexStr( Rule.GetColorUnderCursorSelectedBackground(), Padding ).c_str() );
 
 		m_ColorNormalFGEdit.Notify();
 		m_ColorNormalBGEdit.Notify();
@@ -429,7 +430,7 @@ public:
 		m_Result.SetSizeMin( GetSizeMin() );
 		m_Result.SetSizeMax( GetSizeMax() );
 
-		m_Result.SetColorNormal( (uint32_t)HexStrToInt( m_ColorNormalFGEdit.GetText().data() ) );
+		m_Result.SetColorNormal( ( uint32_t )HexStrToInt( m_ColorNormalFGEdit.GetText().data() ) );
 		m_Result.SetColorNormalBackground( ( uint32_t )HexStrToInt( m_ColorNormalBGEdit.GetText( ).data( ) ) );
 
 		m_Result.SetColorSelected( ( uint32_t )HexStrToInt( m_ColorSelectedFGEdit.GetText().data() ) );
@@ -443,9 +444,9 @@ public:
 
 		return m_Result;
 	}
-	virtual bool Command(int id, int subId, Win* win, void* data) override
+	virtual bool Command( int id, int subId, Win* win, void* data ) override
 	{
-		if (id == CMD_RESETCOLORS)
+		if ( id == CMD_RESETCOLORS )
 		{
 			clNCFileHighlightingRule Rule = GetDefaultColors();
 
@@ -511,10 +512,10 @@ class clFileHighlightingListWin: public iContainerListWin<clNCFileHighlightingRu
 {
 public:
 	clFileHighlightingListWin( Win* Parent, std::vector<clNCFileHighlightingRule>* Rules )
-	 : iContainerListWin<clNCFileHighlightingRule>( Parent, Rules )
+		: iContainerListWin<clNCFileHighlightingRule>( Parent, Rules )
 	{
 	}
-	
+
 	virtual void DrawItem( wal::GC& gc, int n, crect rect ) override;
 };
 
@@ -566,14 +567,14 @@ class clFileHighlightingWin: public NCDialog
 
 public:
 	clFileHighlightingWin( NCDialogParent* parent, std::vector<clNCFileHighlightingRule>* Rules, PanelWin* Panel )
-	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Files highlighting" ) ).data(), bListOkCancel )
-	 , m_ListWin( this, Rules )
-	 , m_Layout( 10, 10 )
-	 , m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
-	 , m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
-	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )
-	 , m_Saved( true )
-	 , m_Panel( Panel )
+		: NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Files highlighting" ) ).data(), bListOkCancel )
+		, m_ListWin( this, Rules )
+		, m_Layout( 10, 10 )
+		, m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
+		, m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
+		, m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )
+		, m_Saved( true )
+		, m_Panel( Panel )
 	{
 		m_AddCurrentButton.Enable();
 		m_AddCurrentButton.Show();
@@ -653,7 +654,7 @@ bool clFileHighlightingWin::Command( int id, int subId, Win* win, void* data )
 	{
 		const clNCFileHighlightingRule* ValueToEdit = m_ListWin.GetCurrentData( );
 
-		if ( !ValueToEdit ) return true;
+		if ( !ValueToEdit ) { return true; }
 
 		clEditFileHighlightingWin Dialog( ( NCDialogParent* )Parent(), ValueToEdit, m_Panel );
 		Dialog.SetEnterCmd( 0 );
@@ -694,7 +695,7 @@ bool clFileHighlightingWin::Key( cevent_key* pEvent )
 			{
 				return false;
 			}
-			
+
 			return true;
 		}
 
@@ -750,7 +751,7 @@ bool clNCFileHighlightingRule::IsRulePassed( const unicode_t* FileName, uint64_t
 {
 	clMultimaskSplitter Splitter( m_Mask );
 
-	if ( Splitter.CheckAndFetchAllMasks( FileName ) ) return true;
+	if ( Splitter.CheckAndFetchAllMasks( FileName ) ) { return true; }
 
 	return false;
 }

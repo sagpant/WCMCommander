@@ -65,19 +65,19 @@ class clPanelPlace
 			bool IsSystem    = m_Stack.back( ).fsPtr->Type( ) == FS::SYSTEM;
 			bool NoMoreNodes = m_Stack.size() == 1;
 
-			if ( toSys && HasFS && IsSystem && NoMoreNodes ) break;
+			if ( toSys && HasFS && IsSystem && NoMoreNodes ) { break; }
 
 			m_Stack.pop_back();
 		}
 	}
-	
+
 public:
 	clPanelPlace( ) : m_Stack( ), m_EmptyPath() {}
 
 	bool Pop()
 	{
 		// should be at least 1 item after popping
-		if ( m_Stack.size() < 2 ) return false;
+		if ( m_Stack.size() < 2 ) { return false; }
 
 		m_Stack.pop_back();
 
@@ -136,12 +136,12 @@ class PanelWin: public NCDialogParent
 public:
 	enum VIEW_MODE
 	{
-	   MEDIUM = 0,
-	   BRIEF = 1,
-	   FULL = 2,
-	   FULL_ST = 3,
-	   FULL_ACCESS = 4,
-	   TWO_COLUMNS = 5
+		MEDIUM = 0,
+		BRIEF = 1,
+		FULL = 2,
+		FULL_ST = 3,
+		FULL_ACCESS = 4,
+		TWO_COLUMNS = 5
 	};
 
 	enum LOAD_TYPE { SET = 0, PUSH, RESET };

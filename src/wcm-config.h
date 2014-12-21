@@ -27,18 +27,18 @@ private:
 	struct sNode
 	{
 		sNode()
-		 : m_Type( MT_INT )
-		 , m_Section( NULL )
-		 , m_Name( NULL )
-		 , m_Current()
-		 , m_Default()
+			: m_Type( MT_INT )
+			, m_Section( NULL )
+			, m_Name( NULL )
+			, m_Current()
+			, m_Default()
 		{}
 		sNode( eMapType Type, const char* Section, const char* Name )
-		 : m_Type( Type )
-		 , m_Section( Section )
-		 , m_Name( Name )
-		 , m_Current()
-		 , m_Default()
+			: m_Type( Type )
+			, m_Section( Section )
+			, m_Name( Name )
+			, m_Current()
+			, m_Default()
 		{}
 		eMapType    m_Type;
 		const char* m_Section;
@@ -67,7 +67,7 @@ private:
 			return N;
 		}
 		static sNode CreateBoolNode( const char* Section, const char* Name, bool* pBool, bool DefaultValue )
-		{	
+		{
 			sNode N( MT_BOOL, Section, Name );
 			N.m_Current.m_Bool = pBool;
 			N.m_Default.m_Bool = DefaultValue;
@@ -93,7 +93,7 @@ private:
 
 public:
 
-#pragma region System settings
+	#pragma region System settings
 	bool systemAskOpenExec;
 	bool systemEscPanel;
 	bool systemEscCommandLine;
@@ -102,9 +102,9 @@ public:
 	bool systemAutoSaveSetup;
 	bool systemShowHostName;
 	std::vector<char> systemLang; //"+" - auto "-" -internal eng.
-#pragma endregion
+	#pragma endregion
 
-#pragma region Panel settings
+	#pragma region Panel settings
 	bool panelShowHiddenFiles;
 	bool panelCaseSensitive;
 	bool panelSelectFolders;
@@ -116,36 +116,36 @@ public:
 	ePanelSpacesMode panelShowSpacesMode;
 	int panelModeLeft;
 	int panelModeRight;
-#pragma endregion
+	#pragma endregion
 
-#pragma region Editor settings
+	#pragma region Editor settings
 	bool editSavePos;
 	bool editAutoIdent;
 	int editTabSize;
 	bool editShl;
-#pragma endregion
+	#pragma endregion
 
-#pragma region Terminal settings
+	#pragma region Terminal settings
 	int terminalBackspaceKey;
-#pragma endregion
+	#pragma endregion
 
-#pragma region Style settings
+	#pragma region Style settings
 	bool styleShow3DUI;
 	int styleColorMode;
 	bool styleShowToolBar;
 	bool styleShowButtonBar;
 	bool styleShowButtonBarIcons;
 	bool styleShowMenuBar;
-#pragma endregion 
+	#pragma endregion
 
-#pragma region Window position and size to be restored on the next startup
+	#pragma region Window position and size to be restored on the next startup
 	int windowX;
 	int windowY;
 	int windowWidth;
 	int windowHeight;
-#pragma endregion
+	#pragma endregion
 
-#pragma region Fonts
+	#pragma region Fonts
 	std::vector<char> panelFontUri;
 	std::vector<char> viewerFontUri;
 	std::vector<char> editorFontUri;
@@ -157,12 +157,12 @@ public:
 
 	/// store properties of the currently active fonts in ...Uri fields
 	void ImpCurrentFonts();
-#pragma endregion
+	#pragma endregion
 
-#pragma region Paths of the panels to be restored on the next startup
+	#pragma region Paths of the panels to be restored on the next startup
 	std::vector<char> leftPanelPath;
 	std::vector<char> rightPanelPath;
-#pragma endregion
+	#pragma endregion
 
 	clWcmConfig();
 	void Load( NCWin* nc );

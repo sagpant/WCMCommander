@@ -25,11 +25,11 @@ struct SearchItemNode
 	clPtr<FSNode> fsNode; //если пусто, то это просто директорий в котором лежат файлы следующие в списке за ним
 
 	SearchItemNode( )
-	: m_Added(false), dirId( -1 ), cs( 0 )
+		: m_Added( false ), dirId( -1 ), cs( 0 )
 	{}
 
 	SearchItemNode( int di, FSNode* pNode, charset_struct* _c )
-	: m_Added(false), dirId( di ), cs( _c ), fsNode( pNode ? new FSNode( *pNode ) : ( ( FSNode* )0 ) )
+		: m_Added( false ), dirId( di ), cs( _c ), fsNode( pNode ? new FSNode( *pNode ) : ( ( FSNode* )0 ) )
 	{}
 };
 
@@ -386,7 +386,7 @@ public:
 	{
 		if ( !p.ptr() ) { return; }
 
-		for ( size_t i = 0; i < (int)p->m_DirList.size(); i++ )
+		for ( size_t i = 0; i < ( int )p->m_DirList.size(); i++ )
 		{
 			m_DirHash[p->m_DirList[i]->id] = p->m_DirList[i];
 		}
@@ -409,7 +409,7 @@ public:
 
 		this->CalcScroll();
 
-		if ( this->GetPageFirstItem() + this->GetPageItemCount() + 1 < (int)m_ItemList.size() )
+		if ( this->GetPageFirstItem() + this->GetPageItemCount() + 1 < ( int )m_ItemList.size() )
 		{
 			return;
 		}
@@ -425,11 +425,11 @@ public:
 
 		auto i = m_DirHash.find( t->dirId );
 
-		if ( i == m_DirHash.end() ) return false;
+		if ( i == m_DirHash.end() ) { return false; }
 
 		clPtr<SearchDirNode> d = i->second;
 
-		if ( !d ) return false;
+		if ( !d ) { return false; }
 
 		FSPath path = d->path;
 
@@ -453,11 +453,11 @@ public:
 
 		auto i = m_DirHash.find( t->dirId );
 
-		if ( i == m_DirHash.end() ) return false;
+		if ( i == m_DirHash.end() ) { return false; }
 
 		clPtr<SearchDirNode> d = i->second;
 
-		if ( !d ) return false;
+		if ( !d ) { return false; }
 
 		FSPath path = d->path;
 
@@ -473,31 +473,31 @@ public:
 
 	bool EventKey( cevent_key* pEvent ) override
 	{
-/*
-		bool Pressed = pEvent->Type() == EV_KEYDOWN;
+		/*
+		      bool Pressed = pEvent->Type() == EV_KEYDOWN;
 
-		if ( Pressed && m_NCWin )
-		{
-			std::vector<unicode_t> URI;
-			
-			switch ( pEvent->Key() )
-			{
-			case VK_F3:
-			{
-				if ( this->GetCurrentURI( &URI ) )m_NCWin->StartViewer( URI, 0 );
-				break;
-			}
-			case VK_F4:
-			{
-				if ( this->GetCurrentURI( &URI ) ) m_NCWin->StartEditor( URI, 0, 0 );
-				break;
-			}
-			default:
-				break;
-			}
-		}
-*/
-		return VListWin::EventKey(pEvent);
+		      if ( Pressed && m_NCWin )
+		      {
+		         std::vector<unicode_t> URI;
+
+		         switch ( pEvent->Key() )
+		         {
+		         case VK_F3:
+		         {
+		            if ( this->GetCurrentURI( &URI ) )m_NCWin->StartViewer( URI, 0 );
+		            break;
+		         }
+		         case VK_F4:
+		         {
+		            if ( this->GetCurrentURI( &URI ) ) m_NCWin->StartEditor( URI, 0, 0 );
+		            break;
+		         }
+		         default:
+		            break;
+		         }
+		      }
+		*/
+		return VListWin::EventKey( pEvent );
 	}
 
 	virtual void DrawItem( wal::GC& gc, int n, crect rect );
@@ -514,7 +514,7 @@ int CenterIconHeight( const crect& rect, int IconHeight )
 
 void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 {
-	if ( n >= 0 && n < (int)this->m_ItemList.size() )
+	if ( n >= 0 && n < ( int )this->m_ItemList.size() )
 	{
 //		bool frame = false;
 		UiCondList ucl;
@@ -529,12 +529,12 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 		unsigned bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 		unsigned textColor = UiGetColor( uiColor, uiItem, &ucl, 0 );
 //		unsigned frameColor = UiGetColor( uiFrameColor, uiItem, &ucl, 0 );;
-/*
-		if ( n == this->GetCurrent() )
-		{
-			frame = true;
-		}
-*/
+		/*
+		      if ( n == this->GetCurrent() )
+		      {
+		         frame = true;
+		      }
+		*/
 		gc.SetFillColor( bg );
 		gc.FillRect( rect );
 
@@ -557,7 +557,7 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 					gc.Set( GetFont() );
 					gc.SetTextColor( textColor );
 					gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( m_ItemList[n].cs->name ).data() );
-				}				
+				}
 			}
 
 			x += 20;
@@ -574,6 +574,7 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 			if ( i != m_DirHash.end() )
 			{
 				clPtr<SearchDirNode> d = i->second;
+
 				if ( d ) { txt = d->path.GetUnicode( ); }
 			}
 
@@ -636,7 +637,7 @@ public:
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListOkCancel ),
 		   pData( pD ),
 		   lo( 10, 10 ),
-		   listWin( this, pD->searchFs, dynamic_cast<NCWin*>(parent) ),
+		   listWin( this, pD->searchFs, dynamic_cast<NCWin*>( parent ) ),
 		   cPathWin( this ),
 		   curFound( -1 ),
 		   curBadDirs( -1 ),

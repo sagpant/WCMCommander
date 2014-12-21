@@ -96,7 +96,7 @@ EditWin::EditWin( Win* parent )
 	    firstLine( 0 ),
 	    colOffset( 0 ),
 	    rows( 0 ),
-		cols( 0 ),
+	    cols( 0 ),
 	    charH( 1 ),
 	    charW( 1 ),
 	    recomendedCursorCol( -1 ),
@@ -997,7 +997,7 @@ void EditWin::FromClipboard() //!Undo
 		int ctxPos = 0;
 
 		// insert clipboard text (ctx) into editor buffer (text) line by line
-		while (ctxPos < ctxLen)
+		while ( ctxPos < ctxLen )
 		{
 			char buf[1024];
 			int bufPos = 0;
@@ -1037,12 +1037,12 @@ void EditWin::FromClipboard() //!Undo
 				{
 					char* textAfterCursor = str.Get() + cursor.pos;
 					int lenTextAfterCursor = str.len - cursor.pos;
-					undoBlock->AddLine(cursor.line + 1, line.flags, textAfterCursor, lenTextAfterCursor);
+					undoBlock->AddLine( cursor.line + 1, line.flags, textAfterCursor, lenTextAfterCursor );
 					// copy the aftercursor text to new line
-					text.Get(cursor.line + 1).Set(textAfterCursor, lenTextAfterCursor);
+					text.Get( cursor.line + 1 ).Set( textAfterCursor, lenTextAfterCursor );
 					// remove the aftercursor text from current line
 					str.len = cursor.pos;
-					undoBlock->DelText(cursor.line, cursor.pos, textAfterCursor, lenTextAfterCursor);
+					undoBlock->DelText( cursor.line, cursor.pos, textAfterCursor, lenTextAfterCursor );
 				}
 				else // we have added an empty line
 				{
@@ -2147,16 +2147,20 @@ bool EditWin::EventKey( cevent_key* pEvent )
 
 			case VK_DOWN:
 #if defined( __APPLE__)
-				if ( ctrl ) PageDown( shift ); else
+				if ( ctrl ) { PageDown( shift ); }
+				else
 #endif
-				CursorDown( shift );
+					CursorDown( shift );
+
 				break;
 
 			case VK_UP:
 #if defined( __APPLE__)
-				if ( ctrl ) PageUp( shift ); else
+				if ( ctrl ) { PageUp( shift ); }
+				else
 #endif
-				CursorUp( shift );
+					CursorUp( shift );
+
 				break;
 
 			case VK_HOME:

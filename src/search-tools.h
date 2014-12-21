@@ -16,7 +16,7 @@ struct SNode
 	char b;
 	SNode(): a( 0 ), b( 0 ) {}
 	SNode( char n1, char n2 ): a( n1 ), b( n2 ) {}
-	bool Eq( char c ) const { return c == a || ( b && c == b); }
+	bool Eq( char c ) const { return c == a || ( b && c == b ); }
 	bool Eq( const SNode& x ) const { return a == x.a && b == x.b; }
 };
 

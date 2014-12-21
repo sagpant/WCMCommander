@@ -7,7 +7,7 @@
 #include "ux_util.h"
 
 #if !defined( _WIN32 )
-#	include <wal.h>
+#  include <wal.h>
 
 using namespace wal;
 

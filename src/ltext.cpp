@@ -16,8 +16,8 @@ const char* LText( const char* index )
 {
 	const auto i = lText.find( index );
 
-	if ( i == lText.end() ) return index;
-	
+	if ( i == lText.end() ) { return index; }
+
 	std::vector<char>* p = &( i->second );
 
 	return p->data() ? p->data() : index;
@@ -27,7 +27,7 @@ const char* LText( const char* index, const char* def )
 {
 	const auto i = lText.find( index );
 
-	if ( i == lText.end() ) return def;
+	if ( i == lText.end() ) { return def; }
 
 	std::vector<char>* p = &( i->second );
 

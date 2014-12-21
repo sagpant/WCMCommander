@@ -292,7 +292,7 @@ void OperSaveFileThread::Run()
 
 			int r = file->Read( buf, count );
 
-			if ( r != count ) throw_msg( "Unable to read\n" );
+			if ( r != count ) { throw_msg( "Unable to read\n" ); }
 
 			int n = fs->Write( f, buf, count, &ret_error, Info() );
 

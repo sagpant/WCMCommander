@@ -496,7 +496,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 		auto iter = g_LastFileInfo.find( fileName );
 
-		if ( iter == g_LastFileInfo.end() ) continue;
+		if ( iter == g_LastFileInfo.end() ) { continue; }
 
 		const FileInfoNode& Info = iter->second;
 
@@ -728,7 +728,7 @@ clPtr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* curre
 
 		if ( Exist )
 		{
-			if ( iter->second.mtime == list[i].mtime ) continue;
+			if ( iter->second.mtime == list[i].mtime ) { continue; }
 		}
 
 		FileInfoNode node;

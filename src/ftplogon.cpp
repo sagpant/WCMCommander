@@ -45,11 +45,11 @@ FtpLogonDialog::~FtpLogonDialog() {}
 FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	:  NCVertDialog( ::createDialogAsChild, 0,  parent, utf8_to_unicode( _LT( "FTP logon" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   serverText(0, this, utf8_to_unicode(_LT("&Server:")).data(), &serverEdit),
-	   userText(0, this, utf8_to_unicode(_LT("&Login:")).data(), &userEdit),
-	   passwordText(0, this, utf8_to_unicode(_LT("Pass&word:")).data(), &passwordEdit),
-	   portText(0, this, utf8_to_unicode(_LT("&Port:")).data(), &portEdit),
-	   charsetText(0, this, utf8_to_unicode(_LT("&Charset:")).data(), &charsetButton),
+	   serverText( 0, this, utf8_to_unicode( _LT( "&Server:" ) ).data(), &serverEdit ),
+	   userText( 0, this, utf8_to_unicode( _LT( "&Login:" ) ).data(), &userEdit ),
+	   passwordText( 0, this, utf8_to_unicode( _LT( "Pass&word:" ) ).data(), &passwordEdit ),
+	   portText( 0, this, utf8_to_unicode( _LT( "&Port:" ) ).data(), &portEdit ),
+	   charsetText( 0, this, utf8_to_unicode( _LT( "&Charset:" ) ).data(), &charsetButton ),
 	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), // placeholder
 	   charset( params.charset ),
 	   serverEdit  ( 0, this, 0, 0, 16 ),

@@ -34,11 +34,11 @@ class PanelList
 public:
 	enum SORT_MODE
 	{
-	   SORT_NONE = 0, //unsorted
-	   SORT_NAME,
-	   SORT_EXT,
-	   SORT_SIZE,
-	   SORT_MTIME
+		SORT_NONE = 0, //unsorted
+		SORT_NAME,
+		SORT_EXT,
+		SORT_SIZE,
+		SORT_MTIME
 	};
 
 private:
@@ -74,7 +74,7 @@ public:
 	{
 	}
 
-	int   Count( bool RootDir ) const { return listCount + (RootDir ? 0 : 1); }
+	int   Count( bool RootDir ) const { return listCount + ( RootDir ? 0 : 1 ); }
 
 	bool AscSort() const { return ascSort; }
 	SORT_MODE SortMode() const { return sortMode; }
@@ -114,6 +114,7 @@ public:
 		{
 			return ( n >= 0 && n < listCount ) ? list[n] : 0;
 		}
+
 		return ( n > 0 && n <= listCount ) ? list[n - 1] : 0;
 	}
 
@@ -123,6 +124,7 @@ public:
 		{
 			return n >= 0 && n < listCount ? list[n]->GetUnicodeName() : emptyStr;
 		}
+
 		return n > 0 && n <= listCount ? list[n - 1]->GetUnicodeName() : ( n == 0 ? upperStr : emptyStr );
 	};
 
@@ -133,7 +135,7 @@ public:
 		for ( int i = 0; i < n; i++ )
 			if ( !str.Cmp( list[i]->Name() ) )
 			{
-				return i + (RootDir ? 0 : 1);
+				return i + ( RootDir ? 0 : 1 );
 			}
 
 		return -1;
@@ -225,11 +227,13 @@ public:
 		if ( RootDir )
 		{
 			if ( n < 0 || n >= listCount ) { return; }
+
 			p = list[n];
 		}
 		else
 		{
 			if ( n <= 0 || n > listCount ) { return; }
+
 			p = list[n - 1];
 		}
 

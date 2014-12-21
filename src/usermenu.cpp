@@ -23,12 +23,12 @@ class clEditUserMenuWin: public NCVertDialog
 {
 public:
 	clEditUserMenuWin( NCDialogParent* parent, const clNCUserMenuItem* Item )
-	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit user menu" ) ).data(), bListOkCancel )
-	 , m_Layout( 17, 2 )
-	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description")).data(), &m_DescriptionEdit)
-	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
-	 , m_CommandText(0, this, utf8_to_unicode(_LT("E&xecute command")).data(), &m_CommandEdit)
-	 , m_CommandEdit( 0, this, 0, 0, 16 )
+		: NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit user menu" ) ).data(), bListOkCancel )
+		, m_Layout( 17, 2 )
+		, m_DescriptionText( 0, this, utf8_to_unicode( _LT( "&Description" ) ).data(), &m_DescriptionEdit )
+		, m_DescriptionEdit( 0, this, 0, 0, 16 )
+		, m_CommandText( 0, this, utf8_to_unicode( _LT( "E&xecute command" ) ).data(), &m_CommandEdit )
+		, m_CommandEdit( 0, this, 0, 0, 16 )
 	{
 		if ( Item )
 		{
@@ -55,8 +55,8 @@ public:
 		ls.y.ideal = 400;
 		ls.y.minimal = 400;
 
-		SetLSize(ls);
-	//	SetPosition();
+		SetLSize( ls );
+		// SetPosition();
 	}
 
 	std::vector<unicode_t> GetDescription() const { return m_DescriptionEdit.GetText(); }
@@ -89,8 +89,8 @@ class clUserMenuListWin: public VListWin
 {
 public:
 	clUserMenuListWin( Win* parent, std::vector<clNCUserMenuItem>* Items )
-	 : VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
-	 , m_ItemList( Items )
+		: VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
+		, m_ItemList( Items )
 	{
 		wal::GC gc( this );
 		gc.Set( GetFont() );
@@ -118,15 +118,19 @@ public:
 	const clNCUserMenuItem* GetCurrentData() const
 	{
 		int n = GetCurrent( );
-		if ( n < 0 || n >= (int)m_ItemList->size() ) { return NULL; }
-		return &( m_ItemList->at(n) );
+
+		if ( n < 0 || n >= ( int )m_ItemList->size() ) { return NULL; }
+
+		return &( m_ItemList->at( n ) );
 	}
 
 	clNCUserMenuItem* GetCurrentData( )
 	{
 		int n = GetCurrent( );
-		if ( n < 0 || n >= (int)m_ItemList->size() ) { return NULL; }
-		return &( m_ItemList->at(n) );
+
+		if ( n < 0 || n >= ( int )m_ItemList->size() ) { return NULL; }
+
+		return &( m_ItemList->at( n ) );
 	}
 
 	void Ins( const clNCUserMenuItem& p )
@@ -157,7 +161,7 @@ public:
 
 		if ( n < 0 || n >= ( int )m_ItemList->size( ) ) { return; }
 
-		m_ItemList->at(n) = p;
+		m_ItemList->at( n ) = p;
 		CalcScroll();
 		Invalidate();
 	}
@@ -218,13 +222,13 @@ class clUserMenuWin: public NCDialog
 	bool   m_Saved;
 public:
 	clUserMenuWin( NCDialogParent* parent, std::vector<clNCUserMenuItem>* Items )
-	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "User menu" ) ).data(), bListOkCancel )
-	 , m_ListWin( this, Items )
-	 , m_Layout( 10, 10 )
-	 , m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
-	 , m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
-	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )
-	 , m_Saved( true )
+		: NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "User menu" ) ).data(), bListOkCancel )
+		, m_ListWin( this, Items )
+		, m_Layout( 10, 10 )
+		, m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
+		, m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
+		, m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )
+		, m_Saved( true )
 	{
 		m_AddCurrentButton.Enable();
 		m_AddCurrentButton.Show();
@@ -286,12 +290,14 @@ bool clUserMenuWin::Command( int id, int subId, Win* win, void* data )
 	if ( id == CMD_RUN )
 	{
 		EndModal( CMD_RUN );
-		NCWin* W = (NCWin*)Parent();
+		NCWin* W = ( NCWin* )Parent();
 		const clNCUserMenuItem* ItemToRun = m_ListWin.GetCurrentData( );
+
 		if ( W && ItemToRun )
 		{
 			W->StartCommand( ItemToRun->GetCommand(), false );
 		}
+
 		return true;
 	}
 
@@ -316,7 +322,7 @@ bool clUserMenuWin::Command( int id, int subId, Win* win, void* data )
 	{
 		const clNCUserMenuItem* ValueToEdit = m_ListWin.GetCurrentData();
 
-		if ( !ValueToEdit ) return true;
+		if ( !ValueToEdit ) { return true; }
 
 		clEditUserMenuWin Dialog( ( NCDialogParent* )Parent(), ValueToEdit );
 		Dialog.SetEnterCmd( 0 );
@@ -357,7 +363,7 @@ bool clUserMenuWin::Key( cevent_key* pEvent )
 			{
 				return false;
 			}
-			
+
 			return true;
 		}
 
@@ -416,7 +422,7 @@ clUserMenuWin::~clUserMenuWin()
 
 bool UserMenuDlg( NCDialogParent* Parent, std::vector<clNCUserMenuItem>* MenuItems )
 {
-	if ( !MenuItems ) return false;
+	if ( !MenuItems ) { return false; }
 
 	// make an editable copy
 	std::vector<clNCUserMenuItem> LocalItems( *MenuItems );

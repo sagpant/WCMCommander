@@ -22,7 +22,7 @@
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
 #if !defined(_MSC_VER) || _MSC_VER >= 1700
-#	include <inttypes.h>
+#  include <inttypes.h>
 #endif
 
 #include <map>
@@ -40,9 +40,9 @@ class TextInStream
 	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.data(), bufSize ); pos = 0; return count > 0; }
 public:
 	TextInStream( int _bSize = 1024 )
-	 : bufSize( _bSize > 0 ? _bSize : 1024 )
-	 , pos( 1 )
-	 , count( 1 )
+		: bufSize( _bSize > 0 ? _bSize : 1024 )
+		, pos( 1 )
+		, count( 1 )
 	{
 		buffer.resize( bufSize );
 	}
@@ -378,7 +378,7 @@ void SaveStringList( const char* section, std::vector< std::string >& list )
 		path.Push( CS_UTF8, carray_cat<char>( section, ".cfg" ).data() );
 		out.Open( ( sys_char_t* )path.GetString( sys_charset_id ) );
 
-		for ( int i = 0; i < (int)list.size(); i++ )
+		for ( int i = 0; i < ( int )list.size(); i++ )
 		{
 			if ( list[i].c_str() && list[i][0] )
 			{
@@ -648,45 +648,45 @@ static const char* HighlightingRulesSection = "HighlightingRules";
 static const char* UserMenuSection = "UserMenu";
 
 clWcmConfig::clWcmConfig()
- : systemAskOpenExec( true )
- , systemEscPanel( true )
- , systemEscCommandLine( true )
- , systemBackSpaceUpDir( false )
- , systemAutoComplete( true )
- , systemAutoSaveSetup( true )
- , systemShowHostName( false )
- , systemLang( new_char_str( "+" ) )
+	: systemAskOpenExec( true )
+	, systemEscPanel( true )
+	, systemEscCommandLine( true )
+	, systemBackSpaceUpDir( false )
+	, systemAutoComplete( true )
+	, systemAutoSaveSetup( true )
+	, systemShowHostName( false )
+	, systemLang( new_char_str( "+" ) )
 
- , panelShowHiddenFiles( true )
- , panelCaseSensitive( false )
- , panelSelectFolders( false )
- , panelShowDotsInRoot( false )
- , panelShowFolderIcons( true )
- , panelShowExecutableIcons( true )
- , panelShowLinkIcons( true )
- , panelShowScrollbar( true )
- , panelShowSpacesMode( ePanelSpacesMode_Trailing )
- , panelModeLeft( 0 )
- , panelModeRight( 0 )
+	, panelShowHiddenFiles( true )
+	, panelCaseSensitive( false )
+	, panelSelectFolders( false )
+	, panelShowDotsInRoot( false )
+	, panelShowFolderIcons( true )
+	, panelShowExecutableIcons( true )
+	, panelShowLinkIcons( true )
+	, panelShowScrollbar( true )
+	, panelShowSpacesMode( ePanelSpacesMode_Trailing )
+	, panelModeLeft( 0 )
+	, panelModeRight( 0 )
 
- , editSavePos( true )
- , editAutoIdent( false )
- , editTabSize( 3 )
- , editShl( true )
+	, editSavePos( true )
+	, editAutoIdent( false )
+	, editTabSize( 3 )
+	, editShl( true )
 
- , terminalBackspaceKey( 0 )
+	, terminalBackspaceKey( 0 )
 
- , styleShow3DUI( false )
- , styleColorMode( 0 )
- , styleShowToolBar( true )
- , styleShowButtonBar( true )
- , styleShowButtonBarIcons( true )
- , styleShowMenuBar( true )
+	, styleShow3DUI( false )
+	, styleColorMode( 0 )
+	, styleShowToolBar( true )
+	, styleShowButtonBar( true )
+	, styleShowButtonBarIcons( true )
+	, styleShowMenuBar( true )
 
- , windowX(0)
- , windowY(0)
- , windowWidth(0)
- , windowHeight(0)
+	, windowX( 0 )
+	, windowY( 0 )
+	, windowWidth( 0 )
+	, windowHeight( 0 )
 {
 	leftPanelPath = new_char_str( "" );
 	rightPanelPath = new_char_str( "" );
@@ -717,7 +717,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionPanel, "show_executableicons",     &panelShowExecutableIcons, panelShowExecutableIcons );
 	MapBool( sectionPanel, "show_linkicons",     &panelShowLinkIcons, panelShowLinkIcons );
 	MapBool( sectionPanel, "show_scrollbar",     &panelShowScrollbar, panelShowScrollbar );
-	MapInt( sectionPanel,  "show_spaces_mode",     (int*)&panelShowSpacesMode, panelShowSpacesMode );
+	MapInt( sectionPanel,  "show_spaces_mode",     ( int* )&panelShowSpacesMode, panelShowSpacesMode );
 	MapInt( sectionPanel,  "mode_left",     &panelModeLeft, panelModeLeft );
 	MapInt( sectionPanel,  "mode_right",    &panelModeRight, panelModeRight );
 
@@ -785,7 +785,7 @@ void clWcmConfig::MapStr( const char* Section, const char* Name, std::vector<cha
 class clConfigHelper
 {
 public:
-	clConfigHelper() :m_SectionName( "" ) {}
+	clConfigHelper() : m_SectionName( "" ) {}
 
 	void SetSectionName( const char* SectionName )
 	{
@@ -802,7 +802,7 @@ public:
 #if defined(_WIN32)
 	clConfigWriter() {}
 #else
-	explicit clConfigWriter( IniHash& hash ) :m_Hash( hash ) {}
+	explicit clConfigWriter( IniHash& hash ) : m_Hash( hash ) {}
 #endif
 
 	void Write( const char* KeyNamePattern, int i, const char* Data )
@@ -820,7 +820,7 @@ public:
 		char Buf[4096];
 		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
 #ifdef _WIN32
-		RegWriteInt( m_SectionName, Buf, (int)Data );
+		RegWriteInt( m_SectionName, Buf, ( int )Data );
 #else
 		m_Hash.SetBoolValue( m_SectionName, Buf, Data );
 #endif
@@ -848,7 +848,7 @@ public:
 #if defined(_WIN32)
 	clConfigReader() {}
 #else
-	explicit clConfigReader( IniHash& hash ):m_Hash( hash ) {}
+	explicit clConfigReader( IniHash& hash ): m_Hash( hash ) {}
 #endif
 
 	std::vector<unicode_t> Read( const char* KeyNamePattern, int i )
@@ -893,11 +893,11 @@ private:
 
 void SaveFileAssociations( NCWin* nc
 #ifndef _WIN32
-, IniHash& hash
+                           , IniHash& hash
 #endif
-)
+                         )
 {
-	if ( !nc ) return;
+	if ( !nc ) { return; }
 
 #if defined(_WIN32)
 	clConfigWriter Cfg;
@@ -938,11 +938,11 @@ void SaveFileAssociations( NCWin* nc
 
 void LoadFileAssociations( NCWin* nc
 #ifndef _WIN32
-, IniHash& hash
+                           , IniHash& hash
 #endif
-)
+                         )
 {
-	if ( !nc ) return;
+	if ( !nc ) { return; }
 
 #if defined(_WIN32)
 	clConfigReader Cfg;
@@ -955,7 +955,7 @@ void LoadFileAssociations( NCWin* nc
 
 	std::vector<clNCFileAssociation> Assoc;
 
-	while (true)
+	while ( true )
 	{
 		std::vector<unicode_t> Mask = Cfg.Read( "Mask%i", i );
 		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
@@ -967,7 +967,7 @@ void LoadFileAssociations( NCWin* nc
 		std::vector<unicode_t> EditSecondary = Cfg.Read( "EditSecondary%i", i );
 		bool HasTerminal = Cfg.ReadBool( "HasTerminal%i", i, true );
 
-		if ( !Mask.data() || !*Mask.data() ) break;
+		if ( !Mask.data() || !*Mask.data() ) { break; }
 
 		clNCFileAssociation A;
 		A.SetMask( Mask );
@@ -989,11 +989,11 @@ void LoadFileAssociations( NCWin* nc
 
 void SaveUserMenu( NCWin* nc
 #ifndef _WIN32
-, IniHash& hash
+                   , IniHash& hash
 #endif
-)
+                 )
 {
-	if ( !nc ) return;
+	if ( !nc ) { return; }
 
 #if defined(_WIN32)
 	clConfigWriter Cfg;
@@ -1021,11 +1021,11 @@ void SaveUserMenu( NCWin* nc
 
 void LoadUserMenu( NCWin* nc
 #ifndef _WIN32
-, IniHash& hash
+                   , IniHash& hash
 #endif
-)
+                 )
 {
-	if ( !nc ) return;
+	if ( !nc ) { return; }
 
 #if defined(_WIN32)
 	clConfigReader Cfg;
@@ -1038,12 +1038,12 @@ void LoadUserMenu( NCWin* nc
 
 	std::vector<clNCUserMenuItem> Items;
 
-	while (true)
+	while ( true )
 	{
 		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
 		std::vector<unicode_t> Execute = Cfg.Read( "Execute%i", i );
 
-		if ( !Description.data() || !*Execute.data() ) break;
+		if ( !Description.data() || !*Execute.data() ) { break; }
 
 		clNCUserMenuItem A;
 		A.SetDescription( Description );
@@ -1058,11 +1058,11 @@ void LoadUserMenu( NCWin* nc
 
 void SaveFileHighlightingRules( NCWin* nc
 #ifndef _WIN32
-, IniHash& hash
+                                , IniHash& hash
 #endif
-)
+                              )
 {
-	if ( !nc ) return;
+	if ( !nc ) { return; }
 
 #if defined(_WIN32)
 	clConfigWriter Cfg;
@@ -1103,11 +1103,11 @@ void SaveFileHighlightingRules( NCWin* nc
 
 void LoadFileHighlightingRules( NCWin* nc
 #ifndef _WIN32
-, IniHash& hash
+                                , IniHash& hash
 #endif
-)
+                              )
 {
-	if ( !nc ) return;
+	if ( !nc ) { return; }
 
 #if defined(_WIN32)
 	clConfigReader Cfg;
@@ -1120,7 +1120,7 @@ void LoadFileHighlightingRules( NCWin* nc
 
 	std::vector<clNCFileHighlightingRule> Rules;
 
-	while (true)
+	while ( true )
 	{
 		std::vector<unicode_t> Mask = Cfg.Read( "Mask%i", i );
 		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
@@ -1145,7 +1145,7 @@ void LoadFileHighlightingRules( NCWin* nc
 			AttribsMask = 0;
 		}
 
-		if ( !Mask.data() || !*Mask.data() ) break;
+		if ( !Mask.data() || !*Mask.data() ) { break; }
 
 		clNCFileHighlightingRule R;
 		R.SetMask( Mask );
@@ -1172,11 +1172,11 @@ void LoadFileHighlightingRules( NCWin* nc
 
 void SaveCommandsHistory( NCWin* nc
 #ifndef _WIN32
-, IniHash& hash
+                          , IniHash& hash
 #endif
-)
+                        )
 {
-	if ( !nc ) return;
+	if ( !nc ) { return; }
 
 #if defined(_WIN32)
 	clConfigWriter Cfg;
@@ -1189,7 +1189,7 @@ void SaveCommandsHistory( NCWin* nc
 
 	for ( int i = 0; i < Count; i++ )
 	{
-		const unicode_t* Hist = (*nc->GetHistory())[Count-i-1];
+		const unicode_t* Hist = ( *nc->GetHistory() )[Count - i - 1];
 
 		Cfg.Write( "Command%i", i, unicode_to_utf8( Hist ).data( ) );
 	}
@@ -1197,11 +1197,11 @@ void SaveCommandsHistory( NCWin* nc
 
 void LoadCommandsHistory( NCWin* nc
 #ifndef _WIN32
-, IniHash& hash
+                          , IniHash& hash
 #endif
-)
+                        )
 {
-	if ( !nc ) return;
+	if ( !nc ) { return; }
 
 #if defined(_WIN32)
 	clConfigReader Cfg;
@@ -1214,11 +1214,11 @@ void LoadCommandsHistory( NCWin* nc
 
 	int i = 0;
 
-	while (true)
+	while ( true )
 	{
 		std::vector<unicode_t> Cmd = Cfg.Read( "Command%i", i );
 
-		if ( !Cmd.data() || !*Cmd.data() ) break;
+		if ( !Cmd.data() || !*Cmd.data() ) { break; }
 
 		nc->GetHistory()->Put( Cmd.data() );
 
@@ -1245,11 +1245,11 @@ void LoadEditorPositions()
 		char Buf[0xFFFF];
 		memset( Buf, 0, sizeof( Buf ) );
 
-		if ( !Line.size() ) continue;
+		if ( !Line.size() ) { continue; }
 
 		int NumRead = Lsscanf( Line.data( ), "FL = %i L = %i P = %i FN = %65534c", &FL, &L, &P, Buf );
 
-		if ( NumRead != 4 ) break;
+		if ( NumRead != 4 ) { break; }
 
 //		printf( "FL = %i L = %i P = %i FN = %s\n", FL, L, P, Buf );
 
@@ -1281,7 +1281,7 @@ void LoadViewerPositions()
 
 		int NumRead = Lsscanf( Line.data(), "L = %i FN = %65534c", &L, Buf );
 
-		if ( NumRead != 2 ) break;
+		if ( NumRead != 2 ) { break; }
 
 		std::vector<unicode_t> FileName = utf8_to_unicode( Buf );
 
@@ -1292,6 +1292,7 @@ void LoadViewerPositions()
 void clWcmConfig::Load( NCWin* nc )
 {
 #ifdef _WIN32
+
 	for ( size_t i = 0; i < m_MapList.size(); i++ )
 	{
 		sNode& Node = m_MapList[i];
@@ -1556,20 +1557,20 @@ public:
 PanelOptDialog::~PanelOptDialog() {}
 
 PanelOptDialog::PanelOptDialog( NCDialogParent* parent )
- :  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel )
- , iL( 16, 3 )
- , showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show &hidden files" ) ).data(), 0, g_WcmConfig.panelShowHiddenFiles )
- , caseSensitive( 0, this, utf8_to_unicode( _LT( "&Case sensitive sort" ) ).data(), 0, g_WcmConfig.panelCaseSensitive )
- , selectFolders( 0, this, utf8_to_unicode( _LT( "Select &folders" ) ).data(), 0, g_WcmConfig.panelSelectFolders )
- , showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the &root folder" ) ).data(), 0, g_WcmConfig.panelShowDotsInRoot )
- , showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, g_WcmConfig.panelShowFolderIcons )
- , showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, g_WcmConfig.panelShowExecutableIcons )
- , showLinkIcons( 0, this, utf8_to_unicode( _LT( "Show &link icons" ) ).data(), 0, g_WcmConfig.panelShowLinkIcons )
- , showScrollbar( 0, this, utf8_to_unicode( _LT( "Show &scrollbar" ) ).data(), 0, g_WcmConfig.panelShowScrollbar )
- , showSpacesStatic( 0, this, utf8_to_unicode( _LT( "Show spaces as · in names:" ) ).data() )
- , showSpacesNoneButton( 0, this, utf8_to_unicode( _LT( "No" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode != 1 && g_WcmConfig.panelShowSpacesMode != 2 )
- , showSpacesAllButton( 0, this,  utf8_to_unicode( _LT( "All" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 1 )
- , showSpacesTrailingButton( 0, this, utf8_to_unicode( _LT( "Trailing only" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 2 )
+	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Panel settings" ) ).data(), bListOkCancel )
+	, iL( 16, 3 )
+	, showHiddenButton( 0, this, utf8_to_unicode( _LT( "Show &hidden files" ) ).data(), 0, g_WcmConfig.panelShowHiddenFiles )
+	, caseSensitive( 0, this, utf8_to_unicode( _LT( "&Case sensitive sort" ) ).data(), 0, g_WcmConfig.panelCaseSensitive )
+	, selectFolders( 0, this, utf8_to_unicode( _LT( "Select &folders" ) ).data(), 0, g_WcmConfig.panelSelectFolders )
+	, showDotsInRoot( 0, this, utf8_to_unicode( _LT( "Show .. in the &root folder" ) ).data(), 0, g_WcmConfig.panelShowDotsInRoot )
+	, showFolderIcons( 0, this, utf8_to_unicode( _LT( "Show folder &icons" ) ).data(), 0, g_WcmConfig.panelShowFolderIcons )
+	, showExecutableIcons( 0, this, utf8_to_unicode( _LT( "Show &executable icons" ) ).data(), 0, g_WcmConfig.panelShowExecutableIcons )
+	, showLinkIcons( 0, this, utf8_to_unicode( _LT( "Show &link icons" ) ).data(), 0, g_WcmConfig.panelShowLinkIcons )
+	, showScrollbar( 0, this, utf8_to_unicode( _LT( "Show &scrollbar" ) ).data(), 0, g_WcmConfig.panelShowScrollbar )
+	, showSpacesStatic( 0, this, utf8_to_unicode( _LT( "Show spaces as · in names:" ) ).data() )
+	, showSpacesNoneButton( 0, this, utf8_to_unicode( _LT( "No" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode != 1 && g_WcmConfig.panelShowSpacesMode != 2 )
+	, showSpacesAllButton( 0, this,  utf8_to_unicode( _LT( "All" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 1 )
+	, showSpacesTrailingButton( 0, this, utf8_to_unicode( _LT( "Trailing only" ) ).data(), 1, g_WcmConfig.panelShowSpacesMode == 2 )
 {
 	iL.AddWinAndEnable( &showHiddenButton,  0, 0 );
 	showHiddenButton.SetFocus();
@@ -1618,6 +1619,7 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.panelShowExecutableIcons  = dlg.showExecutableIcons.IsSet();
 		g_WcmConfig.panelShowLinkIcons  = dlg.showLinkIcons.IsSet();
 		g_WcmConfig.panelShowScrollbar = dlg.showScrollbar.IsSet();
+
 		if ( dlg.showSpacesTrailingButton.IsSet() )
 		{
 			g_WcmConfig.panelShowSpacesMode = ePanelSpacesMode_Trailing;
@@ -1630,6 +1632,7 @@ bool DoPanelConfigDialog( NCDialogParent* parent )
 		{
 			g_WcmConfig.panelShowSpacesMode = ePanelSpacesMode_None;
 		}
+
 		return true;
 	}
 
@@ -1666,7 +1669,7 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file &position" ) ).data(), 0, g_WcmConfig.editSavePos ),
 	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto &indent" ) ).data(), 0, g_WcmConfig.editAutoIdent ),
 	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax &highlighting" ) ).data(), 0, g_WcmConfig.editShl ),
-	   tabText(0, this, utf8_to_unicode(_LT("&Tab size:")).data(), &tabEdit),
+	   tabText( 0, this, utf8_to_unicode( _LT( "&Tab size:" ) ).data(), &tabEdit ),
 	   tabEdit( 0, this, 0, 0, 16 )
 {
 	char buf[0x100];
@@ -1748,10 +1751,10 @@ public:
 		bool fixed;
 		Node(): oldFont( 0 ) {}
 		Node( const char* n, bool fix,  cfont* old, std::vector<char>* uri )
-		 : name( new_char_str( n ) )
-		 , oldFont( old )
-		 , pUri( uri )
-		 , fixed( fix )
+			: name( new_char_str( n ) )
+			, oldFont( old )
+			, pUri( uri )
+			, fixed( fix )
 		{}
 	};
 
@@ -2071,7 +2074,7 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 			}
 		}
 
-		if ( parent ) parent->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, nullptr, nullptr );
+		if ( parent ) { parent->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, nullptr, nullptr ); }
 
 		return true;
 	}
@@ -2294,13 +2297,13 @@ SysOptDialog::~SysOptDialog() {}
 SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	: NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "System settings" ) ).data(), bListOkCancel )
 	, m_iL( 16, 3 )
-   , m_AskOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, g_WcmConfig.systemAskOpenExec )
-   , m_EscPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, g_WcmConfig.systemEscPanel )
-   , m_EscCommandLineButton(0, this, utf8_to_unicode(_LT("Enable &ESC key to clear the command line")).data(), 0, g_WcmConfig.systemEscCommandLine )
-   , m_BackUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, g_WcmConfig.systemBackSpaceUpDir )
-   , m_AutoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, g_WcmConfig.systemAutoComplete )
-   , m_AutoSaveSetupButton( 0, this, utf8_to_unicode( _LT( "Auto &save setup" ) ).data(), 0, g_WcmConfig.systemAutoSaveSetup )
-   , m_ShowHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, g_WcmConfig.systemShowHostName )
+	, m_AskOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, g_WcmConfig.systemAskOpenExec )
+	, m_EscPanelButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to show/hide panels" ) ).data(), 0, g_WcmConfig.systemEscPanel )
+	, m_EscCommandLineButton( 0, this, utf8_to_unicode( _LT( "Enable &ESC key to clear the command line" ) ).data(), 0, g_WcmConfig.systemEscCommandLine )
+	, m_BackUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable &BACKSPACE key to go up dir" ) ).data(), 0, g_WcmConfig.systemBackSpaceUpDir )
+	, m_AutoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, g_WcmConfig.systemAutoComplete )
+	, m_AutoSaveSetupButton( 0, this, utf8_to_unicode( _LT( "Auto &save setup" ) ).data(), 0, g_WcmConfig.systemAutoSaveSetup )
+	, m_ShowHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, g_WcmConfig.systemShowHostName )
 	, m_LangStatic( 0, this, utf8_to_unicode( _LT( "&Language:" ) ).data( ), &m_LangButton )
 	, m_LangVal( 0, this, utf8_to_unicode( "______________________" ).data( ) )
 	, m_LangButton( 0, this, utf8_to_unicode( ">" ).data( ), 1000 )

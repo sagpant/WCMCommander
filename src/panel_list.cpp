@@ -124,11 +124,13 @@ void PanelList::ShiftSelection( int n, LPanelSelectionType* selectType, bool Roo
 	if ( RootDir )
 	{
 		if ( n < 0 || n >= listCount ) { return; }
+
 		p = list[n];
 	}
 	else
 	{
 		if ( n <= 0 || n > listCount ) { return; }
+
 		p = list[n - 1];
 	}
 

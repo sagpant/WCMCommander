@@ -151,7 +151,7 @@ clPtr<AppList> GetAppList( const unicode_t* uri )
 			bool IsPref = pref.data() && !_wcsicmp( pref.data(), sub.data() );
 			bool IsOpen = !pref.data() && !_wcsicmp( L"Open", sub.data() );
 
-			if ( IsPref || (IsOpen && ret->list.count() > 0) )
+			if ( IsPref || ( IsOpen && ret->list.count() > 0 ) )
 			{
 				ret->list.insert( 0 );
 				ret->list[0] = node;

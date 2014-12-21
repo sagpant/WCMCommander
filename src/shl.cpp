@@ -210,8 +210,8 @@ namespace SHL
 		{
 			int c;
 
-			if (  (_words && _words->Exist( ( const char* )first, ( const char* )s, &c )) ||
-			      (_ns_words && _ns_words->Exist( ( const char* )first, ( const char* )s, &c )) )
+			if (  ( _words && _words->Exist( ( const char* )first, ( const char* )s, &c ) ) ||
+			      ( _ns_words && _ns_words->Exist( ( const char* )first, ( const char* )s, &c ) ) )
 			{
 				*pColor =  ( c >= 0 ) ? c : _color;
 			}
@@ -379,11 +379,11 @@ namespace SHL
 
 	enum TOKENS
 	{
-	   TOK_ID = -500,   // /[_\a][_\a\d]+/
-	   TOK_STR, // "...\?..."
-	   TOK_CHARS, // [.$()..]
-	   TOK_RULE, // <...>
-	   TOK_EOF
+		TOK_ID = -500,   // /[_\a][_\a\d]+/
+		TOK_STR, // "...\?..."
+		TOK_CHARS, // [.$()..]
+		TOK_RULE, // <...>
+		TOK_EOF
 	};
 
 
@@ -413,7 +413,7 @@ namespace SHL
 		if ( _tok != t )
 		{
 			char buf[64];
-			Lsnprintf( buf, sizeof(buf)-1, "symbol not found '%c'", t );
+			Lsnprintf( buf, sizeof( buf ) - 1, "symbol not found '%c'", t );
 			Syntax( buf );
 		}
 
@@ -429,7 +429,7 @@ namespace SHL
 		if ( n < mincount )
 		{
 			char buf[64];
-			Lsnprintf( buf, sizeof(buf), "symbol not found '%c'", t );
+			Lsnprintf( buf, sizeof( buf ), "symbol not found '%c'", t );
 			Syntax( buf );
 		}
 	}
@@ -1079,7 +1079,7 @@ begin:
 										}
 
 										auto pc = colors.find( parzer.Str() );
-										
+
 										if ( pc == colors.end() )
 										{
 											parzer.Syntax( "color not found" );
@@ -1191,24 +1191,24 @@ begin:
 			delete t;
 		};
 	}
-/*
-	static void ParzeStrList( StrList& slist, ShlParzer& parzer )
-	{
-		while ( true )
-		{
-			if ( parzer.Tok() == TOK_STR )
-			{
-				slist.Add( parzer.Str() );
-				parzer.Next();
-				continue;
-			}
+	/*
+	   static void ParzeStrList( StrList& slist, ShlParzer& parzer )
+	   {
+	      while ( true )
+	      {
+	         if ( parzer.Tok() == TOK_STR )
+	         {
+	            slist.Add( parzer.Str() );
+	            parzer.Next();
+	            continue;
+	         }
 
-			if ( parzer.Tok() != ',' ) { break; }
+	         if ( parzer.Tok() != ',' ) { break; }
 
-			parzer.Next();
-		}
-	}
-*/
+	         parzer.Next();
+	      }
+	   }
+	*/
 ///////////////////////// ShlConf
 
 	ShlConf::ShlConf()

@@ -24,9 +24,9 @@ class ToolBar: public Win
 
 	enum DrawStates
 	{
-	   DRAW_NORMAL = 0,
-	   DRAW_SELECTED = 1,
-	   DRAW_PRESSED = 2
+		DRAW_NORMAL = 0,
+		DRAW_SELECTED = 1,
+		DRAW_PRESSED = 2
 	};
 
 	Node* GetNodeByPos( int x, int y );

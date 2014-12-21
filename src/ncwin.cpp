@@ -9,9 +9,9 @@
 #include <sys/types.h>
 
 #ifdef _WIN32
-#	if !defined( NOMINMAX )
-#		define NOMINMAX
-#	endif
+#  if !defined( NOMINMAX )
+#     define NOMINMAX
+#  endif
 #  include <winsock2.h>
 #else
 #  include <signal.h>
@@ -235,7 +235,7 @@ static bool StrHaveSpace( const unicode_t* s )
 
 std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
 {
-	if ( begin >= end ) return end;
+	if ( begin >= end ) { return end; }
 
 	return std::search( begin, end, SubStr.begin(), SubStr.end() );
 }
@@ -247,7 +247,7 @@ std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const uni
 
 //	bool HasSpaces = StrHaveSpace( Name.data() );
 
-	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
+	if ( Name.size() && Name.back() == 0 ) { Name.pop_back(); }
 
 //	if ( HasSpaces )
 	{
@@ -258,7 +258,7 @@ std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const uni
 	std::vector<unicode_t> Mask;
 	Mask.push_back( '!' );
 	Mask.push_back( '.' );
-	Mask.push_back( '!' );	
+	Mask.push_back( '!' );
 
 	auto pos = FindSubstr( Result.begin(), Result.end(), Mask );
 
@@ -341,7 +341,8 @@ void NCWin::NotifyAutoComplete()
 void NCWin::NotifyAutoCompleteChange()
 {
 	const unicode_t* p = m_AutoCompleteList.GetCurrentString();
-	if ( p && *p ) m_Edit.SetText( p, false );
+
+	if ( p && *p ) { m_Edit.SetText( p, false ); }
 }
 
 void NCWin::HideAutoComplete()
@@ -379,7 +380,7 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 	r.bottom = Bottom;
 	m_AutoCompleteList.Move( r );
 
-	if ( m_PrevAutoCurrentCommand == CurrentCommand ) return;
+	if ( m_PrevAutoCurrentCommand == CurrentCommand ) { return; }
 
 	bool HasHistory = false;
 
@@ -400,7 +401,9 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 	if ( HasHistory )
 	{
 		m_PrevAutoCurrentCommand = CurrentCommand;
-		if ( !m_AutoCompleteList.IsVisible( ) ) m_AutoCompleteList.Show( );
+
+		if ( !m_AutoCompleteList.IsVisible( ) ) { m_AutoCompleteList.Show( ); }
+
 		m_AutoCompleteList.Invalidate();
 	}
 	else
@@ -413,15 +416,17 @@ bool IsRoot()
 {
 #if defined(_WIN32)
 	HANDLE Token = 0;
-	if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &Token))
+
+	if ( OpenProcessToken( GetCurrentProcess(), TOKEN_QUERY, &Token ) )
 	{
 		TOKEN_ELEVATION TokenInfo;
 		TokenInfo.TokenIsElevated = 0;
 		DWORD ReturnLength = 0;
-		GetTokenInformation( Token, TokenElevation, &TokenInfo, sizeof(TokenInfo), &ReturnLength );
+		GetTokenInformation( Token, TokenElevation, &TokenInfo, sizeof( TokenInfo ), &ReturnLength );
 		CloseHandle( Token );
 		return TokenInfo.TokenIsElevated > 0;
 	}
+
 	return false;
 #else
 	return getuid() == 0;
@@ -429,30 +434,30 @@ bool IsRoot()
 }
 
 NCWin::NCWin()
- : NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect )
- , _lo( 5, 1 )
- , _lpanel( 1, 2 )
- , _ledit( 1, 2 )
- , _buttonWin( this )
- , _leftPanel( this, &g_WcmConfig.panelModeLeft )
- , _rightPanel( this, &g_WcmConfig.panelModeRight )
- , m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
- , m_Edit( uiCommandLine, this, 0, 0, 10, false )
- , _terminal( 0, this )
- , m_BackgroundActivity( eBackgroundActivity_None )
- , _activityNotification( this )
- , _editPref( this )
- , _panel( &_leftPanel )
- , _menu( 0, this )
- , _toolBar( this, 0, 16 )
- , _viewer( this )
- , _vhWin( this, &_viewer )
- , _editor( this )
- , _ehWin( this, &_editor )
- , _panelVisible( true )
- , _mode( PANEL )
- , _shiftSelectType( LPanelSelectionType_NotDefined )
- ,_execId( -1 )
+	: NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect )
+	, _lo( 5, 1 )
+	, _lpanel( 1, 2 )
+	, _ledit( 1, 2 )
+	, _buttonWin( this )
+	, _leftPanel( this, &g_WcmConfig.panelModeLeft )
+	, _rightPanel( this, &g_WcmConfig.panelModeRight )
+	, m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
+	, m_Edit( uiCommandLine, this, 0, 0, 10, false )
+	, _terminal( 0, this )
+	, m_BackgroundActivity( eBackgroundActivity_None )
+	, _activityNotification( this )
+	, _editPref( this )
+	, _panel( &_leftPanel )
+	, _menu( 0, this )
+	, _toolBar( this, 0, 16 )
+	, _viewer( this )
+	, _vhWin( this, &_viewer )
+	, _editor( this )
+	, _ehWin( this, &_editor )
+	, _panelVisible( true )
+	, _mode( PANEL )
+	, _shiftSelectType( LPanelSelectionType_NotDefined )
+	, _execId( -1 )
 {
 	_execSN[0] = 0;
 
@@ -597,9 +602,9 @@ NCWin::NCWin()
 	_mdFiles.AddCmd( ID_MKDIR, _LT( "&Make directory" ),   "F7" );
 	_mdFiles.AddCmd( ID_DELETE, _LT( "&Delete" ), "F8" );
 	_mdFiles.AddSplit();
-	_mdFiles.AddCmd( ID_GROUP_SELECT, _LT( "Select &group" ),"Gray +" );
-	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "U&nselect group"),"Gray -" );
-	_mdFiles.AddCmd( ID_GROUP_INVERT, _LT( "&Invert selection" ),"Gray *" );
+	_mdFiles.AddCmd( ID_GROUP_SELECT, _LT( "Select &group" ), "Gray +" );
+	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "U&nselect group" ), "Gray -" );
+	_mdFiles.AddCmd( ID_GROUP_INVERT, _LT( "&Invert selection" ), "Gray *" );
 
 	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Shift F7" );
 	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Shift-F8 (Ctrl-K)" );
@@ -620,17 +625,17 @@ NCWin::NCWin()
 	cpoint ScreenSize = GetScreenSize();
 
 	// Upon fresh start all g_WcmConfig.* are zeros. In this case set window width and heigh to 3/4 of the screen size
-	if (g_WcmConfig.windowWidth == 0)
+	if ( g_WcmConfig.windowWidth == 0 )
 	{
 		g_WcmConfig.windowWidth = ScreenSize.x * 3 / 4;
 	}
 
-	if (g_WcmConfig.windowHeight == 0)
+	if ( g_WcmConfig.windowHeight == 0 )
 	{
 		g_WcmConfig.windowHeight = ScreenSize.y * 3 / 4;
 	}
 
-	wal::crect Rect(g_WcmConfig.windowX, g_WcmConfig.windowY, g_WcmConfig.windowX + g_WcmConfig.windowWidth, g_WcmConfig.windowY + g_WcmConfig.windowHeight);
+	wal::crect Rect( g_WcmConfig.windowX, g_WcmConfig.windowY, g_WcmConfig.windowX + g_WcmConfig.windowWidth, g_WcmConfig.windowY + g_WcmConfig.windowHeight );
 
 	// enforce main window Rect restrictions:
 	// size is least minW x minH (#3), and screensize at most (#4)
@@ -641,14 +646,14 @@ NCWin::NCWin()
 	const int minH = 100;
 
 	Rect.left   = std::max( Rect.left, 0 ); // #1
-	Rect.left = std::min(Rect.left, ScreenSize.x - minW); // #2
-	Rect.top = std::max(Rect.top, 0); //#1
-	Rect.top = std::min(Rect.top, ScreenSize.y - minH); //#2
-	
-	Rect.right = std::max(Rect.right, Rect.left + minW); // #3
-	Rect.right = std::min(Rect.right, Rect.left + ScreenSize.x); //#4
-	Rect.bottom = std::max(Rect.bottom, Rect.top + minH); // #3
-	Rect.bottom = std::min(Rect.bottom, Rect.top + ScreenSize.y); //#4
+	Rect.left = std::min( Rect.left, ScreenSize.x - minW ); // #2
+	Rect.top = std::max( Rect.top, 0 ); //#1
+	Rect.top = std::min( Rect.top, ScreenSize.y - minH ); //#2
+
+	Rect.right = std::max( Rect.right, Rect.left + minW ); // #3
+	Rect.right = std::min( Rect.right, Rect.left + ScreenSize.x ); //#4
+	Rect.bottom = std::max( Rect.bottom, Rect.top + minH ); // #3
+	Rect.bottom = std::min( Rect.bottom, Rect.top + ScreenSize.y ); //#4
 
 	NCDialogParent::Move( Rect, true );
 
@@ -662,7 +667,7 @@ NCWin::NCWin()
 
 bool NCWin::EventClose()
 {
-	if ( g_WcmConfig.systemAutoSaveSetup ) g_WcmConfig.Save( this );
+	if ( g_WcmConfig.systemAutoSaveSetup ) { g_WcmConfig.Save( this ); }
 
 	switch ( _mode )
 	{
@@ -870,7 +875,7 @@ void NCWin::PanelEnter()
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
 
-	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) return;
+	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) { return; }
 
 	if ( g_WcmConfig.systemAskOpenExec )
 	{
@@ -900,6 +905,7 @@ void NCWin::PanelEnter()
 			if ( ret == CMD_OPEN_FILE )
 			{
 #ifndef _WIN32
+
 				if ( !terminal )
 				{
 					ExecNoTerminalProcess( cmd.data() );
@@ -908,6 +914,7 @@ void NCWin::PanelEnter()
 
 #endif
 				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
+
 				return;
 			}
 		}
@@ -925,11 +932,13 @@ void NCWin::PanelEnter()
 	if ( cmd.data() )
 	{
 #if !defined( _WIN32 )
+
 		if ( !terminal )
 		{
 			ExecNoTerminalProcess( cmd.data() );
 			return;
 		}
+
 #endif
 
 		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
@@ -938,8 +947,8 @@ void NCWin::PanelEnter()
 
 enum
 {
-   CMD_RC_RUN = 999,
-   CMD_RC_OPEN_0 = 1000
+	CMD_RC_RUN = 999,
+	CMD_RC_OPEN_0 = 1000
 };
 
 struct AppMenuData
@@ -1023,6 +1032,7 @@ void NCWin::RightButtonPressed( cpoint point )
 
 
 #ifndef _WIN32
+
 	if ( !data.nodeList[ret].terminal )
 	{
 		ExecNoTerminalProcess( data.nodeList[ret].cmd );
@@ -1164,8 +1174,8 @@ std::string GetVolumeName( int i )
 	char VolumeName[1024] = { 0 };
 
 	char RootPath[0x100];
-	Lsnprintf( RootPath, sizeof(RootPath), "%c:\\", i + 'A' );
-	GetVolumeInformation( RootPath, VolumeName, sizeof(VolumeName), nullptr, nullptr, nullptr, nullptr, 0 );
+	Lsnprintf( RootPath, sizeof( RootPath ), "%c:\\", i + 'A' );
+	GetVolumeInformation( RootPath, VolumeName, sizeof( VolumeName ), nullptr, nullptr, nullptr, nullptr, 0 );
 
 	return std::string( VolumeName );
 }
@@ -1174,11 +1184,20 @@ std::string GetDriveTypeString( unsigned int Type )
 {
 	switch ( Type )
 	{
-	case DRIVE_REMOVABLE: return "removable";
-	case DRIVE_FIXED: return "fixed";
-	case DRIVE_REMOTE: return "remote";
-	case DRIVE_CDROM: return "CDROM";
-	case DRIVE_RAMDISK: return "RAM disk";
+		case DRIVE_REMOVABLE:
+			return "removable";
+
+		case DRIVE_FIXED:
+			return "fixed";
+
+		case DRIVE_REMOTE:
+			return "remote";
+
+		case DRIVE_CDROM:
+			return "CDROM";
+
+		case DRIVE_RAMDISK:
+			return "RAM disk";
 	}
 
 	return std::string();
@@ -1232,7 +1251,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			UINT driveType = GetDriveType( buf );
 
 			bool ShouldReadVolumeName = ( driveType == DRIVE_FIXED || driveType == DRIVE_RAMDISK );
-			
+
 			std::string DriveTypeStr = GetDriveTypeString( driveType );
 			std::string VolumeName = ShouldReadVolumeName ? GetVolumeName( i ) : std::string();
 
@@ -1482,20 +1501,21 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 void NCWin::SelectSortMode( PanelWin* p )
 {
 	if ( !p ) { return; }
+
 	if ( _mode != PANEL ) { return; }
 
 	clMenuData mData;
-	
+
 	PanelList::SORT_MODE Mode = p->GetSortMode();
 	bool IsAscending = p->IsAscendingSort();
 
 	const int CHECKED_ICON_ID = IsAscending ? ID_REDO : ID_UNDO;
 
-	mData.Add( _LT("Name"), nullptr, nullptr, ID_SORT_BY_NAME_R, Mode == PanelList::SORT_NAME ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT("Extension"), nullptr, nullptr, ID_SORT_BY_EXT_R, Mode == PanelList::SORT_EXT ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT("Modification time"), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT("Size"), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT("Unsorted"), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Name" ), nullptr, nullptr, ID_SORT_BY_NAME_R, Mode == PanelList::SORT_NAME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Extension" ), nullptr, nullptr, ID_SORT_BY_EXT_R, Mode == PanelList::SORT_EXT ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Modification time" ), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Size" ), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Unsorted" ), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
 	//mData.AddSplitter();
 
 	int res = RunDldMenu( uiDriveDlg, p, "Sort by", &mData );
@@ -1503,23 +1523,28 @@ void NCWin::SelectSortMode( PanelWin* p )
 
 	switch ( res )
 	{
-	case ID_SORT_BY_NAME_R:
-		p->SortByName();
-		break;
-	case ID_SORT_BY_EXT_R:
-		p->SortByExt();
-		break;
-	case ID_SORT_BY_MODIF_R:
-		p->SortByMTime();
-		break;
-	case ID_SORT_BY_SIZE_R:
-		p->SortBySize();
-		break;
-	case ID_UNSORT_R:
-		p->DisableSort();
-		break;
-	default:
-		break;
+		case ID_SORT_BY_NAME_R:
+			p->SortByName();
+			break;
+
+		case ID_SORT_BY_EXT_R:
+			p->SortByExt();
+			break;
+
+		case ID_SORT_BY_MODIF_R:
+			p->SortByMTime();
+			break;
+
+		case ID_SORT_BY_SIZE_R:
+			p->SortBySize();
+			break;
+
+		case ID_UNSORT_R:
+			p->DisableSort();
+			break;
+
+		default:
+			break;
 	}
 }
 
@@ -1530,26 +1555,27 @@ void NCWin::UserMenu()
 	return;
 
 	clMenuData mData;
-	
+
 	//PanelList::SORT_MODE Mode = p->GetSortMode();
 	//bool IsAscending = p->IsAscendingSort();
 
 	//const int CHECKED_ICON_ID = IsAscending ? ID_REDO : ID_UNDO;
 
-	mData.Add( _LT("Name"), nullptr, nullptr, ID_SORT_BY_NAME_R );
-	mData.Add( _LT("Extension"), nullptr, nullptr, ID_SORT_BY_EXT_R );
+	mData.Add( _LT( "Name" ), nullptr, nullptr, ID_SORT_BY_NAME_R );
+	mData.Add( _LT( "Extension" ), nullptr, nullptr, ID_SORT_BY_EXT_R );
 	//mData.Add( _LT("Modification time"), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
 	//mData.Add( _LT("Size"), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
 	//mData.Add( _LT("Unsorted"), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
 	//mData.AddSplitter();
 
-	(void)RunDldMenu( uiDriveDlg, this, "User menu (F4 edit)", &mData );
+	( void )RunDldMenu( uiDriveDlg, this, "User menu (F4 edit)", &mData );
 	m_Edit.SetFocus();
 }
 
 void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
 {
 	if ( !cmd.data() ) { return; }
+
 	if ( !list.ptr() || list->Count() <= 0 ) { return; }
 
 	std::vector<FSNode*> nodes = list->GetArray();
@@ -1618,6 +1644,7 @@ void NCWin::CreateDirectory()
 	};
 
 	GetOtherPanel()->Reread();
+
 	_panel->Reread( false, FSString( dir.data() ) );
 }
 
@@ -1625,7 +1652,8 @@ void NCWin::QuitQuestion()
 {
 	if ( NCMessageBox( this, _LT( "Quit" ), _LT( "Do you want to quit?" ), false, bListOkCancel ) == CMD_OK )
 	{
-		if ( g_WcmConfig.systemAutoSaveSetup ) g_WcmConfig.Save( this );
+		if ( g_WcmConfig.systemAutoSaveSetup ) { g_WcmConfig.Save( this ); }
+
 		AppExit();
 	}
 }
@@ -1634,18 +1662,20 @@ bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mo
 {
 	const clNCFileAssociation* Assoc = this->FindFileAssociation( FileName );
 
-	if ( !Assoc ) return false;
+	if ( !Assoc ) { return false; }
 
-	std::vector<unicode_t> Cmd = MakeCommand( Assoc->Get(Mode), FileName );
+	std::vector<unicode_t> Cmd = MakeCommand( Assoc->Get( Mode ), FileName );
 
 	if ( Cmd.data() && *Cmd.data() )
 	{
 #if !defined( _WIN32 )
+
 		if ( !Assoc->GetHasTerminal() )
 		{
 			ExecNoTerminalProcess( Cmd.data() );
 			return true;
 		}
+
 #endif
 
 		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath() );
@@ -1662,12 +1692,14 @@ void NCWin::View( bool Secondary )
 
 	try
 	{
-		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) ) return;
+		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) ) { return; }
 
 		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
 		{
 			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to view a new file while a background editor is active.\nDo you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
-			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) return;
+
+			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) { return; }
+
 			if ( Msg == CMD_SWITCH )
 			{
 				SwitchToBackgroundActivity();
@@ -1719,9 +1751,10 @@ void NCWin::View( bool Secondary )
 		{
 			std::vector<unicode_t> Name = new_unicode_str( fs->Uri( path ).GetUnicode() );
 			auto i = g_ViewPosHash.find( Name );
-			if ( i != g_ViewPosHash.end() ) _viewer.SetCol( i->second );
+
+			if ( i != g_ViewPosHash.end() ) { _viewer.SetCol( i->second ); }
 		}
-}
+	}
 	catch ( cexception* ex )
 	{
 		NCMessageBox( this, _LT( "View" ), ex->message(), true );
@@ -1751,12 +1784,14 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 	try
 	{
-		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) ) return;
+		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) ) { return; }
 
 		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
 		{
 			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to edit a new file while a background editor is active.\nDo you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
-			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) return;
+
+			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) { return; }
+
 			if ( Msg == CMD_SWITCH )
 			{
 				SwitchToBackgroundActivity();
@@ -1807,6 +1842,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 		{
 			std::vector<unicode_t> Name = new_unicode_str( fs->Uri( path ).GetUnicode() );
 			auto i = g_EditPosHash.find( Name );
+
 			if ( i != g_EditPosHash.end() )
 			{
 				_editor.SetScrollCtx( i->second );
@@ -1862,9 +1898,9 @@ void  NCWin::PasteFileNameToCommandLine( const unicode_t* Path, bool AddTrailing
 
 		if ( Spaces ) { m_Edit.Insert( '"' ); }
 
-		if ( AddPathSeparator && !wal::LastCharEquals( Path, DIR_SPLITTER ) ) m_Edit.Insert( DIR_SPLITTER );
+		if ( AddPathSeparator && !wal::LastCharEquals( Path, DIR_SPLITTER ) ) { m_Edit.Insert( DIR_SPLITTER ); }
 
-		if ( AddTrailingSpace ) m_Edit.Insert( ' ' );
+		if ( AddTrailingSpace ) { m_Edit.Insert( ' ' ); }
 
 		NotifyAutoComplete();
 	}
@@ -1916,8 +1952,9 @@ void NCWin::CtrlF()
 
 void NCWin::CtrlL()
 {
-	if ( _mode != PANEL ) return;
-	if ( _panel->IsVisible() ) 
+	if ( _mode != PANEL ) { return; }
+
+	if ( _panel->IsVisible() )
 	{
 		DoCtrlLDialog( this, _panel->StatVfs() );
 	}
@@ -1973,7 +2010,7 @@ void NCWin::Delete()
 	else
 	{
 		char buf[0x100];
-		Lsnprintf( buf, sizeof(buf), _LT( "You have %i selected files\nDo you want to delete it?" ), n );
+		Lsnprintf( buf, sizeof( buf ), _LT( "You have %i selected files\nDo you want to delete it?" ), n );
 
 		if ( NCMessageBox( this, _LT( "Delete" ), buf, false ) != CMD_OK )
 		{
@@ -2026,7 +2063,7 @@ void NCWin::Copy( bool shift )
 	FSString uri = GetOtherPanel()->UriOfDir();
 
 	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Copy" ) ).data(),
-	                                            shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
+	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
 
@@ -2066,7 +2103,7 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 
 		clMultimaskSplitter Splitter( Mask );
 
-		if ( Splitter.CheckAndFetchAllMasks( FileName ) ) return &i;
+		if ( Splitter.CheckAndFetchAllMasks( FileName ) ) { return &i; }
 	}
 
 	return NULL;
@@ -2096,7 +2133,7 @@ void NCWin::Move( bool shift )
 	FSString uri = GetOtherPanel()->UriOfDir();
 
 	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Move" ) ).data(),
-	                                            shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
+	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
 
@@ -2155,7 +2192,7 @@ void NCWin::SaveSetupDialog()
 	if ( NCMessageBox( this, _LT( "Save setup" ), _LT( "Do you with to save current setup?" ), false, bListOkCancel ) == CMD_OK )
 	{
 		SaveSetup();
-	}	
+	}
 }
 
 void NCWin::SaveSetup()
@@ -2234,7 +2271,7 @@ bool NCWin::StartEditor( const std::vector<unicode_t> FileName, int Line, int Po
 
 	if ( !fs.Ptr() ) { return false; }
 
- 	clPtr<MemFile> file = LoadFile( fs, fspath, this, true );
+	clPtr<MemFile> file = LoadFile( fs, fspath, this, true );
 
 	if ( !file.ptr() ) { return false; }
 
@@ -2249,7 +2286,7 @@ bool NCWin::StartEditor( const std::vector<unicode_t> FileName, int Line, int Po
 
 	SetMode( EDIT );
 
- 	return true;
+	return true;
 }
 
 bool NCWin::StartViewer( const std::vector<unicode_t> FileName, int Line )
@@ -2406,7 +2443,7 @@ void NCWin::EditExit()
 	{
 		int ret = NCMessageBox( this, _LT( "Edit" ), _LT( "File has changes\nsave it?" ), true, bListYesNoCancel );
 
-		if ( ret == CMD_NO || (ret == CMD_YES && EditSave( false )) )
+		if ( ret == CMD_NO || ( ret == CMD_YES && EditSave( false ) ) )
 		{
 			_leftPanel.Reread();
 			_rightPanel.Reread();
@@ -2543,9 +2580,9 @@ void NCWin::NotifyCurrentPathInfo()
 
 		hostName[len++] =
 #ifdef _WIN32
-	   '>';
+		   '>';
 #else
-	   geteuid() ? '$' : '#';
+		   geteuid() ? '$' : '#';
 #endif
 		hostName[len] = 0;
 
@@ -2554,8 +2591,10 @@ void NCWin::NotifyCurrentPathInfo()
 	else
 	{
 		Info = new_unicode_str( _panel->UriOfDir().GetUnicode() );
+
 		// add a nice trailing > symbol
-		if ( Info.size() ) Info.pop_back();
+		if ( Info.size() ) { Info.pop_back(); }
+
 		Info.push_back( '>' );
 		Info.push_back( 0 );
 	}
@@ -2571,15 +2610,15 @@ void NCWin::NotifyCurrentPathInfo()
 	// clip the long text
 	if ( Length_Pixels > Length_MaxPixels && Length_Pixels > 0 )
 	{
-		float Shrink = (float)Length_MaxPixels / (float)Length_Pixels;
+		float Shrink = ( float )Length_MaxPixels / ( float )Length_Pixels;
 
-		int Length_Chars  = (int)Info.size();
-		int NewLength_Chars = std::max( 3, int( Shrink * Length_Chars )-3 );
+		int Length_Chars  = ( int )Info.size();
+		int NewLength_Chars = std::max( 3, int( Shrink * Length_Chars ) - 3 );
 
-		Info = std::vector<unicode_t>( Info.begin()+(Length_Chars-NewLength_Chars), Info.end() );
+		Info = std::vector<unicode_t>( Info.begin() + ( Length_Chars - NewLength_Chars ), Info.end() );
 		// add ... at the beginning
 		const unicode_t Prefix[] = { '.', '.', '.' };
-		Info.insert( Info.begin(), Prefix, Prefix+3 );
+		Info.insert( Info.begin(), Prefix, Prefix + 3 );
 	}
 
 	// update only if not equal
@@ -2674,7 +2713,7 @@ void NCWin::UpdateActivityNotification()
 		_activityNotification.Show();
 	}
 
-	if ( _mode != PANEL ) _activityNotification.Hide();
+	if ( _mode != PANEL ) { _activityNotification.Hide(); }
 }
 
 void NCWin::SetBackgroundActivity( eBackgroundActivity BackgroundActivity )
@@ -2690,19 +2729,21 @@ void NCWin::SwitchToBackgroundActivity()
 
 	switch ( m_BackgroundActivity )
 	{
-	case eBackgroundActivity_None:
-		break;
-	case eBackgroundActivity_Editor:
-		SetMode( EDIT );
-		break;
-	case eBackgroundActivity_Viewer:
-		SetMode( VIEW );
-		break;
+		case eBackgroundActivity_None:
+			break;
+
+		case eBackgroundActivity_Editor:
+			SetMode( EDIT );
+			break;
+
+		case eBackgroundActivity_Viewer:
+			SetMode( VIEW );
+			break;
 	}
 }
 
 NCCommandLine::NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true )
-: EditLine( nId, parent, rect, txt, chars, frame )
+	: EditLine( nId, parent, rect, txt, chars, frame )
 {
 }
 
@@ -2717,29 +2758,32 @@ bool NCCommandLine::EventKey( cevent_key* pEvent )
 	switch ( pEvent->Key() )
 	{
 #ifdef _WIN32
-	case VK_CONTROL:
-	case VK_SHIFT:
-	case VK_MENU:
+
+		case VK_CONTROL:
+		case VK_SHIFT:
+		case VK_MENU:
 #endif
-	case VK_LMETA:
-	case VK_RMETA:
-	case VK_LCONTROL:
-	case VK_RCONTROL:
-	case VK_LSHIFT:
-	case VK_RSHIFT:
-	case VK_LMENU:
-	case VK_RMENU:
-		break;
-	default:
-		if ( p && Pressed ) p->NotifyAutoComplete( );
-		break;
+		case VK_LMETA:
+		case VK_RMETA:
+		case VK_LCONTROL:
+		case VK_RCONTROL:
+		case VK_LSHIFT:
+		case VK_RSHIFT:
+		case VK_LMENU:
+		case VK_RMENU:
+			break;
+
+		default:
+			if ( p && Pressed ) { p->NotifyAutoComplete( ); }
+
+			break;
 	}
-	
+
 	return Result;
 }
 
 NCAutocompleteList::NCAutocompleteList( WTYPE t, unsigned hints, int nId, Win* _parent, SelectType st, BorderType bt, crect* rect )
-: TextList( t, hints, nId, _parent, st, bt, rect )
+	: TextList( t, hints, nId, _parent, st, bt, rect )
 {
 }
 
@@ -2796,7 +2840,7 @@ bool IsCommand_CD( const unicode_t* p )
 
 bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 {
-	if ( !Out ) return false;
+	if ( !Out ) { return false; }
 
 #if _MSC_VER > 1700
 	char* home;
@@ -2806,7 +2850,7 @@ bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 	const char* home = getenv( EnvVarName );
 #endif
 
-	if ( !home ) return false;
+	if ( !home ) { return false; }
 
 	*Out = utf8_to_unicode( home );
 
@@ -2814,7 +2858,7 @@ bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 	// deallocate after _dupenv_s()
 	free( home );
 #endif
-	
+
 	return true;
 }
 
@@ -2833,7 +2877,7 @@ std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
 		{
 			if ( LookAhead( p, &Ch ) )
 			{
-				if ( ( IsPathSeparator(Ch) || Ch == 0 ) && ApplyEnvVariable( "HOME", &Temp ) )
+				if ( ( IsPathSeparator( Ch ) || Ch == 0 ) && ApplyEnvVariable( "HOME", &Temp ) )
 				{
 					// replace ~ with the HOME path
 					Out.insert( Out.end(), Temp.begin(), Temp.end() );
@@ -2844,7 +2888,8 @@ std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
 		else if ( *p == '$' )
 		{
 			// skip `$`
-			std::vector<char> EnvVarName = unicode_to_utf8( p+1 );
+			std::vector<char> EnvVarName = unicode_to_utf8( p + 1 );
+
 			for ( auto i = EnvVarName.begin(); i != EnvVarName.end(); i++ )
 			{
 				if ( IsPathSeparator( *i ) )
@@ -2863,14 +2908,15 @@ std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
 				p += strlen( EnvVarName.data() );
 			}
 		}
-		else if ( IsPathSeparator(*p) )
+		else if ( IsPathSeparator( *p ) )
 		{
-			if ( !LastCharEquals( Out, '/' ) && !LastCharEquals( Out, '\\' ) ) Out.push_back( DIR_SPLITTER );
+			if ( !LastCharEquals( Out, '/' ) && !LastCharEquals( Out, '\\' ) ) { Out.push_back( DIR_SPLITTER ); }
 		}
 		else
 		{
 			Out.push_back( *p );
 		}
+
 		p++;
 	}
 
@@ -2879,7 +2925,7 @@ std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
 // debug
 //	std::vector<char> U = unicode_to_utf8( Out.data() );
 //	const char* UTF = U.data();
-	
+
 	return Out;
 }
 
@@ -2930,9 +2976,13 @@ bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
 			p++;
 			continue;
 		}
+
 #ifndef _WIN32
+
 		if ( *p == '\\' && !sc ) { p++; }
+
 #endif
+
 		if ( !p ) { break; }
 
 		pre.append( *p );
@@ -2995,23 +3045,27 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 //	printf( "StartCommand %s, %i\n", (const char*)p, (int)ForceNoTerminal );
 
-	if ( !*p ) return false;
+	if ( !*p ) { return false; }
 
 	if ( *p )
 	{
 		if ( !ProcessBuiltInCommands( p ) )
 		{
 #ifndef _WIN32
+
 			if ( p[0] == '&' || ForceNoTerminal )
 			{
 				_history.Put( p );
-				if ( p[0] == '&' ) p++;
+
+				if ( p[0] == '&' ) { p++; }
+
 				ExecNoTerminalProcess( p );
 			}
 			else
 #endif
 			{
 				FS* fs = _panel->GetFS();
+
 				if ( fs && fs->Type() == FS::SYSTEM )
 				{
 					StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
@@ -3029,9 +3083,9 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const
 {
-	if ( !DebugEnabledFlag ) return;
+	if ( !DebugEnabledFlag ) { return; }
 
-	if ( !KeyEvent ) return;
+	if ( !KeyEvent ) { return; }
 
 	const int Key = KeyEvent->Key();
 	const int Mod = KeyEvent->Mod();
@@ -3047,7 +3101,7 @@ void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabled
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 {
 	DebugKeyboard( pEvent, pressed, g_DebugKeyboard );
-	
+
 	if ( Blocked() ) { return false; }
 
 	const int Key = pEvent->Key();
@@ -3131,14 +3185,15 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			switch ( FullKey )
 			{
 				case FC( VK_M, KM_CTRL ):
-					{
-						crect rect = ScreenRect();
-						cpoint p;
-						p.x = ( rect.left + rect.right ) / 3;
-						p.y = ( rect.top  + rect.bottom ) / 3;
-						RightButtonPressed( p );
-					}
-					return true;
+				{
+					crect rect = ScreenRect();
+					cpoint p;
+					p.x = ( rect.left + rect.right ) / 3;
+					p.y = ( rect.top  + rect.bottom ) / 3;
+					RightButtonPressed( p );
+				}
+
+				return true;
 
 				case FC( VK_DOWN, KM_SHIFT ):
 					_panel->KeyDown( shift, &_shiftSelectType );
@@ -3150,18 +3205,21 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 						m_AutoCompleteList.EventKey( pEvent );
 						return true;
 					}
+
 					_panel->KeyDown( shift, &_shiftSelectType );
 					return true;
 
 				case FC( VK_UP, KM_SHIFT ):
 					_panel->KeyUp( shift, &_shiftSelectType );
 					return true;
+
 				case VK_UP:
 					if ( m_AutoCompleteList.IsVisible() )
 					{
 						m_AutoCompleteList.EventKey( pEvent );
 						return true;
 					}
+
 					_panel->KeyUp( shift, &_shiftSelectType );
 					return true;
 
@@ -3176,6 +3234,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 
 #if defined( __APPLE__)
+
 				case FC( VK_UP, KM_CTRL ):
 #endif
 				case FC( VK_PRIOR, KM_SHIFT ):
@@ -3196,6 +3255,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 
 #if defined( __APPLE__)
+
 				case FC( VK_DOWN, KM_CTRL ):
 #endif
 				case FC( VK_NEXT, KM_SHIFT ):
@@ -3300,6 +3360,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				_terminal.Scroll( -25 );
 				return true;
 			}
+
 			if ( FullKey == VK_UP   )
 			{
 				_terminal.Scroll( +25 );
@@ -3314,12 +3375,14 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				m_Edit.SetText( _history.Next() );
 				NotifyAutoComplete();
 				break;
+
 			case VK_DOWN:
 				if ( m_AutoCompleteList.IsVisible() )
 				{
 					m_AutoCompleteList.EventKey( pEvent );
 					break;
 				}
+
 				m_Edit.SetText( _history.Next() );
 				break;
 
@@ -3327,12 +3390,14 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				m_Edit.SetText( _history.Prev() );
 				NotifyAutoComplete();
 				break;
+
 			case VK_UP:
 				if ( m_AutoCompleteList.IsVisible() )
 				{
 					m_AutoCompleteList.EventKey( pEvent );
 					break;
 				}
+
 				m_Edit.SetText( _history.Prev() );
 				break;
 
@@ -3361,7 +3426,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				{
 					clPtr<FSList> list = _panel->GetSelectedList();
 
-					if (!list.ptr() || list->Count() <= 0)
+					if ( !list.ptr() || list->Count() <= 0 )
 					{
 						// copy a single file name to clipboard
 						const unicode_t* p = GetCurrentFileName();
@@ -3398,6 +3463,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					_menu.EventKey( pEvent );
 					break;
 				}
+
 				if ( m_AutoCompleteList.IsVisible() )
 				{
 					HideAutoComplete();
@@ -3415,6 +3481,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 						break;
 					}
 				}
+
 				break;
 
 			case FC( VK_ESCAPE, KM_SHIFT ):
@@ -3451,18 +3518,19 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				_panel->Invalidate();
 				break;
 				/*
-			case FC( VK_S, KM_CTRL ):
-			{
+				case FC( VK_S, KM_CTRL ):
+				{
 				cevent_key* key = _panel->QuickSearch( nullptr );
 				m_Edit.SetFocus();
 
 				if ( key ) { OnKeyDown( this, key, key->Type() == EV_KEYDOWN ); }
-			}
-			*/
+				}
+				*/
 
-			return true;
+				return true;
 
 #if defined( __APPLE__)
+
 			case FC( VK_DOWN, KM_CTRL ):
 #endif
 			case VK_NEXT:
@@ -3470,6 +3538,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 #if defined( __APPLE__)
+
 			case FC( VK_UP, KM_CTRL ):
 #endif
 			case VK_PRIOR:
@@ -3511,9 +3580,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				// on UNIX shift-tab gives XK_ISO_Left_Tab
 #ifdef XK_ISO_Left_Tab
+
 			case XK_ISO_Left_Tab:
 #endif
-			case FC(VK_TAB, KM_SHIFT):
+			case FC( VK_TAB, KM_SHIFT ):
 				Tab( true );
 				break;
 
@@ -3521,22 +3591,29 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case FC( VK_RETURN, KM_SHIFT ):
 			{
 				HideAutoComplete();
+
 				if ( m_Edit.IsVisible() )
 				{
-					if ( StartCommand( FetchAndClearCommandLine(), true ) ) break;
+					if ( StartCommand( FetchAndClearCommandLine(), true ) ) { break; }
 				}
-				if ( _panelVisible ) PanelEnter();
+
+				if ( _panelVisible ) { PanelEnter(); }
+
 				break;
 			}
+
 			case VK_NUMPAD_RETURN:
 			case VK_RETURN:
 			{
 				HideAutoComplete();
+
 				if ( m_Edit.IsVisible() )
 				{
-					if ( StartCommand( FetchAndClearCommandLine(), false ) ) break;
+					if ( StartCommand( FetchAndClearCommandLine(), false ) ) { break; }
 				}
-				if ( _panelVisible ) PanelEnter();
+
+				if ( _panelVisible ) { PanelEnter(); }
+
 				break;
 			}
 
@@ -3686,9 +3763,12 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case VK_ESCAPE:
 			{
 				HideAutoComplete();
-				if ( pressed ) SwitchToBackgroundActivity();
+
+				if ( pressed ) { SwitchToBackgroundActivity(); }
+
 				// Send ESC to terminal. Fix for https://github.com/corporateshark/WalCommander/issues/94
-				if ( FullKey == VK_ESCAPE ) break;
+				if ( FullKey == VK_ESCAPE ) { break; }
+
 				return true;
 			}
 
@@ -3743,9 +3823,11 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				case FC( VK_TAB, KM_CTRL ):
 					SetMode( PANEL );
 					break;
+
 				case FC( VK_O, KM_CTRL ):
 					SetMode( TERMINAL );
 					break;
+
 				case VK_F4:
 				case VK_F10:
 				case VK_ESCAPE:
@@ -3816,6 +3898,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					case FC( VK_O, KM_CTRL ):
 						SetMode( TERMINAL );
 						break;
+
 					case VK_F3:
 					case VK_F10:
 					case VK_ESCAPE:
@@ -3887,13 +3970,15 @@ void NCWin::ThreadStopped( int id, void* data )
 	_rightPanel.Reread();
 }
 
-bool NCWin::Command(int id, int subId, Win* win, void* data)
+bool NCWin::Command( int id, int subId, Win* win, void* data )
 {
-	if (id == 0) { return true; }
+	if ( id == 0 ) { return true; }
 
 	if ( id == CMD_MENU_INFO && ( subId == SCMD_MENU_CANCEL || subId == SCMD_MENU_SELECT ) )
 	{
-		if ( g_WcmConfig.styleShowMenuBar ) _menu.Show(); else _menu.Hide();
+		if ( g_WcmConfig.styleShowMenuBar ) { _menu.Show(); }
+		else { _menu.Hide(); }
+
 		this->RecalcLayouts();
 	}
 
@@ -4339,7 +4424,7 @@ void ButtonWin::OnChangeStyles()
 		w->SetLSize( ls );
 	}
 
-	wal::GC gc( (Win*)nullptr );
+	wal::GC gc( ( Win* )nullptr );
 	gc.Set( g_DialogFont.ptr() );
 	cpoint maxW( 1, 1 );
 
@@ -4364,9 +4449,9 @@ void ButtonWin::OnChangeStyles()
 }
 
 ButtonWin::ButtonWin( Win* parent )
- : Win( WT_CHILD, 0, parent )
- , m_Lo( 1, 20 )
- , m_Buttons( 10 )
+	: Win( WT_CHILD, 0, parent )
+	, m_Lo( 1, 20 )
+	, m_Buttons( 10 )
 {
 	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
@@ -4417,7 +4502,7 @@ void ButtonWin::Paint( wal::GC& gc, const crect& paintRect )
 {
 	for ( size_t i = 0; i != m_Buttons.size(); i++ )
 	{
-		if ( m_Buttons[i] ) m_Buttons[i]->SetShowIcon( g_WcmConfig.styleShowButtonBarIcons );
+		if ( m_Buttons[i] ) { m_Buttons[i]->SetShowIcon( g_WcmConfig.styleShowButtonBarIcons ); }
 	}
 
 	crect r = ClientRect();
@@ -4555,9 +4640,9 @@ int uiClassEditorHeadWin = GetUiID( "EditorHeadWin" );
 int EditorHeadWin::UiGetClassId() { return uiClassEditorHeadWin; };
 
 EditorHeadWin::EditorHeadWin( Win* parent, EditWin* pEdit )
- : Win( WT_CHILD, 0, parent, 0 )
- , _edit( pEdit )
- , prefixString( utf8_to_unicode( _LT( "Edit:" ) ).data() )
+	: Win( WT_CHILD, 0, parent, 0 )
+	, _edit( pEdit )
+	, prefixString( utf8_to_unicode( _LT( "Edit:" ) ).data() )
 {
 	OnChangeStyles();
 	CheckSize();
@@ -4595,7 +4680,7 @@ bool EditorHeadWin::UpdateCS()
 bool EditorHeadWin::UpdatePos()
 {
 	char cBuf[64];
-	Lsnprintf( cBuf, sizeof(cBuf), "%i /%i  %i", _edit->GetCursorLine() + 1, _edit->GetLinesCount(), _edit->GetCursorCol() + 1 );
+	Lsnprintf( cBuf, sizeof( cBuf ), "%i /%i  %i", _edit->GetCursorLine() + 1, _edit->GetLinesCount(), _edit->GetCursorCol() + 1 );
 	unicode_t uBuf[64];
 
 	for ( int i = 0; i < 32; i++ ) if ( ( uBuf[i] = cBuf[i] ) == 0 ) { break; }
@@ -4615,7 +4700,7 @@ bool EditorHeadWin::UpdateSym()
 
 	if ( sym >= 0 )
 	{
-		Lsnprintf( cBuf, sizeof(cBuf), "%i (%X)", sym, sym );
+		Lsnprintf( cBuf, sizeof( cBuf ), "%i (%X)", sym, sym );
 	}
 
 	unicode_t uBuf[64];
@@ -4778,9 +4863,9 @@ static int uiClassViewerHeadWin = GetUiID( "ViewerHeadWin" );
 int ViewerHeadWin::UiGetClassId() { return uiClassViewerHeadWin; }
 
 ViewerHeadWin::ViewerHeadWin( Win* parent, ViewWin* pView )
- : Win( WT_CHILD, 0, parent, 0 )
- , _view( pView )
- , prefixString( utf8_to_unicode( _LT( "View:" ) ).data() )
+	: Win( WT_CHILD, 0, parent, 0 )
+	, _view( pView )
+	, prefixString( utf8_to_unicode( _LT( "View:" ) ).data() )
 {
 	OnChangeStyles();
 	CheckSize();

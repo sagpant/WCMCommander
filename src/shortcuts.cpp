@@ -5,7 +5,7 @@
  */
 
 #ifdef _WIN32
-#	include <winsock2.h>
+#  include <winsock2.h>
 #endif
 
 
@@ -60,7 +60,7 @@ private:
 		std::vector< std::string > list;
 		LoadStringList( shortcursSection, list );
 
-		for ( int i = 0; i < (int)list.size(); i++ )
+		for ( int i = 0; i < ( int )list.size(); i++ )
 		{
 			if ( list[i].data() )
 			{
@@ -411,7 +411,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 		if ( !node || !node->name.data() ) { return true; } //-V560
 
 		std::vector<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Rename item" ) ).data(),
-		                                            node->name.data() );
+		                                                 node->name.data() );
 
 		if ( name.data() )
 		{
@@ -475,7 +475,7 @@ bool ShortcutWin::Command( int id, int subId, Win* win, void* data )
 						return false;
 
 			std::vector<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(), utf8_to_unicode( _LT( "Enter shortcut name" ) ).data(),
-			                                            fs[0]->Uri( *path ).GetUnicode() );
+			                                                 fs[0]->Uri( *path ).GetUnicode() );
 
 			if ( name.data() )
 			{
@@ -511,15 +511,16 @@ bool ShortcutWin::Key( cevent_key* pEvent )
 			Selected();
 			return true;
 		}
-/*
-		unicode_t c = UnicodeLC( pEvent->Char() );
 
-		if ( c > 32 )
-		{
-			listWin.Next( c );
-			return true;
-		}
-*/
+		/*
+		      unicode_t c = UnicodeLC( pEvent->Char() );
+
+		      if ( c > 32 )
+		      {
+		         listWin.Next( c );
+		         return true;
+		      }
+		*/
 	}
 
 	return false;

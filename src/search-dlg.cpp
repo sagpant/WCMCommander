@@ -26,18 +26,18 @@ SearchParamDialog::~SearchParamDialog() {}
 SearchParamDialog::SearchParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   textLabel(0, this, utf8_to_unicode(_LT("&Search for:")).data(), &textEdit),
-	   textEdit(0, this, 0, 0, 50),
+	   textLabel( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &textEdit ),
+	   textEdit( 0, this, 0, 0, 50 ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
 
 {
 	if ( params->txt.data() ) { textEdit.SetText( params->txt.data(), true ); }
 
-	iL.AddWin(&textLabel, 0, 0);
+	iL.AddWin( &textLabel, 0, 0 );
 	textLabel.Enable();
 	textLabel.Show();
 
-	iL.AddWin(&textEdit, 0, 1);
+	iL.AddWin( &textEdit, 0, 1 );
 	textEdit.Enable();
 	textEdit.Show();
 	textEdit.SetFocus();
@@ -96,9 +96,9 @@ SearchFileParamDialog::~SearchFileParamDialog() {}
 SearchFileParamDialog::SearchFileParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   maskText(0, this, utf8_to_unicode(_LT("File &mask:")).data(), &maskEdit),
-	   textText(0, this, utf8_to_unicode(_LT("&Text:")).data(), &textEdit),
-	   maskEdit(0, this, 0, 0, 50),
+	   maskText( 0, this, utf8_to_unicode( _LT( "File &mask:" ) ).data(), &maskEdit ),
+	   textText( 0, this, utf8_to_unicode( _LT( "&Text:" ) ).data(), &textEdit ),
+	   maskEdit( 0, this, 0, 0, 50 ),
 	   textEdit ( 0, this, 0, 0, 50 ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
 {
@@ -173,8 +173,8 @@ ReplaceEditParamDialog::~ReplaceEditParamDialog() {}
 ReplaceEditParamDialog::ReplaceEditParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Replace" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
-	   fromText(0, this, utf8_to_unicode(_LT("&Search for:")).data(), &fromEdit),
-	   toText(0, this, utf8_to_unicode(_LT("&Replace with:")).data(), &toEdit),
+	   fromText( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &fromEdit ),
+	   toText( 0, this, utf8_to_unicode( _LT( "&Replace with:" ) ).data(), &toEdit ),
 	   fromEdit ( 0, this, 0, 0, 50 ),
 	   toEdit   ( 0, this, 0, 0, 50 ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )

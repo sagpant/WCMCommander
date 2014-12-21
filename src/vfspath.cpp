@@ -5,7 +5,7 @@
  */
 
 #if defined(_MSC_VER)
-#	define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "vfspath.h"
@@ -343,7 +343,7 @@ void cs_string::copy( const cs_string& a, int cs_id )
 					u = buf;
 				}
 
-				(void)old_charset->cs_to_unicode( u, a.m_Data->m_ByteBuffer.data(), -1, 0 );
+				( void )old_charset->cs_to_unicode( u, a.m_Data->m_ByteBuffer.data(), -1, 0 );
 				u[sym_count] = 0;
 			}
 

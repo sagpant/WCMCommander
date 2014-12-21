@@ -10,10 +10,10 @@
 #include "ltext.h"
 
 #ifdef _WIN32
-#	if !defined( NOMINMAX )
-#		define NOMINMAX
-#	endif
-#	include <windows.h>
+#  if !defined( NOMINMAX )
+#     define NOMINMAX
+#  endif
+#  include <windows.h>
 #endif
 
 #include <unordered_map>
@@ -39,7 +39,7 @@ void InitOperCharsets()
 
 	if ( LoadStringList( charsetSection, stringList ) )
 	{
-		for ( i = 0; i < (int)stringList.size(); i++ )
+		for ( i = 0; i < ( int )stringList.size(); i++ )
 		{
 			auto iter = hash.find( stringList[i].data() );
 
@@ -123,6 +123,7 @@ static int  GetOtherCharsetList( charset_struct** list, int size )
 	for ( i = 0; i < retCount; i++ )
 	{
 		bool Exists = hash.find( tempList[i]->id ) != hash.end();
+
 		if ( !Exists && n < size )
 		{
 			list[n++] = tempList[i];
@@ -193,12 +194,12 @@ void CharsetListWin::DrawItem( wal::GC& gc, int n, crect rect )
 		unsigned bg = UiGetColor( uiBackground, uiItem, &ucl, 0xFFFFFF );
 		unsigned textColor = UiGetColor( uiColor, uiItem, &ucl, 0 );
 //		unsigned frameColor = UiGetColor( uiFrameColor, uiItem, &ucl, 0 );;
-/*
-		if ( n == this->GetCurrent() )
-		{
-			frame = true;
-		}
-*/
+		/*
+		      if ( n == this->GetCurrent() )
+		      {
+		         frame = true;
+		      }
+		*/
 		gc.SetFillColor( bg );
 		gc.FillRect( rect );
 		gc.Set( GetFont() );

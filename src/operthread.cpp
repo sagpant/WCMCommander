@@ -12,9 +12,9 @@ ButtonDataNode bOk[] = { { " Ok ", CMD_OK},  {0, 0}};
 OperData::~OperData() {}
 
 OperThread::OperThread( const char* opName, NCDialogParent* p, OperThreadNode* n )
- : node( n )
- , operName( new_char_str( opName ) )
- , parentWin( p )
+	: node( n )
+	, operName( new_char_str( opName ) )
+	, parentWin( p )
 {
 	//printf("OperThread create\n");
 }

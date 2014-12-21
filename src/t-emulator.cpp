@@ -88,18 +88,18 @@ static unicode_t* GetCSetTable( char c )
 
 enum STATES
 {
-   ST_NORMAL = 0,
-   ST_ESCAPE,  //esc
-   ST_CSI,  //esc[
-   ST_TP_NUM,  //esc]
-   ST_TP_TEXT, //esc]<NUM>;
-   ST_CHSET,  //esc(
-   ST_DECPM,   //esc[p
-   ST_G0_CHSET,
-   ST_G1_CHSET,
-   ST_G2_CHSET,
-   ST_G3_CHSET,
-   ST_DECSTR //esc!
+	ST_NORMAL = 0,
+	ST_ESCAPE,  //esc
+	ST_CSI,  //esc[
+	ST_TP_NUM,  //esc]
+	ST_TP_TEXT, //esc]<NUM>;
+	ST_CHSET,  //esc(
+	ST_DECPM,   //esc[p
+	ST_G0_CHSET,
+	ST_G1_CHSET,
+	ST_G2_CHSET,
+	ST_G3_CHSET,
+	ST_DECSTR //esc!
 };
 
 
@@ -644,7 +644,7 @@ void Emulator::Append( char ch )
 								_attr.inverse = true;
 								break;
 
-								//case 8: set invisible
+							//case 8: set invisible
 							case 22:
 								_attr.bold = false;
 								break;
@@ -661,7 +661,7 @@ void Emulator::Append( char ch )
 								_attr.inverse = false;
 								break;
 
-								//case 28: set visible
+							//case 28: set visible
 							case 30:
 								_attr.fColor = 0;
 								break;
@@ -878,7 +878,7 @@ void Emulator::Append( char ch )
 								_savedCursor = _cursor;
 								_screen1.Clear();
 
-								//! no break
+							//! no break
 							case 47:
 								_screen = &_screen1;
 								_clList.SetAll( true );
@@ -915,7 +915,7 @@ void Emulator::Append( char ch )
 							case 1049:
 								RestoreCursor();
 
-								//! no break
+							//! no break
 							case 47:
 								_screen = &_screen0;
 								_clList.SetAll( true );
