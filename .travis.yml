@@ -41,8 +41,9 @@ script:
       cd "$TRAVIS_BUILD_DIR" &&
       mkdir build &&
       cd build &&
-      cmake .. &&
-      make;
+      cmake -DCMAKE_INSTALL_PREFIX=prefix .. &&
+      make &&
+      make install;
     fi
   - if [ "$BUILDMODE" = "cmake-mingw32" ]; then echo "===> Building with cmake+mingw32..." &&
       cd "$TRAVIS_BUILD_DIR" &&
@@ -56,6 +57,7 @@ script:
       echo "SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> toolchain.cmake &&
       echo "SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> toolchain.cmake &&
       echo "SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)" >> toolchain.cmake &&
-      cmake -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake .. &&
-      make;
+      cmake -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake -DCMAKE_INSTALL_PREFIX=prefix .. &&
+      make &&
+      make install;
     fi
