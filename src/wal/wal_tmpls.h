@@ -234,7 +234,7 @@ namespace wal
 		{
 			if ( size <= 0 )
 			{
-				ptr = NULL;
+				ptr = nullptr;
 				i = 0;
 			}
 			else
@@ -255,7 +255,7 @@ namespace wal
 			return ptr;
 		}
 
-		bool valid() { return ptr != NULL; }
+		bool valid() { return ptr != nullptr; }
 
 	};
 
@@ -347,7 +347,7 @@ namespace wal
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	template <class LT, class KT, bool IC, class P>
@@ -506,7 +506,7 @@ namespace wal
 
 			for ( i = 0; i < newSize; i++ )
 			{
-				newTable[i] = NULL;
+				newTable[i] = nullptr;
 			}
 
 			for ( i = 0; i < tableSize; i++ )
@@ -537,7 +537,7 @@ namespace wal
 
 			for ( i = 0; i < a.tableSize; i++ )
 			{
-				tmpTable[i] = NULL;
+				tmpTable[i] = nullptr;
 			}
 
 			for ( i = 0; i < a.tableSize; i++ )
@@ -609,7 +609,7 @@ namespace wal
 		T* get( const KT& k )
 		{
 			Node* p = hash.find( unsigned( k ), k );
-			return p ? &( p->m_data ) : NULL;
+			return p ? &( p->m_data ) : nullptr;
 		}
 
 		chash& operator = ( const chash& a )
@@ -698,16 +698,13 @@ namespace wal
 
 		static bool eq( const T* a, const T* b )
 		{
-			for ( ; *a /* && *b */ && *a == *b; a++, b++ )
-			{
-				NULL;
-			}
+			while ( *a && *a == *b ) { a++; b++; };
 
 			return *a == *b;
 		}
 
 	public:
-		chstring() { ptr = NULL; }
+		chstring() { ptr = nullptr; }
 		chstring( const T* s )
 		{
 			strSize = size( s );
@@ -812,7 +809,7 @@ namespace wal
 		T* exist( const CT* s )
 		{
 			Node* p = hash.find( chstring<CT>::key( s ), s );
-			return p ? &( p->m_data ) : NULL;
+			return p ? &( p->m_data ) : nullptr;
 		}
 
 		T& get( const CT* s )
@@ -1104,10 +1101,7 @@ template <class T> inline bool strless( T* a, T* b )
 {
 	T s1 = *a, s2 = *b;
 
-	for ( ; *s1 && *s1 == *s2; s1++, s2++ )
-	{
-		NULL;
-	}
+	while ( *s1 && *s1 == *s2 ) { s1++; s2++; };
 
 	return *s1 <= *s2;
 }
