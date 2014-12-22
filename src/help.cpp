@@ -58,8 +58,7 @@ using namespace wal;
 #endif
 
 #include "wcm-version.h"
-//const char* verString = "Wal Commander v " WCM_VERSION " GitHub Edition (" __DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
-const char* verString = "Wal Commander v " WCM_VERSION " Christmas Edition (" __DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
+const char* verString = "Wal Commander v " WCM_VERSION " GitHub Edition (" __DATE__ "  " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS ")";
 
 struct HelpStyle
 {
