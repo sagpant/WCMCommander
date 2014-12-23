@@ -1082,6 +1082,9 @@ FSWin32Net::~FSWin32Net()
 #elif defined __FreeBSD__
 #  include <sys/param.h>
 #  include <sys/mount.h>
+#elif defined __OpenBSD__
+#  include <sys/param.h>
+#  include <sys/mount.h>
 #endif
 
 #ifdef __linux__

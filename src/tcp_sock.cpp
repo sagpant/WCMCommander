@@ -64,7 +64,7 @@ bool GetHostIp( const char* utf8, unsigned* pIp, int* err )
 
 	struct hostent* ret;
 
-#if defined( __APPLE__ )
+#if defined( __APPLE__ ) || defined(__OpenBSD__)
 	ret = gethostbyname( utf8 );
 
 	if ( !ret )
