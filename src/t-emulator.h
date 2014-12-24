@@ -191,7 +191,7 @@ class Emulator
 	int _utf8count;
 	int _utf8char;
 	int _state;
-	NumberList<> _NL;
+	NumberList<> m_NumberList;
 	ccollect<char, 0x100> _TXT;
 
 	EmulatorAttr _savedAttr;
