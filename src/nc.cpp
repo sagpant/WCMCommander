@@ -5,9 +5,9 @@
  */
 
 #ifdef _WIN32
-#	include <winsock2.h>
-#	include "resource.h"
-#	include "w32util.h"
+#  include <winsock2.h>
+#  include "resource.h"
+#  include "w32util.h"
 #endif
 
 #include "nc.h"
@@ -160,26 +160,26 @@ class clCommandlet_EditFile: public iCommandlet
 {
 public:
 	clCommandlet_EditFile( const char* FileName, int Line, int Pos, NCWin* NcWin )
-	 : m_FileName( FileName )
-	 , m_Line( Line )
-	 , m_Pos( Pos )
-	 , m_NCWin( NcWin )
+		: m_FileName( FileName )
+		, m_Line( Line )
+		, m_Pos( Pos )
+		, m_NCWin( NcWin )
 	{}
 	virtual bool Run() override
 	{
-		if ( !m_NCWin ) return false;
+		if ( !m_NCWin ) { return false; }
 
 		std::vector<unicode_t> uri = utf8_to_unicode( m_FileName );
 
-        bool Result = m_NCWin->StartEditor( uri, m_Line, m_Pos );
+		bool Result = m_NCWin->StartEditor( uri, m_Line, m_Pos );
 
-        if ( !Result )
-        {
+		if ( !Result )
+		{
 			printf( "Failed to start editor for %s\n", m_FileName );
 			return false;
 		}
 
-        return Result;
+		return Result;
 	}
 
 private:
@@ -193,25 +193,25 @@ class clCommandlet_ViewFile: public iCommandlet
 {
 public:
 	clCommandlet_ViewFile( const char* FileName, int Line, NCWin* NcWin )
-	 : m_FileName( FileName )
-	 , m_Line( Line )
-	 , m_NCWin( NcWin )
+		: m_FileName( FileName )
+		, m_Line( Line )
+		, m_NCWin( NcWin )
 	{}
 	virtual bool Run() override
 	{
-		if ( !m_NCWin ) return false;
+		if ( !m_NCWin ) { return false; }
 
 		std::vector<unicode_t> uri = utf8_to_unicode( m_FileName );
 
-        bool Result = m_NCWin->StartViewer( uri, m_Line );
+		bool Result = m_NCWin->StartViewer( uri, m_Line );
 
-        if ( !Result )
-        {
+		if ( !Result )
+		{
 			printf( "Failed to start viewer for %s\n", m_FileName );
 			return false;
 		}
 
-        return Result;
+		return Result;
 	}
 
 private:
@@ -224,7 +224,7 @@ std::vector< clPtr<iCommandlet> > g_Applets;
 
 bool ConvertToLinePos( const char* s, int* Line, int* Pos )
 {
-	if ( !Line || !Pos ) return false;
+	if ( !Line || !Pos ) { return false; }
 
 	*Line = 0;
 	*Pos  = 0;
@@ -233,7 +233,7 @@ bool ConvertToLinePos( const char* s, int* Line, int* Pos )
 
 	int NumRead = Lsscanf( s, "%i:%i", &L, &P );
 
-	if ( NumRead != 2 ) return false;
+	if ( NumRead != 2 ) { return false; }
 
 	*Line = L;
 	*Pos  = P;
@@ -254,18 +254,23 @@ bool ParseCommandLine( int argc, char** argv, NCWin* NcWin )
 			ShowHelp();
 			return false;
 		}
+
 #ifndef _WIN32
+
 		if ( !strcmp( argv[i], "--dlg" ) )
 		{
 			createDialogAsChild = false;
 			continue;
 		}
+
 #endif
+
 		if ( !strcmp( argv[i], "--debug-keyboard" ) )
 		{
 			g_DebugKeyboard = true;
 			continue;
 		}
+
 		if ( !strcmp( argv[i], "--edit" ) || !strcmp( argv[i], "-e" ) || !strcmp( argv[i], "/e" ) )
 		{
 			FETCH_ARG_AND_CHECK( i, "Expected file name to edit" );
@@ -321,7 +326,7 @@ void SetHighDPIAware()
 
 		SetProcessDPIAwareFunc SetDPIAware = ( SetProcessDPIAwareFunc )::GetProcAddress( Lib, "SetProcessDPIAware" );
 
-		if ( SetDPIAware ) SetDPIAware();
+		if ( SetDPIAware ) { SetDPIAware(); }
 
 		FreeLibrary( Lib );
 	}
@@ -418,14 +423,17 @@ int main( int argc, char** argv )
 		InitExtensionApp();
 
 #if !defined( _WIN32 )
+
 		// don't bother with this on Windows
-		if ( !ParseCommandLine( argc, argv, &ncWin ) ) return 0;
+		if ( !ParseCommandLine( argc, argv, &ncWin ) ) { return 0; }
+
 #endif
 
 		for ( auto i = g_Applets.begin(); i != g_Applets.end(); i++ )
 		{
-			if ( !(*i)->Run() ) return 0;
+			if ( !( *i )->Run() ) { return 0; }
 		}
+
 		g_Applets.clear();
 
 		AppRun();

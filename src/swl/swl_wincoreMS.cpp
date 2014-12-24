@@ -106,7 +106,7 @@ namespace wal
 
 			if ( w != mouseWindow->GetID() && w != ::GetCapture() )
 			{
-				cevent ev_leave(EV_LEAVE);
+				cevent ev_leave( EV_LEAVE );
 				mouseWindow->Event( &ev_leave );
 			}
 
@@ -585,7 +585,7 @@ namespace wal
 		{
 			int X, Y, W, H;
 
-			if ( !rect || (type == WT_MAIN && ( hints & WH_USEDEFPOS ) != 0) )
+			if ( !rect || ( type == WT_MAIN && ( hints & WH_USEDEFPOS ) != 0 ) )
 			{
 				X = CW_USEDEFAULT;
 				Y = 0;
@@ -685,7 +685,7 @@ namespace wal
 			if ( !visibled ) { Hide(); }
 
 ///
-			if ( type == WT_POPUP || (type == WT_CHILD && parent) )
+			if ( type == WT_POPUP || ( type == WT_CHILD && parent ) )
 			{
 				Win* w = GetWinByID( lastParentFC );
 
@@ -710,47 +710,53 @@ namespace wal
 		::MoveWindow( handle, rect.left, rect.top, rect.Width(), rect.Height(), repaint ? TRUE : FALSE );
 	}
 
-/*
-void Win::SetCapture()
-{
-	if (!captured)
+	/*
+	void Win::SetCapture()
 	{
-		::SetCapture(handle); 
-		captured = true; 
+	   if (!captured)
+	   {
+	      ::SetCapture(handle);
+	      captured = true;
+	   }
 	}
-}
 
-void Win::ReleaseCapture()
-{
-	if (captured && GetCapture() == handle) 
+	void Win::ReleaseCapture()
 	{
-		::ReleaseCapture(); 
+	   if (captured && GetCapture() == handle)
+	   {
+	      ::ReleaseCapture();
+	      captured = false;
+	   }
+	}
+	*/
+
+	bool Win::SetCapture( CaptureSD* sd )
+	{
+		if ( captured ) { return false; }
+
+		HWND h = ::SetCapture( handle );
+		captured = true;
+
+		if ( sd ) { sd->h = h; }
+
+		return true;
+	}
+
+	void Win::ReleaseCapture( CaptureSD* sd )
+	{
+		if ( !captured || GetCapture() != handle ) { return; }
+
 		captured = false;
-	} 
-}
-*/
 
-bool Win::SetCapture(CaptureSD *sd)
-{
-	if (captured) return false;
-
-	HWND h = ::SetCapture(handle); 
-	captured = true;
-	if (sd) sd->h = h;
-
-	return true;
-}
-
-void Win::ReleaseCapture(CaptureSD *sd)
-{
-	if (!captured || GetCapture() != handle) return;
-
-	captured = false;
-	if (sd && sd->h) {
-		::SetCapture(sd->h);
-	} else
-		::ReleaseCapture(); 
-}
+		if ( sd && sd->h )
+		{
+			::SetCapture( sd->h );
+		}
+		else
+		{
+			::ReleaseCapture();
+		}
+	}
 
 	void Win::Activate()
 	{
@@ -1071,7 +1077,7 @@ void Win::ReleaseCapture(CaptureSD *sd)
 
 	void GC::FillRectXor( crect r )
 	{
-		RECT rect = {r.left, r.top, r.right, r.bottom};
+		//RECT rect = {r.left, r.top, r.right, r.bottom};
 		::PatBlt( handle, r.left, r.top, r.Width(), r.Height(), PATINVERT );
 	};
 
@@ -1243,24 +1249,24 @@ void Win::ReleaseCapture(CaptureSD *sd)
 
 		if ( lf.lfPitchAndFamily & FIXED_PITCH ) { uri.push_back( 'F' ); }
 
-		if ( lf.lfItalic == TRUE ) { uri.push_back('I'); }
+		if ( lf.lfItalic == TRUE ) { uri.push_back( 'I' ); }
 
 		switch ( lf.lfWeight )
 		{
 			case FW_BOLD:
-				uri.push_back('B');
+				uri.push_back( 'B' );
 				break;
 
 			case FW_NORMAL:
-				uri.push_back('N');
+				uri.push_back( 'N' );
 				break;
 
 			case FW_LIGHT:
-				uri.push_back('L');
+				uri.push_back( 'L' );
 				break;
 		};
 
-		uri.push_back(0);
+		uri.push_back( 0 );
 
 		return uri;
 	}
@@ -1435,7 +1441,7 @@ void Win::ReleaseCapture(CaptureSD *sd)
 		{
 			if ( !EmptyClipboard() || SetClipboardData( CF_UNICODETEXT, h ) == NULL )
 			{
-				DWORD e = GetLastError();
+				( void )GetLastError();
 				GlobalFree( h );
 			}
 

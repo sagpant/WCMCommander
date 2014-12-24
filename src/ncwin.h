@@ -9,9 +9,9 @@
 #include "swl.h"
 #include "panel.h"
 #ifdef _WIN32
-#	include "w32cons.h"
+#  include "w32cons.h"
 #else
-#	include "termwin.h"
+#  include "termwin.h"
 #endif
 
 #include "ncview.h"
@@ -74,7 +74,7 @@ public:
 	UFStr() { data[0] = 0;}
 	void Set( const unicode_t* s ) { int i; for ( i = 0; i < N - 1 && *s; i++, s++ ) { data[i] = *s; } data[i] = 0; }
 	UFStr( const unicode_t* s ) { Set( s ); }
-	bool Eq( const unicode_t* s ) { int i = 0; while ( (i < N - 1) && data[i] && (data[i] == *s) ) { i++; s++; }; return (data[i] == 0 && *s == 0) || i >= N; }
+	bool Eq( const unicode_t* s ) { int i = 0; while ( ( i < N - 1 ) && data[i] && ( data[i] == *s ) ) { i++; s++; }; return ( data[i] == 0 && *s == 0 ) || i >= N; }
 	unicode_t* Str() { return data; }
 };
 
@@ -332,7 +332,7 @@ private:
 		return _panel == &_leftPanel ? &_rightPanel : &_leftPanel;
 	}
 
-	PanelWin* GetOtherPanel(PanelWin* panel)
+	PanelWin* GetOtherPanel( PanelWin* panel )
 	{
 		return panel == &_leftPanel ? &_rightPanel : &_leftPanel;
 	}

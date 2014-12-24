@@ -26,7 +26,7 @@ namespace FTU
 
 		CharInfo( FT_GlyphSlotRec* p )
 		{
-			pxWidth = ( (p->metrics.horiAdvance + 0x3F) >> 6 );
+			pxWidth = ( ( p->metrics.horiAdvance + 0x3F ) >> 6 );
 			isSpace = !p->bitmap.buffer || p->bitmap.width <= 0 || p->bitmap.rows <= 0;
 		};
 		CharInfo() {}
@@ -316,7 +316,7 @@ namespace FTU
 
 
 		int h = pxHeight;
-		int w = ( (slot->metrics.horiAdvance + 0x3F) >> 6 );
+		int w = ( ( slot->metrics.horiAdvance + 0x3F ) >> 6 );
 
 
 		if ( w <= 0 || h <= 0 ) { return false; }
@@ -499,7 +499,7 @@ namespace FTU
 		{
 			auto iter = ciHash.find( *text );
 
-			CharInfo* pInfo = ( iter == ciHash.end() ) ? nullptr : &(iter->second);
+			CharInfo* pInfo = ( iter == ciHash.end() ) ? nullptr : &( iter->second );
 
 			if ( !pInfo )
 			{
@@ -526,7 +526,7 @@ namespace FTU
 
 		auto i = ciHash.find( c );
 
-		CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &(i->second);
+		CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &( i->second );
 
 		if ( pInfo )
 		{
@@ -574,7 +574,7 @@ namespace FTU
 
 		auto i = ciHash.find( c );
 
-		CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &(i->second);
+		CharInfo* pInfo = ( i == ciHash.end() ) ? nullptr : &( i->second );
 
 		if ( !pInfo )
 		{

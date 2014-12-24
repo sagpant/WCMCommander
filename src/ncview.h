@@ -15,8 +15,8 @@ extern int uiClassViewer;
 
 enum NCViewerInfo
 {
-   CMD_NCVIEW_INFO      = -101,
-   CMD_NCVIEW_CHANGES   = 1
+	CMD_NCVIEW_INFO      = -101,
+	CMD_NCVIEW_CHANGES   = 1
 };
 
 
@@ -167,7 +167,7 @@ public:
 	int GetCharsetId() {return charset->id;}
 	int GetPercent();
 	int GetCol();
-	void SetCol(int Col);
+	void SetCol( int Col );
 
 	FSString Uri();
 	bool Search( const unicode_t* str, bool sensitive );

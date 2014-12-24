@@ -13,8 +13,8 @@ class iContainerListWin: public VListWin
 {
 public:
 	iContainerListWin( Win* parent, std::vector<ContainerItemType>* Items )
-	 : VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
-	 , m_ItemList( Items )
+		: VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
+		, m_ItemList( Items )
 	{
 		wal::GC gc( this );
 		gc.Set( GetFont() );
@@ -43,15 +43,19 @@ public:
 	const ContainerItemType* GetCurrentData( ) const
 	{
 		int n = GetCurrent( );
-		if ( n < 0 || n >= (int)m_ItemList->size() ) { return nullptr; }
-		return &( m_ItemList->at(n) );
+
+		if ( n < 0 || n >= ( int )m_ItemList->size() ) { return nullptr; }
+
+		return &( m_ItemList->at( n ) );
 	}
 
 	ContainerItemType* GetCurrentData( )
 	{
 		int n = GetCurrent( );
-		if ( n < 0 || n >= (int)m_ItemList->size() ) { return nullptr; }
-		return &( m_ItemList->at(n) );
+
+		if ( n < 0 || n >= ( int )m_ItemList->size() ) { return nullptr; }
+
+		return &( m_ItemList->at( n ) );
 	}
 
 	void Ins( const ContainerItemType& p )
@@ -82,7 +86,7 @@ public:
 
 		if ( n < 0 || n >= ( int )m_ItemList->size( ) ) { return; }
 
-		m_ItemList->at(n) = p;
+		m_ItemList->at( n ) = p;
 		CalcScroll();
 		Invalidate();
 	}

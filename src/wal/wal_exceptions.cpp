@@ -28,7 +28,7 @@ namespace wal
 
 
 #ifdef _WIN32
-#	define vsnprintf _vsnprintf
+#  define vsnprintf _vsnprintf
 #endif
 
 #if defined(_WIN32) && !defined( __GNUC__ )

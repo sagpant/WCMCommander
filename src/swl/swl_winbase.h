@@ -20,13 +20,13 @@ namespace wal
 
 	enum BASE_COMMANDS
 	{
-	   _CMD_BASE_BEGIN_POINT_ = -99,
-	   CMD_ITEM_CLICK,      //может случаться в объектах с подэлементами при нажатии enter или doubleclick (например VList)
-	   CMD_ITEM_CHANGED,
-	   CMD_SBUTTON_INFO, //with subcommands
-	   CMD_SCROLL_INFO,     //with subcommands
-	   CMD_MENU_INFO,    //with subcommands
-	   CMD_EDITLINE_INFO //with subcommands
+		_CMD_BASE_BEGIN_POINT_ = -99,
+		CMD_ITEM_CLICK,      //может случаться в объектах с подэлементами при нажатии enter или doubleclick (например VList)
+		CMD_ITEM_CHANGED,
+		CMD_SBUTTON_INFO, //with subcommands
+		CMD_SCROLL_INFO,     //with subcommands
+		CMD_MENU_INFO,    //with subcommands
+		CMD_EDITLINE_INFO //with subcommands
 	};
 
 	void BaseInit();
@@ -35,7 +35,7 @@ namespace wal
 	extern unicode_t ABCString[];
 	extern int ABCStringLen;
 
-	// Menu text that is split to 3 parts by hot key. 
+	// Menu text that is split to 3 parts by hot key.
 	// The hot key character is prepended by '&', like in Windows menu
 	class MenuTextInfo
 	{
@@ -44,26 +44,28 @@ namespace wal
 		unicode_t* strAfterHk;
 		unicode_t* strFull; // required to calculate text extents quickly
 		unicode_t hotkeyUpperCase;
-		void ParseHkText(const unicode_t* inStr);
+		void ParseHkText( const unicode_t* inStr );
 		void Clear();
-		void Init(const MenuTextInfo& src);
+		void Init( const MenuTextInfo& src );
 	public:
-		explicit MenuTextInfo(const unicode_t* inStr);
-		MenuTextInfo() :strBeforeHk(0), strHk(0), strAfterHk(0), strFull(0), hotkeyUpperCase(0) {}
-		MenuTextInfo(const MenuTextInfo& src) { Init(src); }
-		MenuTextInfo& operator=(const MenuTextInfo& src){ Clear(); Init(src); return *this; };
+		explicit MenuTextInfo( const unicode_t* inStr );
+		MenuTextInfo() : strBeforeHk( 0 ), strHk( 0 ), strAfterHk( 0 ), strFull( 0 ), hotkeyUpperCase( 0 ) {}
+		MenuTextInfo( const MenuTextInfo& src ) { Init( src ); }
+		MenuTextInfo& operator=( const MenuTextInfo& src ) { Clear(); Init( src ); return *this; };
 		~MenuTextInfo() { Clear(); }
 
-		void SetText(const unicode_t* inStr);
-		void DrawItem(GC& gc, int x, int y, int color_text, int color_hotkey) const;
-		cpoint GetTextExtents(GC& gc, cfont* font = 0) const
+		void SetText( const unicode_t* inStr );
+		void DrawItem( GC& gc, int x, int y, int color_text, int color_hotkey ) const;
+		cpoint GetTextExtents( GC& gc, cfont* font = 0 ) const
 		{
-			if (strFull == 0) return cpoint(0, 0);
-			if (font)  gc.Set(font);
-			return gc.GetTextExtents(strFull);
+			if ( strFull == 0 ) { return cpoint( 0, 0 ); }
+
+			if ( font ) { gc.Set( font ); }
+
+			return gc.GetTextExtents( strFull );
 		}
 		int isEmpty() const { return strFull == 0; }
-		bool isHotkeyMatching(unicode_t charUpperCase) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
+		bool isHotkeyMatching( unicode_t charUpperCase ) const { return hotkeyUpperCase != 0 && charUpperCase == hotkeyUpperCase; }
 	};
 
 	class Button: public Win
@@ -74,7 +76,7 @@ namespace wal
 		clPtr<cicon> m_Icon;
 		int          m_CommandId;
 		bool         m_ShowIcon;
-		
+
 		bool HasIcon() const { return m_Icon.ptr() && m_ShowIcon; }
 		void SendCommand() { Command( m_CommandId, 0, this, 0 ); }
 	public:
@@ -85,7 +87,7 @@ namespace wal
 		virtual bool EventFocus( bool recv );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
-		virtual Win* IsHisHotKey(cevent_key* pEvent);
+		virtual Win* IsHisHotKey( cevent_key* pEvent );
 		virtual void OnChangeStyles();
 		virtual void SetShowIcon( bool Show ) { m_ShowIcon = Show; }
 		virtual int UiGetClassId();
@@ -94,9 +96,9 @@ namespace wal
 
 	enum SButtonInfo
 	{
-	   // subcommands of CMD_SBUTTON_INFO
-	   SCMD_SBUTTON_CHECKED = 1,
-	   SCMD_SBUTTON_CLEARED = 0
+		// subcommands of CMD_SBUTTON_INFO
+		SCMD_SBUTTON_CHECKED = 1,
+		SCMD_SBUTTON_CLEARED = 0
 	};
 
 //Checkbox and Radiobutton
@@ -183,8 +185,8 @@ namespace wal
 
 	enum EditLineCmd
 	{
-	   // subcommands of CMD_EDITLINE_INFO
-	   SCMD_EDITLINE_CHANGED = 100
+		// subcommands of CMD_EDITLINE_INFO
+		SCMD_EDITLINE_CHANGED = 100
 	};
 
 	class clValidator: public iIntrusiveCounter
@@ -203,7 +205,8 @@ namespace wal
 	class EditLine: public Win
 	{
 	public:
-		enum FLAGS {
+		enum FLAGS
+		{
 			USEPARENTFOCUS = 1,
 			READONLY = 2
 		};
@@ -211,7 +214,7 @@ namespace wal
 	private:
 		bool _use_alt_symbols;
 		unsigned _flags;
-		bool RO() const { return (_flags & READONLY) != 0; }
+		bool RO() const { return ( _flags & READONLY ) != 0; }
 		EditBuf text;
 		int _chars;
 		bool cursorVisible;
@@ -239,7 +242,7 @@ namespace wal
 		virtual void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
 	public:
 		EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true, unsigned flags = 0 );
-		void SetAcceptAltKeys(){ doAcceptAltKeys = true; }
+		void SetAcceptAltKeys() { doAcceptAltKeys = true; }
 		virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
 		virtual bool EventKey( cevent_key* pEvent );
@@ -259,7 +262,7 @@ namespace wal
 		void SetShowSpaces( bool enable = true ) { showSpaces = enable; Invalidate(); }
 		virtual int UiGetClassId();
 		virtual void OnChangeStyles();
-		void EnableAltSymbols(bool e){ _use_alt_symbols = e; }
+		void EnableAltSymbols( bool e ) { _use_alt_symbols = e; }
 		virtual ~EditLine();
 		void SetValidator( clPtr<clValidator> Validator ) { m_Validator = Validator; }
 	};
@@ -283,7 +286,7 @@ namespace wal
 		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = 0, ALIGN al = LEFT, int w = -1 );
 		virtual void Paint( GC& gc, const crect& paintRect );
 		//void SetText( const unicode_t* txt ) { text.SetText(txt) ; Invalidate(); }
-		void SetText(const unicode_t* txt) { text = wal::new_unicode_str(txt); Invalidate(); }
+		void SetText( const unicode_t* txt ) { text = wal::new_unicode_str( txt ); Invalidate(); }
 		virtual int UiGetClassId();
 	};
 
@@ -294,28 +297,28 @@ namespace wal
 		MenuTextInfo text;
 		Win* master;
 	public:
-		StaticLabel(int nId, Win* parent, const unicode_t* txt, Win* _master = 0, crect* rect = 0);
-		virtual void Paint(GC& gc, const crect& paintRect);
-		virtual Win* IsHisHotKey(cevent_key* pEvent);
+		StaticLabel( int nId, Win* parent, const unicode_t* txt, Win* _master = 0, crect* rect = 0 );
+		virtual void Paint( GC& gc, const crect& paintRect );
+		virtual Win* IsHisHotKey( cevent_key* pEvent );
 		virtual int UiGetClassId();
 	};
 
 
 	enum ScrollCmd
 	{
-	   //subcommands of CMD_SCROLL_INFO
-	   SCMD_SCROLL_VCHANGE = 1,
-	   SCMD_SCROLL_HCHANGE,
+		//subcommands of CMD_SCROLL_INFO
+		SCMD_SCROLL_VCHANGE = 1,
+		SCMD_SCROLL_HCHANGE,
 
-	   SCMD_SCROLL_LINE_UP,
-	   SCMD_SCROLL_LINE_DOWN,
-	   SCMD_SCROLL_LINE_LEFT,
-	   SCMD_SCROLL_LINE_RIGHT,
-	   SCMD_SCROLL_PAGE_UP,
-	   SCMD_SCROLL_PAGE_DOWN,
-	   SCMD_SCROLL_PAGE_LEFT,
-	   SCMD_SCROLL_PAGE_RIGHT,
-	   SCMD_SCROLL_TRACK
+		SCMD_SCROLL_LINE_UP,
+		SCMD_SCROLL_LINE_DOWN,
+		SCMD_SCROLL_LINE_LEFT,
+		SCMD_SCROLL_LINE_RIGHT,
+		SCMD_SCROLL_PAGE_UP,
+		SCMD_SCROLL_PAGE_DOWN,
+		SCMD_SCROLL_PAGE_LEFT,
+		SCMD_SCROLL_PAGE_RIGHT,
+		SCMD_SCROLL_TRACK
 	};
 
 	struct ScrollInfo
@@ -325,16 +328,16 @@ namespace wal
 		seek_t m_Pos;
 		bool   m_AlwaysHidden;
 		ScrollInfo()
-		 : m_Size( 0 )
-		 , m_PageSize( 0 )
-		 , m_Pos( 0 )
-		 , m_AlwaysHidden( false )
+			: m_Size( 0 )
+			, m_PageSize( 0 )
+			, m_Pos( 0 )
+			, m_AlwaysHidden( false )
 		{}
 		ScrollInfo( seek_t _size, seek_t _pageSize, seek_t _pos )
-		 : m_Size( _size )
-		 , m_PageSize( _pageSize )
-		 , m_Pos( _pos )
-		 , m_AlwaysHidden( false )
+			: m_Size( _size )
+			, m_PageSize( _pageSize )
+			, m_Pos( _pos )
+			, m_AlwaysHidden( false )
 		{}
 		bool operator==( const ScrollInfo& o )
 		{
@@ -497,9 +500,9 @@ namespace wal
 
 	enum CmdMenuInfo
 	{
-	   //subcommands of CMD_MENU_INFO
-	   SCMD_MENU_CANCEL = 0,
-	   SCMD_MENU_SELECT = 1
+		//subcommands of CMD_MENU_INFO
+		SCMD_MENU_CANCEL = 0,
+		SCMD_MENU_SELECT = 1
 	};
 
 	class PopupMenu;
@@ -520,7 +523,7 @@ namespace wal
 			MenuData* sub;
 			//Node(): type( 0 ), sub( 0 ) {}
 			Node( int _type, int _id, const unicode_t* s,  const unicode_t* rt, MenuData* _sub )
-				: type(_type), id(_id), leftText(s), sub(_sub)
+				: type( _type ), id( _id ), leftText( s ), sub( _sub )
 			{
 				//if ( s ) { leftText = new_unicode_str( s ); }
 
@@ -587,7 +590,7 @@ namespace wal
 			//std::vector<unicode_t> text;
 			MenuTextInfo text;
 			MenuData* data;
-			Node(MenuTextInfo _text, MenuData* _data) : text(_text), data(_data){}
+			Node( MenuTextInfo _text, MenuData* _data ) : text( _text ), data( _data ) {}
 		};
 
 		wal::ccollect<Node> list;
@@ -624,70 +627,73 @@ namespace wal
 
 ////////////////////////// ComboBox
 
-class ComboBox:public Win {
-public:
-	enum FLAGS {
-		MODE_UP  = 1,
-		READONLY = 2,
-		FRAME3D  = 4,
-		NOFOCUSFRAME = 8
+	class ComboBox: public Win
+	{
+	public:
+		enum FLAGS
+		{
+			MODE_UP  = 1,
+			READONLY = 2,
+			FRAME3D  = 4,
+			NOFOCUSFRAME = 8
+		};
+	private:
+		unsigned _flags;
+		CaptureSD captureSD;
+		Layout _lo;
+		struct Node
+		{
+			std::vector<unicode_t> text;
+			void* data;
+		};
+		EditLine _edit;
+		crect _buttonRect;
+		ccollect<Node, 0x100> _list;
+		clPtr<TextList> _box;
+		int _cols;
+		int _rows;
+		int _current;
+
+	protected:
+		void OpenBox();
+		void RefreshBox();
+
+		bool IsEditLine( Win* w ) const { return w == &_edit; }
+
+	public:
+		ComboBox( int nId, Win* parent, int cols, int rows, unsigned flags = 0,  crect* rect = 0 );
+		virtual void Paint( GC& gc, const crect& paintRect );
+		virtual bool EventMouse( cevent_mouse* pEvent );
+		virtual bool EventKey( cevent_key* pEvent );
+		virtual bool EventFocus( bool recv );
+		virtual bool Command( int id, int subId, Win* win, void* d );
+		virtual void OnChangeStyles();
+		virtual int UiGetClassId();
+		void Clear();
+		void Append( const unicode_t* text, void* data = 0 );
+		void Append( const char* text, void* data = 0 );
+
+		std::vector<unicode_t> GetText() const;
+		void SetText( const unicode_t* txt, bool mark = false );
+		void InsertText( unicode_t t );
+		void InsertText( const unicode_t* txt );
+		int GetCursorPos() { return _edit.GetCursorPos(); }
+		void SetCursorPos( int c, bool mark = false ) { _edit.SetCursorPos( c, mark ); }
+
+
+		int Count() const { return _list.count(); }
+		int Current() const { return _current; }
+		const unicode_t* ItemText( int n );
+
+		void* ItemData( int n );
+		void MoveCurrent( int n );
+		bool IsBoxOpened() { return _box.ptr() != 0; }
+		void CloseBox();
+		virtual bool OnOpenBox();
+		virtual void OnCloseBox();
+
+		virtual ~ComboBox();
 	};
-private:
-	unsigned _flags;
-	CaptureSD captureSD;
-	Layout _lo;
-	struct Node {
-		std::vector<unicode_t> text;
-		void *data;
-	};
-	EditLine _edit;
-	crect _buttonRect;
-	ccollect<Node, 0x100> _list;
-	clPtr<TextList> _box;
-	int _cols;
-	int _rows;
-	int _current;
-
-protected:
-	void OpenBox();
-	void RefreshBox();
-	
-	bool IsEditLine(Win *w) const { return w == &_edit; }
-
-public:
-	ComboBox(int nId, Win *parent, int cols, int rows, unsigned flags = 0,  crect *rect = 0);
-	virtual void Paint(GC &gc, const crect &paintRect);
-	virtual bool EventMouse(cevent_mouse* pEvent);
-	virtual bool EventKey(cevent_key* pEvent);
-	virtual bool EventFocus(bool recv);
-	virtual bool Command(int id, int subId, Win *win, void *d);
-	virtual void OnChangeStyles();
-	virtual int UiGetClassId();
-	void Clear();
-	void Append(const unicode_t *text, void *data = 0);
-	void Append(const char *text, void *data = 0);
-
-	std::vector<unicode_t> GetText() const;
-	void SetText(const unicode_t *txt, bool mark = false);
-	void InsertText(unicode_t t);
-	void InsertText(const unicode_t *txt);
-	int GetCursorPos(){ return _edit.GetCursorPos(); }
-	void SetCursorPos(int c, bool mark = false){ _edit.SetCursorPos(c, mark); }
-
-
-	int Count() const { return _list.count(); }
-	int Current() const { return _current; }
-	const unicode_t* ItemText(int n);
-	
-	void * ItemData(int n);
-	void MoveCurrent(int n);
-	bool IsBoxOpened(){ return _box.ptr()!=0; }
-	void CloseBox();
-	virtual bool OnOpenBox();
-	virtual void OnCloseBox();
-	
-	virtual ~ComboBox();
-};
 
 //ToolTip один на все приложение, поэтому установка нового, удаляет предыдущий
 	void ToolTipShow( Win* w, int x, int y, const unicode_t* s );

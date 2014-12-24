@@ -5,7 +5,7 @@
  */
 
 #ifdef _WIN32
-#	include <winsock2.h>
+#  include <winsock2.h>
 #endif
 
 #include <time.h>
@@ -17,10 +17,10 @@
 
 enum
 {
-   CMD_ALL = 200,
-   CMD_SKIP,
-   CMD_SKIPALL,
-   CMD_RETRY
+	CMD_ALL = 200,
+	CMD_SKIP,
+	CMD_SKIPALL,
+	CMD_RETRY
 };
 
 #define MkDirMode  (S_IRWXU | S_IRGRP | S_IROTH | S_IXGRP | S_IXOTH)
@@ -183,9 +183,10 @@ void OperRDThread::Run()
 
 	int havePostponedStatError = 0;
 	FSString postponedStrError;
-	while (true)
+
+	while ( true )
 	{
-		if (!(fs->Flags() & FS::HAVE_SYMLINK))
+		if ( !( fs->Flags() & FS::HAVE_SYMLINK ) )
 		{
 			break;
 		}
@@ -194,13 +195,14 @@ void OperRDThread::Run()
 
 		// if path is inaccessible, try .. path. Throw the exception later
 		// This makes panel at least having some valid folder
-		while (fs->Stat(path, &st, &ret_err, Info()))
+		while ( fs->Stat( path, &st, &ret_err, Info() ) )
 		{
 			havePostponedStatError = 1;
-			postponedStrError = fs->StrError(ret_err);
-			if (!path.IsAbsolute() || path.Count() <=1 || !path.Pop())
+			postponedStrError = fs->StrError( ret_err );
+
+			if ( !path.IsAbsolute() || path.Count() <= 1 || !path.Pop() )
 			{
-				throw_msg("%s", postponedStrError.GetUtf8());
+				throw_msg( "%s", postponedStrError.GetUtf8() );
 			}
 		}
 
@@ -231,15 +233,17 @@ void OperRDThread::Run()
 	clPtr<FSList> list = new FSList;
 
 	int havePostponedReadError = 0;
+
 	// if directory is not readable, try .. path. Throw the exception later
 	// "Stat" call above does not catch this: it checks only folder existence, but not accessibilly
-	while (fs->ReadDir(list.ptr(), path, &ret_err, Info()))
+	while ( fs->ReadDir( list.ptr(), path, &ret_err, Info() ) )
 	{
 		havePostponedReadError = 1;
-		postponedStrError = fs->StrError(ret_err);
-		if (!path.IsAbsolute() || path.Count() <= 1 || !path.Pop())
+		postponedStrError = fs->StrError( ret_err );
+
+		if ( !path.IsAbsolute() || path.Count() <= 1 || !path.Pop() )
 		{
-			throw_msg("%s", postponedStrError.GetUtf8());
+			throw_msg( "%s", postponedStrError.GetUtf8() );
 		}
 	}
 
@@ -260,7 +264,8 @@ void OperRDThread::Run()
 	data->path = path;
 	data->executed = true;
 	data->vst = vst;
-	if (havePostponedReadError || havePostponedStatError)
+
+	if ( havePostponedReadError || havePostponedStatError )
 	{
 		data->nonFatalErrorString = postponedStrError;
 	}
@@ -313,7 +318,7 @@ void ReadDirThreadFunc( OperThreadNode* node )
 
 enum InfoSignal
 {
-   INFO_NEXTFILE = 2
+	INFO_NEXTFILE = 2
 };
 
 
@@ -342,13 +347,13 @@ public:
 	volatile bool progressChanged;
 	volatile int64_t infoSize;
 	volatile int64_t infoProgress;
-	volatile unsigned infoMs; //for calculating copy speed 
+	volatile unsigned infoMs; //for calculating copy speed
 	volatile int64_t infoBytes; //
 
 	OperCFData( NCDialogParent* p )
 		:  OperData( p ), executed( false ),
 		   pathChanged( false ), infoCount( 0 ), progressChanged( false ),
-		   infoSize( 0 ), infoProgress( 0 ), infoMs(0), infoBytes(0) {}
+		   infoSize( 0 ), infoProgress( 0 ), infoMs( 0 ), infoBytes( 0 ) {}
 
 	void Clear()
 	{
@@ -773,8 +778,8 @@ bool OperCFThread::SendProgressInfo( int64_t size, int64_t progress, int64_t byt
 }
 
 OperFileNameWin::OperFileNameWin( Win* parent, int ccount )
- : Win( Win::WT_CHILD, 0, parent, 0 )
- , _ccount( ccount )
+	: Win( Win::WT_CHILD, 0, parent, 0 )
+	, _ccount( ccount )
 {
 	wal::GC gc( this );
 	cpoint size = GetStaticTextExtent( gc, ABCString, GetFont() );
@@ -994,13 +999,15 @@ class CopyDialog: public SimpleCFThreadWin
 	NCNumberWin _countWin;
 	NCProgressWin _progressWin;
 	StaticLine _speedStr;
-	enum {
+	enum
+	{
 		SPEED_NODE_COUNT = 10
 	};
-	struct SpeedNode {
+	struct SpeedNode
+	{
 		unsigned deltaMs;
 		int64_t bytes;
-		SpeedNode():deltaMs(0), bytes(0){}
+		SpeedNode(): deltaMs( 0 ), bytes( 0 ) {}
 	} _speedList[SPEED_NODE_COUNT];
 
 	unsigned _lastMs;
@@ -1016,8 +1023,8 @@ public:
 		   _to( this ),
 		   _countWin( this ),
 		   _progressWin( this ),
-		  _speedStr( uiValue, this, 0, 0, StaticLine::LEFT, 10 ),
-		  _lastMs( GetTickMiliseconds() )
+		   _speedStr( uiValue, this, 0, 0, StaticLine::LEFT, 10 ),
+		   _lastMs( GetTickMiliseconds() )
 	{
 		_layout.AddWin( &_text1, 0, 0, 0, 1 );
 		_layout.AddWin( &_from, 1, 0, 1, 1 );
@@ -1041,14 +1048,15 @@ public:
 		_countWin.Enable();
 		_progressWin.Show();
 		_progressWin.Enable();
-		_speedStr.Show(); _speedStr.Enable();
+		_speedStr.Show();
+		_speedStr.Enable();
 		AddLayout( &_layout );
-		SetTimer(1, 1000);
+		SetTimer( 1, 1000 );
 		SetPosition();
 	}
 
 	virtual void OperThreadSignal( int info );
-	virtual void EventTimer(int tid);
+	virtual void EventTimer( int tid );
 	virtual ~CopyDialog();
 };
 
@@ -1056,74 +1064,81 @@ public:
 #define MEG (int64_t(1024)*1024)
 #define KIL (int64_t(1024))
 
-static char* GetSmallPrintableSpeedStr(char buf[64], int64_t size)
+static char* GetSmallPrintableSpeedStr( char buf[64], int64_t size )
 {
 	char str[16];
 	str[0] = 0;
-	
+
 	int64_t num = size;
 	int mod = 0;
-	
-	if (num >= GIG)//:)
+
+	if ( num >= GIG ) //:)
 	{
-		mod = (num % GIG)/(GIG/10);
+		mod = ( num % GIG ) / ( GIG / 10 );
 		num /= GIG;
-		str[0] =' ';
-		str[1] ='G';
-		str[2] ='b';
-		str[3] ='/';
-		str[4] ='s';
-		str[5] =0;
-	} else 
-	if (num >= MEG)
+		str[0] = ' ';
+		str[1] = 'G';
+		str[2] = 'b';
+		str[3] = '/';
+		str[4] = 's';
+		str[5] = 0;
+	}
+	else if ( num >= MEG )
 	{
-		mod = (num % MEG)/(MEG/10);
+		mod = ( num % MEG ) / ( MEG / 10 );
 		num /= MEG;
-		str[0] =' ';
-		str[1] ='M';
-		str[2] ='b';
-		str[3] ='/';
-		str[4] ='s';
-		str[5] =0;
-	} else 
-	if (num >= KIL)
+		str[0] = ' ';
+		str[1] = 'M';
+		str[2] = 'b';
+		str[3] = '/';
+		str[4] = 's';
+		str[5] = 0;
+	}
+	else if ( num >= KIL )
 	{
-		mod = (num % KIL)/(KIL/10);
+		mod = ( num % KIL ) / ( KIL / 10 );
 		num /= KIL;
-		str[0] =' ';
-		str[1] ='K';
-		str[2] ='b';
-		str[3] ='/';
-		str[4] ='s';
-		str[5] =0;
-	} else mod = -1;
-	
+		str[0] = ' ';
+		str[1] = 'K';
+		str[2] = 'b';
+		str[3] = '/';
+		str[4] = 's';
+		str[5] = 0;
+	}
+	else { mod = -1; }
+
 
 	char dig[64];
-	char *t = unsigned_to_char<int64_t>(num, dig);
-	if (mod>=0) { t--; t[0]='.'; t[1]=mod+'0'; t[2]=0; }
-	
-	char *us = buf;
-	for (char *s = dig; *s; s++)
-		*(us++) = *s;
-	
-	for (char *t = str; *t; t++)
-		*(us++) = *t;
-		
+	char* t = unsigned_to_char<int64_t>( num, dig );
+
+	if ( mod >= 0 ) { t--; t[0] = '.'; t[1] = mod + '0'; t[2] = 0; }
+
+	char* us = buf;
+
+	for ( char* s = dig; *s; s++ )
+	{
+		*( us++ ) = *s;
+	}
+
+	for ( char* t = str; *t; t++ )
+	{
+		*( us++ ) = *t;
+	}
+
 	*us = 0;
-	
+
 	return buf;
 }
 
-void CopyDialog::EventTimer(int tid)
+void CopyDialog::EventTimer( int tid )
 {
-	if (tid == 1)
+	if ( tid == 1 )
 	{
 		unsigned ms = 0;
 		int64_t bytes = 0;
 
 		{
-			MutexLock lock(&threadData.infoMutex);
+			MutexLock lock( &threadData.infoMutex );
 			ms = threadData.infoMs;
 			bytes = threadData.infoBytes;
 			threadData.infoBytes = 0;
@@ -1132,22 +1147,29 @@ void CopyDialog::EventTimer(int tid)
 
 		//shift
 		int i;
-		for (i = SPEED_NODE_COUNT-1; i>0; i--) 
-			_speedList[i] = _speedList[i-1];
+
+		for ( i = SPEED_NODE_COUNT - 1; i > 0; i-- )
+		{
+			_speedList[i] = _speedList[i - 1];
+		}
 
 		_speedList[0].bytes = bytes;
 
-		if (bytes > 0) {
+		if ( bytes > 0 )
+		{
 			unsigned n = ms - _lastMs;
 			_speedList[0].deltaMs = n > 1000000 ? 0 : n;
 			_lastMs = ms;
-		} else
+		}
+		else
+		{
 			_speedList[0].deltaMs = 0;
+		}
 
 		int64_t sumBytes = 0;
 		int64_t sumMs = 0;
 
-		for (i = 0; i<SPEED_NODE_COUNT; i++)
+		for ( i = 0; i < SPEED_NODE_COUNT; i++ )
 		{
 			sumMs += _speedList[i].deltaMs;
 			sumBytes += _speedList[i].bytes;
@@ -1155,13 +1177,13 @@ void CopyDialog::EventTimer(int tid)
 
 		int64_t speed = 0;
 
-		if (sumMs > 0 && sumBytes > 0)
+		if ( sumMs > 0 && sumBytes > 0 )
 		{
-			speed = (sumBytes*1000)/sumMs;
+			speed = ( sumBytes * 1000 ) / sumMs;
 		}
 
 		char buf[64];
-		_speedStr.SetText( utf8_to_unicode( GetSmallPrintableSpeedStr(buf, speed) ).data() );
+		_speedStr.SetText( utf8_to_unicode( GetSmallPrintableSpeedStr( buf, speed ) ).data() );
 
 		return;
 	}

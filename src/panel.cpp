@@ -7,7 +7,7 @@
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
 #if !defined(_MSC_VER) || _MSC_VER >= 1700
-#	include <inttypes.h>
+#  include <inttypes.h>
 #endif
 #include "globals.h"
 #include "wcm-config.h"
@@ -40,7 +40,7 @@ PanelSearchWin::PanelSearchWin( PanelWin* parent, cevent_key* key )
 	   _edit( 0, this, 0, 0, 16, true ),
 	   _static( 0, this, utf8_to_unicode( _LT( "Search:" ) ).data() ),
 	   _lo( 3, 4 ),
-		ret_key( 0, 0, 0, 0, 0, false )
+	   ret_key( 0, 0, 0, 0, 0, false )
 {
 	_edit.SetAcceptAltKeys();
 	_lo.AddWin( &_static, 1, 1 );
@@ -123,17 +123,17 @@ bool PanelSearchWin::EventKey( cevent_key* pEvent )
 	return EventChildKey( 0, pEvent );
 }
 
-void PanelSearchWin::EndSearch(cevent_key* pEvent)
+void PanelSearchWin::EndSearch( cevent_key* pEvent )
 {
-	EndModal(0);
+	EndModal( 0 );
 
-	if (pEvent)
+	if ( pEvent )
 	{
 		ret_key = *pEvent;
 	}
 	else
 	{
-		ret_key = cevent_key(0, 0, 0, 0, 0, false);
+		ret_key = cevent_key( 0, 0, 0, 0, 0, false );
 	}
 }
 
@@ -193,7 +193,7 @@ bool PanelSearchWin::EventChildKey( Win* child, cevent_key* pEvent )
 		case VK_BACK:
 		case VK_DELETE:
 
-			// this comes from 0xfe08 XK_ISO_Next_Group, workaround for https://github.com/corporateshark/WalCommander/issues/22
+		// this comes from 0xfe08 XK_ISO_Next_Group, workaround for https://github.com/corporateshark/WalCommander/issues/22
 		case 0xfe08:
 			return false;
 
@@ -937,9 +937,9 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	if ( p )
 	{
-		for (const auto& i : Rules)
+		for ( const auto& i : Rules )
 		{
-			if ( i.IsRulePassed(p->GetUnicodeName(), p->Size(), 0) )
+			if ( i.IsRulePassed( p->GetUnicodeName(), p->Size(), 0 ) )
 			{
 				if ( active )
 				{
@@ -951,6 +951,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 					color_bg = i.GetColorNormalBackground();
 					color_text = i.GetColorNormal();
 				}
+
 				break;
 			}
 		}
@@ -979,6 +980,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	int x = rect.left + 7; //5;
 	int y = rect.top;
+	int IconY = y + ( rect.Height() - folderIcon.Height() ) / 2;
 
 	gc.SetTextColor( color_text );
 
@@ -989,21 +991,21 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 			switch ( p->extType )
 			{
 				case FSNode::SERVER:
-					serverIcon.DrawF( gc, x, y );
+					serverIcon.DrawF( gc, x, IconY );
 					break;
 
 				case FSNode::WORKGROUP:
-					workgroupIcon.DrawF( gc, x, y );
+					workgroupIcon.DrawF( gc, x, IconY );
 					break;
 
 				default:
 					if ( ( ( ( color_bg >> 16 ) & 0xFF ) + ( ( color_bg >> 8 ) & 0xFF ) + ( color_bg & 0xFF ) ) < 0x80 * 3 )
 					{
-						folderIcon.DrawF( gc, x, y );
+						folderIcon.DrawF( gc, x, IconY );
 					}
 					else
 					{
-						folderIconHi.DrawF( gc, x, y );
+						folderIconHi.DrawF( gc, x, IconY );
 					}
 			};
 		}
@@ -1017,7 +1019,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	{
 		if ( g_WcmConfig.panelShowExecutableIcons )
 		{
-			executableIcon.DrawF( gc, x, y );
+			executableIcon.DrawF( gc, x, IconY );
 		}
 		else
 		{
@@ -1028,7 +1030,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	{
 		if ( g_WcmConfig.panelShowLinkIcons )
 		{
-			linkIcon.DrawF( gc, x, y );
+			linkIcon.DrawF( gc, x, IconY );
 		}
 		else
 		{
@@ -1214,11 +1216,13 @@ void PanelWin::SetCurrent( int n, bool Shift, LPanelSelectionType* SelectType, b
 			{
 				LPanelSelectionType* SType = SelectType;
 				LPanelSelectionType  LastSelection = LPanelSelectionType_Disable;
+
 				// the last line should be selected only in specific cases
 				if ( count == 0 )
 				{
 					SType = SelectLast ? SelectType : &LastSelection;
 				}
+
 				_list.ShiftSelection( i, SType, HideDotsInDir() );
 			}
 		}
@@ -1250,6 +1254,7 @@ void PanelWin::SetCurrent( int n, bool Shift, LPanelSelectionType* SelectType, b
 			fullRedraw = true;
 		}
 	}
+
 	SetScroll();
 
 	if ( fullRedraw )
@@ -1359,13 +1364,13 @@ void PanelWin::DrawFooter( wal::GC& gc )
 		if ( FreeSpace >= 0 )
 		{
 			char Num[128];
-			Lsnprintf( Num, sizeof(Num), _LT( "%" PRId64 ), FreeSpace );
+			Lsnprintf( Num, sizeof( Num ), _LT( "%" PRId64 ), FreeSpace );
 
 			char SplitNum[128];
 			SplitNumber_3( Num, SplitNum );
 
 			char b[128];
-			Lsnprintf( b, sizeof(b), _LT( "%s" ), SplitNum );
+			Lsnprintf( b, sizeof( b ), _LT( "%s" ), SplitNum );
 
 			unicode_t ub[512];
 			utf8_to_unicode( ub, b );
@@ -1395,17 +1400,17 @@ void PanelWin::DrawFooter( wal::GC& gc )
 
 		char b3[0x100] = "";
 
-		if ( hiddenCount ) { Lsnprintf( b3, sizeof(b3), _LT( "(%i hidden)" ), hiddenCount ); }
+		if ( hiddenCount ) { Lsnprintf( b3, sizeof( b3 ), _LT( "(%i hidden)" ), hiddenCount ); }
 
 		char b2[128];
 
 		if ( selectedCn.count )
 		{
-			Lsnprintf( b2, sizeof(b2), _LT( ( selectedCn.count == 1 ) ? "%s bytes in %i file" : "%s bytes in %i files" ), b11, selectedCn.count );
+			Lsnprintf( b2, sizeof( b2 ), _LT( ( selectedCn.count == 1 ) ? "%s bytes in %i file" : "%s bytes in %i files" ), b11, selectedCn.count );
 		}
 		else
 		{
-			Lsnprintf( b2, sizeof(b2), _LT( "%s (%i) %s" ), b11, filesCn.count, b3 );
+			Lsnprintf( b2, sizeof( b2 ), _LT( "%s (%i) %s" ), b11, filesCn.count, b3 );
 		}
 
 
@@ -1676,7 +1681,7 @@ void PanelWin::LoadPathStringSafe( const char* path )
 {
 	if ( !path || !*path ) { return; }
 
-    dbg_printf("PanelWin::LoadPathStringSafe path=%s\n",path);
+	dbg_printf( "PanelWin::LoadPathStringSafe path=%s\n", path );
 	FSPath fspath;
 
 	clPtr<FS> fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, 0, 0 );
@@ -1693,7 +1698,7 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 //	int err;
 
 //	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;
-    dbg_printf("PanelWin::LoadPath paramPath=%s\n",paramPath.GetUtf8());
+	dbg_printf( "PanelWin::LoadPath paramPath=%s\n", paramPath.GetUtf8() );
 
 	try
 	{
@@ -1742,13 +1747,13 @@ void PanelWin::OperThreadStopped()
 			NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), _operData.errorString.GetUtf8(), true );
 			NCWin* ncWin = GetNCWin();
 			ncWin->NotifyCurrentPathInfo();
-			ncWin->SelectDrive(this, ncWin->GetOtherPanel(this));
+			ncWin->SelectDrive( this, ncWin->GetOtherPanel( this ) );
 			return;
 		}
 
-		if (!_operData.nonFatalErrorString.IsEmpty())
+		if ( !_operData.nonFatalErrorString.IsEmpty() )
 		{
-			NCMessageBox((NCDialogParent*)Parent(), _LT("Read dialog list"), _operData.nonFatalErrorString.GetUtf8(), true);
+			NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Read dialog list" ), _operData.nonFatalErrorString.GetUtf8(), true );
 		}
 
 		clPtr<FSList> list = _operData.list;
@@ -1922,6 +1927,7 @@ bool PanelWin::HideDotsInDir() const
 			return ( _place.Count() > 2 ) ? HideDots : false;
 		}
 	}
+
 #endif
 
 	return ( _place.GetPath().Count() <= 1 ) ? HideDots : false;
@@ -2009,6 +2015,7 @@ void PanelWin::DirEnter()
 		{
 			GetNCWin()->SelectDrive( this, this );
 		}
+
 		return;
 	};
 

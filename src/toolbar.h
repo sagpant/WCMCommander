@@ -24,16 +24,16 @@ class ToolBar: public Win
 
 	enum DrawStates
 	{
-	   DRAW_NORMAL = 0,
-	   DRAW_SELECTED = 1,
-	   DRAW_PRESSED = 2
+		DRAW_NORMAL = 0,
+		DRAW_SELECTED = 1,
+		DRAW_PRESSED = 2
 	};
 
 	Node* GetNodeByPos( int x, int y );
 
 	void DrawNode( wal::GC& gc, Node* pNode, int state );
 	int _iconSize;
-	ccollect<clPtr<Node> > _list; //null node is splitter
+	std::vector< clPtr<Node> > _list; //null node is splitter
 	Node* _pressed;
 
 	int _ticks;

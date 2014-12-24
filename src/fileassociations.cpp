@@ -19,25 +19,25 @@ class clEditFileAssociationsWin: public NCVertDialog
 {
 public:
 	clEditFileAssociationsWin( NCDialogParent* parent, const clNCFileAssociation* Assoc )
-	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file associations" ) ).data(), bListOkCancel )
-	 , m_Layout( 17, 2 )
-	 , m_MaskText(0, this, utf8_to_unicode(_LT("A file &mask or several file masks (separated with commas)")).data(), &m_MaskEdit)
-	 , m_MaskEdit( 0, this, 0, 0, 16 )
-	 , m_DescriptionText(0, this, utf8_to_unicode(_LT("&Description of the file association")).data(), &m_DescriptionEdit)
-	 , m_DescriptionEdit( 0, this, 0, 0, 16 )
-	 , m_HasTerminalButton( 0, this, utf8_to_unicode( _LT( "Start in &this terminal" ) ).data(), 0, true )
-	 , m_ExecuteCommandText(0, this, utf8_to_unicode(_LT("E&xecute command (used for Enter)")).data(), &m_ExecuteCommandEdit)
-	 , m_ExecuteCommandEdit( 0, this, 0, 0, 16 )
-	 , m_ExecuteCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Ctrl+&PgDn)" ) ).data(), &m_ExecuteCommandSecondaryEdit )
-	 , m_ExecuteCommandSecondaryEdit( 0, this, 0, 0, 16 )
-	 , m_ViewCommandText(0, this, utf8_to_unicode(_LT("&View command (used for F3)")).data(), &m_ViewCommandEdit)
-	 , m_ViewCommandEdit( 0, this, 0, 0, 16 )
-	 , m_ViewCommandSecondaryText(0, this, utf8_to_unicode(_LT("View command (used for Alt+F&3)")).data(), &m_ViewCommandSecondaryEdit)
-	 , m_ViewCommandSecondaryEdit( 0, this, 0, 0, 16 )
-	 , m_EditCommandText(0, this, utf8_to_unicode(_LT("&Edit command (used for F4)")).data(), &m_EditCommandEdit)
-	 , m_EditCommandEdit( 0, this, 0, 0, 16 )
-	 , m_EditCommandSecondaryText(0, this, utf8_to_unicode(_LT("Edit command (used for Alt+F&4)")).data(), &m_EditCommandSecondaryEdit)
-	 , m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
+		: NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file associations" ) ).data(), bListOkCancel )
+		, m_Layout( 17, 2 )
+		, m_MaskText( 0, this, utf8_to_unicode( _LT( "A file &mask or several file masks (separated with commas)" ) ).data(), &m_MaskEdit )
+		, m_MaskEdit( 0, this, 0, 0, 16 )
+		, m_DescriptionText( 0, this, utf8_to_unicode( _LT( "&Description of the file association" ) ).data(), &m_DescriptionEdit )
+		, m_DescriptionEdit( 0, this, 0, 0, 16 )
+		, m_HasTerminalButton( 0, this, utf8_to_unicode( _LT( "Start in &this terminal" ) ).data(), 0, true )
+		, m_ExecuteCommandText( 0, this, utf8_to_unicode( _LT( "E&xecute command (used for Enter)" ) ).data(), &m_ExecuteCommandEdit )
+		, m_ExecuteCommandEdit( 0, this, 0, 0, 16 )
+		, m_ExecuteCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Execute command (used for Ctrl+&PgDn)" ) ).data(), &m_ExecuteCommandSecondaryEdit )
+		, m_ExecuteCommandSecondaryEdit( 0, this, 0, 0, 16 )
+		, m_ViewCommandText( 0, this, utf8_to_unicode( _LT( "&View command (used for F3)" ) ).data(), &m_ViewCommandEdit )
+		, m_ViewCommandEdit( 0, this, 0, 0, 16 )
+		, m_ViewCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "View command (used for Alt+F&3)" ) ).data(), &m_ViewCommandSecondaryEdit )
+		, m_ViewCommandSecondaryEdit( 0, this, 0, 0, 16 )
+		, m_EditCommandText( 0, this, utf8_to_unicode( _LT( "&Edit command (used for F4)" ) ).data(), &m_EditCommandEdit )
+		, m_EditCommandEdit( 0, this, 0, 0, 16 )
+		, m_EditCommandSecondaryText( 0, this, utf8_to_unicode( _LT( "Edit command (used for Alt+F&4)" ) ).data(), &m_EditCommandSecondaryEdit )
+		, m_EditCommandSecondaryEdit( 0, this, 0, 0, 16 )
 	{
 		m_MaskEdit.SetText( utf8_to_unicode( "*" ).data(), true );
 
@@ -150,7 +150,7 @@ class clFileAssociationsListWin: public iContainerListWin<clNCFileAssociation>
 {
 public:
 	clFileAssociationsListWin( Win* Parent, std::vector<clNCFileAssociation>* Associations )
-	 : iContainerListWin<clNCFileAssociation>( Parent, Associations )
+		: iContainerListWin<clNCFileAssociation>( Parent, Associations )
 	{
 	}
 
@@ -181,7 +181,7 @@ void clFileAssociationsListWin::DrawItem( wal::GC& gc, int n, crect rect )
 	gc.SetFillColor( bg );
 	gc.FillRect( rect );
 
-	const clNCFileAssociation* p = &m_ItemList->at(n);
+	const clNCFileAssociation* p = &m_ItemList->at( n );
 
 	if ( p )
 	{
@@ -203,13 +203,13 @@ class clFileAssociationsWin: public NCDialog
 	bool   m_Saved;
 public:
 	clFileAssociationsWin( NCDialogParent* parent, std::vector<clNCFileAssociation>* Associations )
-	 : NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel )
-	 , m_ListWin( this, Associations )
-	 , m_Layout( 10, 10 )
-	 , m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
-	 , m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
-	 , m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )
-	 , m_Saved( true )
+		: NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "File associations" ) ).data(), bListOkCancel )
+		, m_ListWin( this, Associations )
+		, m_Layout( 10, 10 )
+		, m_AddCurrentButton( 0, this, utf8_to_unicode( "+ (&Ins)" ).data(), CMD_PLUS )
+		, m_DelButton( 0, this, utf8_to_unicode( "- (&Del)" ).data(), CMD_MINUS )
+		, m_EditButton( 0, this, utf8_to_unicode( _LT( "&Edit" ) ).data(), CMD_EDIT )
+		, m_Saved( true )
 	{
 		m_AddCurrentButton.Enable();
 		m_AddCurrentButton.Show();
@@ -289,7 +289,7 @@ bool clFileAssociationsWin::Command( int id, int subId, Win* win, void* data )
 	{
 		const clNCFileAssociation* ValueToEdit = m_ListWin.GetCurrentData();
 
-		if ( !ValueToEdit ) return true;
+		if ( !ValueToEdit ) { return true; }
 
 		clEditFileAssociationsWin Dialog( ( NCDialogParent* )Parent(), ValueToEdit );
 		Dialog.SetEnterCmd( 0 );
@@ -330,7 +330,7 @@ bool clFileAssociationsWin::Key( cevent_key* pEvent )
 			{
 				return false;
 			}
-			
+
 			return true;
 		}
 

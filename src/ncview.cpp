@@ -243,7 +243,7 @@ seek_t VFile::Align( seek_t x, charset_struct* charset, FSCInfo* info )
 	int a = 16;
 	int b = 16;
 
-	if ( a > x ) { a = int(x); }
+	if ( a > x ) { a = int( x ); }
 
 	if ( x + b > _size )
 	{
@@ -261,7 +261,7 @@ seek_t VFile::Align( seek_t x, charset_struct* charset, FSCInfo* info )
 
 	char* s = buf + a;
 
-	if ( (*s >= 0 && *s <= ' ') || (s[-1] >= 0 && s[-1] <= ' ') ) { return x; }
+	if ( ( *s >= 0 && *s <= ' ' ) || ( s[-1] >= 0 && s[-1] <= ' ' ) ) { return x; }
 
 	s = charset->GetPrev( s + 1, buf );
 	return s ? ( x - a ) + ( s - buf ) : x;
@@ -483,24 +483,24 @@ VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 /*
 static const unsigned char* StrLastNL( const unsigned char* ptr, int n )
 {
-	if ( !ptr ) { return 0; }
+   if ( !ptr ) { return 0; }
 
-	const unsigned char* last = 0;
+   const unsigned char* last = 0;
 
-	for ( const unsigned char* s = ptr, *end = ptr + n; s < end; s++ )
-		if ( *s == '\n' ) { last = s; }
+   for ( const unsigned char* s = ptr, *end = ptr + n; s < end; s++ )
+      if ( *s == '\n' ) { last = s; }
 
-	return last;
+   return last;
 }
 
 static const unsigned char* StrFirstNL( const unsigned char* ptr, int n )
 {
-	if ( !ptr ) { return 0; }
+   if ( !ptr ) { return 0; }
 
-	for ( const unsigned char* s = ptr, *end = ptr + n; s < end; s++ )
-		if ( *s == '\n' ) { return s; }
+   for ( const unsigned char* s = ptr, *end = ptr + n; s < end; s++ )
+      if ( *s == '\n' ) { return s; }
 
-	return 0;
+   return 0;
 }
 */
 seek_t VFile::GetPrevLine( seek_t filePos,  int* pCols, charset_struct* charset, bool* nlFound, FSCInfo* info )
@@ -837,14 +837,14 @@ struct ViewerEvent
 {
 	enum
 	{
-	   NO = 0,
-	   SET, //set offset, track must be in first line
-	   VTRACK, HTRACK,
-	   UP, DOWN, LEFT, RIGHT,
-	   PAGEUP, PAGEDOWN, PAGELEFT, PAGERIGHT,
-	   HOME, END,
-	   LEFTSTEP, RIGHTSTEP,
-	   FOUND
+		NO = 0,
+		SET, //set offset, track must be in first line
+		VTRACK, HTRACK,
+		UP, DOWN, LEFT, RIGHT,
+		PAGEUP, PAGEDOWN, PAGELEFT, PAGERIGHT,
+		HOME, END,
+		LEFTSTEP, RIGHTSTEP,
+		FOUND
 	};
 
 	int type;
@@ -1015,7 +1015,7 @@ void* ViewerThread( void* param )
 					case ViewerEvent::END:
 						toEndOnChange = true;
 
-						//no break
+					//no break
 					case ViewerEvent::VTRACK:
 					case ViewerEvent::UP:
 					case ViewerEvent::DOWN:
@@ -1035,7 +1035,7 @@ void* ViewerThread( void* param )
 					switch ( event.type )
 					{
 						case ViewerEvent::SET:
-							pos.begin = std::max( (int64_t)0, event.track );
+							pos.begin = std::max( ( int64_t )0, event.track );
 							break;
 
 						case ViewerEvent::HOME:
@@ -1100,7 +1100,7 @@ void* ViewerThread( void* param )
 					switch ( event.type )
 					{
 						case ViewerEvent::SET:
-							pos.begin = std::max( (int64_t)0, event.track );
+							pos.begin = std::max( ( int64_t )0, event.track );
 							pos.col = 0;
 							break;
 
@@ -1324,7 +1324,7 @@ void* ViewerThread( void* param )
 					switch ( event.type )
 					{
 						case ViewerEvent::SET:
-							pos.begin = std::max( 0, (int)event.track );
+							pos.begin = std::max( 0, ( int )event.track );
 							pos.col = 0;
 							break;
 
@@ -1423,7 +1423,7 @@ void* ViewerThread( void* param )
 
 							if ( n < 0 ) { n = 0; }
 
-							pos.col = (int)n;
+							pos.col = ( int )n;
 						}
 						break;
 
@@ -2126,7 +2126,7 @@ static void ViewDrawPreparedText( ViewerColors* viewerColors,  wal::GC& gc, int 
 		char t = *type;
 		int i = 1;
 
-		while ( i < count && type[i] == t ) i++;
+		while ( i < count && type[i] == t ) { i++; }
 
 		int fg;
 		int bg;
@@ -2495,15 +2495,15 @@ int ViewWin::GetCol()
 {
 	if ( threadData )
 	{
-		return int(threadData->pos.begin);
+		return int( threadData->pos.begin );
 	}
 
 	return -1;
 }
 
-void ViewWin::SetCol(int Col)
+void ViewWin::SetCol( int Col )
 {
-	if ( Col < 0 ) return;
+	if ( Col < 0 ) { return; }
 
 	threadData->SetEvent( ViewerEvent( ViewerEvent::SET, Col ) );
 }
@@ -2584,7 +2584,7 @@ void* VSThreadFunc( void* ptr )
 
 		seek_t nrSize = data->file->Size() - offset;
 
-		int n = bufSize > nrSize ? int(nrSize) : bufSize;
+		int n = bufSize > nrSize ? int( nrSize ) : bufSize;
 		int bytes = data->file->ReadBlock( offset, buf.data(), n, &data->info );
 
 		if ( bytes > 0 )
@@ -2622,7 +2622,7 @@ void* VSThreadFunc( void* ptr )
 
 				int n = bufSize - count;
 
-				if ( n > nrSize ) { n = int(nrSize); }
+				if ( n > nrSize ) { n = int( nrSize ); }
 
 				int bytes = data->file->ReadBlock( offset + count, buf.data() + count, n, &data->info );
 

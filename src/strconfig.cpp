@@ -136,26 +136,26 @@ std::vector<char> StrConfig::GetConfig()
 			}
 			else
 			{
-				res.push_back('"');
+				res.push_back( '"' );
 
 				for ( ; *s; s++ )
 				{
 					if ( *s == '\'' || *s == '"' || *s == '\\' )
 					{
-						res.push_back('\\');
+						res.push_back( '\\' );
 					}
 
-					res.push_back(*s);
+					res.push_back( *s );
 				}
 
-				res.push_back('"');
+				res.push_back( '"' );
 			}
 		}
 
-		res.push_back(';');
+		res.push_back( ';' );
 	}
 
-	res.push_back(0);
+	res.push_back( 0 );
 	return res;
 }
 

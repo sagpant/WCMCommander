@@ -110,8 +110,8 @@ extern ButtonDataNode bListYesNoCancel[];
 
 enum
 {
-   CMD_KILL = 100,
-   CMD_KILL_9 = 101
+	CMD_KILL = 100,
+	CMD_KILL_9 = 101
 };
 
 int NCMessageBox( NCDialogParent* parent, const char* utf8head, const char* utf8txt, bool red = false, ButtonDataNode* buttonList = bListOk );

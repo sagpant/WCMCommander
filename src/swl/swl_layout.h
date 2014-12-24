@@ -116,7 +116,7 @@ namespace wal
 	{
 		friend class Win;
 		friend struct LItemLayout;
-		wal::ccollect< clPtr<LItem> > objList;
+		std::vector< clPtr<LItem> > objList;
 		wal::ccollect< SpaceStruct > lines;
 		wal::ccollect< SpaceStruct > columns;
 		crect currentRect;
@@ -128,7 +128,8 @@ namespace wal
 
 		void Recalc();
 	public:
-		enum {
+		enum
+		{
 			LEFT = 1,
 			RIGHT = 2,
 			TOP = 4,

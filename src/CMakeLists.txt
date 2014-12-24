@@ -228,4 +228,4 @@ TARGET_LINK_LIBRARIES(wcm ${wcm_LIBS})
 # install
 INSTALL(TARGETS wcm RUNTIME DESTINATION bin)
 INSTALL(FILES wcm.desktop DESTINATION share/applications)
-INSTALL(FILES install-files/share/wcm/icon/wcm.png DESTINATION share/pixmaps)
+INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/wcm/icon/wcm.png DESTINATION share/pixmaps)

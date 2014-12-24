@@ -38,8 +38,8 @@ struct EmulatorScreenPoint
 	void Set( int r, int c ) { row = r; col = c; }
 
 	//нумерация строк обратная, поэтому и такая ботва со сравнением колонок
-	bool operator <  ( const EmulatorScreenPoint& a ) const { return row < a.row || (row == a.row && col > a.col); }
-	bool operator <= ( const EmulatorScreenPoint& a ) const { return row < a.row || (row == a.row && col >= a.col); }
+	bool operator <  ( const EmulatorScreenPoint& a ) const { return row < a.row || ( row == a.row && col > a.col ); }
+	bool operator <= ( const EmulatorScreenPoint& a ) const { return row < a.row || ( row == a.row && col >= a.col ); }
 
 	bool operator != ( const EmulatorScreenPoint& a ) const { return row != a.row || col != a.col; }
 	bool operator == ( const EmulatorScreenPoint& a ) const { return row == a.row && col == a.col; }
@@ -168,8 +168,8 @@ class Emulator
 
 	enum Keypad
 	{
-	   K_NORMAL = 0,
-	   K_APPLICATION
+		K_NORMAL = 0,
+		K_APPLICATION
 	} ;
 
 
@@ -191,7 +191,7 @@ class Emulator
 	int _utf8count;
 	int _utf8char;
 	int _state;
-	NumberList<> _N;
+	NumberList<> m_NumberList;
 	ccollect<char, 0x100> _TXT;
 
 	EmulatorAttr _savedAttr;

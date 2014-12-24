@@ -204,24 +204,30 @@ namespace wal
 	int StaticLine::UiGetClassId() {  return uiClassStatic;}
 
 	StaticLine::StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect, ALIGN al, int w )
-		: Win(Win::WT_CHILD, 0, parent, rect, nId)
-		, text( txt ? new_unicode_str(txt) : std::vector<wchar_t>() )
+		: Win( Win::WT_CHILD, 0, parent, rect, nId )
+		, text( txt ? new_unicode_str( txt ) : std::vector<wchar_t>() )
 		, align( al )
 		, width( w )
 	{
-		if (!rect) 
+		if ( !rect )
 		{
-			GC gc(this);
-			if (w >= 0)
+			GC gc( this );
+
+			if ( w >= 0 )
 			{
-				static unicode_t t[]={'A', 'B', 'C', 0};
-				cpoint p = GetStaticTextExtent(gc,t,GetFont());
+				static unicode_t t[] = {'A', 'B', 'C', 0};
+				cpoint p = GetStaticTextExtent( gc, t, GetFont() );
 				p.x = p.y * w;
-				SetLSize(LSize(p));
-			} else if (txt)
-				SetLSize(LSize(GetStaticTextExtent(gc,txt,GetFont())));
+				SetLSize( LSize( p ) );
+			}
+			else if ( txt )
+			{
+				SetLSize( LSize( GetStaticTextExtent( gc, txt, GetFont() ) ) );
+			}
 			else
-				SetLSize(LSize(cpoint(0, 0)));
+			{
+				SetLSize( LSize( cpoint( 0, 0 ) ) );
+			}
 		}
 	}
 
@@ -232,20 +238,28 @@ namespace wal
 		gc.SetFillColor( UiGetColor( uiBackground, 0, 0, 0xFFFFFF )/*GetColor(0)*/ );
 		gc.FillRect( rect ); //CCC
 
-		if ( !text.data() || !text[0] ) return;
+		if ( !text.data() || !text[0] ) { return; }
 
 		gc.SetTextColor( UiGetColor( uiColor, 0, 0, 0 )/*GetColor(IsEnabled() ? IC_TEXT : IC_GRAY_TEXT)*/ ); //CCC
 		gc.Set( GetFont() );
 
-		if (align >= 0)
+		if ( align >= 0 )
 		{
 			cpoint size = gc.GetTextExtents( text.data() );
-			if (align) //right	
+
+			if ( align ) //right
+			{
 				DrawStaticText( gc, rect.right - size.x, 0, text.data() );
+			}
 			else //center
-				DrawStaticText( gc, (rect.Width() - size.x) / 2, 0, text.data() );
-		} else
+			{
+				DrawStaticText( gc, ( rect.Width() - size.x ) / 2, 0, text.data() );
+			}
+		}
+		else
+		{
 			DrawStaticText( gc, 0, 0, text.data() );
+		}
 	}
 
 //////////////////////////////////// ToolTip
@@ -316,13 +330,14 @@ namespace wal
 
 		for ( size_t i = 0; i != utf8.size(); i++ )
 		{
-			if ( !utf8[i] ) break;
-			if ( !IsDigit( utf8[i] ) ) return false;
+			if ( !utf8[i] ) { break; }
+
+			if ( !IsDigit( utf8[i] ) ) { return false; }
 		}
 
 		uint64_t Result = strtoull( utf8.data(), nullptr, 10 );
 
-		if ( Result == ULLONG_MAX ) return false;
+		if ( Result == ULLONG_MAX ) { return false; }
 
 		return true;
 	}

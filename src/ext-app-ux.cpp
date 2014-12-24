@@ -206,6 +206,7 @@ static void SearchExe( const char* dirName, cstrhash<bool>& hash )
 				hash[ent.d_name] = true;
 			}
 		};
+
 err:
 		closedir( d );
 	}
@@ -362,7 +363,7 @@ inline void MimeGlobs::AddExt( const char* s, int m )
 
 	buf[len] = 0;
 
-	m_ExtMimeHash[ std::wstring(buf) ].push_back( m );
+	m_ExtMimeHash[ std::wstring( buf ) ].push_back( m );
 }
 
 
@@ -542,7 +543,7 @@ int MimeSubclasses::GetParentList( int mime, ccollect<int>& list )
 {
 	auto i = hash.find( mime );
 
-	ccollect<int>* p = ( i == hash.end() ) ? nullptr : &(i->second);
+	ccollect<int>* p = ( i == hash.end() ) ? nullptr : &( i->second );
 
 	if ( p )
 	{
@@ -624,14 +625,16 @@ void MimeDB::AddParentsRecursive( int mime, ccollect<int>* pList, std::unordered
 		for ( i = 0; i < parentList.count(); i++ )
 		{
 			bool Exists = pHash->find( parentList[i] ) != pHash->end();
+
 			if ( !Exists )
 			{
 				pList->append( parentList[i] );
-				(*pHash)[ parentList[i] ] = true;
+				( *pHash )[ parentList[i] ] = true;
 
 				AddParentsRecursive( parentList[i], pList, pHash );
 			}
 		}
+
 //		for (i=0; i<parentList.count(); i++)
 //			AddParentsRecursive(parentList[i], pList, pHash);
 	}
@@ -656,7 +659,7 @@ int MimeDB::GetMimeList( const unicode_t* fileName, ccollect<int>& outList )
 
 		for ( i = 0; i < temp1.count(); i++ )
 		{
-			bool Exists = hash.find( temp1[i] ) != hash.end(); 
+			bool Exists = hash.find( temp1[i] ) != hash.end();
 
 			if ( !Exists )
 			{
@@ -666,6 +669,7 @@ int MimeDB::GetMimeList( const unicode_t* fileName, ccollect<int>& outList )
 				AddParentsRecursive( temp1[i], &outList, &hash );
 			}
 		}
+
 //		for (i=0; i<temp1.count(); i++)
 //			AddParentsRecursive(temp1[i], &outList, &hash);
 	}
@@ -686,7 +690,7 @@ int AppDefListFile::GetAppList( int mime, ccollect<int>& appList )
 {
 	auto i = hash.find( mime );
 
-	ccollect<int, 1>* p = ( i == hash.end() ) ? nullptr : &(i->second);
+	ccollect<int, 1>* p = ( i == hash.end() ) ? nullptr : &( i->second );
 
 	if ( p )
 	{
@@ -857,7 +861,7 @@ AppNode* AppDB::GetApp( int id )
 {
 	auto i = apps.find( id );
 
-	clPtr<AppNode>* p = ( i == apps.end() ) ? nullptr : &(i->second);
+	clPtr<AppNode>* p = ( i == apps.end() ) ? nullptr : &( i->second );
 
 	if ( !p )
 	{
@@ -865,7 +869,7 @@ AppNode* AppDB::GetApp( int id )
 
 		i = apps.find( id );
 
-		p = ( i == apps.end() ) ? nullptr : &(i->second);
+		p = ( i == apps.end() ) ? nullptr : &( i->second );
 	}
 
 	return p ? p->ptr() : 0;
@@ -877,7 +881,7 @@ int AppDB::GetAppList( int mime, ccollect<int>& appList )
 
 	auto i = mimeMapHash.find( mime );
 
-	ccollect<int>* p = ( i == mimeMapHash.end() ) ? nullptr : &(i->second);
+	ccollect<int>* p = ( i == mimeMapHash.end() ) ? nullptr : &( i->second );
 
 	if ( p )
 	{
@@ -1133,6 +1137,7 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 			for ( int j = 0; j < appList.count(); j++ )
 			{
 				bool Exists = hash.find( appList[j] ) != hash.end();
+
 				if ( !Exists )
 				{
 					hash[appList[j]] = true;

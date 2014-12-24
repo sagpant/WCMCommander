@@ -24,7 +24,7 @@ class clNCFileAssociation
 {
 public:
 	clNCFileAssociation()
-	 : m_HasTerminal( true )
+		: m_HasTerminal( true )
 	{}
 	const std::vector<unicode_t>& GetMask() const { return m_Mask; }
 	const std::vector<unicode_t>& GetDescription() const { return m_Description; }
@@ -40,12 +40,23 @@ public:
 	{
 		switch ( Mode )
 		{
-		case eFileAssociation_Execute: return GetExecuteCommand();
-		case eFileAssociation_ExecuteSecondary: return GetExecuteCommandSecondary();
-		case eFileAssociation_View: return GetViewCommand();
-		case eFileAssociation_ViewSecondary: return GetViewCommandSecondary();
-		case eFileAssociation_Edit: return GetEditCommand();
-		case eFileAssociation_EditSecondary: return GetEditCommandSecondary();
+			case eFileAssociation_Execute:
+				return GetExecuteCommand();
+
+			case eFileAssociation_ExecuteSecondary:
+				return GetExecuteCommandSecondary();
+
+			case eFileAssociation_View:
+				return GetViewCommand();
+
+			case eFileAssociation_ViewSecondary:
+				return GetViewCommandSecondary();
+
+			case eFileAssociation_Edit:
+				return GetEditCommand();
+
+			case eFileAssociation_EditSecondary:
+				return GetEditCommandSecondary();
 		}
 
 		return GetExecuteCommand();

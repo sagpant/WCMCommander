@@ -93,7 +93,7 @@ struct OperThreadParam: public iIntrusiveCounter
 
 void* __123___OperThread( void* param )
 {
-	if ( !param ) return nullptr;
+	if ( !param ) { return nullptr; }
 
 	clPtr<OperThreadParam> pTp( ( OperThreadParam* )param );
 

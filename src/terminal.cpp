@@ -88,141 +88,141 @@ Ok:
 /*
 static int WritePipe( int fd, int cmd, ... )
 {
-	ccollect<char*> list;
+   ccollect<char*> list;
 
-	va_list ap;
-	va_start( ap, cmd );
+   va_list ap;
+   va_start( ap, cmd );
 
-	while ( true )
-	{
-		char* s = va_arg( ap, char* );
+   while ( true )
+   {
+      char* s = va_arg( ap, char* );
 
-		if ( !s ) { break; }
+      if ( !s ) { break; }
 
-		list.append( s );
-	}
+      list.append( s );
+   }
 
-	va_end( ap );
+   va_end( ap );
 
-	int ret;
-	char c = cmd;
-	ret = write( fd, &c, sizeof( char ) );
+   int ret;
+   char c = cmd;
+   ret = write( fd, &c, sizeof( char ) );
 
-	if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
+   if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
 
-	c = list.count();
-	ret = write( fd, &c, sizeof( char ) );
+   c = list.count();
+   ret = write( fd, &c, sizeof( char ) );
 
-	if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
+   if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
 
-	for ( int i = 0; i < list.count(); i++ )
-	{
-		char* s = list[i];
-		int l = strlen( s ) + 1;
-		ret = write( fd, s, l );
+   for ( int i = 0; i < list.count(); i++ )
+   {
+      char* s = list[i];
+      int l = strlen( s ) + 1;
+      ret = write( fd, s, l );
 
-		if ( ret < 0 || ret != l ) { return -1; }
-	}
+      if ( ret < 0 || ret != l ) { return -1; }
+   }
 
-	return 0;
+   return 0;
 }
 */
 /*
 static int ReadPipe( int fd, int& cmd, ccollect<std::vector<char> >& params )
 {
-	char c;
-	int ret;
-	ret = read( fd, &c, sizeof( char ) );
+   char c;
+   int ret;
+   ret = read( fd, &c, sizeof( char ) );
 
-	if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
+   if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
 
-	cmd = c;
-	ret = read( fd, &c, sizeof( char ) );
+   cmd = c;
+   ret = read( fd, &c, sizeof( char ) );
 
-	if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
+   if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
 
-	params.clear();
+   params.clear();
 
-	int count = c;
+   int count = c;
 
-	for ( int i = 0; i < count; i++ )
-	{
-		ccollect<char> p;
+   for ( int i = 0; i < count; i++ )
+   {
+      ccollect<char> p;
 
-		while ( true )
-		{
-			ret = read( fd, &c, sizeof( char ) );
+      while ( true )
+      {
+         ret = read( fd, &c, sizeof( char ) );
 
-			if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
+         if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
 
-			p.append( c );
+         p.append( c );
 
-			if ( !c ) { break; }
-		}
+         if ( !c ) { break; }
+      }
 
-		params.append( p.grab() );
-	}
+      params.append( p.grab() );
+   }
 
-	return 0;
+   return 0;
 }
 */
 /*
 static void Shell( int in, int out )
 {
-	fcntl( in, F_SETFD, long( FD_CLOEXEC ) );
-	fcntl( out, F_SETFD, long( FD_CLOEXEC ) );
+   fcntl( in, F_SETFD, long( FD_CLOEXEC ) );
+   fcntl( out, F_SETFD, long( FD_CLOEXEC ) );
 
 
-	while ( true )
-	{
-		ccollect<std::vector<char> > pList;
-		int cmd = 0;
+   while ( true )
+   {
+      ccollect<std::vector<char> > pList;
+      int cmd = 0;
 
-		if ( ReadPipe( in, cmd, pList ) ) { exit( 1 ); }
+      if ( ReadPipe( in, cmd, pList ) ) { exit( 1 ); }
 
-		switch ( cmd )
-		{
-			case 1:
+      switch ( cmd )
+      {
+         case 1:
 
-			{
-				pid_t pid = fork();
+         {
+            pid_t pid = fork();
 
-				if ( !pid )
-				{
-					static char shell[] = "/bin/sh";
+            if ( !pid )
+            {
+               static char shell[] = "/bin/sh";
 
-					if ( pList.count() )
-					{
-						const char* params[] = {shell, "-c", pList[0].data(), NULL};
-						execv( shell, ( char** ) params );
-						printf( "error execute %s\n", shell );
-					}
-					else
-					{
-						printf( "internal err (no shall paremeters)\n" );
-					}
+               if ( pList.count() )
+               {
+                  const char* params[] = {shell, "-c", pList[0].data(), NULL};
+                  execv( shell, ( char** ) params );
+                  printf( "error execute %s\n", shell );
+               }
+               else
+               {
+                  printf( "internal err (no shall paremeters)\n" );
+               }
 
-					exit( 1 );
-				}
+               exit( 1 );
+            }
 
-				char buf[64];
-				sprintf( buf, "%i", int( pid ) );
+            char buf[64];
+            sprintf( buf, "%i", int( pid ) );
 
-				if ( WritePipe( out, 0, buf, ( const char* ) 0 ) ) { exit( 1 ); }
+            if ( WritePipe( out, 0, buf, ( const char* ) 0 ) ) { exit( 1 ); }
 
-				printf ( "exec '%s' (%i)\n", pList[0].data(), pid );
+            printf ( "exec '%s' (%i)\n", pList[0].data(), pid );
 
-			}
-			break;
+         }
+         break;
 
-			default:
-				if ( WritePipe( out, 1, "unknown internal shell command", ( const char* )0 ) ) { exit( 1 ); }
+         default:
+            if ( WritePipe( out, 1, "unknown internal shell command", ( const char* )0 ) ) { exit( 1 ); }
 
-				printf( "internal err (unknown shell command)\n" );
+            printf( "internal err (unknown shell command)\n" );
 
-				break;
-		};
-	}
+            break;
+      };
+   }
 }
 */
 
@@ -470,21 +470,21 @@ inline void Terminal::OutAppendUnicode( unicode_t c )
 	{
 		if ( c < 0x10000 ) //1110xxxx 10xxxxxx 10xxxxxx
 		{
-			outQueue.Put( 0x80 | (c & 0x3F) );
+			outQueue.Put( 0x80 | ( c & 0x3F ) );
 			c >>= 6;
-			outQueue.Put( 0x80 | (c & 0x3F) );
+			outQueue.Put( 0x80 | ( c & 0x3F ) );
 			c >>= 6;
-			outQueue.Put( 0xE0 | (c & 0x0F) );
+			outQueue.Put( 0xE0 | ( c & 0x0F ) );
 		}
 		else     //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 		{
-			outQueue.Put( 0x80 | (c & 0x3F) );
+			outQueue.Put( 0x80 | ( c & 0x3F ) );
 			c >>= 6;
-			outQueue.Put( 0x80 | (c & 0x3F) );
+			outQueue.Put( 0x80 | ( c & 0x3F ) );
 			c >>= 6;
-			outQueue.Put( 0x80 | (c & 0x3F) );
+			outQueue.Put( 0x80 | ( c & 0x3F ) );
 			c >>= 6;
-			outQueue.Put( 0xF0 | (c & 0x07) );
+			outQueue.Put( 0xF0 | ( c & 0x07 ) );
 		}
 	}
 }

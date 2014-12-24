@@ -119,9 +119,9 @@ namespace wal
 
 			cursor = PrevCursor;
 
-			CharsToDelete = std::min( CharsToDelete, count-cursor );
+			CharsToDelete = std::min( CharsToDelete, count - cursor );
 
-			if ( CharsToDelete > 0 ) DeleteBlock( cursor, CharsToDelete );
+			if ( CharsToDelete > 0 ) { DeleteBlock( cursor, CharsToDelete ); }
 		}
 		else if ( cursor < count )
 		{
@@ -148,12 +148,13 @@ namespace wal
 				cursor--;
 			}
 
-			CharsToDelete = PrevCursor-cursor;
+			CharsToDelete = PrevCursor - cursor;
 		}
 		else if ( cursor > 0 )
 		{
 			cursor--;
 		}
+
 		marker = cursor;
 		DeleteBlock( cursor, CharsToDelete );
 	}
@@ -204,7 +205,7 @@ namespace wal
 
 	int EditBuf::GetCharGroup( unicode_t c )
 	{
-		if ( c <= ' ' || (c >= 0x7F && c <= 0xA0) )
+		if ( c <= ' ' || ( c >= 0x7F && c <= 0xA0 ) )
 		{
 			return 0;
 		}
@@ -283,20 +284,20 @@ namespace wal
 	}
 
 	EditLine::EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars, bool frame, unsigned flags )
-	 : Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId )
-	 , _use_alt_symbols( false )
-	 , _flags( flags )
-	 , text( txt )
-	 , _chars( chars > 0 ? chars : 10 )
-	 , cursorVisible( false )
-	 , passwordMode( false )
-	 , showSpaces( true )
-	 , doAcceptAltKeys( false )
-	 , first( 0 )
-	 , frame3d( frame )
-	 , charH( 0 )
-	 , charW( 0 )
-	 , m_ReplaceMode( false )
+		: Win( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, parent, rect, nId )
+		, _use_alt_symbols( false )
+		, _flags( flags )
+		, text( txt )
+		, _chars( chars > 0 ? chars : 10 )
+		, cursorVisible( false )
+		, passwordMode( false )
+		, showSpaces( true )
+		, doAcceptAltKeys( false )
+		, first( 0 )
+		, frame3d( frame )
+		, charH( 0 )
+		, charW( 0 )
+		, m_ReplaceMode( false )
 	{
 		text.End();
 
@@ -601,7 +602,7 @@ namespace wal
 				CheckCursorPos();
 				Invalidate();
 
-				SetCapture(&captureSD);
+				SetCapture( &captureSD );
 			}
 			break;
 
@@ -611,7 +612,7 @@ namespace wal
 					break;
 				}
 
-				ReleaseCapture(&captureSD);
+				ReleaseCapture( &captureSD );
 				break;
 		};
 
@@ -621,7 +622,7 @@ namespace wal
 
 	bool EditLine::EventKey( cevent_key* pEvent )
 	{
-		if (!doAcceptAltKeys && (pEvent->Mod() & KM_ALT) != 0)
+		if ( !doAcceptAltKeys && ( pEvent->Mod() & KM_ALT ) != 0 )
 		{
 			return false;
 		}
@@ -631,7 +632,7 @@ namespace wal
 
 			bool shift = ( pEvent->Mod() & KM_SHIFT ) != 0;
 			bool ctrl  = ( pEvent->Mod() & KM_CTRL ) != 0;
-			bool alt   = ( pEvent->Mod() & KM_ALT ) !=0;
+			bool alt   = ( pEvent->Mod() & KM_ALT ) != 0;
 
 			if ( ctrl )
 			{
@@ -652,11 +653,13 @@ namespace wal
 						return true;
 
 					case VK_V:
-						if ( !RO() ) ClipboardPaste();
+						if ( !RO() ) { ClipboardPaste(); }
+
 						return true;
 
 					case VK_X:
-						if ( !RO() ) ClipboardCut();
+						if ( !RO() ) { ClipboardCut(); }
+
 						return true;
 				}
 			}
@@ -665,8 +668,10 @@ namespace wal
 			{
 				case VK_BACK:
 				{
-					if ( RO() ) return true;
+					if ( RO() ) { return true; }
+
 					if ( text.Cursor() == 0 ) { return true; }
+
 					text.Backspace( ctrl );
 					Changed();
 				}
@@ -674,7 +679,8 @@ namespace wal
 
 				case VK_DELETE:
 				{
-					if ( RO() ) return true;
+					if ( RO() ) { return true; }
+
 					if ( text.Cursor() > text.Count() ) { return true; }
 
 					text.Del( ctrl );
@@ -731,7 +737,7 @@ namespace wal
 				break;
 
 				case VK_INSERT:
-					if ( shift ) { if ( RO() ) return true; ClipboardPaste(); }
+					if ( shift ) { if ( RO() ) { return true; } ClipboardPaste(); }
 					else if ( ctrl && text.Marked() ) { ClipboardCopy(); }
 
 					break;
@@ -739,16 +745,21 @@ namespace wal
 				default:
 					wchar_t c = pEvent->Char();
 
-					if ( c && c >= 0x20 && (!alt || _use_alt_symbols) )
+					if ( c && c >= 0x20 && ( !alt || _use_alt_symbols ) )
 					{
 						std::vector<unicode_t> oldtext = GetText();
-						if ( RO() ) return true;
-						if ( m_ReplaceMode ) text.Del( false );
+
+						if ( RO() ) { return true; }
+
+						if ( m_ReplaceMode ) { text.Del( false ); }
+
 						text.Insert( c );
+
 						if ( m_Validator && !m_Validator->IsValid( GetText() ) )
 						{
 							SetText( oldtext.data(), false );
 						}
+
 						Changed();
 					}
 					else { return false; }

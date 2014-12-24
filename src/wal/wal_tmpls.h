@@ -9,8 +9,8 @@
 //Created by Wal (Krasnoyarsk)
 
 #if defined( _MSC_VER )
-#	pragma warning( disable:4127 ) // warning C4127: conditional expression is constant (ext-app.cpp)
-#	pragma warning( disable:4512 ) // warning C4512: assignment operator could not be generated
+#  pragma warning( disable:4127 ) // warning C4127: conditional expression is constant (ext-app.cpp)
+#  pragma warning( disable:4512 ) // warning C4512: assignment operator could not be generated
 #endif
 
 #include <stdlib.h>
@@ -62,13 +62,13 @@ namespace wal
 /// ccollect //////////////////////////////////////////////////////////
 
 	template <class T, size_t Step> ccollect<T, Step>::ccollect()
-	 : m_data()
+		: m_data()
 	{
 		m_data.reserve( Step );
 	}
 
 	template <class T, size_t Step> ccollect<T, Step>::ccollect( size_t n )
-	 : m_data( n )
+		: m_data( n )
 	{
 	}
 
@@ -95,7 +95,7 @@ namespace wal
 
 	template <class T, size_t Step> inline void ccollect<T, Step>::set( int n, const T& a )
 	{
-		ASSERT( n >= 0 && n < (int)m_data.size() );
+		ASSERT( n >= 0 && n < ( int )m_data.size() );
 		m_data[n] = a;
 	}
 
@@ -123,7 +123,7 @@ namespace wal
 
 	template <class T, size_t Step> T& ccollect<T, Step>::operator [] ( int n )
 	{
-		ASSERT( n >= 0 && n < (int)m_data.size() );
+		ASSERT( n >= 0 && n < ( int )m_data.size() );
 		return m_data[ n ];
 	}
 
@@ -136,19 +136,19 @@ namespace wal
 	{
 		m_data.insert( m_data.end(), number, p );
 	}
-	
+
 	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n )
 	{
-		ASSERT( n >= 0 && n <= (int)m_data.size() );
+		ASSERT( n >= 0 && n <= ( int )m_data.size() );
 
-		m_data.insert( m_data.begin()+n, T() );
+		m_data.insert( m_data.begin() + n, T() );
 	}
 
 	template <class T, size_t Step> inline void ccollect<T, Step>::insert( int n, const T& a )
 	{
 		ASSERT( n >= 0 && n <= ( int )m_data.size() );
 
-		m_data.insert( m_data.begin()+n, a );
+		m_data.insert( m_data.begin() + n, a );
 	}
 
 	template <class T, size_t Step> inline void ccollect<T, Step>::clear()
@@ -158,7 +158,7 @@ namespace wal
 
 	template <class T, size_t Step> inline int ccollect<T, Step>::count() const
 	{
-		return int(m_data.size());
+		return int( m_data.size() );
 	}
 
 /// hash tables ////////////////////////////////////////////////////////////////////////////
@@ -234,7 +234,7 @@ namespace wal
 		{
 			if ( size <= 0 )
 			{
-				ptr = NULL;
+				ptr = nullptr;
 				i = 0;
 			}
 			else
@@ -255,7 +255,7 @@ namespace wal
 			return ptr;
 		}
 
-		bool valid() { return ptr != NULL; }
+		bool valid() { return ptr != nullptr; }
 
 	};
 
@@ -347,7 +347,7 @@ namespace wal
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	template <class LT, class KT, bool IC, class P>
@@ -506,7 +506,7 @@ namespace wal
 
 			for ( i = 0; i < newSize; i++ )
 			{
-				newTable[i] = NULL;
+				newTable[i] = nullptr;
 			}
 
 			for ( i = 0; i < tableSize; i++ )
@@ -537,7 +537,7 @@ namespace wal
 
 			for ( i = 0; i < a.tableSize; i++ )
 			{
-				tmpTable[i] = NULL;
+				tmpTable[i] = nullptr;
 			}
 
 			for ( i = 0; i < a.tableSize; i++ )
@@ -592,7 +592,7 @@ namespace wal
 
 			Node( const T& d, unsigned k ) : hashKey( k ), m_data( d ) {}
 			Node( const Node& a ): m_data( a.m_data ), hashKey( a.hashKey ) {}
-			Node& operator=(const Node& a) = delete;
+			Node& operator=( const Node& a ) = delete;
 			const KT& key() { return m_data.key(); }
 			unsigned intKey() { return hashKey; }
 			Node* next;
@@ -609,7 +609,7 @@ namespace wal
 		T* get( const KT& k )
 		{
 			Node* p = hash.find( unsigned( k ), k );
-			return p ? &( p->m_data ) : NULL;
+			return p ? &( p->m_data ) : nullptr;
 		}
 
 		chash& operator = ( const chash& a )
@@ -681,7 +681,7 @@ namespace wal
 
 		static void cp( T* d, const T* s )
 		{
-			while ( (*( d++ ) = *( s++ )) );
+			while ( ( *( d++ ) = *( s++ ) ) );
 		}
 
 		static T* newstr( const T* s, int size )
@@ -698,16 +698,13 @@ namespace wal
 
 		static bool eq( const T* a, const T* b )
 		{
-			for ( ; *a /* && *b */ && *a == *b; a++, b++ )
-			{
-				NULL;
-			}
+			while ( *a && *a == *b ) { a++; b++; };
 
 			return *a == *b;
 		}
 
 	public:
-		chstring() { ptr = NULL; }
+		chstring() { ptr = nullptr; }
 		chstring( const T* s )
 		{
 			strSize = size( s );
@@ -812,7 +809,7 @@ namespace wal
 		T* exist( const CT* s )
 		{
 			Node* p = hash.find( chstring<CT>::key( s ), s );
-			return p ? &( p->m_data ) : NULL;
+			return p ? &( p->m_data ) : nullptr;
 		}
 
 		T& get( const CT* s )
@@ -1104,10 +1101,7 @@ template <class T> inline bool strless( T* a, T* b )
 {
 	T s1 = *a, s2 = *b;
 
-	for ( ; *s1 && *s1 == *s2; s1++, s2++ )
-	{
-		NULL;
-	}
+	while ( *s1 && *s1 == *s2 ) { s1++; s2++; };
 
 	return *s1 <= *s2;
 }

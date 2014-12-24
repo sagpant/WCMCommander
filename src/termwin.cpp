@@ -96,7 +96,7 @@ void TerminalWin::PageDown()
 	Scroll( - ( screen.rows - 1 ) );
 }
 
-void TerminalWin::Scroll(int Lines)
+void TerminalWin::Scroll( int Lines )
 {
 	if ( SetFirst( _firstRow + Lines ) )
 	{

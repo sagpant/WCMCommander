@@ -7,18 +7,18 @@
 #define WAL_SYS_API_H
 
 #ifdef _WIN32
-#	if !defined( NOMINMAX )
-#		define NOMINMAX
-#	endif
-#	include <windows.h>
+#  if !defined( NOMINMAX )
+#     define NOMINMAX
+#  endif
+#  include <windows.h>
 #else
-#	include <sys/types.h>
-#	include <sys/stat.h>
-#	include <fcntl.h>
-#	include <unistd.h>
-#	include <pthread.h>
-#	include <string.h>
-#	include <stdlib.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <fcntl.h>
+#  include <unistd.h>
+#  include <pthread.h>
+#  include <string.h>
+#  include <stdlib.h>
 #endif
 
 #include <errno.h>
@@ -35,15 +35,15 @@ namespace wal
 	//typedef unsigned short sys_char_t;
 	typedef wchar_t sys_char_t;
 
-	inline int sys_strlen( const sys_char_t* s ) { return int(wcslen( s )); }
+	inline int sys_strlen( const sys_char_t* s ) { return int( wcslen( s ) ); }
 
 	typedef HANDLE file_t;
 
-#	define FILE_NULL INVALID_HANDLE_VALUE
+#  define FILE_NULL INVALID_HANDLE_VALUE
 
 	inline bool valid_file( file_t fd ) { return fd != FILE_NULL; }
 
-#	define DIR_SPLITTER '\\'
+#  define DIR_SPLITTER '\\'
 
 #else
 	typedef char sys_char_t;
@@ -55,7 +55,7 @@ namespace wal
 
 	inline bool valid_file( file_t fd ) { return fd >= 0; }
 
-#	define DIR_SPLITTER '/'
+#  define DIR_SPLITTER '/'
 
 	typedef pthread_t thread_t;
 	typedef pthread_mutex_t mutex_t;
@@ -109,63 +109,63 @@ namespace wal
 
 	enum CHARSET_ID
 	{
-	   CS_LATIN1 = 0,
-	   CS_ISO8859_1 = 0,
-	   CS_UTF8 = 1,
-	   CS_CP437,
-	   CS_CP737,
-	   CS_CP775,
-	   CS_CP850,
-	   CS_CP852,
-	   CS_CP855,
-	   CS_CP857,
-	   CS_CP860,
-	   CS_CP861,
-	   CS_CP862,
-	   CS_CP863,
-	   CS_CP864,
-	   CS_CP865,
-	   CS_CP866,
-	   CS_CP869,
-	   CS_CP874,
-	   CS_EBCDIC_037,
-	   CS_EBCDIC_1025,
-	   CS_EBCDIC_1026,
-	   CS_EBCDIC_500,
-	   CS_EBCDIC_875,
+		CS_LATIN1 = 0,
+		CS_ISO8859_1 = 0,
+		CS_UTF8 = 1,
+		CS_CP437,
+		CS_CP737,
+		CS_CP775,
+		CS_CP850,
+		CS_CP852,
+		CS_CP855,
+		CS_CP857,
+		CS_CP860,
+		CS_CP861,
+		CS_CP862,
+		CS_CP863,
+		CS_CP864,
+		CS_CP865,
+		CS_CP866,
+		CS_CP869,
+		CS_CP874,
+		CS_EBCDIC_037,
+		CS_EBCDIC_1025,
+		CS_EBCDIC_1026,
+		CS_EBCDIC_500,
+		CS_EBCDIC_875,
 
-	   CS_ISO8859_2,
-	   CS_ISO8859_3,
-	   CS_ISO8859_4,
-	   CS_ISO8859_5,
-	   CS_ISO8859_6,
-	   CS_ISO8859_7,
-	   CS_ISO8859_8,
-	   CS_ISO8859_9,
-	   CS_ISO8859_10,
-	   CS_ISO8859_11,
-	   CS_ISO8859_13,
-	   CS_ISO8859_14,
-	   CS_ISO8859_15,
-	   CS_ISO8859_16,
-	   CS_KOI8R,
-	   CS_KOI8U,
-	   CS_MAC_CYRILLIC,
-	   CS_MAC_GREEK,
-	   CS_MAC_ICELAND,
-	   CS_MAC_LATIN2,
-	   CS_MAC_ROMAN,
-	   CS_MAC_TURKISH,
-	   CS_WIN1250,
-	   CS_WIN1251,
-	   CS_WIN1252,
-	   CS_WIN1253,
-	   CS_WIN1254,
-	   CS_WIN1255,
-	   CS_WIN1256,
-	   CS_WIN1257,
-	   CS_WIN1258
-	   //CS_end
+		CS_ISO8859_2,
+		CS_ISO8859_3,
+		CS_ISO8859_4,
+		CS_ISO8859_5,
+		CS_ISO8859_6,
+		CS_ISO8859_7,
+		CS_ISO8859_8,
+		CS_ISO8859_9,
+		CS_ISO8859_10,
+		CS_ISO8859_11,
+		CS_ISO8859_13,
+		CS_ISO8859_14,
+		CS_ISO8859_15,
+		CS_ISO8859_16,
+		CS_KOI8R,
+		CS_KOI8U,
+		CS_MAC_CYRILLIC,
+		CS_MAC_GREEK,
+		CS_MAC_ICELAND,
+		CS_MAC_LATIN2,
+		CS_MAC_ROMAN,
+		CS_MAC_TURKISH,
+		CS_WIN1250,
+		CS_WIN1251,
+		CS_WIN1252,
+		CS_WIN1253,
+		CS_WIN1254,
+		CS_WIN1255,
+		CS_WIN1256,
+		CS_WIN1257,
+		CS_WIN1258
+		//CS_end
 	};
 
 
@@ -208,25 +208,25 @@ namespace wal
 
 	enum OPEN_FILE_FLAG
 	{
-	   FOPEN_READ = 1,
-	   FOPEN_WRITE = 2,
-	   FOPEN_RW = 3,
+		FOPEN_READ = 1,
+		FOPEN_WRITE = 2,
+		FOPEN_RW = 3,
 
-	   FOPEN_CREATE = 4, //open if exist and create if not exist
-	   FOPEN_SYNC = 8,
-	   FOPEN_TRUNC = 16 //truncate if exist
+		FOPEN_CREATE = 4, //open if exist and create if not exist
+		FOPEN_SYNC = 8,
+		FOPEN_TRUNC = 16 //truncate if exist
 	};
 
 	enum SEEK_FILE_MODE
 	{
 #ifdef _WIN32
-	   FSEEK_BEGIN = FILE_BEGIN,
-	   FSEEK_POS   = FILE_CURRENT,
-	   FSEEK_END   = FILE_END
+		FSEEK_BEGIN = FILE_BEGIN,
+		FSEEK_POS   = FILE_CURRENT,
+		FSEEK_END   = FILE_END
 #else
-	   FSEEK_BEGIN = SEEK_SET,
-	   FSEEK_POS   = SEEK_CUR,
-	   FSEEK_END   = SEEK_END
+		FSEEK_BEGIN = SEEK_SET,
+		FSEEK_POS   = SEEK_CUR,
+		FSEEK_END   = SEEK_END
 #endif
 	};
 
@@ -320,14 +320,14 @@ namespace wal
 
 	sys_char_t* sys_error_str( int err, sys_char_t* buf, int size );
 
-	int unicode_strlen(const unicode_t* s);
-	unicode_t* unicode_strchr(const unicode_t* s, unicode_t c);
-	unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s);
-	// copy unlit end of string, or when n chars copid, whichever comes first. 
+	int unicode_strlen( const unicode_t* s );
+	unicode_t* unicode_strchr( const unicode_t* s, unicode_t c );
+	unicode_t* unicode_strcpy( unicode_t* d, const unicode_t* s );
+	// copy unlit end of string, or when n chars copid, whichever comes first.
 	// d is always 0-ended
-	unicode_t* unicode_strncpy0(unicode_t* d, const unicode_t* s, int n);
-	void unicode_strcat(unicode_t* d, const unicode_t* s);
-	unicode_t* unicode_strdup(const unicode_t* s);
+	unicode_t* unicode_strncpy0( unicode_t* d, const unicode_t* s, int n );
+	void unicode_strcat( unicode_t* d, const unicode_t* s );
+	unicode_t* unicode_strdup( const unicode_t* s );
 
 //for internal use
 	class SysStringStruct
@@ -461,7 +461,7 @@ namespace wal
 		HANDLE ev[2]; //??volatile
 	};
 
-	int thread_create( thread_t* th, void * ( *f )( void* ), void* arg, bool detached = false );
+	int thread_create( thread_t* th, void* ( *f )( void* ), void* arg, bool detached = false );
 	int thread_join( thread_t th, void** val );
 	thread_t thread_self();
 	inline bool thread_equal( thread_t a, thread_t b ) { return a == b; }
@@ -481,7 +481,7 @@ namespace wal
 
 //...
 #else
-	inline int thread_create( thread_t* th, void * ( *f )( void* ), void* arg, bool detached = false )
+	inline int thread_create( thread_t* th, void* ( *f )( void* ), void* arg, bool detached = false )
 	{
 		int r = pthread_create( th, 0, f, arg );
 

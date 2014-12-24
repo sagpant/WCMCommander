@@ -344,7 +344,7 @@ bool NCDialog::EventChildKey( Win* child, cevent_key* pEvent )
 		}
 		else if ( pEvent->Key() == VK_TAB )
 		{
-			if ((pEvent->Mod() & KM_SHIFT) != 0)
+			if ( ( pEvent->Mod() & KM_SHIFT ) != 0 )
 			{
 				FocusPrevChild();
 			}
@@ -352,15 +352,18 @@ bool NCDialog::EventChildKey( Win* child, cevent_key* pEvent )
 			{
 				FocusNextChild();
 			}
+
 			return true;
 		}
+
 // on UNIX shift-tab gives XK_ISO_Left_Tab
 #ifdef XK_ISO_Left_Tab
-		else if(pEvent->Key() == XK_ISO_Left_Tab)
+		else if ( pEvent->Key() == XK_ISO_Left_Tab )
 		{
 			FocusPrevChild();
 			return true;
 		}
+
 #endif // XK_ISO_Left_Tab
 		else if ( pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN )
 		{
@@ -733,6 +736,7 @@ void clMenuData::Add( const unicode_t* name, const unicode_t* comment1, const un
 	if ( name ) { node.name = new_unicode_str( name ); }
 
 	if ( comment1 ) { node.comment1 = new_unicode_str( comment1 ); }
+
 	if ( comment2 ) { node.comment2 = new_unicode_str( comment2 ); }
 
 	node.cmd = cmd;
@@ -744,11 +748,11 @@ void clMenuData::Add( const unicode_t* name, const unicode_t* comment1, const un
 void clMenuData::Add( const char* utf8name, const char* utf8coment1, const char* utf8coment2, int cmd, int icon )
 {
 	Add( utf8name ? utf8_to_unicode( utf8name ).data() : 0,
-		 utf8coment1 ? utf8_to_unicode( utf8coment1 ).data() : 0,
-		 utf8coment2 ? utf8_to_unicode( utf8coment2 ).data() : 0,
-		 cmd,
-		 icon
-	);
+	     utf8coment1 ? utf8_to_unicode( utf8coment1 ).data() : 0,
+	     utf8coment2 ? utf8_to_unicode( utf8coment2 ).data() : 0,
+	     cmd,
+	     icon
+	   );
 }
 
 void clMenuData::AddSplitter()
@@ -817,16 +821,16 @@ bool clSelectDriveDlgMenu::EventShow( bool show )
 
 
 clSelectDriveDlgMenu::clSelectDriveDlgMenu( Win* parent, clMenuData* data )
- : Win( Win::WT_CHILD, Win::WH_TABFOCUS | Win::WH_CLICKFOCUS, parent )
- , _data( data )
- , _current( 0 )
- , _itemH( 16 )
- , _width( 50 )
- , _nameW( 10 )
- , _comment1W( 0 )
- , _comment2W( 0 )
- , _splitterH( 5 )
- , _splitterW( 1 )
+	: Win( Win::WT_CHILD, Win::WH_TABFOCUS | Win::WH_CLICKFOCUS, parent )
+	, _data( data )
+	, _current( 0 )
+	, _itemH( 16 )
+	, _width( 50 )
+	, _nameW( 10 )
+	, _comment1W( 0 )
+	, _comment2W( 0 )
+	, _splitterH( 5 )
+	, _splitterW( 1 )
 {
 	wal::GC gc( this );
 	gc.Set( GetFont() );
@@ -1051,7 +1055,7 @@ void clSelectDriveDlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 	for ( int i = 0; i < count; i++ )
 	{
 		if ( _data->list[i].cmd == 0 )
-		{			
+		{
 			gc.SetFillColor( bgColor );
 			gc.FillRect( crect( 0, y, _width, y + _splitterH ) );
 			crect rect( 0, y + 1, 0 + _width, y + 2 );
@@ -1063,8 +1067,10 @@ void clSelectDriveDlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 			gc.FillRect( rect );
 			y += _splitterH;
 			Splitters++;
-			if ( Splitters == 1 ) SplitterTop = y;
-			if ( Splitters == 2 ) SplitterBottom = y - _splitterH;
+
+			if ( Splitters == 1 ) { SplitterTop = y; }
+
+			if ( Splitters == 2 ) { SplitterBottom = y - _splitterH; }
 		}
 		else
 		{
@@ -1081,6 +1087,7 @@ void clSelectDriveDlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 			gc.FillRect( crect( 0, y, _width, y + _itemH ) );
 
 			cicon icon;
+
 			if ( _data->list[i].icon >= 0 )
 			{
 				icon.Load( _data->list[i].icon, 16, 16 );
@@ -1089,6 +1096,7 @@ void clSelectDriveDlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 			{
 				icon.Load( _data->list[i].cmd, 16, 16 );
 			}
+
 			gc.DrawIcon( 0, y, &icon );
 			gc.SetTextColor( textColor );
 			int x = 16 + 5;
@@ -1124,7 +1132,7 @@ void clSelectDriveDlgMenu::Paint( wal::GC& gc, const crect& paintRect )
 	{
 		int cx = _nameW + 5 + _comment1W + 30;
 		gc.SetFillColor( ColorTone( bgColor, -150 ) );
-		gc.FillRect( crect(cx, SplitterTop, cx + _splitterW, SplitterBottom) );
+		gc.FillRect( crect( cx, SplitterTop, cx + _splitterW, SplitterBottom ) );
 	}
 }
 

@@ -349,7 +349,8 @@ void W32Cons::Scroll( int Lines )
 {
 	if ( SetFirst( _firstRow - Lines ) )
 	{
-		if ( Lines > 0 ) Reread();
+		if ( Lines > 0 ) { Reread(); }
+
 		CalcScroll();
 		Invalidate();
 	}
@@ -681,9 +682,9 @@ bool W32Cons::Execute( Win* w, int tId, const unicode_t* _cmd, const unicode_t* 
 		if ( n <= 0 || n > 1000 ) { return false; }
 
 #if _MSC_VER > 1700
-		Lwcsncpy( buf.data() + n, buf.size()-n, L"\\system32\\cmd.exe", _TRUNCATE );
+		Lwcsncpy( buf.data() + n, buf.size() - n, L"\\system32\\cmd.exe", _TRUNCATE );
 #else
-		Lwcsncpy( buf.data() + n, L"\\system32\\cmd.exe", buf.size()-n );
+		Lwcsncpy( buf.data() + n, L"\\system32\\cmd.exe", buf.size() - n );
 #endif
 	}
 

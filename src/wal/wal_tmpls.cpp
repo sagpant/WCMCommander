@@ -9,12 +9,12 @@ namespace LPtr
 {
 	void IncRef( iIntrusiveCounter* Obj )
 	{
-		if ( Obj ) Obj->IncRefCount();
+		if ( Obj ) { Obj->IncRefCount(); }
 	}
 
 	void DecRef( iIntrusiveCounter* Obj )
 	{
-		if ( Obj ) Obj->DecRefCount();
+		if ( Obj ) { Obj->DecRefCount(); }
 	}
 };
 
