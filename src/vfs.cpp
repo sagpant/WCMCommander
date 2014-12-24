@@ -1079,7 +1079,7 @@ FSWin32Net::~FSWin32Net()
 // for statfs()
 #ifdef __linux__
 #  include <sys/statfs.h>
-#elif defined __FreeBSD__
+#elif defined(__FreeBSD__) || defined(__OpenBSD__)
 #  include <sys/param.h>
 #  include <sys/mount.h>
 #endif

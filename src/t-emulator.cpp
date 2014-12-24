@@ -114,7 +114,7 @@ void Emulator::ResetState()
 	_utf8char = ' ';
 	_keypad = K_NORMAL;
 	_wrap = true;
-	_N.Reset();
+	m_NumberList.Reset();
 };
 
 #define INIT_ROWS 25
@@ -452,7 +452,7 @@ void Emulator::Append( char ch )
 			{
 				case '[':
 					_state = ST_CSI;
-					_N.Reset();
+					m_NumberList.Reset();
 					return;
 
 				case '(':
@@ -473,7 +473,7 @@ void Emulator::Append( char ch )
 
 				case ']':
 					_state = ST_TP_NUM;
-					_N.Reset();
+					m_NumberList.Reset();
 					return;
 
 //ЭТО НЕВЕРНО
@@ -557,7 +557,7 @@ void Emulator::Append( char ch )
 			break;
 
 		case ST_TP_NUM:
-			if ( _N.Read( ch ) ) { return; }
+			if ( m_NumberList.Read( ch ) ) { return; }
 
 			if ( ch == ';' )
 			{
@@ -577,7 +577,7 @@ void Emulator::Append( char ch )
 
 			if ( ch == 7 )
 			{
-				//!!! set text parameter (_N[0], _TXT)
+				//!!! set text parameter (m_NumberList[0], _TXT)
 			}
 
 			break;
@@ -589,26 +589,26 @@ void Emulator::Append( char ch )
 			{
 				case '?':
 					_state = ST_DECPM;
-					_N.Reset();
+					m_NumberList.Reset();
 					return;
 			};
 
-			if ( _N.ReadList( ch ) ) { return; }
+			if ( m_NumberList.ReadList( ch ) ) { return; }
 
 			switch ( ch )
 			{
 				case 'd':
-					SetCursor( ( _N[0] ? _N[0] : 1 ) - 1, _cursor.col );
+					SetCursor( ( m_NumberList[0] ? m_NumberList[0] : 1 ) - 1, _cursor.col );
 					break;
 
 				case 'f':
-					SetCursor( ( _N[0] ? _N[0] : 1 ) - 1, ( _N[1] ? _N[1] : 1 ) - 1 );
+					SetCursor( ( m_NumberList[0] ? m_NumberList[0] : 1 ) - 1, ( m_NumberList[1] ? m_NumberList[1] : 1 ) - 1 );
 					break;
 
 				case 'r':
 				{
-					int top = ( _N[0] ? _N[0] : 1 ) - 1;
-					int bottom = ( _N[1] ? _N[1] : _rows ) - 1;
+					int top = ( m_NumberList[0] ? m_NumberList[0] : 1 ) - 1;
+					int bottom = ( m_NumberList[1] ? m_NumberList[1] : _rows ) - 1;
 
 					if ( top > bottom || bottom >= _rows || top < 0 ) { break; }
 
@@ -619,10 +619,10 @@ void Emulator::Append( char ch )
 
 				case 'm':
 				{
-					for ( int i = 0; i <= _N.count; i++ )
+					for ( int i = 0; i <= m_NumberList.count; i++ )
 					{
-//printf("_N[%i] = %i\n", i, _N[i]);
-						switch ( _N[i] )
+//printf("m_NumberList[%i] = %i\n", i, m_NumberList[i]);
+						switch ( m_NumberList[i] )
 						{
 							case 0:
 								_attr.SetNormal();
@@ -735,7 +735,7 @@ void Emulator::Append( char ch )
 								break;
 
 							default:
-								DBG( "unknown %i in esc[%im\n", _N[i], _N[i] );
+								DBG( "unknown %i in esc[%im\n", m_NumberList[i], m_NumberList[i] );
 						}
 					}
 				}
@@ -750,52 +750,52 @@ void Emulator::Append( char ch )
 					break;
 
 				case 'A':
-					IncCursor( - ( _N[0] ? _N[0] : 1 ), 0 );
+					IncCursor( - ( m_NumberList[0] ? m_NumberList[0] : 1 ), 0 );
 					break;
 
 				case 'B':
-					IncCursor(   ( _N[0] ? _N[0] : 1 ), 0 );
+					IncCursor(   ( m_NumberList[0] ? m_NumberList[0] : 1 ), 0 );
 					break;
 
 				case 'C':
-					IncCursor( 0, _N[0] ? _N[0] : 1 );
+					IncCursor( 0, m_NumberList[0] ? m_NumberList[0] : 1 );
 					break;
 
 				case 'D':
-					IncCursor( 0, -( _N[0] ? _N[0] : 1 ) );
+					IncCursor( 0, -( m_NumberList[0] ? m_NumberList[0] : 1 ) );
 					break;
 
 				case 'E': //cursor - next n lines
-					SetCursor( _cursor.row - _N[0] ? _N[0] : 1, 0 );
+					SetCursor( _cursor.row - m_NumberList[0] ? m_NumberList[0] : 1, 0 );
 					break;
 
 				case 'F': //cursor - prev n lines
-					SetCursor( _cursor.row - _N[0] ? _N[0] : 1, 0 );
+					SetCursor( _cursor.row - m_NumberList[0] ? m_NumberList[0] : 1, 0 );
 					break;
 
 				case 'G': //set cursor column
-					SetCursor( _cursor.row, ( _N[0] ? _N[0] : 1 ) - 1 );
+					SetCursor( _cursor.row, ( m_NumberList[0] ? m_NumberList[0] : 1 ) - 1 );
 					break;
 
 				case 'H':
-					SetCursor( ( _N[0] ? _N[0] : 1 ) - 1, ( _N[1] ? _N[1] : 1 ) - 1 );
+					SetCursor( ( m_NumberList[0] ? m_NumberList[0] : 1 ) - 1, ( m_NumberList[1] ? m_NumberList[1] : 1 ) - 1 );
 					break;
 
 				case 'I': //n Tabs
 				{
-					for ( int i = 0, n = _N[0] ? _N[0] : 1; i < n; i++ ) { Tab(); }
+					for ( int i = 0, n = m_NumberList[0] ? m_NumberList[0] : 1; i < n; i++ ) { Tab(); }
 				}
 				break;
 
 				case 'J':
-					EraseDisp( _N[0] );
+					EraseDisp( m_NumberList[0] );
 					break;
 
 				case 'K': // clear line
 				{
-//printf("Clear line (%i)\n", _N[0]);
-					int from  = ( _N[0] > 0 ) ? 0 : _cursor.col;
-					int to = ( _N[0] != 1 ) ? _cols : _cursor.col;
+//printf("Clear line (%i)\n", m_NumberList[0]);
+					int from  = ( m_NumberList[0] > 0 ) ? 0 : _cursor.col;
+					int to = ( m_NumberList[0] != 1 ) ? _cols : _cursor.col;
 					_screen->SetLineChar( _rows - _cursor.row - 1, from, to - from, _attr.Color() + ' ' );
 				}
 				break;
@@ -803,7 +803,7 @@ void Emulator::Append( char ch )
 				case 'L': // ins n lines (IL)
 				{
 //printf("IL\n");
-					int count = _N[0] ? _N[0] : 1;
+					int count = m_NumberList[0] ? m_NumberList[0] : 1;
 					_screen->ScrollDown( _rows - _scB - 1, _rows - _cursor.row - 1,  count, _attr.Color() + ' ' );
 				}
 				break;
@@ -811,7 +811,7 @@ void Emulator::Append( char ch )
 				case 'M': // delete n lines (DL)
 				{
 //printf("DL\n");
-					int count = _N[0] ? _N[0] : 1;
+					int count = m_NumberList[0] ? m_NumberList[0] : 1;
 					_screen->ScrollUp( _rows - _scB - 1, _rows - _cursor.row - 1, count, _attr.Color() + ' ' );
 				}
 
@@ -821,42 +821,42 @@ void Emulator::Append( char ch )
 				case 'P': //Delete chars
 				{
 //printf("DC-\n");
-					int count = _N[0] ? _N[0] : 1;
+					int count = m_NumberList[0] ? m_NumberList[0] : 1;
 					_screen->DeleteLineChar( _rows - _cursor.row - 1, _cursor.col, count, _attr.Color() + ' ' );
 				}
 				break;
 
 				case 'S': //scroll up n times
-					ScrollUp( _N[0] ? _N[0] : 1 );
+					ScrollUp( m_NumberList[0] ? m_NumberList[0] : 1 );
 					break;
 
 				case 'T': //scroll down n times
-					ScrollDown( _N[0] ? _N[0] : 1 );
+					ScrollDown( m_NumberList[0] ? m_NumberList[0] : 1 );
 					break;
 
 				case 'X': //erase n chars (ECH)
 				{
 //printf("ECH\n");
-					_screen->SetLineChar( _rows - _cursor.row - 1, _cursor.col,  _N[0] ? _N[0] : 1, _attr.Color() + ' ' );
+					_screen->SetLineChar( _rows - _cursor.row - 1, _cursor.col,  m_NumberList[0] ? m_NumberList[0] : 1, _attr.Color() + ' ' );
 				}
 				break;
 
 				default:
-					DBG( "unknown esc[%i'%c'\n", _N[0], ch );
+					DBG( "unknown esc[%i'%c'\n", m_NumberList[0], ch );
 
 			}
 
 			break;
 
 		case ST_DECPM:
-			if ( _N.ReadList( ch ) ) { return; }
+			if ( m_NumberList.ReadList( ch ) ) { return; }
 
 			switch ( ch )
 			{
 				case 'h':
 				{
-					for ( int i = 0; i <= _N.count; i++ )
-						switch ( _N[i] )
+					for ( int i = 0; i <= m_NumberList.count; i++ )
+						switch ( m_NumberList[i] )
 						{
 							case 1:
 								_keypad = K_APPLICATION;
@@ -886,15 +886,15 @@ void Emulator::Append( char ch )
 								break;
 
 							default:
-								DBG( "unknown %i in esc[?%ih\n", _N[i], _N[i] );
+								DBG( "unknown %i in esc[?%ih\n", m_NumberList[i], m_NumberList[i] );
 						};
 				}
 				break;
 
 				case 'l':
 				{
-					for ( int i = 0; i <= _N.count; i++ )
-						switch ( _N[i] )
+					for ( int i = 0; i <= m_NumberList.count; i++ )
+						switch ( m_NumberList[i] )
 						{
 							case 1:
 								_keypad = K_NORMAL;
@@ -923,14 +923,14 @@ void Emulator::Append( char ch )
 								break;
 
 							default:
-								DBG( "unknown %i in esc[?%il\n", _N[i], _N[i] );
+								DBG( "unknown %i in esc[?%il\n", m_NumberList[i], m_NumberList[i] );
 						};
 				}
 				break;
 
 
 				default:
-					DBG( "unknown esc[?%i%c\n", _N[0], ch );
+					DBG( "unknown esc[?%i%c\n", m_NumberList[0], ch );
 			}
 
 			break;

@@ -394,6 +394,7 @@ namespace wal
 
 #if defined(__APPLE__) || \
    defined(__FreeBSD__) || \
+   defined(__OpenBSD__) || \
    defined(_POSIX_C_SOURCE) && defined(_XOPEN_SOURCE) && defined(_GNU_SOURCE) && (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
 			strerror_r( err, buf, size );
 #else
