@@ -1918,6 +1918,25 @@ void NCWin::PastePanelCurrentFileURI( PanelWin* p, bool AddTrailingSpace )
 	}
 }
 
+void NCWin::CopyPanelCurrentFileURI( PanelWin* p )
+{
+	if ( !p || _mode != PANEL ) { return; }
+
+	if ( p->IsVisible() )
+	{
+		FSString S = p->UriOfCurrent();
+
+		const unicode_t* Path = S.GetUnicode();
+
+		if ( Path )
+		{
+			ClipboardText ct;
+			ct.AppendUnicodeStr( Path );
+			ClipboardSetText( this, ct );
+		}
+	}
+}
+
 void NCWin::PastePanelPath( PanelWin* p, bool AddTrailingSpace )
 {
 	if ( !p || _mode != PANEL ) { return; }
@@ -3404,6 +3423,11 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			case VK_INSERT:
 			case FC( VK_S, KM_CTRL ):
 				_panel->KeyIns();
+				break;
+
+			case FC( VK_INSERT, KM_ALT | KM_CTRL ):
+			case FC( VK_INSERT, KM_ALT | KM_SHIFT ):
+				CopyPanelCurrentFileURI( _panel );
 				break;
 
 			case FC( VK_INSERT, KM_CTRL ):

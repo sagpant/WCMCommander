@@ -315,6 +315,9 @@ private:
 	void SetToolbarEdit();
 	void SetToolbarView();
 
+	/// copy the full path of the currently selected panel item to the clipboard
+	void CopyPanelCurrentFileURI( PanelWin* p );
+
 	void PastePanelPath( PanelWin* p, bool AddTrailingSpace );
 	void PastePanelCurrentFileURI( PanelWin* p, bool AddTrailingSpace );
 
