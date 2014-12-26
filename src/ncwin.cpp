@@ -3425,6 +3425,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				_panel->KeyIns();
 				break;
 
+			case FC( VK_P, KM_CTRL | KM_SHIFT ):
 			case FC( VK_INSERT, KM_ALT | KM_CTRL ):
 			case FC( VK_INSERT, KM_ALT | KM_SHIFT ):
 				CopyPanelCurrentFileURI( _panel );
