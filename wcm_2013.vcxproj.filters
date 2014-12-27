@@ -8,6 +8,7 @@
     <ClCompile Include="src/ext-app.cpp" />
     <ClCompile Include="src/globals.cpp" />
     <ClCompile Include="src/fileassociations.cpp" />
+    <ClCompile Include="src/fileattributes.cpp" />
     <ClCompile Include="src/filehighlighting.cpp" />
     <ClCompile Include="src/fileopers.cpp" />
     <ClCompile Include="src/filesearch.cpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="src/ext-app.h" />
     <ClInclude Include="src/fileassociations.h" />
     <ClInclude Include="src/filehighlighting.h" />
+    <ClInclude Include="src/fileattributes.h" />
     <ClInclude Include="src/fileopers.h" />
     <ClInclude Include="src/filesearch.h" />
     <ClInclude Include="src/ftplogon.h" />
