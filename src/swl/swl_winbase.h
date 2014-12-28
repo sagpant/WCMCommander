@@ -650,7 +650,7 @@ namespace wal
 		crect _buttonRect;
 		ccollect<Node, 0x100> _list;
 		clPtr<TextList> _box;
-		int _cols;
+//		int _cols;
 		int _rows;
 		int _current;
 
