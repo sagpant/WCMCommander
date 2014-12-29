@@ -283,10 +283,10 @@ namespace wal
 		ALIGN align;
 		int width; //ширина в ВЫСОТАХ фонта
 	public:
-		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = 0, ALIGN al = LEFT, int w = -1 );
+		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = nullptr, ALIGN al = LEFT, int w = -1 );
 		virtual void Paint( GC& gc, const crect& paintRect );
 		//void SetText( const unicode_t* txt ) { text.SetText(txt) ; Invalidate(); }
-		void SetText( const unicode_t* txt ) { text = wal::new_unicode_str( txt ); Invalidate(); }
+		void SetText( const unicode_t* txt );
 		virtual int UiGetClassId();
 	};
 
