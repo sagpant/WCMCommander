@@ -10,6 +10,7 @@
 #include "dialog_enums.h"
 #include "dialog_helpers.h"
 #include "ltext.h"
+#include "panel.h"
 
 class clFileAttributesWin: public NCVertDialog
 {
@@ -17,10 +18,27 @@ public:
 	clFileAttributesWin( NCDialogParent* parent, PanelWin* Panel )
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Attributes")).data(), bListOkCancel )
 	 , m_Panel( Panel )
+	 , m_Node( Panel ? Panel->GetCurrent() : nullptr )
 	 , m_Layout( 17, 2 )
-	 , m_CaptionText( 0, this, utf8_to_unicode( _LT( "Change file attributes for" ) ).data(), nullptr )
-	 , m_FileNameText( 0, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr )
+	 , m_CaptionText( 0, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
+	 , m_FileNameText( 0, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
 	{
+		if ( m_Panel )
+		{
+			const unicode_t* FileName = m_Panel->GetCurrentFileName();
+
+			m_FileNameText.SetText( FileName );
+		}
+
+		if ( m_Node && m_Node->IsDir() )
+		{
+			m_CaptionText.SetText( utf8_to_unicode( _LT("Change attributes for folder:") ).data() );
+		}
+		else
+		{
+			m_CaptionText.SetText( utf8_to_unicode( _LT("Change file attributes for:") ).data() );
+		}
+
 		m_Layout.AddWinAndEnable( &m_CaptionText, 0, 0 );
 		m_Layout.AddWinAndEnable( &m_FileNameText, 1, 0 );
 		
@@ -30,11 +48,12 @@ public:
 	}
 private:
 	PanelWin* m_Panel;
+	FSNode* m_Node;
 
 	Layout m_Layout;
 
-	StaticLabel m_CaptionText;
-	StaticLabel m_FileNameText;
+	StaticLine m_CaptionText;
+	StaticLine m_FileNameText;
 };
 
 bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel )
