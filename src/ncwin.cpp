@@ -2966,7 +2966,7 @@ bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
 	if ( Path.empty() || !Path[0] )
 	{
 #if defined(_WIN32)
-		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
+		StartExecute( cmd, _panel->GetFS(), _panel->GetPath() );
 #else
 		Home( _panel );
 #endif
