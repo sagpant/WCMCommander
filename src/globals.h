@@ -21,6 +21,12 @@
 // Unix
 #define UNIX_CONFIG_DIR_PATH  "/usr/share/wcm"
 
+#if defined(_MSC_VER)
+#	define UNUSED
+#else
+#	define UNUSED __attribute__ ((unused))
+#endif
+
 extern clWcmConfig g_WcmConfig;
 
 extern clPtr<cfont> g_PanelFont;
