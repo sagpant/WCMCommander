@@ -6,6 +6,8 @@ namespace wal
 {
 	void MenuTextInfo::ParseHkText( const unicode_t* inStr )
 	{
+		strRaw = ( inStr == 0 ) ? 0 : unicode_strdup( inStr );
+
 		hotkeyUpperCase = 0;
 
 		if ( inStr == 0 )
@@ -94,10 +96,12 @@ namespace wal
 		_clearUnicodeArray( &strHk );
 		_clearUnicodeArray( &strAfterHk );
 		_clearUnicodeArray( &strFull );
+		_clearUnicodeArray( &strRaw );
 	}
 
 	void MenuTextInfo::Init( const MenuTextInfo& src )
 	{
+		strRaw = ( src.strRaw == 0 ) ? 0 : unicode_strdup( src.strRaw );
 		strBeforeHk = ( src.strBeforeHk == 0 ) ? 0 : unicode_strdup( src.strBeforeHk );
 		strHk = ( src.strHk == 0 ) ? 0 : unicode_strdup( src.strHk );
 		strAfterHk = ( src.strAfterHk == 0 ) ? 0 : unicode_strdup( src.strAfterHk );
