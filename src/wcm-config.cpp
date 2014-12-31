@@ -1008,7 +1008,7 @@ void SaveUserMenu( NCWin* nc
 	{
 		const clNCUserMenuItem& A = Items[i];
 
-		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
+		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().GetRawText() );
 		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetCommand().data() );
 
 		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
