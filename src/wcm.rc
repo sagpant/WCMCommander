@@ -77,7 +77,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            128,IDC_STATIC,14,14,21,20
     LTEXT           "Wal Commander GitHub Edition, Version 0.19.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2014",IDC_STATIC,42,26,114,8
+    LTEXT           "Copyright (C) 2014-2015",IDC_STATIC,42,26,114,8
     DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
 END
 
@@ -182,7 +182,7 @@ BEGIN
 		      VALUE "ProductVersion", "0.19.0\0"
 		      VALUE "OriginalFilename", "wcm.exe\0"
 		      VALUE "ProductName", "Wal Commander GitHub Edition\0"
-				VALUE "LegalCopyright", "Valery Goryachev 2013-2014; Sergey Kosarevsky, 2014\0"
+				VALUE "LegalCopyright", "Valery Goryachev 2013-2014; Sergey Kosarevsky, 2014-2015\0"
         END
     END
     BLOCK "VarFileInfo"

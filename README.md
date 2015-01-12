@@ -5,7 +5,7 @@ Wal Commander
 
 Copyright (c) Valery [Wal] Goryachev 2013-2014
 
-Copyright (c) Sergey Kosarevsky, 2014
+Copyright (c) Sergey Kosarevsky, 2014-2015
 
 Maintained by Sergey Kosarevsky
 

@@ -129,7 +129,7 @@ bool StartsWith( const char* s, const char* substr )
 void ShowHelp()
 {
 	printf( "%s\n", verString );
-	printf( "Copyright (C) Valery Goryachev 2013-2014, Copyright (C) Sergey Kosarevsky, 2014\n" );
+	printf( "Copyright (C) Valery Goryachev 2013-2014, Copyright (C) Sergey Kosarevsky, 2014-2015\n" );
 	printf( "http://wcm.linderdaum.com\n" );
 	printf( "\nUsage: wcm [switches]\n\n" );
 	printf( "The following switches may be used in the command line:\n\n" );
