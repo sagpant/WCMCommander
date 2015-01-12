@@ -108,9 +108,7 @@ public:
 		// disable editing of these properties
 		m_Compressed.Enable( false );
 		m_Encrypted.Enable( false );
-		m_NotIndexed.Enable( false );
 		m_Sparse.Enable( false );
-		m_Temporary.Enable( false );
 		m_Offline.Enable( false );
 		m_ReparsePoint.Enable( false );
 		m_Virtual.Enable( false );
