@@ -12,6 +12,41 @@
 #include "ltext.h"
 #include "panel.h"
 
+/*
+Windows:
+	Read only
+	Archive
+	Hidden
+	System
+	Compressed
+	Encrypted
+	Not Indexed
+	Sparse
+	Temporary
+	Offline
+	Reparse point
+	Virtual
+
+*NIX:
+	Read by owner
+	Write by owner
+	Execute by owner
+	Read by group
+	Write by group
+	Execute by group
+	Read by others
+	Write by others
+	Execute by others
+	Owner name
+	Group Name
+
+Common:
+	Last write time
+	Creation time
+	Last access time
+	Change time
+*/
+
 class clFileAttributesWin: public NCVertDialog
 {
 public:
