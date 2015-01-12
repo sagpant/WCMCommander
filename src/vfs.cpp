@@ -1362,7 +1362,9 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	{
 		fsStat->mode = st_link.st_mode;
 		fsStat->size   = st_link.st_size;
-		fsStat->mtime  = st_link.st_mtime;
+		fsStat->m_CreationTime = st_link.st_ctime;
+		fsStat->m_LastAccessTime = st_link.st_atime;
+		fsStat->m_LastWriteTime = st_link.st_mtime;
 		fsStat->gid = st_link.st_gid;
 		fsStat->uid = st_link.st_uid;
 
@@ -1371,7 +1373,6 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 
 		return 0;
 	}
-
 #endif
 
 	struct stat st;
@@ -1384,7 +1385,9 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 
 	fsStat->mode = st.st_mode;
 	fsStat->size   = st.st_size;
-	fsStat->mtime  = st.st_mtime;
+	fsStat->m_CreationTime = st.st_ctime;
+	fsStat->m_LastAccessTime = st.st_atime;
+	fsStat->m_LastWriteTime = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 
@@ -1408,7 +1411,9 @@ int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
 
 	fsStat->mode = st.st_mode;
 	fsStat->size   = st.st_size;
-	fsStat->mtime  = st.st_mtime;
+	fsStat->m_CreationTime = st.st_ctime;
+	fsStat->m_LastAccessTime = st.st_atime;
+	fsStat->m_LastWriteTime = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 
