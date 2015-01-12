@@ -99,7 +99,7 @@ Section "Start Menu Shortcuts"
   
    !insertmacro MUI_STARTMENU_WRITE_END
 
-	CreateShortCut "$DESKTOP\Wal Commnader.lnk" "$INSTDIR\" "" "$INSTDIR\small.ico"
+	CreateShortCut "$DESKTOP\Wal Commander.lnk" "$INSTDIR\" "" "$INSTDIR\small.ico"
 
 ;  CreateShortCut "$DESKTOP\Asteroids.lnk" "$INSTDIR\Launcher2.exe"
 SectionEnd
@@ -109,7 +109,7 @@ SectionEnd
 ; Uninstaller
 
 Function un.onInit
-	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove Wal Commnader GitHub Edition and all of its components?" IDYES +2
+	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove Wal Commander GitHub Edition and all of its components?" IDYES +2
 	Abort
 FunctionEnd
 
