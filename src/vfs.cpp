@@ -1985,13 +1985,12 @@ unicode_t* FSStat::GetModeStr( unicode_t buf[64] )
 	return buf;
 }
 
-
-unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
+unicode_t* FSTimeToStr( unicode_t ret[64], FSTime TimeValue )
 {
 	char str[64];
 	unicode_t* t = ret;
 #ifdef _WIN32
-	FILETIME mt = m_LastWriteTime;
+	FILETIME mt = TimeValue;
 	FILETIME lt;
 	SYSTEMTIME st;
 
@@ -2001,7 +2000,7 @@ unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
 	           int( st.wDay ), int( st.wMonth ), int( st.wYear ),
 	           int( st.wHour ), int( st.wMinute ), int( st.wSecond ) );
 #else
-	time_t mt = mtime;
+	time_t mt = TimeValue;
 	struct tm* p = localtime( &mt );
 
 	if ( p )
@@ -2027,7 +2026,11 @@ unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
 
 	*t = 0;
 	return ret;
+}
 
+unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
+{
+	return FSTimeToStr( ret, m_LastWriteTime );
 }
 
 unicode_t* FSStat::GetPrintableSizeStr( unicode_t buf[64] )
