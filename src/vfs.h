@@ -218,7 +218,10 @@ struct FSNode: public iIntrusiveCounter
 	bool IsBad() const { return st.IsBad(); }
 
 #ifdef _WIN32
-	bool IsHidden() { return ( st.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) != 0; }
+	bool IsHidden() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) != 0; }
+	bool IsSystem() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM ) != 0; }
+	bool IsReadOnly() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_READONLY ) != 0; }
+	bool IsArchive() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE ) != 0; }
 #else
 	bool IsHidden() { return name.GetUnicode()[0] == '.'; }
 #endif
