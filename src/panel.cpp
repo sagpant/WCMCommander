@@ -1046,7 +1046,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	if ( isSelected )
 	{
 		gc.SetTextColor( color_shadow );
-		gc.TextOut( x + 1, y + 1, _list.GetFileName( n, HideDotsInDir() ) );
+		gc.TextOutF( x + 1, y + 1, _list.GetFileName( n, HideDotsInDir() ) );
 		gc.SetTextColor( color_text );
 	}
 
@@ -1158,7 +1158,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 		ReplaceTrailingSpaces( &Name );
 	}
 
-	gc.TextOut( x, y, Name.data() );
+	gc.TextOutF( x, y, Name.data() );
 }
 
 void PanelWin::SetCurrent( int n )
