@@ -540,7 +540,10 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 				pNode->st.dwFileAttributes = ent.dwFileAttributes;
 				pNode->st.size = ( seek_t( ent.nFileSizeHigh ) << 32 ) + ent.nFileSizeLow;
 
-				pNode->st.mtime = ent.ftLastWriteTime;
+				pNode->st.m_CreationTime = ent.ftCreationTime;
+				pNode->st.m_LastAccessTime = ent.ftLastAccessTime;
+				pNode->st.m_LastWriteTime = ent.ftLastWriteTime;
+				
 
 				if ( ent.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 				{
@@ -587,7 +590,9 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 		fsStat->size = 0;
 		fsStat->dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
 		fsStat->mode = S_IFDIR;
-		fsStat->mtime = 0;
+		fsStat->m_CreationTime = 0;
+		fsStat->m_LastAccessTime = 0;
+		fsStat->m_LastWriteTime = 0;
 		fsStat->mode |= 0664;
 		return 0;
 	}
@@ -605,7 +610,9 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	{
 		fsStat->size = ( seek_t( ent.nFileSizeHigh ) << 32 ) + ent.nFileSizeLow;
 		fsStat->dwFileAttributes = ent.dwFileAttributes;
-		fsStat->mtime = ent.ftLastWriteTime;
+		fsStat->m_CreationTime = ent.ftCreationTime;
+		fsStat->m_LastAccessTime = ent.ftLastAccessTime;
+		fsStat->m_LastWriteTime = ent.ftLastWriteTime;
 
 		if ( ent.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 		{
@@ -663,7 +670,9 @@ int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
 
 	fsStat->size = ( seek_t( e.nFileSizeHigh ) << 32 ) + e.nFileSizeLow;
 	fsStat->dwFileAttributes = e.dwFileAttributes;
-	fsStat->mtime = e.ftLastWriteTime;
+	fsStat->m_CreationTime = e.ftCreationTime;
+	fsStat->m_LastAccessTime = e.ftLastAccessTime;
+	fsStat->m_LastWriteTime = e.ftLastWriteTime;
 
 	if ( e.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 	{
@@ -1752,14 +1761,14 @@ inline bool lessMTimeAsc( FSNode** a, FSNode** b )
 {
 	bool ad = a[0]->IsDir();
 	bool bd = b[0]->IsDir();
-	return ( ad == bd ) ? ( a[0]->st.mtime < b[0]->st.mtime ) : ( ad > bd );
+	return ( ad == bd ) ? ( a[0]->st.m_LastWriteTime < b[0]->st.m_LastWriteTime ) : ( ad > bd );
 }
 
 inline bool lessMTimeDesc( FSNode** a, FSNode** b )
 {
 	bool ad = a[0]->IsDir();
 	bool bd = b[0]->IsDir();
-	return ( ad == bd ) ? !( a[0]->st.mtime < b[0]->st.mtime ) : ( ad > bd );
+	return ( ad == bd ) ? !( a[0]->st.m_LastWriteTime < b[0]->st.m_LastWriteTime ) : ( ad > bd );
 }
 
 void FSList::SortByMTime( FSNode** buf, int count, bool asc )
@@ -1982,7 +1991,7 @@ unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
 	char str[64];
 	unicode_t* t = ret;
 #ifdef _WIN32
-	FILETIME mt = mtime;
+	FILETIME mt = m_LastWriteTime;
 	FILETIME lt;
 	SYSTEMTIME st;
 

@@ -1430,7 +1430,7 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 		}
 	}
 
-	destFs->SetFileTime( destPath, srcNode->st.mtime, srcNode->st.mtime, 0, Info() );
+	destFs->SetFileTime( destPath, srcNode->st.m_LastWriteTime, srcNode->st.m_LastWriteTime, 0, Info() );
 
 	return !move || Unlink( srcFs, srcPath );
 
@@ -1503,7 +1503,7 @@ bool OperCFThread::CopyDir( FS* srcFs, FSPath& __srcPath, FSNode* srcNode, FS* d
 		if ( !CopyNode( srcFs, srcPath, node, destFs, destPath, move ) ) { return false; }
 	}
 
-	destFs->SetFileTime( destPath, srcNode->st.mtime, srcNode->st.mtime, 0, Info() );
+	destFs->SetFileTime( destPath, srcNode->st.m_LastWriteTime, srcNode->st.m_LastWriteTime, 0, Info() );
 
 	return !move || RmDir( srcFs, __srcPath );
 }
@@ -1812,7 +1812,7 @@ int OperCFThread::MoveDir( FS* srcFs, FSPath& __srcPath, FSNode* srcNode, FS* de
 
 			}
 
-			destFs->SetFileTime( destPath, srcNode->st.mtime, srcNode->st.mtime, 0, Info() );
+			destFs->SetFileTime( destPath, srcNode->st.m_LastWriteTime, srcNode->st.m_LastWriteTime, 0, Info() );
 
 			return RmDir( srcFs, srcPath ) ? 0 : -1;
 		}

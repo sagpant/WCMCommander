@@ -128,7 +128,9 @@ struct FSStat
 #endif
 	int mode;
 	int64_t size;
-	FSTime mtime;
+	FSTime m_CreationTime;
+	FSTime m_LastAccessTime;
+	FSTime m_LastWriteTime;
 	int uid;
 	int gid;
 
@@ -139,13 +141,14 @@ struct FSStat
 #ifdef _WIN32
 		dwFileAttributes( 0 ),
 #endif
-		mode( 0 ), size( 0 ), mtime( 0 ), uid( -1 ), gid( -1 ), dev( 0 ), ino( 0 )
+		mode( 0 ), size( 0 ), m_CreationTime( 0 ), m_LastAccessTime( 0 ), m_LastWriteTime( 0 ), uid( -1 ), gid( -1 ), dev( 0 ), ino( 0 )
 	{}
 
-	FSStat( const FSStat& a ): mode( a.mode ), size( a.size ), mtime( a.mtime ), uid( a.uid ), gid( a.gid ), dev( a.dev ), ino( a.ino )
+	FSStat( const FSStat& a )
+	: mode( a.mode ), size( a.size ), m_CreationTime( a.m_CreationTime ), m_LastAccessTime( a.m_LastAccessTime ), m_LastWriteTime( a.m_LastWriteTime ), uid( a.uid ), gid( a.gid ), dev( a.dev ), ino( a.ino )
 	{ link.Copy( a.link ); }
 	FSStat& operator = ( const FSStat& a )
-	{  link.Copy( a.link ); mode = a.mode; size = a.size; mtime = a.mtime; uid = a.uid; gid = a.gid; dev = a.dev; ino = a.ino; return *this;}
+	{  link.Copy( a.link ); mode = a.mode; size = a.size; m_CreationTime = a.m_CreationTime; m_LastAccessTime = a.m_LastAccessTime; m_LastWriteTime = a.m_LastWriteTime; uid = a.uid; gid = a.gid; dev = a.dev; ino = a.ino; return *this;}
 
 	bool IsLnk() const { return !link.IsNull(); }
 	bool IsReg() const { return ( mode & S_IFMT ) == S_IFREG; }

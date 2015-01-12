@@ -220,7 +220,7 @@ bool VFile::CheckStat( FSCInfo* info )
 		throw_msg( "can`t stat file '%s' :%s", fs->Uri( path ).GetUtf8(), fs->StrError( err ).GetUtf8() );
 	}
 
-	time_t t = ( time_t ) st.mtime;
+	time_t t = ( time_t ) st.m_LastWriteTime;
 
 	if ( st.size != _size  || t != _lastMTime )
 	{
