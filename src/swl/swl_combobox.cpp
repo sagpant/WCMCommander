@@ -68,7 +68,7 @@ namespace wal
 		   _flags( flags ),
 		   _lo( 3, 4 ),
 		   _edit( 0, this, 0, 0, cols, false, EditLine::USEPARENTFOCUS | ( ( flags& READONLY ) ? EditLine::READONLY : 0 ) ),
-		   _cols( cols > 0 ? cols : 10 ),
+//		   _cols( cols > 0 ? cols : 10 ),
 		   _rows( rows > 0 ? rows : 0 )
 	{
 		_lo.AddWin( &_edit, 1, 1 );

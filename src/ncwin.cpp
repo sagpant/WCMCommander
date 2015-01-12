@@ -2973,6 +2973,16 @@ bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
 
 	std::vector<unicode_t> Path = ConvertCDArgToPath( p );
 
+	if ( Path.empty() || !Path[0] )
+	{
+#if defined(_WIN32)
+		StartExecute( cmd, _panel->GetFS(), _panel->GetPath() );
+#else
+		Home( _panel );
+#endif
+		return true;
+	}
+
 	p = Path.data();
 
 	unicode_t* lastNoSpace = nullptr;

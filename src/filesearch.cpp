@@ -12,6 +12,7 @@
 #include "unicode_lc.h"
 #include "strmasks.h"
 #include "ncwin.h"
+#include "globals.h"
 
 #include <unordered_map>
 
@@ -354,7 +355,7 @@ class SearchListWin: public VListWin
 	int fontW;
 	int fontH;
 	clPtr<FS> m_FileSystem;
-	NCWin* m_NCWin;
+	NCWin* m_NCWin UNUSED;
 
 public:
 	SearchListWin( Win* parent, const clPtr<FS>& FileSystem, NCWin* ncwin )

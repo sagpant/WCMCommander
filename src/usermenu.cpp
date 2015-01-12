@@ -25,14 +25,14 @@ public:
 	clEditUserMenuWin( NCDialogParent* parent, const clNCUserMenuItem* Item )
 		: NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit user menu" ) ).data(), bListOkCancel )
 		, m_Layout( 17, 2 )
-		, m_DescriptionText( 0, this, utf8_to_unicode( _LT( "&Description" ) ).data(), &m_DescriptionEdit )
+		, m_DescriptionText( 0, this, utf8_to_unicode( _LT( "&Name. Prepend hotkey with &" ) ).data(), &m_DescriptionEdit )
 		, m_DescriptionEdit( 0, this, 0, 0, 16 )
 		, m_CommandText( 0, this, utf8_to_unicode( _LT( "E&xecute command" ) ).data(), &m_CommandEdit )
 		, m_CommandEdit( 0, this, 0, 0, 16 )
 	{
 		if ( Item )
 		{
-			m_DescriptionEdit.SetText( Item->GetDescription().data(), false );
+			m_DescriptionEdit.SetText( Item->GetDescription().GetRawText(), false );
 			m_CommandEdit.SetText( Item->GetCommand().data(), false );
 		}
 
@@ -66,7 +66,6 @@ public:
 	{
 		m_Result.SetDescription( GetDescription() );
 		m_Result.SetCommand( GetCommand() );
-
 		return m_Result;
 	}
 
@@ -132,6 +131,22 @@ public:
 
 		return &( m_ItemList->at( n ) );
 	}
+
+	const clNCUserMenuItem* GetItemMatchingHotkey(unicode_t c) const
+	{
+		c = UnicodeUC(c);
+		for (int i = 0; i < (int)m_ItemList->size(); i++)
+		{
+			clNCUserMenuItem& item = m_ItemList->at(i);
+			if (item.GetDescription().isHotkeyMatching(c))
+			{
+				return &item;
+			}
+		}
+		return 0;
+	}
+
+	
 
 	void Ins( const clNCUserMenuItem& p )
 	{
@@ -200,11 +215,7 @@ void clUserMenuListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 	if ( p )
 	{
-		gc.Set( GetFont() );
-		gc.SetTextColor( color );
-		gc.TextOutF( rect.left + 10, rect.top + 1, p->GetDescription().data() );
-		gc.SetTextColor( fcColor );
-		gc.TextOutF( rect.left + 10, rect.top + 1, p->GetDescription().data(), 1 );
+		p->GetDescription().DrawItem(gc, rect.left + 10, rect.top + 1, color, fcColor);
 	}
 }
 
@@ -291,7 +302,7 @@ bool clUserMenuWin::Command( int id, int subId, Win* win, void* data )
 	{
 		EndModal( CMD_RUN );
 		NCWin* W = ( NCWin* )Parent();
-		const clNCUserMenuItem* ItemToRun = m_ListWin.GetCurrentData( );
+		const clNCUserMenuItem* ItemToRun =  data ? (const clNCUserMenuItem*) data : m_ListWin.GetCurrentData();
 
 		if ( W && ItemToRun )
 		{
@@ -308,7 +319,7 @@ bool clUserMenuWin::Command( int id, int subId, Win* win, void* data )
 		if ( !p ) { return true; }
 
 		if ( NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Delete item" ),
-		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( p->GetDescription().data() ).data() , "' ?" ).data(),
+		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( p->GetDescription().GetRawText() ).data() , "' ?" ).data(),
 		                   false, bListOkCancel ) == CMD_OK )
 		{
 			m_ListWin.Del();
@@ -397,6 +408,19 @@ bool clUserMenuWin::Key( cevent_key* pEvent )
 				return false;
 			}
 		}
+
+		if (( pEvent->Mod() & (KM_ALT | KM_CTRL)) == 0)
+		{
+			const clNCUserMenuItem* pItem = m_ListWin.GetItemMatchingHotkey(pEvent->Char());
+
+			if (pItem != 0)
+			{
+				Command(CMD_RUN, 0, this, (void*)pItem);
+				return true;
+			}
+		}
+		return false;
+
 	}
 
 	return false;
