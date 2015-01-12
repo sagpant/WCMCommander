@@ -57,12 +57,12 @@ public:
 	 , m_Node( Panel ? Panel->GetCurrent() : nullptr )
 	 , m_Layout( 17, 2 )
 	 , m_CaptionText( 0, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
-	 , m_FileNameText( 0, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
+	 , m_FileNameText( uiValue, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
 #if defined(_WIN32)
-	 , m_ReadOnly( 0, this, utf8_to_unicode( _LT( "Read only" ) ).data(), 0, false )
-	 , m_Archive( 0, this, utf8_to_unicode( _LT( "Archive" ) ).data(), 0, false )
-	 , m_Hidden( 0, this, utf8_to_unicode( _LT( "Hidden" ) ).data(), 0, false )
-	 , m_System( 0, this, utf8_to_unicode( _LT( "System" ) ).data(), 0, false )
+	 , m_ReadOnly( uiVariable, this, utf8_to_unicode( _LT( "Read only" ) ).data(), 0, false )
+	 , m_Archive( uiVariable, this, utf8_to_unicode( _LT( "Archive" ) ).data(), 0, false )
+	 , m_Hidden( uiVariable, this, utf8_to_unicode( _LT( "Hidden" ) ).data(), 0, false )
+	 , m_System( uiVariable, this, utf8_to_unicode( _LT( "System" ) ).data(), 0, false )
 	 , m_Compressed( 0, this, utf8_to_unicode( _LT( "Compressed" ) ).data(), 0, false )
 	 , m_Encrypted( 0, this, utf8_to_unicode( _LT( "Encrypted" ) ).data(), 0, false )
 	 , m_NotIndexed( 0, this, utf8_to_unicode( _LT( "NotIndexed" ) ).data(), 0, false )
@@ -116,11 +116,34 @@ public:
 		m_Virtual.Enable( false );
 #else
 #endif
+		UpdateAttributes( m_Node );
 		
 		AddLayout( &m_Layout );
 
 		SetPosition();
 	}
+
+private:
+	void UpdateAttributes( FSNode* Node )
+	{
+		if ( !Node ) return;
+#if defined(_WIN32)
+		m_ReadOnly.Change( Node->IsReadOnly() );
+		m_Archive.Change( Node->IsArchive() );
+		m_Hidden.Change( Node->IsHidden() );
+		m_System.Change( Node->IsSystem() );
+		m_Compressed;
+		m_Encrypted;
+		m_NotIndexed;
+		m_Sparse;
+		m_Temporary;
+		m_Offline;
+		m_ReparsePoint;
+		m_Virtual;
+#else
+#endif
+	}
+
 private:
 	PanelWin* m_Panel;
 	FSNode* m_Node;
