@@ -1612,7 +1612,7 @@ std::vector<FSNode*> FSList::GetFilteredArray( bool showHidden, int* pCount )
 	int i;
 
 	for ( i = 0 ; i < n && pNode; pNode = pNode->next )
-		if ( showHidden || !pNode->IsHidden() )
+		if ( showHidden || !pNode->IsAttrHidden() )
 		{
 			p[i++] = pNode;
 		}

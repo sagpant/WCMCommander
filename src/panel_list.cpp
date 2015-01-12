@@ -32,7 +32,7 @@ void PanelList::MakeList()
 		int i = 0;
 
 		for ( FSNode* p = data->First(); p && i < n; p = p->next )
-			if ( showHidden || !p->IsHidden() )
+			if ( showHidden || !p->IsAttrHidden() )
 			{
 				list[ i++ ] = p;
 				filesCn.AddOne( p->st.size );

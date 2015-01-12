@@ -128,18 +128,18 @@ private:
 	{
 		if ( !Node ) return;
 #if defined(_WIN32)
-		m_ReadOnly.Change( Node->IsReadOnly() );
-		m_Archive.Change( Node->IsArchive() );
-		m_Hidden.Change( Node->IsHidden() );
-		m_System.Change( Node->IsSystem() );
-		m_Compressed;
-		m_Encrypted;
-		m_NotIndexed;
-		m_Sparse;
-		m_Temporary;
-		m_Offline;
-		m_ReparsePoint;
-		m_Virtual;
+		m_ReadOnly.Change( Node->IsAttrReadOnly() );
+		m_Archive.Change( Node->IsAttrArchive() );
+		m_Hidden.Change( Node->IsAttrHidden() );
+		m_System.Change( Node->IsAttrSystem() );
+		m_Compressed.Change( Node->IsAttrCompressed() );
+		m_Encrypted.Change( Node->IsAttrEncrypted() );
+		m_NotIndexed.Change( Node->IsAttrNotIndexed() );
+		m_Sparse.Change( Node->IsAttrSparse() );
+		m_Temporary.Change( Node->IsAttrTemporary() );
+		m_Offline.Change( Node->IsAttrOffline() );
+		m_ReparsePoint.Change( Node->IsAttrReparsePoint() );
+		m_Virtual.Change( Node->IsAttrVirtual() );
 #else
 #endif
 	}

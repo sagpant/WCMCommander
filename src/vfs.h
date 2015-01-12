@@ -218,12 +218,20 @@ struct FSNode: public iIntrusiveCounter
 	bool IsBad() const { return st.IsBad(); }
 
 #ifdef _WIN32
-	bool IsHidden() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) != 0; }
-	bool IsSystem() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM ) != 0; }
-	bool IsReadOnly() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_READONLY ) != 0; }
-	bool IsArchive() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE ) != 0; }
+	bool IsAttrHidden() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) != 0; }
+	bool IsAttrSystem() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM ) != 0; }
+	bool IsAttrReadOnly() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_READONLY ) != 0; }
+	bool IsAttrArchive() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE ) != 0; }
+	bool IsAttrCompressed() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED ) != 0; }
+	bool IsAttrEncrypted() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_ENCRYPTED ) != 0; }
+	bool IsAttrNotIndexed() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED ) != 0; }
+	bool IsAttrSparse() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_SPARSE_FILE ) != 0; }
+	bool IsAttrTemporary() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY ) != 0; }
+	bool IsAttrOffline() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE ) != 0; }
+	bool IsAttrReparsePoint() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) != 0; }
+	bool IsAttrVirtual() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_VIRTUAL ) != 0; }
 #else
-	bool IsHidden() { return name.GetUnicode()[0] == '.'; }
+	bool IsAttrHidden() { return name.GetUnicode()[0] == '.'; }
 #endif
 	bool IsSelected() const { return isSelected; }
 	void SetSelected() { isSelected = true; }
