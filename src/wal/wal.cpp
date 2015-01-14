@@ -16,17 +16,6 @@
 
 namespace wal
 {
-
-	static void def_thread_error_func( int err, const char* msg, const char* file, int* line )
-	{
-		if ( !msg ) { msg = ""; }
-
-		fprintf( stderr, "THREAD ERROR (%i): %s (%s:%i)\n", err, msg, file, line ? *line : 0 );
-	}
-
-	void ( *thread_error_func )( int err, const char* msg, const char* file, int* line ) = def_thread_error_func;
-
-
 	std::vector<unicode_t> new_unicode_str( const unicode_t* s )
 	{
 		if ( !s ) { return std::vector<unicode_t>(); }
