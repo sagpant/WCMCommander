@@ -20,7 +20,7 @@ matrix:
 
 before_script:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-  - sudo add-apt-repository --yes ppa:tobydox/mingw
+  - sudo add-apt-repository --yes ppa:tobydox/mingw-x-precise
   - sudo apt-get -qq update
   - sudo apt-get -qq install libsmbclient-dev libssh2-1-dev
   - sudo apt-get -qq install gcc-4.8 g++-4.8
