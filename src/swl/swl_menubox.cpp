@@ -110,7 +110,11 @@ namespace wal
 				pEvent->Point().x += rect.left - sr.left;
 				pEvent->Point().y += rect.top - sr.top;
 
-				if ( sub->EventMouse( pEvent ) ) { return true; }
+				if ( sub->EventMouse( pEvent ) )
+				{
+					SetSelect( -1 );
+					return true;
+				}
 
 				SetSelect( -1 );
 
