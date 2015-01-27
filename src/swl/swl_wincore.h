@@ -306,7 +306,13 @@ namespace wal
 	{
 		KM_SHIFT = 0x0001,
 		KM_CTRL = 0x0002,
-		KM_ALT  = 0x0004
+		KM_ALT  = 0x0004,
+		EXT_KM_RSHIFT = 0x0008,
+		EXT_KM_LSHIFT = 0x0010,
+		EXT_KM_RCTRL = 0x0020,
+		EXT_KM_LCTRL = 0x0040,
+		EXT_KM_RALT = 0x00080,
+		EXT_KM_LALT = 0x00100
 	};
 
 	class cevent//: public iIntrusiveCounter
@@ -344,7 +350,8 @@ namespace wal
 		unsigned keyMods;
 	public:
 		cevent_input( int t, unsigned km ): cevent( t ), keyMods( km ) {}
-		unsigned Mod() { return keyMods; }
+		unsigned Mod() { return keyMods & (KM_ALT|KM_CTRL|KM_SHIFT); }
+		unsigned ExtMod() { return keyMods; }
 		virtual ~cevent_input();
 	};
 
