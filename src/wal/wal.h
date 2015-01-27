@@ -101,9 +101,6 @@ namespace wal
 #define CLASS_COPY_PROTECTION(a) private: a(const a&){}; a& operator = (const a&){return *this;};
 
 ////////////////////////  C++ thread wrappers //////////////////////////////////////
-	extern void ( *thread_error_func )( int err, const char* msg, const char* file, int* line ); //by default - abort process
-
-	inline void check_thread_error( int err, const char* s = 0 ) { if ( err ) { thread_error_func( err, s, 0, 0 ); } }
 
 #ifndef WAL_THREAD_CHECK
 #define WAL_THREAD_CHECK(a) if (!(a)) abort();
@@ -240,17 +237,17 @@ namespace wal
 #ifdef _WIN32
 		_static = stat;
 #endif
-		check_thread_error( mutex_create( &_mutex ), "mutex create" );
+		mutex_create( &_mutex );
 	}
 
 	inline void Mutex::Lock()
 	{
-		check_thread_error( mutex_lock( &_mutex ), "mutex lock" );
+		mutex_lock( &_mutex );
 	}
 
 	inline void Mutex::Unlock()
 	{
-		check_thread_error( mutex_unlock( &_mutex ), "mutex unlock" );
+		mutex_unlock( &_mutex );
 	}
 
 	inline Mutex::~Mutex()
@@ -259,11 +256,11 @@ namespace wal
 
 		if ( !_static )
 		{
-			check_thread_error( mutex_delete( &_mutex ), "mutex destroy" );
+			mutex_delete( &_mutex );
 		}
 
 #else
-		check_thread_error( mutex_delete( &_mutex ), "mutex destroy" );
+		mutex_delete( &_mutex );
 #endif
 	}
 
@@ -310,27 +307,27 @@ namespace wal
 
 	inline Cond::Cond()
 	{
-		check_thread_error( cond_create( &_cond ), "cond create" );
+		cond_create( &_cond );
 	}
 
 	inline void Cond::Wait( Mutex* mutex )
 	{
-		check_thread_error( cond_wait( &_cond, &( mutex->_mutex ) ), "cond wait" );
+		cond_wait( &_cond, &( mutex->_mutex ) );
 	}
 
 	inline void Cond::Signal()
 	{
-		check_thread_error( cond_signal( &_cond ), "cond signal" );
+		cond_signal( &_cond );
 	}
 
 	inline void Cond::Broadcast()
 	{
-		check_thread_error( cond_broadcast( &_cond ), "cond broadcast" );
+		cond_broadcast( &_cond );
 	}
 
 	inline Cond::~Cond()
 	{
-		check_thread_error( cond_delete( &_cond ), "cond destroy" );
+		cond_delete( &_cond );
 	}
 
 

@@ -37,14 +37,14 @@ enum
    _LT("DB>No")
 */
 
-static ButtonDataNode bDeleteAllSkipCancel[] = { {"Delete", CMD_OK}, { "All", CMD_ALL}, { "Skip", CMD_SKIP}, {"Cancel", CMD_CANCEL}, {0, 0}};
-static ButtonDataNode bRetrySkipCancel[] = { { "Retry", CMD_RETRY}, { "Skip", CMD_SKIP}, {"Cancel", CMD_CANCEL}, {0, 0}};
-static ButtonDataNode bRetrySkipSkipallCancel[] = { { "Retry", CMD_RETRY}, { "Skip", CMD_SKIP}, { "Skip All", CMD_SKIPALL}, {"Cancel", CMD_CANCEL}, {0, 0}};
-static ButtonDataNode bOkSkipCancel[] = { { "Ok", CMD_OK}, { "Skip", CMD_SKIP}, {"Cancel", CMD_CANCEL}, {0, 0}};
-static ButtonDataNode bSkipCancel[] = { { "Skip" , CMD_SKIP}, {"Cancel", CMD_CANCEL}, {0, 0}};
-static ButtonDataNode bSkipSkipallCancel[] = { { "Skip", CMD_SKIP}, { "Skip All", CMD_SKIPALL}, {"Cancel", CMD_CANCEL}, {0, 0}};
-//static ButtonDataNode bOk[] = { { " Ok ", CMD_OK},  {0,0}};
-static ButtonDataNode bOkAllNoCancel[] = { { "Ok", CMD_OK}, { "All", CMD_ALL}, { "No", CMD_NO}, {"Cancel", CMD_CANCEL}, {0, 0}};
+static ButtonDataNode bDeleteAllSkipCancel[] = { {"&Delete", CMD_OK}, { "&All", CMD_ALL}, { "&Skip", CMD_SKIP}, {"&Cancel", CMD_CANCEL}, {0, 0}};
+static ButtonDataNode bRetrySkipCancel[] = { { "&Retry", CMD_RETRY}, { "&Skip", CMD_SKIP}, {"&Cancel", CMD_CANCEL}, {0, 0}};
+static ButtonDataNode bRetrySkipSkipallCancel[] = { { "&Retry", CMD_RETRY}, { "&Skip", CMD_SKIP}, { "Skip &All", CMD_SKIPALL}, {"&Cancel", CMD_CANCEL}, {0, 0}};
+static ButtonDataNode bOkSkipCancel[] = { { "O&k", CMD_OK}, { "&Skip", CMD_SKIP}, {"&Cancel", CMD_CANCEL}, {0, 0}};
+static ButtonDataNode bSkipCancel[] = { { "&Skip" , CMD_SKIP}, {"&Cancel", CMD_CANCEL}, {0, 0}};
+static ButtonDataNode bSkipSkipallCancel[] = { { "&Skip", CMD_SKIP}, { "Skip &All", CMD_SKIPALL}, {"&Cancel", CMD_CANCEL}, {0, 0}};
+//static ButtonDataNode bOk[] = { { " O&k ", CMD_OK},  {0,0}};
+static ButtonDataNode bOkAllNoCancel[] = { { "O&k", CMD_OK}, { "&All", CMD_ALL}, { "&No", CMD_NO}, {"&Cancel", CMD_CANCEL}, {0, 0}};
 
 
 ///////////////////////// smb callback objs
@@ -585,7 +585,7 @@ bool OperCFThread::DeleteFile( FS* fs, FSPath& path ) //return true if not conce
 
 	if ( !commitAll )
 	{
-		switch ( RedMessage( _LT( "Do you want delete file?\n" ), fs->Uri( path ).GetUtf8(), bDeleteAllSkipCancel ) )
+		switch ( RedMessage( _LT( "Do you want to delete file?\n" ), fs->Uri( path ).GetUtf8(), bDeleteAllSkipCancel ) )
 		{
 			case CMD_SKIP:
 				return true;

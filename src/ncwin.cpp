@@ -582,7 +582,7 @@ NCWin::NCWin()
 	_mdOptions.AddCmd( ID_CONFIG_TERMINAL,  _LT( "&Terminal settings" ) );
 #endif
 
-	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "S&tyles" ) );
+	_mdOptions.AddCmd( ID_CONFIG_STYLE,  _LT( "Sty&les" ) );
 	_mdOptions.AddSplit();
 	_mdOptions.AddCmd( ID_FILEHIGHLIGHTING, _LT( "Files &highlighting" ) );
 	_mdOptions.AddSplit();
