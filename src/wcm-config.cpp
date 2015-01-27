@@ -1818,7 +1818,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Style" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   pList( p ),
-	   styleShow3DUIButton( 0, this, utf8_to_unicode( _LT( "3D buttons" ) ).data(), 0, g_WcmConfig.styleShow3DUI ),
+	   styleShow3DUIButton( 0, this, utf8_to_unicode( _LT( "&3D buttons" ) ).data(), 0, g_WcmConfig.styleShow3DUI ),
 	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
 	   styleDefButton( 0, this, utf8_to_unicode( _LT( "&Default colors" ) ).data(), 1, g_WcmConfig.styleColorMode != 1 && g_WcmConfig.styleColorMode != 2 ),
 	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "&Black" ) ).data(), 1, g_WcmConfig.styleColorMode == 1 ),
@@ -1826,8 +1826,8 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 
 	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
 	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, g_WcmConfig.styleShowToolBar ),
-	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar" ) ).data(), 0, g_WcmConfig.styleShowButtonBar ),
-	   showButtonbarIconsButton( 0, this, utf8_to_unicode( _LT( "Show &buttonbar icons" ) ).data(), 0, g_WcmConfig.styleShowButtonBarIcons ),
+	   showButtonbarButton( 0, this, utf8_to_unicode( _LT( "Show b&uttonbar" ) ).data(), 0, g_WcmConfig.styleShowButtonBar ),
+	   showButtonbarIconsButton( 0, this, utf8_to_unicode( _LT( "Show buttonbar &icons" ) ).data(), 0, g_WcmConfig.styleShowButtonBarIcons ),
 	   showMenubarButton( 0, this, utf8_to_unicode( _LT( "Show &menubar" ) ).data(), 0, g_WcmConfig.styleShowMenuBar ),
 
 	   fontsStatic( 0, this, utf8_to_unicode( _LT( "Fonts:" ) ).data() ),
