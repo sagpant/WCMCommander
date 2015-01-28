@@ -142,7 +142,7 @@ ButtonWinData editNormalButtons[] =
 ButtonWinData editShiftButtons[] =
 {
 	{"", 0},
-	{"", 0},
+	{"SaveAs", ID_SAVE_AS},
 	{"", 0},
 	{"", 0},
 	{"", 0},
