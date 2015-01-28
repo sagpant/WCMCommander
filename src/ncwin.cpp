@@ -139,10 +139,13 @@ ButtonWinData editNormalButtons[] =
 };
 
 
+// XXX note: currently the array, as well as all other  defines only bottom bar labels.
+// Commad IDs are not used. Instead, command selection is performed inside NCWin::OnKeyDown
+//
 ButtonWinData editShiftButtons[] =
 {
 	{"", 0},
-	{"", 0},
+	{"Save As", ID_SAVE_AS},
 	{"", 0},
 	{"", 0},
 	{"", 0},
