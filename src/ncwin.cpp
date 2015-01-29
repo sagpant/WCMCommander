@@ -4579,6 +4579,9 @@ void StringWin::OnChangeStyles()
 
 	defaultGC->Set( GetFont() );
 	textSize = defaultGC->GetTextExtents( text.data() );
+	cpoint textSizeABC = defaultGC->GetTextExtents( ABCString );
+	// use the same height adjustment as in EditLine
+	textSize.y = textSizeABC.y + 2;
 	LSize ls( textSize );
 	ls.y.maximal = textSize.y;
 	ls.x.maximal = textSize.x;
