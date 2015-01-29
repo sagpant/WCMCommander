@@ -2005,7 +2005,7 @@ bool PanelWin::DirUp()
 	return true;
 }
 
-void PanelWin::DirEnter()
+void PanelWin::DirEnter(bool OpenInExplorer)
 {
 	if ( _place.IsEmpty() ) { return; }
 
@@ -2075,7 +2075,18 @@ void PanelWin::DirEnter()
 
 #endif
 
-	LoadPath( GetFSPtr(), p, 0, 0, RESET );
+#if defined(_WIN32)
+	if ( OpenInExplorer )
+	{
+		FSString URI = fs->Uri(p);
+		const unicode_t* Path = URI.GetUnicode();
+		ShellExecuteW( 0, L"open", Path, nullptr, nullptr, SW_SHOWMAXIMIZED );
+	}
+	else
+#endif
+	{
+		LoadPath( GetFSPtr(), p, 0, 0, RESET );
+	}
 }
 
 void PanelWin::DirRoot()

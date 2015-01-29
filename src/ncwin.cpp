@@ -851,7 +851,7 @@ void NCWin::PanelCtrlPgDown()
 	StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_ExecuteSecondary );
 }
 
-void NCWin::PanelEnter()
+void NCWin::PanelEnter(bool Shift)
 {
 	if ( _mode != PANEL ) { return; }
 
@@ -859,7 +859,7 @@ void NCWin::PanelEnter()
 
 	if ( !p || p->IsDir() )
 	{
-		_panel->DirEnter();
+		_panel->DirEnter(Shift);
 		return;
 	}
 
@@ -874,6 +874,13 @@ void NCWin::PanelEnter()
 	std::vector<unicode_t> cmd;
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
+
+	if ( Shift )
+	{
+		ShellExecuteW(0, L"open", _panel->UriOfCurrent().GetUnicode(), nullptr, nullptr, SW_SHOWMAXIMIZED);
+		return;
+	}
+
 
 	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) { return; }
 
@@ -3632,7 +3639,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					if ( StartCommand( FetchAndClearCommandLine(), true ) ) { break; }
 				}
 
-				if ( _panelVisible ) { PanelEnter(); }
+				if ( _panelVisible ) { PanelEnter(true); }
 
 				break;
 			}
