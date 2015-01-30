@@ -1509,16 +1509,16 @@ void NCWin::SelectSortMode( PanelWin* p )
 
 	clMenuData mData;
 
-	PanelList::SORT_MODE Mode = p->GetSortMode();
+	SORT_MODE Mode = p->GetSortMode();
 	bool IsAscending = p->IsAscendingSort();
 
 	const int CHECKED_ICON_ID = IsAscending ? ID_REDO : ID_UNDO;
 
-	mData.Add( _LT( "Name" ), nullptr, nullptr, ID_SORT_BY_NAME_R, Mode == PanelList::SORT_NAME ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT( "Extension" ), nullptr, nullptr, ID_SORT_BY_EXT_R, Mode == PanelList::SORT_EXT ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT( "Modification time" ), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT( "Size" ), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT( "Unsorted" ), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Name" ), nullptr, nullptr, ID_SORT_BY_NAME_R, Mode == SORT_NAME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Extension" ), nullptr, nullptr, ID_SORT_BY_EXT_R, Mode == SORT_EXT ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Modification time" ), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == SORT_MTIME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Size" ), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == SORT_SIZE ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Unsorted" ), nullptr, nullptr, ID_UNSORT_R, Mode == SORT_NONE ? CHECKED_ICON_ID : -1 );
 	//mData.AddSplitter();
 
 	int res = RunDldMenu( uiDriveDlg, p, "Sort by", &mData );

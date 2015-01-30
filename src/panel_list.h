@@ -29,17 +29,10 @@ struct PanelCounter
 	void SubOne( long long _size ) { count--; size -= _size;};
 };
 
+
 class PanelList
 {
 public:
-	enum SORT_MODE
-	{
-		SORT_NONE = 0, //unsorted
-		SORT_NAME,
-		SORT_EXT,
-		SORT_SIZE,
-		SORT_MTIME
-	};
 
 private:
 	SORT_MODE sortMode;
@@ -139,6 +132,18 @@ public:
 			}
 
 		return -1;
+	}
+
+	int FindExactOrClosestSucceeding(FSNode& n, bool RootDir)
+	{
+		int i = FSNodeVectorSorter::BSearch(n, list, 
+			 EXACT_OR_CLOSEST_SUCCEEDING_NODE,
+			 ascSort, caseSensitive, sortMode);
+		if (i > 0 && i >= (int)(list.size()))
+		{
+			i--;
+		}
+		return i + (RootDir ? 0 : 1);
 	}
 
 	clPtr<cstrhash<bool, unicode_t> > GetSelectedHash()
@@ -260,3 +265,5 @@ public:
 
 	~PanelList() {};
 };
+
+

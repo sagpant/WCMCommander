@@ -236,6 +236,21 @@ struct FSNode: public iIntrusiveCounter
 	~FSNode();
 };
 
+enum BSearchMode
+{
+	EXACT_MATCH_ONLY,
+	EXACT_OR_CLOSEST_PRECEDING_NODE,
+	EXACT_OR_CLOSEST_SUCCEEDING_NODE,
+};
+
+enum SORT_MODE
+{
+	SORT_NONE = 0, //unsorted
+	SORT_NAME,
+	SORT_EXT,
+	SORT_SIZE,
+	SORT_MTIME
+};
 
 class FSList: public iIntrusiveCounter
 {
@@ -259,12 +274,17 @@ public:
 
 	~FSList() { Clear(); }
 
-	static void SortByName  ( FSNode** buf, int count, bool asc, bool case_sensitive );
-	static void SortByExt   ( FSNode** buf, int count, bool asc, bool case_sensitive );
-	static void SortBySize  ( FSNode** buf, int count, bool asc );
-	static void SortByMTime ( FSNode** buf, int count, bool asc );
-
 	CLASS_COPY_PROTECTION( FSList );
+};
+
+typedef int FSNodeCmpFunc(FSNode* n1, FSNode* n2);
+class FSNodeVectorSorter
+{
+	static FSNodeCmpFunc* getCmpFunc(bool isAscending, bool isCaseSensitive, SORT_MODE sortMode);
+
+public:
+	static void Sort(std::vector<FSNode*>& nodeVector, bool isAscending, bool isCaseSensitive, SORT_MODE sortMode);
+	static int BSearch(FSNode& n, const std::vector<FSNode*>& nodeVector, BSearchMode searchMode, bool isAscending, bool isCaseSensitive, SORT_MODE sortMode);
 };
 
 struct FSSmbParam

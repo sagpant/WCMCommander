@@ -305,13 +305,13 @@ void PanelWin::SortByName()
 {
 	FSNode* p = _list.Get( _current, HideDotsInDir() );
 
-	if ( _list.SortMode() == PanelList::SORT_NAME )
+	if ( _list.SortMode() == SORT_NAME )
 	{
-		_list.Sort( PanelList::SORT_NAME, !_list.AscSort() );
+		_list.Sort( SORT_NAME, !_list.AscSort() );
 	}
 	else
 	{
-		_list.Sort( PanelList::SORT_NAME, true );
+		_list.Sort( SORT_NAME, true );
 	}
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -323,13 +323,13 @@ void PanelWin::SortByExt()
 {
 	FSNode* p = _list.Get( _current, HideDotsInDir() );
 
-	if ( _list.SortMode() == PanelList::SORT_EXT )
+	if ( _list.SortMode() == SORT_EXT )
 	{
-		_list.Sort( PanelList::SORT_EXT, !_list.AscSort() );
+		_list.Sort( SORT_EXT, !_list.AscSort() );
 	}
 	else
 	{
-		_list.Sort( PanelList::SORT_EXT, true );
+		_list.Sort( SORT_EXT, true );
 	}
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -341,13 +341,13 @@ void PanelWin::SortBySize()
 {
 	FSNode* p = _list.Get( _current, HideDotsInDir() );
 
-	if ( _list.SortMode() == PanelList::SORT_SIZE )
+	if ( _list.SortMode() == SORT_SIZE )
 	{
-		_list.Sort( PanelList::SORT_SIZE, !_list.AscSort() );
+		_list.Sort( SORT_SIZE, !_list.AscSort() );
 	}
 	else
 	{
-		_list.Sort( PanelList::SORT_SIZE, false );
+		_list.Sort( SORT_SIZE, false );
 	}
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -359,13 +359,13 @@ void PanelWin::SortByMTime()
 {
 	FSNode* p = _list.Get( _current, HideDotsInDir() );
 
-	if ( _list.SortMode() == PanelList::SORT_MTIME )
+	if ( _list.SortMode() == SORT_MTIME )
 	{
-		_list.Sort( PanelList::SORT_MTIME, !_list.AscSort() );
+		_list.Sort( SORT_MTIME, !_list.AscSort() );
 	}
 	else
 	{
-		_list.Sort( PanelList::SORT_MTIME, false );
+		_list.Sort( SORT_MTIME, false );
 	}
 
 	if ( p ) { SetCurrent( p->Name() ); }
@@ -1640,23 +1640,23 @@ void PanelWin::Paint( wal::GC& gc, const crect& paintRect )
 
 			switch ( _list.SortMode() )
 			{
-				case PanelList::SORT_NONE:
+				case SORT_NONE:
 					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "u" : "U" ) ).data() );
 					break;
 
-				case PanelList::SORT_NAME:
+				case SORT_NAME:
 					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "n" : "N" ) ).data() );
 					break;
 
-				case PanelList::SORT_EXT:
+				case SORT_EXT:
 					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "x" : "X" ) ).data() );
 					break;
 
-				case PanelList::SORT_SIZE:
+				case SORT_SIZE:
 					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "S" : "s" ) ).data() );
 					break;
 
-				case PanelList::SORT_MTIME:
+				case SORT_MTIME:
 					gc.TextOutF( x, y, utf8_to_unicode( _LT( asc ? "W" : "w" ) ).data() );
 					break;
 			};
@@ -1697,7 +1697,7 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 	FSCInfo info;
 //	int err;
 
-//	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;
+//	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;Retain
 	dbg_printf( "PanelWin::LoadPath paramPath=%s\n", paramPath.GetUtf8() );
 
 	try
@@ -1706,8 +1706,34 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 		_inOperState = true;
 		_operType = lType;
 
-		if ( current ) { _operCurrent = *current; }
-		else { _operCurrent.Clear(); }
+		bool foundCurrent = false;
+		if (current)
+		{
+			_operCurrentStr = *current;
+
+			int currentIdx = _list.Find(*current, HideDotsInDir());
+			if (currentIdx >= 0)
+			{
+				_operCursorLoc = currentIdx;
+				FSNode* currentNode = _list.Get(currentIdx, HideDotsInDir());
+				if (currentNode)
+				{
+					_operCurrent = *currentNode;
+					foundCurrent = true;
+				}
+			}
+			else
+				_operCursorLoc = -1;
+		}
+		else
+		{
+			_operCurrentStr.Clear();
+		}
+
+		if (!foundCurrent)
+		{
+			_operCurrent.name.Clear();
+		}
 
 		_operSelected = selected;
 		_operData.SetNewParams( fs, paramPath );
@@ -1786,12 +1812,44 @@ void PanelWin::OperThreadStopped()
 			_list.SetSelectedByHash( selected.ptr() );
 		}
 
-		if ( !_operCurrent.IsEmpty() )
+		bool foundCurrent = false;
+
+		// restore cursor location
+		// try to find exact match on name 
+		if (!_operCurrentStr.IsEmpty())
 		{
-			int n = _list.Find( _operCurrent, HideDotsInDir() );
-			SetCurrent( n < 0 ? 0 : n );
+			int n = _list.Find(_operCurrentStr, HideDotsInDir());
+			if (n > 0)
+			{
+				SetCurrent(n);
+				foundCurrent = true;
+			}
 		}
-		else
+		// in no-sort the best is to stay at the same custor location
+		if (!foundCurrent && _list.SortMode() == SORT_NONE)
+		{
+			SetCurrent(_operCursorLoc);
+			foundCurrent = true;
+		}
+
+		// try closest node in current sort mode
+		if (!foundCurrent && !_operCurrent.name.IsEmpty())
+		{
+			int n = _list.FindExactOrClosestSucceeding( _operCurrent, HideDotsInDir() );
+			if (n > 0)
+			{
+				SetCurrent(n);
+				foundCurrent = true;
+			}
+		}
+
+		// un unsorted mode - no way to find closest match. Try last cursor location
+		if (!foundCurrent && _operCursorLoc >= 0)
+		{
+			SetCurrent(_operCursorLoc);
+		}
+		
+		if (!foundCurrent)
 		{
 			SetCurrent( 0 );
 		}

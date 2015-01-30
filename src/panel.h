@@ -212,7 +212,9 @@ private:
 	LOAD_TYPE _operType;
 	OperRDData _operData;
 	clPtr<cstrhash<bool, unicode_t> > _operSelected;
-	FSString _operCurrent;
+	FSNode _operCurrent;
+	FSString _operCurrentStr;
+	int _operCursorLoc;
 
 public:
 	PanelWin( Win* parent, int* mode );
@@ -234,7 +236,7 @@ public:
 	void SortBySize();
 	void SortByMTime();
 	void DisableSort();
-	PanelList::SORT_MODE GetSortMode() const { return _list.SortMode(); }
+	SORT_MODE GetSortMode() const { return _list.SortMode(); }
 	bool IsAscendingSort() const { return _list.AscSort(); }
 
 	cevent_key QuickSearch( cevent_key* key );
