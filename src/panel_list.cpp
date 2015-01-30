@@ -8,7 +8,6 @@
 #include "wcm-config.h"
 #include "globals.h"
 #include "strmasks.h"
-
 using namespace wal;
 
 unicode_t PanelList::emptyStr[] = {0};
@@ -51,38 +50,13 @@ void PanelList::MakeList()
 	}
 }
 
-
 void PanelList::Sort()
 {
 	if ( !list.data() || !listCount )
 	{
 		return;
 	}
-
-	FSNode** p = list.data();
-	int count = listCount;
-
-	switch ( sortMode )
-	{
-		case SORT_NONE:
-			break;
-
-		case SORT_NAME:
-			FSList::SortByName( p, count, ascSort, caseSensitive );
-			break;
-
-		case SORT_EXT:
-			FSList::SortByExt ( p, count, ascSort, caseSensitive );
-			break;
-
-		case SORT_SIZE:
-			FSList::SortBySize( p, count, ascSort );
-			break;
-
-		case SORT_MTIME:
-			FSList::SortByMTime( p, count, ascSort );
-			break;
-	}
+	FSNodeVectorSorter::Sort(list, ascSort, caseSensitive, sortMode);
 }
 
 void PanelList::Mark( const unicode_t* mask, bool enable )

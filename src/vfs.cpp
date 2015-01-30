@@ -8,6 +8,7 @@
 #include "string-util.h"
 #include <sys/types.h>
 #include "unicode_lc.h"
+#include <algorithm>
 
 #if defined( __APPLE__ )
 #  include <sys/param.h>
@@ -1623,188 +1624,142 @@ std::vector<FSNode*> FSList::GetFilteredArray( bool showHidden, int* pCount )
 }
 
 
-inline bool lessNameAscSens( FSNode** a, FSNode** b )
+// binary search. 
+// Returns index of the found node
+// in EXACT_MATCH_ONLY mode returns -1 if node not found
+// in EXACT_OR_CLOSEST_PRECEDING_NODE modes returns -1 if n is less than the 1st nodeVector element 
+// in EXACT_OR_CLOSEST_SUCCEEDING_NODE modes returns vsize if n is greater than the last nodeVector element
+static int _BSearch(FSNode& n, const std::vector<FSNode*>& nodeVector, int(*CmpFunc)(FSNode* n1, FSNode* n2), BSearchMode bSearchMode)
 {
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-	return ( ad == bd ) ? ( a[0]->CmpByName( b[0][0], true ) < 0 ) : ( ad > bd );
-}
+	int vsize = nodeVector.size();
+	if (vsize == 0)
+		return -1;
 
-inline bool lessNameAscNo( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-	return ( ad == bd ) ? ( a[0]->CmpByName( b[0][0], false ) < 0 ) : ( ad > bd );
-}
+	int iLeft = 0;
+	int iRight = vsize-1;
+	int cmp = CmpFunc(&n, nodeVector[iLeft]);
 
-
-inline bool lessNameDescSens( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-	return ( ad == bd ) ? !( a[0]->CmpByName( b[0][0], true ) < 0 ) : ( ad > bd );
-}
-
-inline bool lessNameDescNo( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-	return ( ad == bd ) ? !( a[0]->CmpByName( b[0][0], false ) < 0 ) : ( ad > bd );
-}
-
-
-void FSList::SortByName( FSNode** buf, int count, bool asc, bool case_sensitive )
-{
-	if ( case_sensitive )
+	for (int i = iRight / 2; iLeft< iRight ; i = (iLeft + iRight) / 2)
 	{
-		sort2m<FSNode*>( buf, count, asc ? lessNameAscSens : lessNameDescSens );
+		int cmp = CmpFunc(&n, nodeVector[i]);
+		if (cmp == 0) // found exact match
+			return i;
+		if (cmp > 0)
+			iLeft = i + 1;
+		else
+			iRight = i - 1;
 	}
+
+	switch (bSearchMode)
+	{
+	case EXACT_OR_CLOSEST_PRECEDING_NODE:
+		return iRight;
+	case EXACT_OR_CLOSEST_SUCCEEDING_NODE:
+		return iLeft;
+	default:
+	case EXACT_MATCH_ONLY:
+		return -1;
+	}
+}
+
+
+// standard: returns n1 - n2, for bsearch
+template <bool isAscending, bool isCaseSensitive, SORT_MODE mode>
+int CmpFunc(FSNode* a, FSNode* b)
+{
+	// directories always go first
+	int dirCmp = a->IsDir() - b->IsDir();
+	if (dirCmp)
+		return -dirCmp;
+	switch (mode)
+	{
+	case SORT_EXT:
+	{
+								int cmpExt = a->CmpByExt(*b, isCaseSensitive);
+								if (cmpExt)
+									return isAscending ? cmpExt : -cmpExt;
+	} // if not, do name comparison in the current ascending mode
+	  // i.e. fall into next case
+	case SORT_NAME:
+	{
+								int cmpName = isCaseSensitive ? a->name.Cmp(b->name) : a->name.CmpNoCase(b->name);
+								return isAscending ? cmpName : -cmpName;
+	}
+	case SORT_SIZE:
+	{
+								 int64_t cmpSize = a->st.size - b->st.size;
+								 if (cmpSize)
+									 return isAscending ? (cmpSize > 0 ? 1 : -1) : (cmpSize > 0 ? -1 : 1);
+								 break;
+	}
+	case SORT_MTIME:
+	{
+								  time_t cmpTime = a->st.mtime - b->st.mtime;
+								  if (cmpTime)
+									  return isAscending ? (cmpTime > 0 ? 1 : -1) : (cmpTime > 0 ? -1 : 1);
+								  break;
+	}
+	default:
+		return 0;
+	}
+	// if ext|size|mtime are the same, return name comparison in ascending=true mode
+	return  isCaseSensitive ? a->name.Cmp(b->name) : a->name.CmpNoCase(b->name);
+}
+
+
+FSNodeCmpFunc* FSNodeVectorSorter::getCmpFunc(bool isAscending, bool isCaseSensitive, SORT_MODE sortMode)
+{
+	switch (sortMode)
+	{
+	case SORT_NAME:
+		return isAscending ?
+			(isCaseSensitive ? CmpFunc<true, true, SORT_NAME> : CmpFunc<true, false, SORT_NAME>) :
+			(isCaseSensitive ? CmpFunc<false, true, SORT_NAME> : CmpFunc<false, false, SORT_NAME>);
+	case SORT_EXT:
+		return isAscending ?
+			(isCaseSensitive ? CmpFunc<true, true, SORT_EXT> : CmpFunc<true, false, SORT_EXT>) :
+			(isCaseSensitive ? CmpFunc<false, true, SORT_EXT> : CmpFunc<false, false, SORT_EXT>);
+		break;
+	case SORT_SIZE:
+		return isAscending ? CmpFunc<true, true, SORT_SIZE> : CmpFunc<false, true, SORT_SIZE>;
+		break;
+	case SORT_MTIME:
+		return isAscending ? CmpFunc<true, true, SORT_MTIME> : CmpFunc<false, true, SORT_MTIME>;
+	default: // SORT_NONE
+		break;
+	}
+	return 0;
+}
+
+void FSNodeVectorSorter::Sort(std::vector<FSNode*>& nodeVector, 
+	bool isAscending, bool isCaseSensitive, SORT_MODE sortMode)
+{
+	struct GreaterCmp
+	{
+		FSNodeCmpFunc* pCmpFunc;
+		GreaterCmp(FSNodeCmpFunc* _pCmpFunc) : pCmpFunc(_pCmpFunc){}
+		bool operator() (FSNode* n1, FSNode* n2)
+		{
+			return pCmpFunc(n1, n2) < 0;
+		}
+	};
+
+	FSNodeCmpFunc* pFunc = getCmpFunc(isAscending, isCaseSensitive, sortMode);
+	if (pFunc)
+	{
+		std::sort(nodeVector.begin(), nodeVector.end(), GreaterCmp(pFunc));
+	}
+}
+
+int FSNodeVectorSorter::BSearch(FSNode& n, const std::vector<FSNode*>& nodeVector, 
+	BSearchMode searchMode, bool isAscending, bool isCaseSensitive, SORT_MODE sortMode)
+{
+	FSNodeCmpFunc *pFunc = getCmpFunc(isAscending, isCaseSensitive, sortMode);
+	if (pFunc)
+		return _BSearch(n, nodeVector, pFunc, searchMode);
 	else
-	{
-		sort2m<FSNode*>( buf, count, asc ? lessNameAscNo : lessNameDescNo );
-	}
+		return -1;
 }
-
-inline bool lessExtAscSens( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-
-	if ( ad == bd )
-	{
-		int r = a[0]->CmpByExt( b[0][0], true );
-
-		if ( !r ) { return a[0]->CmpByName( b[0][0], true ) < 0; }
-
-		return r < 0;
-	}
-
-	return ad > bd;
-}
-
-inline bool lessExtAscNo( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-
-	if ( ad == bd )
-	{
-		int r = a[0]->CmpByExt( b[0][0], false );
-
-		if ( !r ) { return a[0]->CmpByName( b[0][0], false ) < 0; }
-
-		return r < 0;
-	}
-
-	return ad > bd;
-}
-
-
-inline bool lessExtDescSens( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-
-	if ( ad == bd )
-	{
-		int r = a[0]->CmpByExt( b[0][0], true );
-
-		if ( !r ) { return a[0]->CmpByName( b[0][0], true ) > 0; }
-
-		return r > 0;
-	}
-
-	return ad > bd;
-}
-
-inline bool lessExtDescNo( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-
-	if ( ad == bd )
-	{
-		int r = a[0]->CmpByExt( b[0][0], false );
-
-		if ( !r ) { return a[0]->CmpByName( b[0][0], false ) > 0; }
-
-		return r > 0;
-	}
-
-	return ad > bd;
-}
-
-
-void FSList::SortByExt( FSNode** buf, int count, bool asc, bool case_sensitive )
-{
-	if ( case_sensitive )
-	{
-		sort2m<FSNode*>( buf, count, asc ? lessExtAscSens : lessExtDescSens );
-	}
-	else
-	{
-		sort2m<FSNode*>( buf, count, asc ? lessExtAscNo : lessExtDescNo );
-	}
-}
-
-
-inline bool lessMTimeAsc( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-	return ( ad == bd ) ? ( a[0]->st.mtime < b[0]->st.mtime ) : ( ad > bd );
-}
-
-inline bool lessMTimeDesc( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-	return ( ad == bd ) ? !( a[0]->st.mtime < b[0]->st.mtime ) : ( ad > bd );
-}
-
-void FSList::SortByMTime( FSNode** buf, int count, bool asc )
-{
-	sort2m<FSNode*>( buf, count, asc ? lessMTimeAsc : lessMTimeDesc );
-}
-
-inline bool lessSizeAsc( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-
-	if ( ad == bd )
-	{
-		if ( a[0]->st.size == b[0]->st.size ) { return a[0]->CmpByName( b[0][0], true ) < 0; }
-
-		return a[0]->st.size < b[0]->st.size;
-	}
-
-	return ad > bd;
-}
-
-
-inline bool lessSizeDesc( FSNode** a, FSNode** b )
-{
-	bool ad = a[0]->IsDir();
-	bool bd = b[0]->IsDir();
-
-	if ( ad == bd )
-	{
-		if ( a[0]->st.size == b[0]->st.size ) { return a[0]->CmpByName( b[0][0], true ) > 0; }
-
-		return a[0]->st.size > b[0]->st.size;
-	}
-
-	return ad > bd;
-}
-
-
-void FSList::SortBySize( FSNode** buf, int count, bool asc )
-{
-	sort2m<FSNode*>( buf, count, asc ? lessSizeAsc : lessSizeDesc );
-}
-
-
 
 /////////////////////////////////////  FSStat ////////////////////////////////////////
 
