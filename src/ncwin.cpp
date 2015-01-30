@@ -35,7 +35,8 @@
 #include "string-util.h"
 #include "filesearch.h"
 #include "help.h"
-#include "shortcuts.h"
+#include "folder-shortcuts.h"
+#include "folder-history.h"
 #include "fileassociations.h"
 #include "fontdlg.h"
 #include "color-style.h"
@@ -292,9 +293,9 @@ void NCWin::SetToolbarPanel()
 	_toolBar.AddSplitter();
 	_toolBar.AddCmd( ID_SEARCH_2,  _LT( "Search files" ) );
 	_toolBar.AddSplitter();
-	_toolBar.AddCmd( ID_SHORTCUTS, _LT( "Show Shortcuts" ) );
+	_toolBar.AddCmd( ID_FOLDER_SHORTCUTS, _LT( "Show Folder Shortcuts" ) );
 	_toolBar.AddSplitter();
-	_toolBar.AddCmd( ID_HISTORY,   _LT( "Show Command history" ) );
+    _toolBar.AddCmd(ID_HISTORY, _LT("Show Command history"));
 	_toolBar.Invalidate();
 }
 
@@ -609,12 +610,14 @@ NCWin::NCWin()
 	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "U&nselect group" ), "Gray -" );
 	_mdFiles.AddCmd( ID_GROUP_INVERT, _LT( "&Invert selection" ), "Gray *" );
 
-	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Shift F7" );
-	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Shift-F8 (Ctrl-K)" );
+	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Alt-F7" );
+	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Alt-F8 (Ctrl-K)" );
+    _mdCommands.AddCmd( ID_FOLDER_HISTORY, _LT( "F&olders history" ), "Alt-F12" );
+    _mdCommands.AddSplit();
 	_mdCommands.AddCmd( ID_CTRL_O, _LT( "&Panel on/off" ), "Ctrl-O" );
-	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl =" );
+	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl-=" );
 	_mdCommands.AddSplit();
-	_mdCommands.AddCmd( ID_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl D" );
+	_mdCommands.AddCmd( ID_FOLDER_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl-D" );
 	_mdCommands.AddCmd( ID_FILEASSOCIATIONS, _LT( "File &associations" ) );
 
 	m_Edit.SetFocus();
@@ -2370,18 +2373,36 @@ void NCWin::Search()
 	}
 }
 
-
-void NCWin::Shortcuts()
+void NCWin::FolderShortcuts()
 {
-	if ( _mode != PANEL ) { return; }
+    if (_mode != PANEL)
+    {
+        return;
+    }
 
-	clPtr<FS> ptr = _panel->GetFSPtr();
-	FSPath path = _panel->GetPath();
+    clPtr<FS> ptr  = _panel->GetFSPtr();
+    FSPath    path = _panel->GetPath();
 
-	if ( ShortcutDlg( this, &ptr, &path ) )
-	{
-		_panel->LoadPath( ptr, path, 0, 0, PanelWin::SET );
-	}
+    if (FolderShortcutDlg(this, &ptr, &path))
+    {
+        _panel->LoadPath(ptr, path, 0, 0, PanelWin::SET);
+    }
+}
+
+void NCWin::FolderHistory()
+{
+    if (_mode != PANEL)
+    {
+        return;
+    }
+
+    clPtr<FS> ptr;
+    FSPath    path;
+
+    if (FolderHistoryDlg(this, &ptr, &path))
+    {
+        _panel->LoadPath(ptr, path, 0, 0, PanelWin::SET);
+    }
 }
 
 void NCWin::FileAssociations()
@@ -3743,10 +3764,14 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case FC( VK_D, KM_CTRL ):
-				Shortcuts();
+				FolderShortcuts();
 				break;
 
-			case FC( VK_F, KM_CTRL ):
+            case FC(VK_F12, KM_ALT):
+                FolderHistory();
+                break;
+
+            case FC(VK_F, KM_CTRL):
 				CtrlF();
 				break;
 
@@ -4374,11 +4399,15 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 				PanelEqual();
 				return true;
 
-			case ID_SHORTCUTS:
-				Shortcuts();
+			case ID_FOLDER_SHORTCUTS:
+				FolderShortcuts();
 				return true;
 
-			case ID_FILEASSOCIATIONS:
+            case ID_FOLDER_HISTORY:
+                FolderHistory();
+                return true;
+
+            case ID_FILEASSOCIATIONS:
 				FileAssociations();
 				return true;
 

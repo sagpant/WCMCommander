@@ -305,7 +305,8 @@ private:
 	void Search();
 	void Tab( bool forceShellTab );
 	void PanelEqual();
-	void Shortcuts();
+	void FolderShortcuts();
+    void FolderHistory();
 	void FileAssociations();
 	void FileHighlighting();
 	void OnOffShl();
