@@ -31,4 +31,6 @@ public:
 	~RegKey();
 };
 
+void ExecuteDefaultApplication( const unicode_t* Path );
+
 #endif

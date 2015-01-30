@@ -92,5 +92,9 @@ std::vector<wchar_t> RegKey::SubKey( int n )
 
 RegKey::~RegKey() { if ( key ) { RegCloseKey( key ); } }
 
+void ExecuteDefaultApplication( const unicode_t* Path )
+{
+	ShellExecuteW( 0, L"open", Path, nullptr, nullptr, SW_SHOWMAXIMIZED );
+}
 
 #endif

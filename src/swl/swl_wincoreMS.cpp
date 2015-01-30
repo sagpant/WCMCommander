@@ -135,18 +135,24 @@ namespace wal
 			ch = 0;
 		}
 
-		unsigned km = 0;
+		unsigned int km = 0;
 
-		if ( ( keyStates[VK_LSHIFT] & 0x80 ) || ( keyStates[VK_RSHIFT] & 0x80 ) ) { km |= KM_SHIFT; }
+		if ( ( keyStates[VK_LSHIFT] & 0x80 ) || ( keyStates[VK_RSHIFT] & 0x80 ) )
+		{
+			km |= KM_SHIFT;
+			km |= (( keyStates[VK_LSHIFT] & 0x80 ) ? EXT_KM_LSHIFT : EXT_KM_RSHIFT);
+		}
 
 		if ( ( keyStates[VK_LCONTROL] & 0x80 ) || ( keyStates[VK_RCONTROL] & 0x80 ) )
 		{
 			km |= KM_CTRL;
+			km |= (( keyStates[VK_LCONTROL] & 0x80 ) ? EXT_KM_LCTRL : EXT_KM_RCTRL);
 		}
 
 		if ( ( keyStates[VK_LMENU] & 0x80 ) || ( keyStates[VK_RMENU] & 0x80 ) )
 		{
 			km |= KM_ALT;
+			km |= (( keyStates[VK_LMENU] & 0x80 ) ? EXT_KM_LALT : EXT_KM_RALT);
 		}
 
 		cevent_key ev( type, wParam, km, lParam & 0xFFFF, ch, FromMouseWheel );

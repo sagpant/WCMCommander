@@ -1,3 +1,20 @@
+0.19.0 GitHub Edition
+	Added: Shift+Enter opens a file/folder with the default OS application
+	Added: bookmarks in the editor (set via RightCtrl+digit, restore via LeftCtrl+digit)
+	Hotkey: Ctrl+Alt+Ins, Alt+Shift+Ins, Ctrl+Shift+P to copy the full path of the currently selected item to the clipboard
+	Improved: 'cd' in the command line without arguments should change directory to $HOME
+	Improved: hotkeys in the F2 user menu
+	Improved: hotkeys in all 'red' dialogs
+	Fixed: button bar text in the editor
+	Fixed: hotkeys in the 'Styles' dialog
+	Fixed: OpenBSD support
+	Fixed: installation issues
+	Fixed: TrueType fonts antialiasing
+	Fixed: debug messages in the console
+	Fixed: mouse interaction bugs
+	Fixed: graphical issue in the current path under the panels
+	Fixed: hide the autocompletion window while switching via Ctrl+Tab to the editor/viewer
+
 0.18.1 GitHub Edition
 	Added: file highlighting
 	Added: speed indicator while copying

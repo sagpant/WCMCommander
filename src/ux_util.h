@@ -17,5 +17,6 @@ struct MntListNode
 };
 
 bool UxMntList( wal::ccollect< MntListNode >* pList );
+void ExecuteDefaultApplication( const unicode_t* Path );
 
 #endif

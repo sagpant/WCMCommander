@@ -510,6 +510,38 @@ struct sEditorScrollCtx
 	EditPoint m_Point;
 };
 
+class clScrollCtxStorage
+{
+public:
+	void Put( size_t Slot, const sEditorScrollCtx* InCtx )
+	{
+		if ( Slot >= m_Slots.size() )
+		{
+			m_Slots.resize( Slot+1 );
+			m_Occupied.resize( Slot+1 );
+		}
+
+		if ( InCtx ) m_Slots[ Slot ] = *InCtx;
+
+		m_Occupied[ Slot ] = ( InCtx != nullptr );
+	}
+
+	bool Get( size_t Slot, sEditorScrollCtx* OutCtx ) const
+	{
+		if ( Slot >= m_Slots.size() ) return false;
+
+		if ( !m_Occupied[ Slot ] ) return false;
+
+		*OutCtx = m_Slots[ Slot ];
+
+		return true;
+	}
+
+private:
+	std::vector<sEditorScrollCtx> m_Slots;
+	std::vector<bool> m_Occupied;
+};
+
 class EditWin : public Win
 {
 	Layout _lo;
@@ -622,6 +654,8 @@ class EditWin : public Win
 	int color_mark_background;
 	int color_ctrl;
 	int color_cursor;
+
+	clScrollCtxStorage m_ScrollCtxStorage;
 
 public:
 	enum COLOR_ID
