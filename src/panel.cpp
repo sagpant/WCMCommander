@@ -2075,15 +2075,13 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 
 #endif
 
-#if defined(_WIN32)
 	if ( OpenInExplorer )
 	{
 		FSString URI = fs->Uri(p);
 		const unicode_t* Path = URI.GetUnicode();
-		ShellExecuteW( 0, L"open", Path, nullptr, nullptr, SW_SHOWMAXIMIZED );
+		ExecuteDefaultApplication( Path );
 	}
 	else
-#endif
 	{
 		LoadPath( GetFSPtr(), p, 0, 0, RESET );
 	}

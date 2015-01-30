@@ -114,4 +114,18 @@ bool UxMntList( wal::ccollect< MntListNode >* pList )
 	return true;
 }
 
+void ExecuteDefaultApplication( const unicode_t* Path )
+{
+	if ( !fork() )
+	{
+		signal( SIGINT, SIG_DFL );
+		static char shell[] = "open";
+		const char* params[] = {shell, Path, NULL};
+
+		execv( shell, ( char** ) params );
+
+		exit( 1 );
+	}
+}
+
 #endif

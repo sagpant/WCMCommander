@@ -875,13 +875,11 @@ void NCWin::PanelEnter(bool Shift)
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
 
-#if defined( _WIN32 )
 	if ( Shift )
 	{
-		ShellExecuteW(0, L"open", _panel->UriOfCurrent().GetUnicode(), nullptr, nullptr, SW_SHOWMAXIMIZED);
+		ExecuteDefaultApplication( _panel->UriOfCurrent().GetUnicode() );
 		return;
 	}
-#endif
 
 	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) { return; }
 
