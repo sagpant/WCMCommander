@@ -19,6 +19,8 @@
 #include "string-util.h"
 #include "unicode_lc.h"
 #include "strmasks.h"
+#include "w32util.h"
+#include "ux_util.h"
 
 #include "icons/folder3.xpm"
 #include "icons/folder.xpm"

@@ -119,8 +119,10 @@ void ExecuteDefaultApplication( const unicode_t* Path )
 	if ( !fork() )
 	{
 		signal( SIGINT, SIG_DFL );
-		static char shell[] = "open";
-		const char* params[] = {shell, Path, NULL};
+		static char shell[] = "/bin/sh";
+		std::vector<char> utf8 = unicode_to_utf8( Path );
+		std::string command = "open " + std::string( utf8.data() );
+		const char* params[] = {shell, "-c", command.c_str(), NULL};
 
 		execv( shell, ( char** ) params );
 
