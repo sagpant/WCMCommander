@@ -1694,7 +1694,7 @@ int CmpFunc(FSNode* a, FSNode* b)
 	}
 	case SORT_MTIME:
 	{
-								  time_t cmpTime = a->st.mtime.GetTimeT() - b->st.mtime.GetTimeT();
+								  time_t cmpTime = a->st.mtime - b->st.mtime;
 								  if (cmpTime)
 									  return isAscending ? (cmpTime > 0 ? 1 : -1) : (cmpTime > 0 ? -1 : 1);
 								  break;
