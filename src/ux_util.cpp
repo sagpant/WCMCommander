@@ -7,7 +7,9 @@
 #include "ux_util.h"
 
 #if !defined( _WIN32 )
+
 #  include <wal.h>
+#	include <signal.h>
 
 using namespace wal;
 
