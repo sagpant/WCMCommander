@@ -126,6 +126,31 @@ namespace wal
 		return false;
 	}
 
+	// not null-safe like strcmp
+	int unicode_strcmp(const unicode_t* s1, const unicode_t* s2)
+	{
+		for (; *s1 == *s2; s1++, s2++)
+		{
+			if (*s1 == 0)
+				return 0;
+		}
+		return *s1 > *s2 ? 1 : -1;
+	}
+
+	// not null-safe, like stricmp
+	int unicode_stricmp(const unicode_t* s1, const unicode_t* s2)
+	{
+		for (;; s1++, s2++)
+		{
+			unicode_t c1 = UnicodeLC(*s1);
+			unicode_t c2 = UnicodeLC(*s1);
+			if (c1 != c2)
+				return c1 > c2 ? 1 : -1;
+			if (c1 == 0)
+				return 0;
+		}
+	}
+
 	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr )
 	{
 		if ( !Str || !SubStr ) { return false; }
