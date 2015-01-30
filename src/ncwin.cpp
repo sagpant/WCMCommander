@@ -697,6 +697,8 @@ bool NCWin::EventClose()
 
 void NCWin::SetMode( MODE m )
 {
+	HideAutoComplete();
+
 	switch ( m )
 	{
 		case PANEL:
@@ -1698,6 +1700,8 @@ void NCWin::View( bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
 
+	HideAutoComplete();
+
 	try
 	{
 		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) ) { return; }
@@ -1789,6 +1793,8 @@ void NCWin::ViewExit()
 void NCWin::Edit( bool enterFileName, bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
+
+	HideAutoComplete();
 
 	try
 	{
@@ -3180,6 +3186,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		if ( Key == VK_TAB && ( Mod & KM_CTRL ) )
 		{
 			SwitchToBackgroundActivity();
+			return true;
 		}
 
 		if ( Key == VK_O && ( Mod & KM_CTRL ) )
@@ -3833,6 +3840,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 #else
 
 			case FC( VK_C, KM_ALT | KM_CTRL ):
+				HideAutoComplete();
 				if ( _execId > 0 )
 				{
 					int ret = KillCmdDialog( this, _execSN );
