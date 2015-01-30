@@ -49,6 +49,8 @@
 
 #ifndef _WIN32
 #  include "ux_util.h"
+#else
+#	include "w32util.h"
 #endif
 
 #include <map>
