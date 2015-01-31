@@ -1831,14 +1831,14 @@ void PanelWin::OperThreadStopped()
 				foundCurrent = true;
 			}
 		}
-		// in no-sort the best is to stay at the same custor location
+		// in no-sort mode the best is to stay at the same cursor location
 		if (!foundCurrent && _list.SortMode() == SORT_NONE)
 		{
 			SetCurrent(_operCursorLoc);
 			foundCurrent = true;
 		}
 
-		// try closest node in current sort mode
+		// in sorted mode try closest node using current sort mode
 		if (!foundCurrent && !_operCurrent.name.IsEmpty())
 		{
 			int n = _list.FindExactOrClosestSucceeding( _operCurrent, HideDotsInDir() );

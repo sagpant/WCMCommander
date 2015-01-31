@@ -2142,6 +2142,32 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 	return NULL;
 }
 
+// XXX case sensitivity should be attribute of a file system, and not the OS. 
+// We can operate on UNIX sftpFS from Windows.
+// Add smth like IsCaseSensitive() virtual func to FS class 
+static bool pathEqual(const unicode_t* p1, const unicode_t* p2)
+{
+#ifdef _WIN32
+	return unicode_stricmp(p1, p2) == 0;
+#else
+	return unicode_strcmp(p1, p2) == 0;
+#endif
+}
+
+static bool file1HasPath2(FSPath& file1, FSPath& path2)
+{
+	if (file1.Count() - path2.Count() != 1)
+		return false;
+	int p2Count = path2.Count();
+	for (int i = 0; i < p2Count; i++)
+	{
+		if (!pathEqual(file1.GetItem(i)->GetUnicode(), path2.GetItem(i)->GetUnicode()))
+			return false;
+	}
+	return true;
+}
+
+
 void NCWin::Move( bool shift )
 {
 	if ( _mode != PANEL ) { return; }
@@ -2185,10 +2211,29 @@ void NCWin::Move( bool shift )
 		destFs = ParzeURI( str.data(), destPath, checkFS, 2 );
 	}
 
-	MoveFiles( srcFs, srcPath, list, destFs, destPath, this );
+	bool isMoveDone = MoveFiles( srcFs, srcPath, list, destFs, destPath, this );
+	//dbg_printf("MoveFiles: srcPath=%s destPath=%s\n", srcPath.GetUtf8(), destPath.GetUtf8());
 
-	_leftPanel.Reread();
-	_rightPanel.Reread();
+	// if all statements below are true:
+	// - move operation is successful
+	// - we move only one file
+	// - the file is moved to the active folder
+	// - the file is under cursor in active folder
+	// then move cursor to new name of the moved file	
+	// This should retain cursor at the renamed file after Shift-F6
+	if (isMoveDone &&
+		list->Count() == 1 &&
+		srcFs == destFs &&
+		destPath.Count() > 0 &&
+		pathEqual(_panel->GetCurrentFileName(), list->First()->GetUnicodeName()) &&
+		file1HasPath2(destPath, srcPath))
+	{
+		const unicode_t* destName = destPath.GetItem(destPath.Count()-1)->GetUnicode();
+		_panel->Reread(true, destName);
+	}
+	else
+	  _panel->Reread();
+	GetOtherPanel()->Reread();
 }
 
 
