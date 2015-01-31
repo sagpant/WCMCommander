@@ -22,7 +22,6 @@
 
 #ifndef _WIN32
 #  include "ux_util.h"
-#	include "utf8proc/utf8proc.h"
 #else
 #	include "w32util.h"
 #endif
@@ -1164,19 +1163,6 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	{
 		ReplaceTrailingSpaces( &Name );
 	}
-
-#if !defined(_WIN32)
-/*
-uint8_t *utf8proc_NFD(const uint8_t *str);
-uint8_t *utf8proc_NFC(const uint8_t *str);
-uint8_t *utf8proc_NFKD(const uint8_t *str);
-uint8_t *utf8proc_NFKC(const uint8_t *str);
-*/
-	std::vector<char> UTFstr = unicode_to_utf8( Name.data() );
-	const uint8_t* u = (const uint8_t*)UTFstr.data();
-	const uint8_t* NormString = utf8proc_NFC( u );
-	Name = utf8_to_unicode( (const char*)NormString );
-#endif
 
 	gc.TextOutF( x, y, Name.data() );
 }

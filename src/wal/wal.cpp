@@ -11,6 +11,10 @@
 #  include <inttypes.h>
 #endif
 
+#if !defined(_WIN32)
+#	include "utf8proc/utf8proc.h"
+#endif
+
 #include <string>
 #include <sstream>
 
@@ -404,6 +408,21 @@ namespace wal
 		Convert >> std::hex >> i;
 
 		return i;
+	}
+
+	std::vector<unicode_t> Normalize_NFC( const unicode_t* Str )
+	{
+#if !defined(_WIN32)
+		std::vector<char> UTFstr = unicode_to_utf8( Str );
+		const uint8_t* NormString = utf8proc_NFC( (const uint8_t*)UTFstr.data() );
+		std::vector<unicode_t> Result = utf8_to_unicode( (const char*)NormString );
+
+		free( NormString );
+
+		return Result;
+#else
+		return new_unicode_str( Str );
+#endif
 	}
 
 }; //namespace wal
