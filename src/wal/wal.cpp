@@ -435,7 +435,7 @@ namespace wal
 
 		return Result;
 #else
-		return new_utf8_str( Str );
+		return new_char_str( Str );
 #endif
 	}
 

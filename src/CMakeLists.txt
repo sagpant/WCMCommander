@@ -6,9 +6,9 @@ ELSE(MINGW)
 	FIND_PACKAGE(Threads)
 	FIND_PACKAGE(X11)
 
-	OPTION(WITH_FREETYPE "Enable freetype support" ON)
-	OPTION(WITH_LIBSSH2 "Enable libssh2 support" ON)
-	OPTION(WITH_SMBCLIENT "Enable samba support" ON)
+	OPTION(WITH_FREETYPE "Enable freetype support" OFF)
+	OPTION(WITH_LIBSSH2 "Enable libssh2 support" OFF)
+	OPTION(WITH_SMBCLIENT "Enable samba support" OFF)
 
 	INCLUDE_DIRECTORIES(${X11_X11_INCLUDE_PATH})
 	SET(wcm_LIBS ${CMAKE_THREAD_LIBS_INIT} ${X11_X11_LIB})
@@ -56,8 +56,7 @@ ENDIF(MINGW)
 # flags
 CONFIGURE_FILE(libconf_ux.h.in libconf_ux.h) # noop, flags are passed via compiler args
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-
-INCLUDE_DIRECTORIES(BEFORE wal swl)
+INCLUDE_DIRECTORIES(BEFORE wal swl utf8proc .)
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unused-parameter -Wno-unknown-pragmas")
 
