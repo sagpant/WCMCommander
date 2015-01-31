@@ -1639,7 +1639,7 @@ static int _BSearch(FSNode& n, const std::vector<FSNode*>& nodeVector, int(*CmpF
 	int iRight = vsize-1;
 	int cmp = CmpFunc(&n, nodeVector[iLeft]);
 
-	for (int i = iRight / 2; iLeft< iRight ; i = (iLeft + iRight) / 2)
+	for (int i = iRight / 2; iLeft <= iRight ; i = (iLeft + iRight) / 2)
 	{
 		int cmp = CmpFunc(&n, nodeVector[i]);
 		if (cmp == 0) // found exact match
@@ -1678,8 +1678,8 @@ int CmpFunc(FSNode* a, FSNode* b)
 								int cmpExt = a->CmpByExt(*b, isCaseSensitive);
 								if (cmpExt)
 									return isAscending ? cmpExt : -cmpExt;
-	} // if not, do name comparison in the current ascending mode
-	  // i.e. fall into next case
+	} // if extensions match, do name comparison using current ascending mode
+	  // i.e. fall into the next case
 	case SORT_NAME:
 	{
 								int cmpName = isCaseSensitive ? a->name.Cmp(b->name) : a->name.CmpNoCase(b->name);
@@ -1702,10 +1702,9 @@ int CmpFunc(FSNode* a, FSNode* b)
 	default:
 		return 0;
 	}
-	// if ext|size|mtime are the same, return name comparison in ascending=true mode
+	// if size|mtime match, return name comparison in ascending=true mode
 	return  isCaseSensitive ? a->name.Cmp(b->name) : a->name.CmpNoCase(b->name);
 }
-
 
 FSNodeCmpFunc* FSNodeVectorSorter::getCmpFunc(bool isAscending, bool isCaseSensitive, SORT_MODE sortMode)
 {
