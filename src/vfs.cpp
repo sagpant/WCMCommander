@@ -1726,7 +1726,7 @@ int CmpFunc(FSNode* a, FSNode* b)
 								  break;
 	}
 	default:
-		return nullptr;
+		return 0;
 	}
 	// if size|mtime match, return name comparison in ascending=true mode
 	return  isCaseSensitive ? a->name.Cmp(b->name) : a->name.CmpNoCase(b->name);
