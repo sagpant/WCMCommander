@@ -50,6 +50,8 @@
 
 #ifndef _WIN32
 #  include "ux_util.h"
+#else
+#	include "w32util.h"
 #endif
 
 #include <map>
@@ -143,7 +145,7 @@ ButtonWinData editNormalButtons[] =
 ButtonWinData editShiftButtons[] =
 {
 	{"", 0},
-	{"", 0},
+	{"SaveAs", ID_SAVE_AS},
 	{"", 0},
 	{"", 0},
 	{"", 0},
@@ -696,6 +698,8 @@ bool NCWin::EventClose()
 
 void NCWin::SetMode( MODE m )
 {
+	HideAutoComplete();
+
 	switch ( m )
 	{
 		case PANEL:
@@ -852,7 +856,7 @@ void NCWin::PanelCtrlPgDown()
 	StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_ExecuteSecondary );
 }
 
-void NCWin::PanelEnter()
+void NCWin::PanelEnter(bool Shift)
 {
 	if ( _mode != PANEL ) { return; }
 
@@ -860,7 +864,7 @@ void NCWin::PanelEnter()
 
 	if ( !p || p->IsDir() )
 	{
-		_panel->DirEnter();
+		_panel->DirEnter(Shift);
 		return;
 	}
 
@@ -875,6 +879,12 @@ void NCWin::PanelEnter()
 	std::vector<unicode_t> cmd;
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
+
+	if ( Shift )
+	{
+		ExecuteDefaultApplication( _panel->UriOfCurrent().GetUnicode() );
+		return;
+	}
 
 	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) { return; }
 
@@ -1691,6 +1701,8 @@ void NCWin::View( bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
 
+	HideAutoComplete();
+
 	try
 	{
 		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) ) { return; }
@@ -1782,6 +1794,8 @@ void NCWin::ViewExit()
 void NCWin::Edit( bool enterFileName, bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
+
+	HideAutoComplete();
 
 	try
 	{
@@ -3182,6 +3196,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 		if ( Key == VK_TAB && ( Mod & KM_CTRL ) )
 		{
 			SwitchToBackgroundActivity();
+			return true;
 		}
 
 		if ( Key == VK_O && ( Mod & KM_CTRL ) )
@@ -3646,7 +3661,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					if ( StartCommand( FetchAndClearCommandLine(), true ) ) { break; }
 				}
 
-				if ( _panelVisible ) { PanelEnter(); }
+				if ( _panelVisible ) { PanelEnter(true); }
 
 				break;
 			}
@@ -3839,6 +3854,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 #else
 
 			case FC( VK_C, KM_ALT | KM_CTRL ):
+				HideAutoComplete();
 				if ( _execId > 0 )
 				{
 					int ret = KillCmdDialog( this, _execSN );
@@ -4593,6 +4609,9 @@ void StringWin::OnChangeStyles()
 
 	defaultGC->Set( GetFont() );
 	textSize = defaultGC->GetTextExtents( text.data() );
+	cpoint textSizeABC = defaultGC->GetTextExtents( ABCString );
+	// use the same height adjustment as in EditLine
+	textSize.y = textSizeABC.y + 2;
 	LSize ls( textSize );
 	ls.y.maximal = textSize.y;
 	ls.x.maximal = textSize.x;

@@ -2093,6 +2093,32 @@ bool EditWin::EventKey( cevent_key* pEvent )
 		{
 			switch ( pEvent->Key() )
 			{
+				case VK_0:
+				case VK_1:
+				case VK_2:
+				case VK_3:
+				case VK_4:
+				case VK_5:
+				case VK_6:
+				case VK_7:
+				case VK_8:
+				case VK_9:
+				{
+					int Slot = pEvent->Key() - VK_0;
+					bool LeftCtrl = ( pEvent->ExtMod() & EXT_KM_LCTRL ) != 0;
+					if ( LeftCtrl )
+					{
+						sEditorScrollCtx Ctx;
+						if (m_ScrollCtxStorage.Get(Slot, &Ctx)) this->SetScrollCtx(Ctx);
+					}
+					else
+					{
+						sEditorScrollCtx Ctx = this->GetScrollCtx();
+						m_ScrollCtxStorage.Put(Slot, &Ctx);
+					}
+					return true;
+				}
+
 				case VK_Y:
 					DeleteLine();
 					return true;

@@ -7,7 +7,9 @@
 #include "ux_util.h"
 
 #if !defined( _WIN32 )
+
 #  include <wal.h>
+#	include <signal.h>
 
 using namespace wal;
 
@@ -112,6 +114,22 @@ bool UxMntList( wal::ccollect< MntListNode >* pList )
 	}
 
 	return true;
+}
+
+void ExecuteDefaultApplication( const unicode_t* Path )
+{
+	if ( !fork() )
+	{
+		signal( SIGINT, SIG_DFL );
+		static char shell[] = "/bin/sh";
+		std::vector<char> utf8 = unicode_to_utf8( Path );
+		std::string command = "open " + std::string( utf8.data() );
+		const char* params[] = {shell, "-c", command.c_str(), NULL};
+
+		execv( shell, ( char** ) params );
+
+		exit( 1 );
+	}
 }
 
 #endif

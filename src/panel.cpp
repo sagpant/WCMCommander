@@ -20,6 +20,12 @@
 #include "unicode_lc.h"
 #include "strmasks.h"
 
+#ifndef _WIN32
+#  include "ux_util.h"
+#else
+#	include "w32util.h"
+#endif
+
 #include "icons/folder3.xpm"
 #include "icons/folder.xpm"
 //#include "icons/executable.xpm"
@@ -2005,7 +2011,7 @@ bool PanelWin::DirUp()
 	return true;
 }
 
-void PanelWin::DirEnter()
+void PanelWin::DirEnter(bool OpenInExplorer)
 {
 	if ( _place.IsEmpty() ) { return; }
 
@@ -2075,7 +2081,16 @@ void PanelWin::DirEnter()
 
 #endif
 
-	LoadPath( GetFSPtr(), p, 0, 0, RESET );
+	if ( OpenInExplorer )
+	{
+		FSString URI = fs->Uri(p);
+		const unicode_t* Path = URI.GetUnicode();
+		ExecuteDefaultApplication( Path );
+	}
+	else
+	{
+		LoadPath( GetFSPtr(), p, 0, 0, RESET );
+	}
 }
 
 void PanelWin::DirRoot()

@@ -286,7 +286,7 @@ public:
 	//dir movies
 	/// returns true if the directory was changed
 	bool DirUp();
-	void DirEnter();
+	void DirEnter(bool OpenInExplorer = false);
 	void DirRoot();
 	bool HideDotsInDir() const;
 
