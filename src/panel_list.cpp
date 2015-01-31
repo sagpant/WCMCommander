@@ -47,6 +47,7 @@ void PanelList::MakeList()
 			}
 
 		listCount = i;
+		list.resize(listCount);
 	}
 }
 
