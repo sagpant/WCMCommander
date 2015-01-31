@@ -450,8 +450,9 @@ namespace wal
 	std::wstring IntToHexStr( int64_t Value, size_t Padding = 0 );
 	/// convert hexadecimal string to int
 	int64_t HexStrToInt( const unicode_t* Str );
-	/// UTF-8 normalization
-	std::vector<char> unicode_to_utf8_NFC( const unicode_t* str );
+	/// Unicode normalization
+	std::vector<unicode_t> normalize_unicode_NFC( const unicode_t* str );
+	std::vector<char>      normalize_utf8_NFC( const char* str );
 }; //namespace wal
 
 #endif

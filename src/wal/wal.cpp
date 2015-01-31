@@ -410,11 +410,11 @@ namespace wal
 		return i;
 	}
 
-	std::vector<unicode_t> Normalize_NFC( const unicode_t* Str )
+	std::vector<unicode_t> normalize_unicode_NFC( const unicode_t* Str )
 	{
 #if !defined(_WIN32)
 		std::vector<char> UTFstr = unicode_to_utf8( Str );
-		const uint8_t* NormString = utf8proc_NFC( (const uint8_t*)UTFstr.data() );
+		uint8_t* NormString = utf8proc_NFC( (const uint8_t*)UTFstr.data() );
 		std::vector<unicode_t> Result = utf8_to_unicode( (const char*)NormString );
 
 		free( NormString );
@@ -422,6 +422,20 @@ namespace wal
 		return Result;
 #else
 		return new_unicode_str( Str );
+#endif
+	}
+
+	std::vector<char> normalize_utf8_NFC( const char* Str )
+	{
+#if !defined(_WIN32)
+		uint8_t* NormString = utf8proc_NFC( (const uint8_t*)Str );
+		std::vector<char> Result = new_char_str( (const char*)NormString );
+
+		free( NormString );
+
+		return Result;
+#else
+		return new_utf8_str( Str );
 #endif
 	}
 
