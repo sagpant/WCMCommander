@@ -159,7 +159,7 @@ wcm:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o
 
 
 $(OBJDIR)/utf8proc.o: $(HW) $(HS) $(HN) src/utf8proc/utf8proc.c 
-	$(CC) -I uft8/proc -std=c99 -c $(CFLAGS) src/utf8proc/utf8proc.c -o $(OBJDIR)/utf8proc.o
+	$(CC) -I uft8/proc -std=c99 -c $(CFLAGS) -Wno-missing-field-initializers src/utf8proc/utf8proc.c -o $(OBJDIR)/utf8proc.o
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) src/dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/dircalc.cpp -o $(OBJDIR)/dircalc.o
