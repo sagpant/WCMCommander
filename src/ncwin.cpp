@@ -2082,11 +2082,20 @@ void NCWin::Copy( bool shift )
 
 	FSPath srcPath = _panel->GetPath();
 
-	if ( _mode != PANEL ) { return; }
+	// shift-op always acts on item under cursor, even if selection exists
+	bool actOnSelection = !shift && _panel->GetSelectedCounter().count > 0;
 
-//	int cur = _panel->Current();
-
-	clPtr<FSList> list = _panel->GetSelectedList();
+	clPtr<FSList> list;
+	if (actOnSelection)
+	{
+		list = _panel->GetSelectedList();
+	}
+	else // act on item under cursor
+	{
+		list = new FSList;
+		FSNode* node = _panel->GetCurrent();
+		if (node) { list->CopyOne(node); }
+	}
 
 	if ( !list.ptr() || list->Count() <= 0 ) { return; }
 
@@ -2095,7 +2104,19 @@ void NCWin::Copy( bool shift )
 
 	FSString uri = GetOtherPanel()->UriOfDir();
 
-	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Copy" ) ).data(),
+	const char* pCaption;
+	char sCaption[128];
+	if (actOnSelection)
+	{
+		Lsnprintf(sCaption, sizeof(sCaption), _LT("Copy %d selected file(s) to:"), list->Count());
+		pCaption = sCaption;
+	}
+	else
+	{
+		pCaption = _LT("Copy file under cursor to:");
+	}
+
+	std::vector<unicode_t> str = InputStringDialog(this, utf8_to_unicode(pCaption).data(),
 	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -2180,18 +2201,41 @@ void NCWin::Move( bool shift )
 
 	if ( _mode != PANEL ) { return; }
 
-//	int cur = _panel->Current();
+	// shift-op always acts on item under cursor, even if selection exists
+	bool actOnSelection = !shift && _panel->GetSelectedCounter().count > 0;
 
-	clPtr<FSList> list = _panel->GetSelectedList();
+	clPtr<FSList> list;
+	if (actOnSelection)
+	{
+		list = _panel->GetSelectedList();
+	}
+	else // act on item under cursor
+	{
+		list = new FSList;
+		FSNode* node = _panel->GetCurrent();
+		if (node) { list->CopyOne(node); }
+	}
 
-	if ( !list.ptr() || list->Count() <= 0 ) { return; }
+	if (!list.ptr() || list->Count() <= 0) { return; }
 
 	clPtr<FS> destFs = GetOtherPanel()->GetFS();
 	FSPath destPath = GetOtherPanel()->GetPath();
 
 	FSString uri = GetOtherPanel()->UriOfDir();
 
-	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Move" ) ).data(),
+	const char* pCaption;
+	char sCaption[128];
+	if (actOnSelection)
+	{
+		Lsnprintf(sCaption, sizeof(sCaption), _LT("Move %d selected file(s) to:"), list->Count());
+		pCaption = sCaption;
+	}
+	else
+	{
+		pCaption = _LT("Move file under cursor to:");
+	}
+
+	std::vector<unicode_t> str = InputStringDialog(this, utf8_to_unicode(pCaption).data(),
 	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
