@@ -1404,12 +1404,12 @@ bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 	{
 		int n = res - ID_MNT_UX0;
 
-		if ( n < 0 || n >= mntList.count() ) { return; }
+		if ( n < 0 || n >= mntList.count() ) { return false; }
 
 		clPtr<FS> fs = new FSSys();
 		FSPath path( sys_charset_id, mntList[n].path.data() );
 		p->LoadPath( fs, path, 0, 0, PanelWin::SET );
-		return;
+		return false;
 	}
 
 #endif
@@ -1461,7 +1461,7 @@ bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			static FSSmbParam lastParams;
 			FSSmbParam params = lastParams;
 
-			if ( !GetSmbLogon( this, params, true ) ) { return; }
+			if ( !GetSmbLogon( this, params, true ) ) { return false; }
 
 			params.isSet = true;
 			clPtr<FS> fs = new FSSmb( &params ) ;
