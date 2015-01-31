@@ -762,8 +762,20 @@ int FSSftp::ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 				}
 
 				clPtr<FSNode> pNode = new FSNode();
-				pNode->name.Set( _operParam.charset, attr->name );
 
+#if !defined(_WIN32)
+				if ( _operParam.charset == CS_UTF8 )
+				{
+					std::vector<char> normname = normalize_utf8_NFC( attr->name );
+					pNode->name.Set( _operParam.charset, normname.data() );
+				}
+				else
+				{
+					pNode->name.Set( _operParam.charset, attr->name );
+				}
+#else
+				pNode->name.Set( _operParam.charset, attr->name );
+#endif
 				pNode->st.size = attr->size;
 				pNode->st.uid = attr->uid;
 				pNode->st.gid = attr->gid;

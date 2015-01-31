@@ -591,7 +591,19 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 					InternalStat( path, &pNode->st, info );
 			}
 
+#if !defined(_WIN32)
+			if ( sys_charset_id == CS_UTF8 )
+			{
+				std::vector<char> normname = normalize_utf8_NFC( pEnt->name );
+				pNode->name.Set( sys_charset_id, normname.data() );
+			}
+			else
+			{
+				pNode->name.Set( sys_charset_id, pEnt->name );
+			}
+#else
 			pNode->name.Set( sys_charset_id, pEnt->name );
+#endif
 
 			list->Append( pNode );
 		};
