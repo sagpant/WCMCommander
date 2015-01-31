@@ -685,7 +685,7 @@ namespace wal
 				DispatchMessage( &msg );
 			}
 
-			modal = 0;
+			modal = nullptr;
 			AppUnblock( GetID() );
 
 			if ( !visibled ) { Hide(); }
