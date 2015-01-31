@@ -243,13 +243,13 @@ struct ShellFileDlgData
 	ShellFileDlgData( clPtr<FSList> l, const unicode_t* s ): list( l )
 	{
 		sorted = list->GetArray();
-		FSList::SortByName( sorted.data(), list->Count(), true,
+		FSNodeVectorSorter::Sort(sorted,true,
 #ifdef _WIN32
 		                    false
 #else
 		                    true
 #endif
-		                  );
+		                  ,SORT_NAME);
 		RefreshList( new_unicode_str( s ) );
 	}
 };

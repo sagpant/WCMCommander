@@ -1517,16 +1517,16 @@ void NCWin::SelectSortMode( PanelWin* p )
 
 	clMenuData mData;
 
-	PanelList::SORT_MODE Mode = p->GetSortMode();
+	SORT_MODE Mode = p->GetSortMode();
 	bool IsAscending = p->IsAscendingSort();
 
 	const int CHECKED_ICON_ID = IsAscending ? ID_REDO : ID_UNDO;
 
-	mData.Add( _LT( "Name" ), nullptr, nullptr, ID_SORT_BY_NAME_R, Mode == PanelList::SORT_NAME ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT( "Extension" ), nullptr, nullptr, ID_SORT_BY_EXT_R, Mode == PanelList::SORT_EXT ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT( "Modification time" ), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == PanelList::SORT_MTIME ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT( "Size" ), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == PanelList::SORT_SIZE ? CHECKED_ICON_ID : -1 );
-	mData.Add( _LT( "Unsorted" ), nullptr, nullptr, ID_UNSORT_R, Mode == PanelList::SORT_NONE ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Name" ), nullptr, nullptr, ID_SORT_BY_NAME_R, Mode == SORT_NAME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Extension" ), nullptr, nullptr, ID_SORT_BY_EXT_R, Mode == SORT_EXT ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Modification time" ), nullptr, nullptr, ID_SORT_BY_MODIF_R, Mode == SORT_MTIME ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Size" ), nullptr, nullptr, ID_SORT_BY_SIZE_R, Mode == SORT_SIZE ? CHECKED_ICON_ID : -1 );
+	mData.Add( _LT( "Unsorted" ), nullptr, nullptr, ID_UNSORT_R, Mode == SORT_NONE ? CHECKED_ICON_ID : -1 );
 	//mData.AddSplitter();
 
 	int res = RunDldMenu( uiDriveDlg, p, "Sort by", &mData );
@@ -2092,11 +2092,20 @@ void NCWin::Copy( bool shift )
 
 	FSPath srcPath = _panel->GetPath();
 
-	if ( _mode != PANEL ) { return; }
+	// shift-op always acts on item under cursor, even if selection exists
+	bool actOnSelection = !shift && _panel->GetSelectedCounter().count > 0;
 
-//	int cur = _panel->Current();
-
-	clPtr<FSList> list = _panel->GetSelectedList();
+	clPtr<FSList> list;
+	if (actOnSelection)
+	{
+		list = _panel->GetSelectedList();
+	}
+	else // act on item under cursor
+	{
+		list = new FSList;
+		FSNode* node = _panel->GetCurrent();
+		if (node) { list->CopyOne(node); }
+	}
 
 	if ( !list.ptr() || list->Count() <= 0 ) { return; }
 
@@ -2105,7 +2114,19 @@ void NCWin::Copy( bool shift )
 
 	FSString uri = GetOtherPanel()->UriOfDir();
 
-	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Copy" ) ).data(),
+	const char* pCaption;
+	char sCaption[128];
+	if (actOnSelection)
+	{
+		Lsnprintf(sCaption, sizeof(sCaption), _LT("Copy %d selected file(s) to:"), list->Count());
+		pCaption = sCaption;
+	}
+	else
+	{
+		pCaption = _LT("Copy file under cursor to:");
+	}
+
+	std::vector<unicode_t> str = InputStringDialog(this, utf8_to_unicode(pCaption).data(),
 	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -2152,6 +2173,32 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 	return NULL;
 }
 
+// XXX case sensitivity should be attribute of a file system, and not the OS. 
+// We can operate on UNIX sftpFS from Windows.
+// Add smth like IsCaseSensitive() virtual func to FS class 
+static bool pathEqual(const unicode_t* p1, const unicode_t* p2)
+{
+#ifdef _WIN32
+	return unicode_stricmp(p1, p2) == 0;
+#else
+	return unicode_strcmp(p1, p2) == 0;
+#endif
+}
+
+static bool file1HasPath2(FSPath& file1, FSPath& path2)
+{
+	if (file1.Count() - path2.Count() != 1)
+		return false;
+	int p2Count = path2.Count();
+	for (int i = 0; i < p2Count; i++)
+	{
+		if (!pathEqual(file1.GetItem(i)->GetUnicode(), path2.GetItem(i)->GetUnicode()))
+			return false;
+	}
+	return true;
+}
+
+
 void NCWin::Move( bool shift )
 {
 	if ( _mode != PANEL ) { return; }
@@ -2164,18 +2211,41 @@ void NCWin::Move( bool shift )
 
 	if ( _mode != PANEL ) { return; }
 
-//	int cur = _panel->Current();
+	// shift-op always acts on item under cursor, even if selection exists
+	bool actOnSelection = !shift && _panel->GetSelectedCounter().count > 0;
 
-	clPtr<FSList> list = _panel->GetSelectedList();
+	clPtr<FSList> list;
+	if (actOnSelection)
+	{
+		list = _panel->GetSelectedList();
+	}
+	else // act on item under cursor
+	{
+		list = new FSList;
+		FSNode* node = _panel->GetCurrent();
+		if (node) { list->CopyOne(node); }
+	}
 
-	if ( !list.ptr() || list->Count() <= 0 ) { return; }
+	if (!list.ptr() || list->Count() <= 0) { return; }
 
 	clPtr<FS> destFs = GetOtherPanel()->GetFS();
 	FSPath destPath = GetOtherPanel()->GetPath();
 
 	FSString uri = GetOtherPanel()->UriOfDir();
 
-	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( "Move" ) ).data(),
+	const char* pCaption;
+	char sCaption[128];
+	if (actOnSelection)
+	{
+		Lsnprintf(sCaption, sizeof(sCaption), _LT("Move %d selected file(s) to:"), list->Count());
+		pCaption = sCaption;
+	}
+	else
+	{
+		pCaption = _LT("Move file under cursor to:");
+	}
+
+	std::vector<unicode_t> str = InputStringDialog(this, utf8_to_unicode(pCaption).data(),
 	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -2195,10 +2265,29 @@ void NCWin::Move( bool shift )
 		destFs = ParzeURI( str.data(), destPath, checkFS, 2 );
 	}
 
-	MoveFiles( srcFs, srcPath, list, destFs, destPath, this );
+	bool isMoveDone = MoveFiles( srcFs, srcPath, list, destFs, destPath, this );
+	//dbg_printf("MoveFiles: srcPath=%s destPath=%s\n", srcPath.GetUtf8(), destPath.GetUtf8());
 
-	_leftPanel.Reread();
-	_rightPanel.Reread();
+	// if all statements below are true:
+	// - move operation is successful
+	// - we move only one file
+	// - the file is moved to the active folder
+	// - the file is under cursor in active folder
+	// then move cursor to new name of the moved file	
+	// This should retain cursor at the renamed file after Shift-F6
+	if (isMoveDone &&
+		list->Count() == 1 &&
+		srcFs == destFs &&
+		destPath.Count() > 0 &&
+		pathEqual(_panel->GetCurrentFileName(), list->First()->GetUnicodeName()) &&
+		file1HasPath2(destPath, srcPath))
+	{
+		const unicode_t* destName = destPath.GetItem(destPath.Count()-1)->GetUnicode();
+		_panel->Reread(true, destName);
+	}
+	else
+	  _panel->Reread();
+	GetOtherPanel()->Reread();
 }
 
 

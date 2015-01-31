@@ -231,7 +231,7 @@ void OperSearchThread::SearchDir( FS* fs, FSPath path, MegaSearcher* pSearcher )
 
 	std::vector<FSNode*> p = list.GetArray();
 
-	list.SortByName( p.data(), count, true, false );
+	FSNodeVectorSorter::Sort(p, true, false, SORT_NAME);
 
 	//check by mask
 	unicode_t* mask = this->searchParams.mask.data();
