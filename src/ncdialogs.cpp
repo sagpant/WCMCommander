@@ -12,6 +12,7 @@
 #include "string-util.h"
 #include "ltext.h"
 #include "unicode_lc.h"
+#include "panel.h"
 
 bool createDialogAsChild //= false;
    = true;
@@ -905,6 +906,17 @@ bool clSelectDriveDlgMenu::EventKey( cevent_key* pEvent )
 
 		switch ( pEvent->Key() )
 		{
+			case VK_R:
+			{
+				bool IsCtrl = ( pEvent->Mod() & KM_CTRL ) != 0;
+				if ( IsCtrl )
+				{
+					Command( ID_RESTART_DIALOG, 0, this, nullptr );
+					return false;
+				}
+				break;
+			}
+
 			case VK_UP:
 				SetCurrent( _current - 1, true );
 				break;
@@ -1146,6 +1158,7 @@ int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, clMenuData*
 	mtable.Enable();
 	mtable.SetFocus();
 	dlg.AddWin( &mtable );
-	return dlg.DoModal();
+	int Result = dlg.DoModal();
+	return Result;
 }
 

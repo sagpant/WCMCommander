@@ -152,5 +152,4 @@ public:
 	void AddSplitter();
 };
 
-
 int RunDldMenu( int nUi, NCDialogParent* parent, const char* header, clMenuData* d );
