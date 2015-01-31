@@ -1392,7 +1392,19 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 			if ( list )
 			{
 				clPtr<FSNode> fsNode = new FSNode();
+#if !defined(_WIN32)
+				if ( _param.charset == CS_UTF8 )
+				{
+					std::vector<char> normname = normalize_utf8_NFC( fileName );
+					fsNode->name = FSString( _param.charset, normname.data() );
+				}
+				else
+				{
+					fsNode->name = FSString( _param.charset, fileName );
+				}
+#else
 				fsNode->name = FSString( _param.charset, fileName );
+#endif
 				fsNode->st = st;
 				list->Append( fsNode );
 			}
