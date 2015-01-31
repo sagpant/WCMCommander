@@ -150,6 +150,7 @@ SET(wcm_COMMON_SOURCES
 	wal/wal_sys_api.cpp
 	wal/wal_tmpls.cpp
 	wcm-config.cpp
+	utf8proc/utf8proc.c
 )
 
 SET(wcm_HEADERS
@@ -213,6 +214,7 @@ SET(wcm_HEADERS
 	wal/wal_sys_api.h
 	wal/wal_tmpls.h
 	wcm-config.h
+	utf8proc/utf8proc.h
 )
 
 SET(wcm_RESOURCES
