@@ -224,6 +224,12 @@ ADD_EXECUTABLE(wcm ${wcm_COMMON_SOURCES} ${wcm_PLATFORM_SOURCES} ${wcm_HEADERS} 
 TARGET_LINK_LIBRARIES(wcm ${wcm_LIBS})
 
 # install
-INSTALL(TARGETS wcm RUNTIME DESTINATION bin)
-INSTALL(FILES wcm.desktop DESTINATION share/applications)
-INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/wcm/icon/wcm.png DESTINATION share/pixmaps)
+SET(BINDIR bin CACHE STRING "directory where to install binary files")
+SET(DESKTOPDIR share/applications CACHE STRING "directory where to install .desktop files")
+SET(PIXMAPDIR share/pixmap CACHE STRING "directory where to install pixmaps")
+SET(DATADIR share/wcm CACHE STRING "directory where to install data")
+
+INSTALL(TARGETS wcm RUNTIME DESTINATION ${BINDIR})
+INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/applications/wcm.desktop DESTINATION ${DESKTOPDIR})
+INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/pixmaps/wcm.png DESTINATION ${PIXMAPDIR})
+INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/install-files/share/wcm/ DESTINATION ${DATADIR})
