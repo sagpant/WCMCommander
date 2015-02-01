@@ -20,3 +20,5 @@ clPtr<cfont> g_HelpHeadFont;
 bool g_DebugKeyboard = false;
 
 clEnvironment g_Env;
+
+NCWin* g_MainWin = nullptr;

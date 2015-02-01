@@ -414,6 +414,8 @@ int main( int argc, char** argv )
 
 		NCWin ncWin;
 
+		g_MainWin = &ncWin;
+
 		// reload config with a valid NCWin
 		g_WcmConfig.Load( &ncWin );
 
