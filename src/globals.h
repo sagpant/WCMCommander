@@ -19,7 +19,9 @@
 #define WIN_REGISTRY_APP   "Wal commander" //app name in windows registry
 
 // Unix
-#define UNIX_CONFIG_DIR_PATH  "/usr/share/wcm"
+#ifndef UNIX_CONFIG_DIR_PATH
+#	define UNIX_CONFIG_DIR_PATH  "/usr/share/wcm"
+#endif
 
 #if defined(_MSC_VER)
 #	define UNUSED
