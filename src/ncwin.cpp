@@ -3251,10 +3251,13 @@ void NCWin::AdjustFontSize( std::vector<char>* FontURI, float Coef )
 		
 	const char* Font = FontURI->data();
 
-	int Size = 0;
-	char FontName[255];
+	if ( !Font || !*Font ) return;
 
-	if (sscanf(Font, "-%i:%s", &Size, FontName) != 2) return;
+	int Size = 0;
+	char FontName[0xFFFF];
+	memset( FontName, 0, sizeof( FontName ) );
+
+	if ( Lsscanf( Font, "-%i:%65534c", &Size, FontName ) != 2) return;
 
 	if ( Coef < 1.0f )
 	{
@@ -3265,8 +3268,9 @@ void NCWin::AdjustFontSize( std::vector<char>* FontURI, float Coef )
 		if (Size < 140) Size = int(Size * Coef);
 	}
 
-	char Buf[255];
-	sprintf(Buf, "-%i:%s", Size, FontName);
+	char Buf[4096];
+
+	Lsnprintf(Buf, sizeof( Buf ), "-%i:%s", Size, FontName);
 
 	*FontURI = new_char_str( Buf );
 
