@@ -3418,19 +3418,23 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				return true;
 
-				case FC(VK_UP, KM_CTRL):
+#if !defined( __APPLE__ )
+				case FC( VK_UP, KM_CTRL ):
 					if (pEvent->IsFromMouseWheel())
 					{
 						IncreaseFontSize( _mode );
 					}
 					return true;
+#endif
 
+#if !defined( __APPLE__ )
 				case FC( VK_DOWN, KM_CTRL ):
 					if ( pEvent->IsFromMouseWheel() )
 					{
 						DecreaseFontSize( _mode );
 					}
 					return true;
+#endif
 
 				case FC( VK_DOWN, KM_SHIFT ):
 					_panel->KeyDown( shift, &_shiftSelectType );
