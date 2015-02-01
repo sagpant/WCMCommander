@@ -56,7 +56,7 @@ ENDIF(MINGW)
 # flags
 SET(BINDIR bin CACHE STRING "directory where to install binary files")
 SET(DESKTOPDIR share/applications CACHE STRING "directory where to install .desktop files")
-SET(PIXMAPDIR share/pixmap CACHE STRING "directory where to install pixmaps")
+SET(PIXMAPDIR share/pixmaps CACHE STRING "directory where to install pixmaps")
 SET(DATADIR share/wcm CACHE STRING "directory where to install data")
 
 CONFIGURE_FILE(libconf_ux.h.in libconf_ux.h) # noop, flags are passed via compiler args
