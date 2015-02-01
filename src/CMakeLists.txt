@@ -54,10 +54,16 @@ ELSE(MINGW)
 ENDIF(MINGW)
 
 # flags
+SET(BINDIR bin CACHE STRING "directory where to install binary files")
+SET(DESKTOPDIR share/applications CACHE STRING "directory where to install .desktop files")
+SET(PIXMAPDIR share/pixmap CACHE STRING "directory where to install pixmaps")
+SET(DATADIR share/wcm CACHE STRING "directory where to install data")
+
 CONFIGURE_FILE(libconf_ux.h.in libconf_ux.h) # noop, flags are passed via compiler args
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(BEFORE wal swl utf8proc .)
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+ADD_DEFINITIONS(-DUNIX_CONFIG_DIR_PATH="${CMAKE_INSTALL_PREFIX}/${DATADIR}")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unused-parameter -Wno-unknown-pragmas")
 
 # sources
@@ -224,11 +230,6 @@ ADD_EXECUTABLE(wcm ${wcm_COMMON_SOURCES} ${wcm_PLATFORM_SOURCES} ${wcm_HEADERS} 
 TARGET_LINK_LIBRARIES(wcm ${wcm_LIBS})
 
 # install
-SET(BINDIR bin CACHE STRING "directory where to install binary files")
-SET(DESKTOPDIR share/applications CACHE STRING "directory where to install .desktop files")
-SET(PIXMAPDIR share/pixmap CACHE STRING "directory where to install pixmaps")
-SET(DATADIR share/wcm CACHE STRING "directory where to install data")
-
 INSTALL(TARGETS wcm RUNTIME DESTINATION ${BINDIR})
 INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/applications/wcm.desktop DESTINATION ${DESKTOPDIR})
 INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/pixmaps/wcm.png DESTINATION ${PIXMAPDIR})
