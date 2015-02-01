@@ -3245,6 +3245,77 @@ void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabled
 #endif
 }
 
+void NCWin::AdjustFontSize( std::vector<char>* FontURI, float Coef )
+{
+	if ( !FontURI ) return;
+		
+	const char* Font = FontURI->data();
+
+	int Size = 0;
+	char FontName[255];
+
+	if (sscanf(Font, "-%i:%s", &Size, FontName) != 2) return;
+
+	if ( Coef < 1.0f )
+	{
+		if (Size > 30) Size = int(Size * Coef);
+	}
+	else
+	{
+		if (Size < 140) Size = int(Size * Coef);
+	}
+
+	char Buf[255];
+	sprintf(Buf, "-%i:%s", Size, FontName);
+
+	*FontURI = new_char_str( Buf );
+
+	InitFonts();
+	SendConfigChanged();
+	StylesChanged(this);
+}
+
+void NCWin::DecreaseFontSize( MODE Mode )
+{
+	const float Coef = 1.0f / 1.1f;
+
+	switch ( Mode )
+	{
+	case VIEW:
+		AdjustFontSize( &g_WcmConfig.viewerFontUri, Coef );
+		break;
+	case EDIT:
+		AdjustFontSize( &g_WcmConfig.editorFontUri, Coef );
+		break;
+	case PANEL:
+		AdjustFontSize( &g_WcmConfig.panelFontUri, Coef );
+		break;
+	default:
+		break;
+	}
+
+}
+
+void NCWin::IncreaseFontSize( MODE Mode )
+{
+	const float Coef = 1.1f;
+
+	switch (Mode)
+	{
+	case VIEW:
+		AdjustFontSize( &g_WcmConfig.viewerFontUri, Coef );
+		break;
+	case EDIT:
+		AdjustFontSize( &g_WcmConfig.editorFontUri, Coef );
+		break;
+	case PANEL:
+		AdjustFontSize( &g_WcmConfig.panelFontUri, Coef );
+		break;
+	default:
+		break;
+	}
+}
+
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 {
 	DebugKeyboard( pEvent, pressed, g_DebugKeyboard );
@@ -3342,6 +3413,20 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				}
 
 				return true;
+
+				case FC(VK_UP, KM_CTRL):
+					if (pEvent->IsFromMouseWheel())
+					{
+						IncreaseFontSize( _mode );
+					}
+					return true;
+
+				case FC( VK_DOWN, KM_CTRL ):
+					if ( pEvent->IsFromMouseWheel() )
+					{
+						DecreaseFontSize( _mode );
+					}
+					return true;
 
 				case FC( VK_DOWN, KM_SHIFT ):
 					_panel->KeyDown( shift, &_shiftSelectType );
