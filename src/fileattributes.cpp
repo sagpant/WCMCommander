@@ -11,6 +11,7 @@
 #include "dialog_helpers.h"
 #include "ltext.h"
 #include "panel.h"
+#include "vfs.h"
 
 /*
 Windows:
@@ -55,6 +56,7 @@ public:
 	 : NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode(_LT("Attributes")).data(), bListOkCancel )
 	 , m_Panel( Panel )
 	 , m_Node( Panel ? Panel->GetCurrent() : nullptr )
+	 , m_URI( Panel ? Panel->UriOfCurrent() : FSString() )
 	 , m_Layout( 17, 2 )
 	 , m_CaptionText( 0, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
 	 , m_FileNameText( uiValue, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
@@ -108,7 +110,9 @@ public:
 		// disable editing of these properties
 		m_Compressed.Enable( false );
 		m_Encrypted.Enable( false );
+		m_NotIndexed.Enable( false );
 		m_Sparse.Enable( false );
+		m_Temporary.Enable( false );
 		m_Offline.Enable( false );
 		m_ReparsePoint.Enable( false );
 		m_Virtual.Enable( false );
@@ -119,6 +123,24 @@ public:
 		AddLayout( &m_Layout );
 
 		SetPosition();
+	}
+
+	FSString GetURI() const { return m_URI; }
+
+	FSNode* GetNode() const
+	{
+		if ( !m_Node ) return nullptr;
+
+#if defined(_WIN32)
+		m_Node->SetAttrReadOnly( m_ReadOnly.IsSet() );
+		m_Node->SetAttrArchive( m_Archive.IsSet() );
+		m_Node->SetAttrHidden( m_Hidden.IsSet() );
+		m_Node->SetAttrSystem( m_System.IsSet() );
+//		m_Node->SetAttrNotIndexed( m_NotIndexed.IsSet() );
+//		m_Node->SetAttrTemporary( m_Temporary.IsSet() );
+#endif
+
+		return m_Node;
 	}
 
 private:
@@ -145,6 +167,7 @@ private:
 private:
 	PanelWin* m_Panel;
 	FSNode* m_Node;
+	FSString m_URI;
 
 	Layout m_Layout;
 
@@ -174,7 +197,21 @@ bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel )
 
 	if ( Dialog.DoModal( ) == CMD_OK )
 	{
-		// TODO: apply changes
+		FSNode* Node = Dialog.GetNode();
+
+		// apply changes
+		if ( Node )
+		{
+			FSPath fspath;
+			clPtr<FS> fs = ParzeURI( Dialog.GetURI().GetUnicode(), fspath, nullptr, 0);
+			if ( fs )
+			{
+				int Err = 0;
+				FSCInfo Info;
+				fs->StatSetAttr( fspath, &Node->st, &Err, &Info );
+			}
+		}
+
 		return true;
 	}
 
