@@ -532,7 +532,7 @@ NCWin::NCWin()
 
 	_lpanel.AddWin( &_leftPanel, 0, 0 );
 	_lpanel.AddWin( &_rightPanel, 0, 1 );
-	_lpanel.AddWin( &_activityNotification, 0, 0 );
+	_lo.AddWin( &_activityNotification, 0, 0 );
 	_lo.AddWin( &m_AutoCompleteList, 0, 1 );
 	_lo.AddLayout( &_lpanel, 2, 0 );
 
