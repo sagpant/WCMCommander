@@ -180,6 +180,9 @@ int FSTmp::SetFileTime(FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCIn
 
 FSString FSTmp::Uri(FSPath& path) 
 { 
-	return FSString((std::string("tmp://") + baseFS->Uri(path).GetUtf8() + DIR_SPLITTER ).c_str());
+	std::string uri(std::string("tmp://") + baseFS->Uri(path).GetUtf8());
+	if (uri.back() != DIR_SPLITTER)
+		uri += DIR_SPLITTER;
+	return FSString(uri.c_str());
 };
 
