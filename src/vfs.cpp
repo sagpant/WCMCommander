@@ -31,6 +31,7 @@ int FS::RmDir  ( FSPath& path, int* err, FSCInfo* info )            { SetError( 
 int FS::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )  { SetError( err, 0 ); return -1; }
 int FS::ReadDir   ( FSList* list, FSPath& path,  int* err, FSCInfo* info )    { SetError( err, 0 ); return -1; }
 int FS::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )         { SetError( err, 0 ); return -1; }
+int FS::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info ) { SetError( err, 0 ); return -1; }
 int FS::FStat( int fd, FSStat* st, int* err, FSCInfo* info )     { SetError( err, 0 ); return -1; }
 int FS::Symlink   ( FSPath& path, FSString& str, int* err, FSCInfo* info )      { SetError( err, 0 ); return -1; }
 int FS::StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info )    { SetError( err, 0 ); return -1; }
@@ -637,6 +638,15 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	//...
 	SetError( err, 50 );
 	return -1;
+}
+
+int FSSys::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info )
+{
+	const unicode_t* lpFileName = path.GetUnicode();
+
+	DWORD Attr = st->dwFileAttributes;
+
+	return SetFileAttributesW( lpFileName, Attr ) ? 0 : -1;
 }
 
 int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
@@ -1410,6 +1420,13 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	return 0;
 }
 
+int FSSys::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info )
+{
+	// TODO: implement
+	SetError( err, 0 );
+	return -1;
+}
+
 int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
 {
 	fsStat->link.Clear();
@@ -1639,7 +1656,7 @@ std::vector<FSNode*> FSList::GetFilteredArray( bool showHidden, int* pCount )
 	int i;
 
 	for ( i = 0 ; i < n && pNode; pNode = pNode->next )
-		if ( showHidden || !pNode->IsAttrHidden() )
+		if ( showHidden || !pNode->IsHidden() )
 		{
 			p[i++] = pNode;
 		}

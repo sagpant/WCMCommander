@@ -221,6 +221,8 @@ struct FSNode: public iIntrusiveCounter
 	bool IsBad() const { return st.IsBad(); }
 
 #ifdef _WIN32
+	/// should be hidden in panels
+	bool IsHidden() const { return IsAttrHidden() || IsAttrSystem(); }
 	bool IsAttrHidden() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) != 0; }
 	bool IsAttrSystem() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM ) != 0; }
 	bool IsAttrReadOnly() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_READONLY ) != 0; }
@@ -233,8 +235,27 @@ struct FSNode: public iIntrusiveCounter
 	bool IsAttrOffline() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE ) != 0; }
 	bool IsAttrReparsePoint() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) != 0; }
 	bool IsAttrVirtual() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_VIRTUAL ) != 0; }
+
+	void SetAttr( bool a, int Mask )
+	{
+		if ( a )
+		{
+			st.dwFileAttributes |= Mask;
+		}
+		else
+		{
+			st.dwFileAttributes &= ~Mask;
+		}
+	}
+
+	void SetAttrReadOnly( bool a ) { SetAttr( a, FILE_ATTRIBUTE_READONLY ); }
+	void SetAttrArchive( bool a ) { SetAttr( a, FILE_ATTRIBUTE_ARCHIVE ); }
+	void SetAttrHidden( bool a ) { SetAttr( a, FILE_ATTRIBUTE_HIDDEN ); }
+	void SetAttrSystem( bool a ) { SetAttr( a, FILE_ATTRIBUTE_SYSTEM ); }
+	void SetAttrNotIndexed( bool a ) { SetAttr( a, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED ); }
+	void SetAttrTemporary( bool a ) { SetAttr( a, FILE_ATTRIBUTE_TEMPORARY ); }
 #else
-	bool IsAttrHidden() { return name.GetUnicode()[0] == '.'; }
+	bool IsHidden() { return name.GetUnicode()[0] == '.'; }
 #endif
 	bool IsSelected() const { return isSelected; }
 	void SetSelected() { isSelected = true; }
@@ -552,6 +573,8 @@ public:
 	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
 	virtual int ReadDir  ( FSList* list, FSPath& path,  int* err, FSCInfo* info );
 	virtual int Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info );
+	/// apply attributes to a file
+	virtual int StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
 	virtual int StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info );
@@ -649,6 +672,7 @@ public:
 	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
 	virtual int ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info );
 	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
+	virtual int StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
 	virtual int StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info );
