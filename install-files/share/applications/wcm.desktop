@@ -7,5 +7,5 @@ Exec=wcm
 TryExec=wcm
 Terminal=false
 Categories=Utility;FileManager;
-Icon=/usr/share/wcm/icon/wcm.png
+Icon=wcm
 StartupNotify=true
