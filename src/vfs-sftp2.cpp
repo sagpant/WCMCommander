@@ -26,7 +26,15 @@ bool GetDefaultSshKeys( FSString& pub_key, FSString& private_key )
 {
     // TODO: Get by-host keyfiles, configure keyfiles, etc etc
     // http://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa
-    const char* home = getenv( "HOME" );
+
+#if _MSC_VER > 1700
+	char* home;
+	size_t size;
+	_dupenv_s(&home, &size, "HOME" );
+#else
+	const char* home = getenv( "HOME" );
+#endif
+
     if ( !home )
     {
         return false;
@@ -34,6 +42,11 @@ bool GetDefaultSshKeys( FSString& pub_key, FSString& private_key )
 
     pub_key = carray_cat<char>( home, "/.ssh/id_rsa.pub" ).data();
     private_key = carray_cat<char>( home, "/.ssh/id_rsa" ).data();
+
+#if _MSC_VER > 1700
+	// deallocate after _dupenv_s()
+	free(home);
+#endif
 
     struct stat sb;
     if ( ( stat( pub_key.GetUtf8(), &sb ) != 0 ) || ( stat( private_key.GetUtf8(), &sb ) != 0 ) )
