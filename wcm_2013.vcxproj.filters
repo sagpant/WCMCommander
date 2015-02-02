@@ -75,6 +75,7 @@
     <ClCompile Include="src/dlg-ctrl-l.cpp" />
     <ClCompile Include="src/usermenu.cpp" />
     <ClCompile Include="src/swl\swl_combobox.cpp" />
+    <ClCompile Include="src\vfs-tmp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/charsetdlg.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="src/wcm-config.h" />
     <ClInclude Include="src/strmasks.h" />
     <ClInclude Include="src/usermenu.h" />
+    <ClInclude Include="src\vfs-tmp.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src/wcm.rc" />

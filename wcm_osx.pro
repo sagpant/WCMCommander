@@ -74,6 +74,7 @@ SOURCES += src/nc.cpp \
     src/vfs-sftp.cpp \
     src/vfs-sftp2.cpp \
     src/vfs-smb.cpp \
+    src/vfs-tmp.cpp \
     src/vfs-uri.cpp \
     src/vfs.cpp \
     src/vfspath.cpp \
@@ -146,6 +147,7 @@ HEADERS += \
     src/vfs-ftp.h \
     src/vfs-sftp.h \
     src/vfs-smb.h \
+    src/vfs-tmp.h \
     src/vfs-uri.h \
     src/vfs.h \
     src/vfspath.h \

@@ -184,6 +184,19 @@ void FSPath::MakeCache( int cs, unicode_t splitter )
 	cacheSplitter = splitter;
 }
 
+bool FSPath::Equals(FSPath* that) 
+{
+	int size = Count();
+	if (!that || size != that->Count())
+		return false;
+	for (int i = 0; i < size; i++)
+	{
+		if (this->GetItem(i)->Cmp(*that->GetItem(i)) != 0)
+			return false;
+	}
+	return true;
+}
+
 FSPath::~FSPath() {}
 
 

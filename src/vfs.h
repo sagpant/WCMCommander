@@ -506,7 +506,7 @@ public:
 class FS: public iIntrusiveCounter
 {
 public:
-	enum TYPES { SYSTEM = 0, SFTP = 1, SAMBA = 2, FTP = 3, WIN32NET = 4 };
+	enum TYPES { SYSTEM = 0, SFTP = 1, SAMBA = 2, FTP = 3, WIN32NET = 4, TMP = 5 };
 	enum FLAGS { HAVE_READ = 1, HAVE_WRITE = 2, HAVE_SYMLINK = 4, HAVE_SEEK = 8 };
 	enum OPENFLAGS { SHARE_READ = 1, SHARE_WRITE = 2 };
 private:

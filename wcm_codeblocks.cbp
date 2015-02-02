@@ -308,6 +308,8 @@
 		<Unit filename="src/vfs-sftp2.cpp" />
 		<Unit filename="src/vfs-smb.cpp" />
 		<Unit filename="src/vfs-smb.h" />
+		<Unit filename="src/vfs-tmp.cpp" />
+		<Unit filename="src/vfs-tmp.h" />
 		<Unit filename="src/vfs-uri.cpp" />
 		<Unit filename="src/vfs-uri.h" />
 		<Unit filename="src/vfs.cpp" />
