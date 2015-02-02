@@ -260,6 +260,8 @@ $(OBJDIR)/vfspath.o: $(HW) $(HS) $(HN) src/vfspath.cpp
 $(OBJDIR)/vfs-smb.o: $(HW) $(HS) $(HN) src/vfs-smb.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-smb.cpp -o $(OBJDIR)/vfs-smb.o
 	
+$(OBJDIR)/vfs-tmp.o: $(HW) $(HS) $(HN) src/vfs-smb.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-tmp.cpp -o $(OBJDIR)/vfs-tmp.o
 	
 $(OBJDIR)/tcp_sock.o: $(HW) $(HS) $(HN) src/tcp_sock.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/tcp_sock.cpp -o $(OBJDIR)/tcp_sock.o

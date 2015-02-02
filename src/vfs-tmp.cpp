@@ -30,7 +30,7 @@ bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode)
 	if (findByBasePath(&srcPath))
 		return false;
 
-	tmpList.push_back(FSTmpNode(FSString(srcPath.GetUnicode()), srcPath, *fsNode));
+	tmpList.push_back(FSTmpNode(srcPath.GetUnicode(), &srcPath, &fsNode->st));
 	return true;
 }
 
@@ -42,7 +42,7 @@ int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 		clPtr<FSNode> pNode = new FSNode();
 
 		pNode->name=it->tmpFSString;
-		pNode->st = it->baseFSNode.st;
+		pNode->st = it->baseFSNodeStat;
 
 		list->Append(pNode);
 	}

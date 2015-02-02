@@ -8,8 +8,9 @@ struct FSTmpNode
 {
 	FSString tmpFSString; // how it appears in tmp panel
 	FSPath baseFSPath; // what stands behind the tmp item
-	FSNode baseFSNode; // stat: isDir, size, etc
-	FSTmpNode(FSString& _tmpFSString, FSPath& _baseFSPath, FSNode& _baseFSNode) : tmpFSString(_tmpFSString), baseFSPath(_baseFSPath), baseFSNode(_baseFSNode){}
+	FSStat baseFSNodeStat; // stat: isDir, size, etc
+	FSTmpNode(const unicode_t* _tmpUnicodeStr, FSPath* _baseFSPath, FSStat* _baseFSNodeStat) 
+	  : tmpFSString(_tmpUnicodeStr), baseFSPath(*_baseFSPath), baseFSNodeStat(*_baseFSNodeStat){}
 };
 
 class FSTmp : public FS
