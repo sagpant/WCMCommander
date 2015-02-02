@@ -2002,9 +2002,15 @@ void NCWin::CtrlF()
 void NCWin::CtrlA()
 {
 	if ( _mode != PANEL ) return;
+	if ( !_panel ) return;
+
 	if ( _panel->IsVisible() ) 
 	{
-		FileAttributesDlg( this, _panel );
+		if ( FileAttributesDlg( this, _panel ) )
+		{
+			_leftPanel.Reread();
+			_rightPanel.Reread();
+		}
 	}
 }
 
