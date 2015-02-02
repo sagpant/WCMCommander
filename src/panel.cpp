@@ -905,7 +905,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	bool isExe = !isDir && p && p->IsExe();
 	bool isBad = p && p->IsBad();
 	bool isSelected = p && p->IsSelected();
-	bool isHidden = p && p->IsAttrHidden();
+	bool isHidden = p && p->IsHidden();
 	bool isLink = p && p->IsLnk();
 
 	/*
