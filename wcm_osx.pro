@@ -79,7 +79,8 @@ SOURCES += src/nc.cpp \
     src/vfspath.cpp \
     src/w32util.cpp \
     src/wcm-config.cpp \
-    src/swl/swl_staticlabel.cpp
+    src/swl/swl_staticlabel.cpp \
+    src/utf8proc/utf8proc.c
 
 HEADERS += \
     src/swl/swl.h \
@@ -154,8 +155,10 @@ HEADERS += \
     src/wcm-config.h
 
 INCLUDEPATH += wcm
+INCLUDEPATH += src
 INCLUDEPATH += src/swl
 INCLUDEPATH += src/wal
+INCLUDEPATH += src/utf8proc
 INCLUDEPATH += /opt/X11/include
 INCLUDEPATH += /usr/local/include
 
