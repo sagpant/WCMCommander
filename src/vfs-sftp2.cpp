@@ -15,10 +15,48 @@
 
 #include "string-util.h"
 
+#define SSH_PASSWORD_ATTEMPTS 3
 
 void InitSSH()
 {
 	libssh2_init( 0 );
+}
+
+bool GetDefaultSshKeys( FSString& pub_key, FSString& private_key )
+{
+    // TODO: Get by-host keyfiles, configure keyfiles, etc etc
+    // http://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa
+
+#if _MSC_VER > 1700
+	char* home;
+	size_t size;
+	_dupenv_s(&home, &size, "HOME" );
+#else
+	const char* home = getenv( "HOME" );
+#endif
+
+    if ( !home )
+    {
+        return false;
+    }
+
+    pub_key = carray_cat<char>( home, "/.ssh/id_rsa.pub" ).data();
+    private_key = carray_cat<char>( home, "/.ssh/id_rsa" ).data();
+
+#if _MSC_VER > 1700
+	// deallocate after _dupenv_s()
+	free(home);
+#endif
+
+    struct stat sb;
+    if ( ( stat( pub_key.GetUtf8(), &sb ) != 0 ) || ( stat( private_key.GetUtf8(), &sb ) != 0 ) )
+    {
+        pub_key = "";
+        private_key = "";
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -258,17 +296,72 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 			WaitSocket( info );
 		}
 
-
 		//publickey,password,keyboard-interactive
 		static const char passId[] = "password";
+		static const char publickey[] = "publickey";
 		static const char kInterId[] = "keyboard-interactive";
-
 
 		static unicode_t userSymbol[] = { '@', 0 };
 
 		while ( true )
 		{
-			if ( !strncmp( authList, passId, strlen( passId ) ) )
+			if ( !strncmp( authList, publickey, strlen( publickey ) ) )
+			{
+				FSString public_key;
+                FSString private_key;
+                if( !GetDefaultSshKeys(public_key, private_key) )
+                {
+                    continue;
+                }
+
+                int ret;
+                WHILE_EAGAIN_(ret, libssh2_userauth_publickey_fromfile (sshSession,
+                        charUserName, public_key.GetUtf8(), private_key.GetUtf8(), "" ) );
+
+				if (ret == 0)
+				{
+					fprintf(stderr, "You shouldn't use keys with an empty passphrase!\n");
+				}
+				// TODO: prompt for key password. Copied from SO, didn't work:
+				// http://stackoverflow.com/questions/14952702/
+//				else if (ret == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED)
+//				{
+//					// if we get here it means the public key was initially accepted
+//					// but the private key has a non-empty passphrase
+//					for (int i = 0; i < SSH_PASSWORD_ATTEMPTS; ++i)
+//					{
+//
+//                        FSPromptData data;
+//                        data.visible = false;
+//                        data.prompt = utf8_to_unicode( "Private key password:" ).data();
+//
+//                        if ( !info->Prompt(
+//                                utf8_to_unicode( "SFTP_" ).data(),
+//                                carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).data(),
+//                                &data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
+//
+//                        char* password = ( char* )FSString( data.prompt.Data() ).Get( _operParam.charset );
+//
+//						ret = libssh2_userauth_publickey_fromfile( sshSession,
+//                                charUserName, public_key.GetUtf8(), private_key.GetUtf8(), password );
+//						if ( ret != LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED ) break;
+//					}
+//				}
+
+				if (ret != 0)
+				{
+                    // http://www.libssh2.org/libssh2_session_last_error.html
+                    // Do I get it right that when want_buf==0 I don't need to release the buffer?
+                    char *buf;
+                    libssh2_session_last_error(sshSession, &buf, NULL, 0);
+					fprintf(stderr, "Authentication using key failed: %s!\n", buf);
+				}
+
+				if (ret) { throw int( ret - 1000 ); }
+
+				break;
+			}
+			else if ( !strncmp( authList, passId, strlen( passId ) ) )
 			{
 				FSPromptData data;
 				data.visible = false;

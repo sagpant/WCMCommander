@@ -298,7 +298,7 @@ private:
 	void CtrlA();
 	void CtrlF();
 	void CtrlL();
-	void HistoryDialog();
+	void HistoryDialog();	
 	void SelectDrive( PanelWin* p, PanelWin* OtherPanel );
 	void SelectSortMode( PanelWin* p );
 	void SaveSetupDialog();
@@ -392,4 +392,6 @@ private:
 	bool ProcessCommand_CLS( const unicode_t* cmd );
 	bool ProcessBuiltInCommands( const unicode_t* cmd );
 	void DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const;
+	/// return 'true' if the dialog should be restarted
+	bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel );
 };

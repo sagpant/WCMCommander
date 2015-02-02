@@ -1217,7 +1217,18 @@ std::string GetDriveTypeString( unsigned int Type )
 
 void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 {
-	if ( _mode != PANEL ) { return; }
+	bool RedoDialog = false;
+
+	do
+	{
+		RedoDialog = SelectDriveInternal( p, OtherPanel );
+	}
+	while ( RedoDialog );
+}
+
+bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
+{
+	if ( _mode != PANEL ) { return false; }
 
 #ifndef _WIN32
 	ccollect< MntListNode > mntList;
@@ -1340,11 +1351,14 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	int res = RunDldMenu( uiDriveDlg, p, "Drive", &mData );
 	m_Edit.SetFocus();
 
+	// restart this dialog to reread the drives list (Ctrl+R)
+	if ( res == ID_RESTART_DIALOG ) return true;
+
 	if ( res == ID_DEV_OTHER_PANEL )
 	{
 		clPtr<FS> fs = OtherPanel->GetFSPtr();
 		p->LoadPath( fs, OtherPanel->GetPath(), 0, 0, PanelWin::SET );
-		return;
+		return false;
 	}
 
 #ifdef _WIN32
@@ -1382,7 +1396,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 		if ( !path.IsAbsolute() ) { path.Set( CS_UTF8, "/" ); }
 
 		p->LoadPath( fs, path, 0, 0, PanelWin::SET );
-		return;
+		return false;
 	}
 
 #else
@@ -1391,12 +1405,12 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	{
 		int n = res - ID_MNT_UX0;
 
-		if ( n < 0 || n >= mntList.count() ) { return; }
+		if ( n < 0 || n >= mntList.count() ) { return false; }
 
 		clPtr<FS> fs = new FSSys();
 		FSPath path( sys_charset_id, mntList[n].path.data() );
 		p->LoadPath( fs, path, 0, 0, PanelWin::SET );
-		return;
+		return false;
 	}
 
 #endif
@@ -1448,7 +1462,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			static FSSmbParam lastParams;
 			FSSmbParam params = lastParams;
 
-			if ( !GetSmbLogon( this, params, true ) ) { return; }
+			if ( !GetSmbLogon( this, params, true ) ) { return false; }
 
 			params.isSet = true;
 			clPtr<FS> fs = new FSSmb( &params ) ;
@@ -1469,7 +1483,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			static FSFtpParam lastParams;
 			FSFtpParam params = lastParams;
 
-			if ( !GetFtpLogon( this, params ) ) { return; }
+			if ( !GetFtpLogon( this, params ) ) { return false; }
 
 			clPtr<FS> fs = new FSFtp( &params ) ;
 
@@ -1490,7 +1504,7 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 			static FSSftpParam lastParams;
 			FSSftpParam params = lastParams;
 
-			if ( !GetSftpLogon( this, params ) ) { return; }
+			if ( !GetSftpLogon( this, params ) ) { return false; }
 
 			params.isSet = true;
 			clPtr<FS> fs = new FSSftp( &params ) ;
@@ -1505,8 +1519,9 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 		break;
 #endif
 
-
 	};
+
+	return false;
 }
 
 void NCWin::SelectSortMode( PanelWin* p )
@@ -3454,8 +3469,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				case FC( VK_F1, KM_SHIFT ):
 				case FC( VK_F1, KM_ALT ):
+				{
 					SelectDrive( &_leftPanel, &_rightPanel );
 					return true;
+				}
 
 				case FC( VK_F2, KM_SHIFT ):
 				case FC( VK_F2, KM_ALT ):
