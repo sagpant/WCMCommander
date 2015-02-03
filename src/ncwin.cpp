@@ -3241,7 +3241,7 @@ void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabled
 #endif
 }
 
-void NCWin::AdjustFontSize( std::vector<char>* FontURI, float Coef )
+void NCWin::AdjustFontSize( std::string* FontURI, float Coef )
 {
 	if ( !FontURI ) return;
 		
@@ -3268,7 +3268,7 @@ void NCWin::AdjustFontSize( std::vector<char>* FontURI, float Coef )
 
 	Lsnprintf(Buf, sizeof( Buf ), "-%i:%s", Size, FontName);
 
-	*FontURI = new_char_str( Buf );
+	*FontURI = std::string( Buf );
 
 	InitFonts();
 	SendConfigChanged();

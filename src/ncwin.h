@@ -388,7 +388,7 @@ public:
 
 	void IncreaseFontSize( MODE Mode );
 	void DecreaseFontSize( MODE Mode );
-	void AdjustFontSize( std::vector<char>* FontURI, float Coef );
+	void AdjustFontSize( std::string* FontURI, float Coef );
 
 private:
 	bool ProcessCommand_CD( const unicode_t* cmd );
