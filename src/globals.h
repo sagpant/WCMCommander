@@ -69,3 +69,7 @@ private:
 };
 
 extern clEnvironment g_Env;
+
+class NCWin;
+
+extern NCWin* g_MainWin;

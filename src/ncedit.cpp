@@ -8,8 +8,10 @@
 #define NOMINMAX
 #endif
 
+#include "globals.h"
 #include "nc.h"
 #include "ncedit.h"
+#include "ncwin.h"
 #include "wcm-config.h"
 #include "color-style.h"
 #include "string-util.h"
@@ -2093,6 +2095,22 @@ bool EditWin::EventKey( cevent_key* pEvent )
 		{
 			switch ( pEvent->Key() )
 			{
+				case VK_UP:
+					if (pEvent->IsFromMouseWheel())
+					{
+						if ( g_MainWin ) g_MainWin->IncreaseFontSize(NCWin::EDIT);
+						return true;
+					}
+					break;
+
+				case VK_DOWN:
+					if (pEvent->IsFromMouseWheel())
+					{
+						if ( g_MainWin ) g_MainWin->DecreaseFontSize(NCWin::EDIT);
+						return true;
+					}
+					break;
+
 				case VK_0:
 				case VK_1:
 				case VK_2:

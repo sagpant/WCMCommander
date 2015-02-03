@@ -6,6 +6,7 @@
 
 #include "globals.h"
 #include "ncview.h"
+#include "ncwin.h"
 #include "wcm-config.h"
 #include "color-style.h"
 #include "nc.h"
@@ -1925,6 +1926,20 @@ bool ViewWin::EventKey( cevent_key* pEvent )
 		{
 			switch ( pEvent->Key() )
 			{
+				case VK_UP:
+					if (pEvent->IsFromMouseWheel())
+					{
+						if ( g_MainWin ) g_MainWin->IncreaseFontSize(NCWin::VIEW);
+					}
+					return true;
+
+				case VK_DOWN:
+					if (pEvent->IsFromMouseWheel())
+					{
+						if ( g_MainWin ) g_MainWin->DecreaseFontSize(NCWin::VIEW);
+					}
+					return true;
+
 				case VK_NEXT:
 					threadData->SetEvent( ViewerEvent( ViewerEvent::END ) );
 					return true;
