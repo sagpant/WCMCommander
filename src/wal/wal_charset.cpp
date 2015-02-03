@@ -421,7 +421,7 @@ namespace wal
 			return *s;
 		}
 
-		unicode_t t;
+		uint32_t t;
 		int n;
 
 		if ( ( *s & 0xE0 ) == 0xC0 )
