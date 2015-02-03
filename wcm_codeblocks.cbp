@@ -15,6 +15,9 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m64" />
+					<Add option="-Isrc/swl -Isrc/wal -Isrc" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -43,6 +46,7 @@
 					<Add option="-O3" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m64" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -71,6 +75,7 @@
 					<Add option="-g" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m32" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -99,6 +104,7 @@
 					<Add option="-O3" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m32" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -123,20 +129,32 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-D_DEBUG" />
-					<Add option="-g" />
+					<Add option="-O3" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m32" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc" />
+					<Add option="-DNDEBUG" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
 					<Add directory="wal" />
 					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 				<Linker>
-					<Add library="ws2_32" />
-					<Add library="mpr" />
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="advapi32" />
-					<Add library="comdlg32" />
-					<Add library="libz.a" />
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+					<Add library="freetype" />
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+					<Add library="freetype" />
 				</Linker>
 			</Target>
 			<Target title="Release Win32">
@@ -145,20 +163,26 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-O3" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m32" />
+					<Add option="-Isrc/swl -Isrc/wal" />
 					<Add option="-DNDEBUG" />
-					<Add option="-O2" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
 					<Add directory="wal" />
 					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 				<Linker>
-					<Add library="ws2_32" />
-					<Add library="mpr" />
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="advapi32" />
-					<Add library="comdlg32" />
-					<Add library="libz.a" />
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+					<Add library="freetype" />
 				</Linker>
 			</Target>
 		</Build>
@@ -170,6 +194,7 @@
 		<Unit filename="src/color-style.h" />
 		<Unit filename="src/dircalc.cpp" />
 		<Unit filename="src/dircalc.h" />
+		<Unit filename="src/dlg-ctrl-l.cpp" />
 		<Unit filename="src/eloadsave.cpp" />
 		<Unit filename="src/eloadsave.h" />
 		<Unit filename="src/ext-app-ux.cpp">
@@ -255,6 +280,7 @@
 		<Unit filename="src/strconfig.cpp" />
 		<Unit filename="src/strconfig.h" />
 		<Unit filename="src/string-util.h" />
+		<Unit filename="src/strmasks.cpp" />
 		<Unit filename="src/swl/swl.h" />
 		<Unit filename="src/swl/swl_button.cpp" />
 		<Unit filename="src/swl/swl_editline.cpp" />
@@ -300,6 +326,14 @@
 		<Unit filename="src/toolbar.cpp" />
 		<Unit filename="src/toolbar.h" />
 		<Unit filename="src/unicode_lc.cpp" />
+		<Unit filename="src/usermenu.cpp" />
+		<Unit filename="src/utf8proc/utf8proc.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
 		<Unit filename="src/ux_util.cpp" />
 		<Unit filename="src/vfs-ftp.cpp" />
 		<Unit filename="src/vfs-ftp.h" />
@@ -308,6 +342,8 @@
 		<Unit filename="src/vfs-sftp2.cpp" />
 		<Unit filename="src/vfs-smb.cpp" />
 		<Unit filename="src/vfs-smb.h" />
+		<Unit filename="src/vfs-tmp.cpp" />
+		<Unit filename="src/vfs-tmp.h" />
 		<Unit filename="src/vfs-uri.cpp" />
 		<Unit filename="src/vfs-uri.h" />
 		<Unit filename="src/vfs.cpp" />

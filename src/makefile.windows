@@ -9,7 +9,7 @@ HW = src/wal/wal_tmpls.h src/wal/wal.h src/wal/wal_sys_api.h
 HS = src/swl/swl.h src/swl/swl_internal.h src/swl/swl_layout.h src/swl/swl_winbase.h src/swl/swl_wincore.h src/swl/swl_wincore_internal.h 
 HN = src/libconf.h src/nc.h src/ncwin.h src/panel.h src/ncdialogs.h src/terminal.h src/termwin.h src/ncedit.h src/nchistory.h src/shell.h \
  src/operthread.h src/operwin.h src/vfs.h src/vfspath.h src/vfs-smb.h src/vfs-uri.h src/fileopers.h src/mfile.h src/eloadsave.h src/smblogon.h src/ext-app.h \
- src/wcm-config.h src/panel_list.h src/tcp_sock.h src/vfs-ftp.h src/ftplogon.h src/charsetdlg.h src/vfs-sftp.h src/sftpdlg.h src/color-style.h src/filesearch.h \
+ src/wcm-config.h src/panel_list.h src/tcp_sock.h src/vfs-ftp.h src/ftplogon.h src/charsetdlg.h src/vfs-sftp.h src/vfs-tmp.h src/sftpdlg.h src/color-style.h src/filesearch.h \
  src/help.h src/ux_util.h src/strconfig.h src/shortcuts.h src/fontdlg.h src/ncfonts.h src/shl.h src/toolbar.h src/ncview.h src/search-dlg.h src/search-tools.h \
  src/shell-tools.h src/t-emulator.h src/dircalc.h src/ltext.h
 
@@ -85,6 +85,7 @@ OBJS = \
 	$(OBJDIR)/vfs-ftp.o \
 	$(OBJDIR)/vfs-sftp2.o \
 	$(OBJDIR)/vfs-smb.o \
+	$(OBJDIR)/vfs-tmp.o \
 	$(OBJDIR)/vfs-uri.o \
 	$(OBJDIR)/vfs.o \
 	$(OBJDIR)/vfspath.o \
@@ -199,6 +200,8 @@ $(OBJDIR)/vfspath.o: $(HW) $(HS) $(HN) src/vfspath.cpp
 $(OBJDIR)/vfs-smb.o: $(HW) $(HS) $(HN) src/vfs-smb.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-smb.cpp -o $(OBJDIR)/vfs-smb.o
 	
+$(OBJDIR)/vfs-tmp.o: $(HW) $(HS) $(HN) src/vfs-smb.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-tmp.cpp -o $(OBJDIR)/vfs-tmp.o
 	
 $(OBJDIR)/tcp_sock.o: $(HW) $(HS) $(HN) src/tcp_sock.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/tcp_sock.cpp -o $(OBJDIR)/tcp_sock.o

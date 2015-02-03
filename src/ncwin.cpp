@@ -47,6 +47,7 @@
 #include "strmasks.h"
 #include "dlg-ctrl-l.h"
 #include "usermenu.h"
+#include "vfs-tmp.h"
 
 #ifndef _WIN32
 #  include "ux_util.h"
@@ -533,7 +534,7 @@ NCWin::NCWin()
 
 	_lpanel.AddWin( &_leftPanel, 0, 0 );
 	_lpanel.AddWin( &_rightPanel, 0, 1 );
-	_lpanel.AddWin( &_activityNotification, 0, 0 );
+	_lo.AddWin( &_activityNotification, 0, 0 );
 	_lo.AddWin( &m_AutoCompleteList, 0, 1 );
 	_lo.AddLayout( &_lpanel, 2, 0 );
 
@@ -1301,6 +1302,7 @@ bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 	mData.Add( "6. SFTP", nullptr, nullptr, ID_DEV_SFTP );
 #endif
+	mData.Add("7. temporary (alpha test!)", nullptr, nullptr, ID_DEV_TMP);
 
 #ifndef _WIN32  //unix mounts
 	//ID_MNT_UX0
@@ -1518,7 +1520,12 @@ bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 		}
 		break;
 #endif
-
+		case ID_DEV_TMP:
+		{
+			clPtr<FSTmp> fs = new FSTmp(OtherPanel->GetFS());
+			p->LoadPath(fs, FSTmp::rootPathName, 0, 0, PanelWin::SET);
+		}
+		break;
 	};
 
 	return false;
@@ -1852,7 +1859,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 		{
 			int cur = _panel->Current();
 
-			if ( !cur ) { return; }
+			if ( cur < 0 ) { return; } // on temporary panel 
 
 			FSNode* p =  _panel->GetCurrent();
 

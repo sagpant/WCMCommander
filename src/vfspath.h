@@ -213,6 +213,8 @@ public:
 	const unicode_t* GetUnicode( char delimiter = DIR_SPLITTER ) { return ( const unicode_t* ) GetString( CS_UNICODE, delimiter ); }
 	const char* GetUtf8( char delimiter = DIR_SPLITTER ) { return ( const char* ) GetString( CS_UTF8, delimiter ); }
 
+	bool Equals(FSPath* that);
+
 	~FSPath();
 };
 

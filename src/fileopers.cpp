@@ -14,6 +14,7 @@
 #include "ftplogon.h"
 #include "sftpdlg.h"
 #include "ltext.h"
+#include "vfs-tmp.h"
 
 enum
 {
@@ -1294,6 +1295,14 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 	int ret_err;
 
 	int in = -1;
+
+	if (destFs->Type() == FS::TYPES::TMP)
+	{
+		// copy and move work the same way
+		FSTmp* destTmpFS = static_cast<FSTmp*>(destFs);
+		destTmpFS->AddNode(srcPath, srcNode);
+		return true;
+	}
 
 	while ( true )
 	{

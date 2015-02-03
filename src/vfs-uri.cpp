@@ -12,7 +12,7 @@
 #include "vfs-smb.h"
 #include "vfs-ftp.h"
 #include "vfs-sftp.h"
-
+#include "vfs-tmp.h"
 #include "string-util.h"
 
 static unicode_t rootPathStr[] = {'/', 0};
@@ -214,7 +214,13 @@ clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int 
 
 #endif
 
-	if ( uri[0] == 'f' && uri[1] == 'i' && uri[2] == 'l' && uri[3] == 'e' && uri[4] == ':' && uri[5] == '/' && uri[6] == '/' )
+	if (uri[0] == 't' && uri[1] == 'm' && uri[2] == 'p' && uri[3] == ':' && uri[4] == '/' && uri[5] == '/')
+	{
+		clPtr<FS> baseFS = ParzeURI(uri + 6, path, checkFS, count);
+		return new FSTmp(baseFS);
+	}
+
+	if (uri[0] == 'f' && uri[1] == 'i' && uri[2] == 'l' && uri[3] == 'e' && uri[4] == ':' && uri[5] == '/' && uri[6] == '/')
 	{
 		uri += 6;   //оставляем 1 символ '/'
 	}
