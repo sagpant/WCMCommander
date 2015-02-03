@@ -410,6 +410,12 @@ namespace wal
 					cevent_move cevm( cpoint ( lParam & 0xFFFF, ( lParam >> 16 ) & 0xFFFF ) );
 					return win->Event( &cevm );
 				}
+				case WM_SYSCOMMAND:
+				{
+					// without this pressing Alt-key freezes Ctrl|Shift switchings of the bottombar until Alt is pressed for the second time
+					if (wParam == SC_KEYMENU && (lParam >> 16) <= 0) 
+						return 0;
+				}
 
 			};
 
