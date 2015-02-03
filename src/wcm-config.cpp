@@ -1974,9 +1974,9 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 
 		if ( count <= 0 || cur < 0 || cur >= count ) { return true; }
 
-		std::vector<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
+		std::string* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
 
-		clPtr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && pUri->data() ) ? pUri->data() : 0 );
+		clPtr<cfont> p = SelectFTFont( ( NCDialogParent* )Parent(), pList->get( fontList.GetCurrentInt() ).fixed, ( pUri && !pUri->empty() ) ? pUri->c_str() : nullptr );
 
 		if ( p.ptr() )
 		{
