@@ -1341,7 +1341,7 @@ void clWcmConfig::Load( NCWin* nc )
 
 			if ( s )
 			{
-				*Node.m_Current.m_Str = new_char_str( s );
+				*Node.m_Current.m_Str = s;
 			}
 			else
 			{
