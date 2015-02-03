@@ -34,6 +34,13 @@ struct FSTmpNode
 			n->name = *newName;
 	}
 };
+#ifdef _WIN32
+#define FSTMP_ERROR_FILE_EXISTS ERROR_FILE_EXISTS
+#define FSTMP_ERROR_FILE_NOT_FOUND ERROR_FILE_NOT_FOUND
+#else
+#define FSTMP_ERROR_FILE_EXISTS EEXIST
+#define FSTMP_ERROR_FILE_NOT_FOUND ENOENT
+#endif // _WIN32
 
 class FSTmp : public FS
 {
@@ -41,10 +48,10 @@ class FSTmp : public FS
 	FSTmpNode rootDir;
 
 public:
-	static FSPath FSTmp::rootPathName;
+	static FSPath rootPathName;
 	virtual unsigned Flags() { return baseFS->Flags(); };
-	virtual bool IsEEXIST(int err){ return err == ERROR_FILE_EXISTS || baseFS->IsEEXIST(err); };
-	virtual bool IsENOENT(int err){ return err == ERROR_FILE_NOT_FOUND || baseFS->IsENOENT(err); };
+	virtual bool IsEEXIST(int err){ return err == FSTMP_ERROR_FILE_EXISTS || baseFS->IsEEXIST(err); };
+	virtual bool IsENOENT(int err){ return err == FSTMP_ERROR_FILE_NOT_FOUND || baseFS->IsENOENT(err); };
 	virtual bool IsEXDEV(int err) { return baseFS->IsEXDEV(err); };
 	virtual FSString StrError(int err) { return baseFS->StrError(err); }
 	virtual bool Equal(FS* fs){ return fs && fs->Type() == Type(); }

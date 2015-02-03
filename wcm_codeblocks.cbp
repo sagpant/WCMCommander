@@ -149,12 +149,6 @@
 					<Add library="smbclient" />
 					<Add library="stdc++" />
 					<Add library="freetype" />
-					<Add library="X11" />
-					<Add library="pthread" />
-					<Add library="ssh2" />
-					<Add library="smbclient" />
-					<Add library="stdc++" />
-					<Add library="freetype" />
 				</Linker>
 			</Target>
 			<Target title="Release Win32">
@@ -211,6 +205,10 @@
 		<Unit filename="src/fileopers.h" />
 		<Unit filename="src/filesearch.cpp" />
 		<Unit filename="src/filesearch.h" />
+		<Unit filename="src/folder-history.cpp" />
+		<Unit filename="src/folder-history.h" />
+		<Unit filename="src/folder-shortcuts.cpp" />
+		<Unit filename="src/folder-shortcuts.h" />
 		<Unit filename="src/fontdlg.cpp">
 			<Option target="Debug Linux64" />
 			<Option target="Release Linux64" />
@@ -254,6 +252,8 @@
 		<Unit filename="src/panel.h" />
 		<Unit filename="src/panel_list.cpp" />
 		<Unit filename="src/panel_list.h" />
+		<Unit filename="src/path-list.cpp" />
+		<Unit filename="src/path-list.h" />
 		<Unit filename="src/search-dlg.cpp" />
 		<Unit filename="src/search-dlg.h" />
 		<Unit filename="src/search-tools.cpp" />
@@ -271,12 +271,6 @@
 		<Unit filename="src/shell.h" />
 		<Unit filename="src/shl.cpp" />
 		<Unit filename="src/shl.h" />
-		<Unit filename="src/path-list.cpp" />
-		<Unit filename="src/path-list.h" />
-		<Unit filename="src/folder-shortcuts.cpp" />
-		<Unit filename="src/folder-shortcuts.h" />
-		<Unit filename="src/folder-history.cpp" />
-		<Unit filename="src/folder-history.h" />
 		<Unit filename="src/small.ico" />
 		<Unit filename="src/smblogon.cpp" />
 		<Unit filename="src/smblogon.h" />
@@ -330,6 +324,7 @@
 		<Unit filename="src/toolbar.cpp" />
 		<Unit filename="src/toolbar.h" />
 		<Unit filename="src/unicode_lc.cpp" />
+		<Unit filename="src/urlparser/LUrlParser.cpp" />
 		<Unit filename="src/usermenu.cpp" />
 		<Unit filename="src/utf8proc/utf8proc.c">
 			<Option compilerVar="CC" />

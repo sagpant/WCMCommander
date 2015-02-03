@@ -21,7 +21,11 @@ FSTmpNode::FSTmpNode(const unicode_t* _name, FSTmpNode* _parentDir)
 : FSTmpNode(NODE_DIR, _name, _parentDir)
 {
 	fsStat.mode |= S_IFDIR;
+#ifdef _WIN32	
 	fsStat.mtime = FSTime(FSTime::TIME_CURRENT);
+#else
+	fsStat.mtime = time(0);
+#endif
 }
 
 FSTmpNode* FSTmpNode::findByBasePath(FSPath* basePath, bool isRecursive)
@@ -149,7 +153,7 @@ int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (!n || n->nodeType != FSTmpNode::NODE_DIR)
 	{
-		return FS::SetError(err, ERROR_FILE_NOT_FOUND);
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 	}
 
 	for (std::list<FSTmpNode>::iterator it = n->content.begin(); it != n->content.end(); ++it)
@@ -170,7 +174,7 @@ int FSTmp::Stat(FSPath& path, FSStat* st, int* err, FSCInfo* info)
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (!n)
 	{
-		return FS::SetError(err, ERROR_FILE_NOT_FOUND);
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 	}
 	*st = n->fsStat;
 	return FS::SetError(err, 0);
@@ -194,7 +198,7 @@ int FSTmp::OpenRead(FSPath& path, int flags, int* err, FSCInfo* info)
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (n == 0 || n->nodeType != FSTmpNode::NODE_FILE)
 	{
-		return FS::SetError(err, ERROR_FILE_NOT_FOUND);
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 	}
 	else
 	{
@@ -207,7 +211,7 @@ int FSTmp::OpenRead(FSPath& path, int flags, int* err, FSCInfo* info)
 int FSTmp::OpenCreate(FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info)
 {
 	// can not create orphan file in TMP panel
-	return FS::SetError(err, ERROR_FILE_NOT_FOUND);
+	return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 }
 
 int FSTmp::Rename(FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info)
@@ -215,7 +219,7 @@ int FSTmp::Rename(FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info)
 	FSTmpNode* n = rootDir.findByName(oldpath.GetItem(oldpath.Count() - 1));
 	if (n == 0)
 	{
-		return FS::SetError(err, ERROR_FILE_NOT_FOUND);
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 	}
 	else
 	{
@@ -241,7 +245,7 @@ int FSTmp::Delete(FSPath& path, int* err, FSCInfo* info)
 	FSTmpNode* n = rootDir.findByName(dName);
 	if (n == 0)
 	{
-		return FS::SetError(err, ERROR_FILE_NOT_FOUND);;
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);;
 	}
 	else
 	{
@@ -262,7 +266,7 @@ int FSTmp::Delete(FSPath& path, int* err, FSCInfo* info)
 				return FS::SetError(err, 0);
 			}
 		}
-		return FS::SetError(err, ERROR_FILE_NOT_FOUND);;
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);;
 	}
 }
 
@@ -279,7 +283,7 @@ int FSTmp::RmDir(FSPath& path, int* err, FSCInfo* info)
 			return FS::SetError(err, 0);
 		}
 	}
-	return FS::SetError(err, ERROR_FILE_NOT_FOUND);
+	return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 }
 
 int FSTmp::SetFileTime(FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info)
@@ -287,7 +291,7 @@ int FSTmp::SetFileTime(FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCIn
 	FSTmpNode* fsTemp = rootDir.findByName(path.GetItem(path.Count() - 1));
 	if (fsTemp == 0)
 	{
-		return FS::SetError(err, ERROR_FILE_NOT_FOUND);
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 	}
 	else
 	{
@@ -322,8 +326,8 @@ bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath)
 	{
 		return false;
 	}
-
-	return dn->Add(&FSTmpNode(&srcPath, &fsNode->st, dn));
+	FSTmpNode fsTmpNode(&srcPath, &fsNode->st, dn);
+	return dn->Add(&fsTmpNode);
 }
 
 int FSTmp::MkDir(FSPath& path, int mode, int* err, FSCInfo* info)
@@ -332,8 +336,9 @@ int FSTmp::MkDir(FSPath& path, int mode, int* err, FSCInfo* info)
 	parentPath.Copy(path, path.Count() - 1);
 	FSTmpNode* parent = rootDir.findByFsPath(&parentPath);
 	if (!parent)
-		return SetError(err, ERROR_FILE_NOT_FOUND);
+		return SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 	FSTmpNode* parentDir = parent;
-	parentDir->Add(&FSTmpNode(path.GetItem(path.Count() - 1)->GetUnicode(), parentDir));
+	FSTmpNode fsTmpNode(path.GetItem(path.Count() - 1)->GetUnicode(), parentDir);
+	parentDir->Add(&fsTmpNode);
 	return SetError(err, 0);
 }
