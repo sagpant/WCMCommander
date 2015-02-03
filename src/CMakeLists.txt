@@ -146,6 +146,7 @@ SET(wcm_COMMON_SOURCES
 	vfs-ftp.cpp
 	vfs-sftp2.cpp
 	vfs-smb.cpp
+	vfs-tmp.cpp
 	vfs-uri.cpp
 	vfs.cpp
 	vfspath.cpp
@@ -212,6 +213,7 @@ SET(wcm_HEADERS
 	vfs-ftp.h
 	vfs-sftp.h
 	vfs-smb.h
+	vfs-tmp.h
 	vfs-uri.h
 	vfs.h
 	vfspath.h

@@ -543,11 +543,17 @@ namespace wal
 		return parent->IsEnabled() && parent->EventChildKey( child, ev );
 	}
 
-
+	static bool g_AsyncKeyMap[0xFFFF];
 
 	static void DoKeyEvent( int type, Win* w, KeySym ks, unsigned km,  unicode_t ch, bool FromMouseWheel = false )
 	{
 //	printf( "type = %i ks = %x km = %u, ch = %u\n", type, (unsigned int)ks, km, ch );
+
+		// update async table
+		if ( ks < 0xFFFF )
+		{
+			g_AsyncKeyMap[ ks ] = ( type == EV_KEYDOWN );
+		}
 
 		switch ( ks )
 		{
@@ -698,6 +704,16 @@ namespace wal
 				break;
 		}
 
+		if ( g_AsyncKeyMap[XK_Control_L] ) km |= EXT_KM_LCTRL;
+		if ( g_AsyncKeyMap[XK_Control_R] ) km |= EXT_KM_RCTRL;
+		if ( g_AsyncKeyMap[XK_Shift_L] ) km |= EXT_KM_LSHIFT;
+		if ( g_AsyncKeyMap[XK_Shift_R] ) km |= EXT_KM_RSHIFT;
+		if ( g_AsyncKeyMap[XK_Alt_L] ) km |= EXT_KM_LALT;
+		if ( g_AsyncKeyMap[XK_Alt_R] ) km |= EXT_KM_RALT;
+#if defined(__APPLE__)
+		if ( g_AsyncKeyMap[XK_Meta_L] ) km |= EXT_KM_LCTRL;
+		if ( g_AsyncKeyMap[XK_Meta_R] ) km |= EXT_KM_RCTRL;
+#endif
 
 		cevent_key ev( type, ks , km, 1, ch, FromMouseWheel );
 

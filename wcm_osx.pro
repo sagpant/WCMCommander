@@ -74,12 +74,14 @@ SOURCES += src/nc.cpp \
     src/vfs-sftp.cpp \
     src/vfs-sftp2.cpp \
     src/vfs-smb.cpp \
+    src/vfs-tmp.cpp \
     src/vfs-uri.cpp \
     src/vfs.cpp \
     src/vfspath.cpp \
     src/w32util.cpp \
     src/wcm-config.cpp \
-    src/swl/swl_staticlabel.cpp
+    src/swl/swl_staticlabel.cpp \
+    src/utf8proc/utf8proc.c
 
 HEADERS += \
     src/swl/swl.h \
@@ -146,6 +148,7 @@ HEADERS += \
     src/vfs-ftp.h \
     src/vfs-sftp.h \
     src/vfs-smb.h \
+    src/vfs-tmp.h \
     src/vfs-uri.h \
     src/vfs.h \
     src/vfspath.h \
@@ -154,8 +157,10 @@ HEADERS += \
     src/wcm-config.h
 
 INCLUDEPATH += wcm
+INCLUDEPATH += src
 INCLUDEPATH += src/swl
 INCLUDEPATH += src/wal
+INCLUDEPATH += src/utf8proc
 INCLUDEPATH += /opt/X11/include
 INCLUDEPATH += /usr/local/include
 
