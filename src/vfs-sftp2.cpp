@@ -303,9 +303,12 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 		static unicode_t userSymbol[] = { '@', 0 };
 
-		while ( true )
+        int ret = 0;
+		for ( char* authorizationMethod = strtok( authList, "," );
+              authorizationMethod != NULL;
+              authorizationMethod = strtok(NULL, ",") )
 		{
-			if ( !strncmp( authList, publickey, strlen( publickey ) ) )
+			if ( !strcmp( authorizationMethod, publickey ) )
 			{
 				FSString public_key;
                 FSString private_key;
@@ -314,13 +317,13 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
                     continue;
                 }
 
-                int ret;
-                WHILE_EAGAIN_(ret, libssh2_userauth_publickey_fromfile (sshSession,
+                WHILE_EAGAIN_( ret, libssh2_userauth_publickey_fromfile ( sshSession,
                         charUserName, public_key.GetUtf8(), private_key.GetUtf8(), "" ) );
 
 				if (ret == 0)
 				{
 					fprintf(stderr, "You shouldn't use keys with an empty passphrase!\n");
+                    break;
 				}
 				// TODO: prompt for key password. Copied from SO, didn't work:
 				// http://stackoverflow.com/questions/14952702/
@@ -348,20 +351,16 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 //					}
 //				}
 
-				if (ret != 0)
+				if ( ret != 0 )
 				{
                     // http://www.libssh2.org/libssh2_session_last_error.html
                     // Do I get it right that when want_buf==0 I don't need to release the buffer?
-                    char *buf;
-                    libssh2_session_last_error(sshSession, &buf, NULL, 0);
-					fprintf(stderr, "Authentication using key failed: %s!\n", buf);
+                    char* buf;
+                    libssh2_session_last_error( sshSession, &buf, NULL, 0 );
+					fprintf( stderr, "Authentication using key failed: %s!\n", buf );
 				}
-
-				if (ret) { throw int( ret - 1000 ); }
-
-				break;
 			}
-			else if ( !strncmp( authList, passId, strlen( passId ) ) )
+			else if ( !strcmp( authorizationMethod, passId ) )
 			{
 				FSPromptData data;
 				data.visible = false;
@@ -372,42 +371,30 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 				        carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).data(),
 				        &data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
 
-				int ret;
 				WHILE_EAGAIN_( ret, libssh2_userauth_password( sshSession,
 				                                               ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
 				                                               ( char* )FSString( data.prompt.Data() ).Get( _operParam.charset ) ) );
 
-				if ( ret ) { throw int( ret - 1000 ); }
-
-				break; //!!!
+                if ( ret == 0 ) { break; }
 			}
-			else if ( !strncmp( authList, kInterId, strlen( kInterId ) ) )
+			else if ( !strcmp( authorizationMethod, kInterId ) )
 			{
 				MutexLock lock( &kbdIntMutex );
 				kbdIntInfo = info;
 				kbdIntParam = &_operParam;
 
-				int ret;
 				WHILE_EAGAIN_( ret,
 				               libssh2_userauth_keyboard_interactive( sshSession,
 				                                                      ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
 				                                                      KbIntCallback )
 				             );
 
-				if ( ret ) { throw int( ret - 1000 ); }
-
-				break; //!!!
+                if ( ret == 0 ) { break; }
 			}
 
-			char* s = authList;
-
-			while ( *s && *s != ',' ) { s++; }
-
-			if ( !*s ) { break; }
-
-			authList = s + 1;
 		};
 
+        if ( ret != 0 ) { throw int( ret - 1000 ); }
 
 		while ( true )
 		{
