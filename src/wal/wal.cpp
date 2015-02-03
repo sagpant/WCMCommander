@@ -439,4 +439,26 @@ namespace wal
 #endif
 	}
 
+std::string GetEnvVariable( const char* VarName )
+{
+#if _MSC_VER > 1700
+	char* value;
+	size_t size;
+	_dupenv_s( &value, &size, VarName );
+#else
+	const char* value = getenv( VarName );
+#endif
+
+	if ( !value ) { return std::string(); }
+
+	std::string Result( value );
+
+#if _MSC_VER > 1700
+	// deallocate after _dupenv_s()
+	free( value );
+#endif
+
+	return Result;
+}
+
 }; //namespace wal

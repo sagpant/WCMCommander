@@ -24,8 +24,8 @@ void InitSSH()
 
 bool GetDefaultSshKeys( FSString& pub_key, FSString& private_key )
 {
-    // TODO: Get by-host keyfiles, configure keyfiles, etc etc
-    // http://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa
+	// TODO: Get by-host keyfiles, configure keyfiles, etc etc
+	// http://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa
 
 #if _MSC_VER > 1700
 	char* home;
@@ -35,28 +35,28 @@ bool GetDefaultSshKeys( FSString& pub_key, FSString& private_key )
 	const char* home = getenv( "HOME" );
 #endif
 
-    if ( !home )
-    {
-        return false;
-    }
+	if ( !home )
+	{
+		return false;
+	}
 
-    pub_key = carray_cat<char>( home, "/.ssh/id_rsa.pub" ).data();
-    private_key = carray_cat<char>( home, "/.ssh/id_rsa" ).data();
+	pub_key = carray_cat<char>( home, "/.ssh/id_rsa.pub" ).data();
+	private_key = carray_cat<char>( home, "/.ssh/id_rsa" ).data();
 
 #if _MSC_VER > 1700
 	// deallocate after _dupenv_s()
 	free(home);
 #endif
 
-    struct stat sb;
-    if ( ( stat( pub_key.GetUtf8(), &sb ) != 0 ) || ( stat( private_key.GetUtf8(), &sb ) != 0 ) )
-    {
-        pub_key = "";
-        private_key = "";
-        return false;
-    }
+	struct stat sb;
+	if ( ( stat( pub_key.GetUtf8(), &sb ) != 0 ) || ( stat( private_key.GetUtf8(), &sb ) != 0 ) )
+	{
+		pub_key = "";
+		private_key = "";
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 
@@ -103,9 +103,9 @@ void FSSftp::WaitSocket( FSCInfo* info ) //throw int(errno) or int(-2) on stop
 		}
 
 		int n = _sock.Select2(
-		           ( dir & LIBSSH2_SESSION_BLOCK_INBOUND ) != 0,
-		           ( dir & LIBSSH2_SESSION_BLOCK_OUTBOUND ) != 0,
-		           3 );
+					( dir & LIBSSH2_SESSION_BLOCK_INBOUND ) != 0,
+					( dir & LIBSSH2_SESSION_BLOCK_OUTBOUND ) != 0,
+					3 );
 
 		if ( n > 0 ) { return; }
 	}
@@ -193,9 +193,9 @@ void KbIntCallback(
 		static unicode_t userSymbol[] = { '@', 0 };
 
 		if ( !kbdIntInfo->Prompt(
-		        utf8_to_unicode( "SFTP" ).data(),
-		        carray_cat<unicode_t>( kbdIntParam->user.Data(), userSymbol, kbdIntParam->server.Data() ).data(),
-		        pData.data(), num_prompts ) ) { return; }
+				utf8_to_unicode( "SFTP" ).data(),
+				carray_cat<unicode_t>( kbdIntParam->user.Data(), userSymbol, kbdIntParam->server.Data() ).data(),
+				pData.data(), num_prompts ) ) { return; }
 
 		for ( i = 0; i < num_prompts; i++ )
 		{
@@ -303,24 +303,25 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 		static unicode_t userSymbol[] = { '@', 0 };
 
-		while ( true )
+		int ret = 0;
+		for ( char* authorizationMethod = strtok( authList, "," ); authorizationMethod != NULL; authorizationMethod = strtok(NULL, ",") )
 		{
-			if ( !strncmp( authList, publickey, strlen( publickey ) ) )
+			if ( !strcmp( authorizationMethod, publickey ) )
 			{
 				FSString public_key;
-                FSString private_key;
-                if( !GetDefaultSshKeys(public_key, private_key) )
-                {
-                    continue;
-                }
+				FSString private_key;
+				if( !GetDefaultSshKeys(public_key, private_key) )
+				{
+					continue;
+				}
 
-                int ret;
-                WHILE_EAGAIN_(ret, libssh2_userauth_publickey_fromfile (sshSession,
-                        charUserName, public_key.GetUtf8(), private_key.GetUtf8(), "" ) );
+				WHILE_EAGAIN_( ret, libssh2_userauth_publickey_fromfile ( sshSession,
+						charUserName, public_key.GetUtf8(), private_key.GetUtf8(), "" ) );
 
 				if (ret == 0)
 				{
 					fprintf(stderr, "You shouldn't use keys with an empty passphrase!\n");
+					break;
 				}
 				// TODO: prompt for key password. Copied from SO, didn't work:
 				// http://stackoverflow.com/questions/14952702/
@@ -331,83 +332,67 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 //					for (int i = 0; i < SSH_PASSWORD_ATTEMPTS; ++i)
 //					{
 //
-//                        FSPromptData data;
-//                        data.visible = false;
-//                        data.prompt = utf8_to_unicode( "Private key password:" ).data();
+//						FSPromptData data;
+//						data.visible = false;
+//						data.prompt = utf8_to_unicode( "Private key password:" ).data();
 //
-//                        if ( !info->Prompt(
-//                                utf8_to_unicode( "SFTP_" ).data(),
-//                                carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).data(),
-//                                &data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
+//						if ( !info->Prompt(
+//								utf8_to_unicode( "SFTP_" ).data(),
+//								carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).data(),
+//								&data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
 //
-//                        char* password = ( char* )FSString( data.prompt.Data() ).Get( _operParam.charset );
+//						char* password = ( char* )FSString( data.prompt.Data() ).Get( _operParam.charset );
 //
 //						ret = libssh2_userauth_publickey_fromfile( sshSession,
-//                                charUserName, public_key.GetUtf8(), private_key.GetUtf8(), password );
+//								charUserName, public_key.GetUtf8(), private_key.GetUtf8(), password );
 //						if ( ret != LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED ) break;
 //					}
 //				}
 
-				if (ret != 0)
+				if ( ret != 0 )
 				{
-                    // http://www.libssh2.org/libssh2_session_last_error.html
-                    // Do I get it right that when want_buf==0 I don't need to release the buffer?
-                    char *buf;
-                    libssh2_session_last_error(sshSession, &buf, NULL, 0);
-					fprintf(stderr, "Authentication using key failed: %s!\n", buf);
+					// http://www.libssh2.org/libssh2_session_last_error.html
+					// Do I get it right that when want_buf==0 I don't need to release the buffer?
+					char* buf;
+					libssh2_session_last_error( sshSession, &buf, NULL, 0 );
+					fprintf( stderr, "Authentication using key failed: %s!\n", buf );
 				}
-
-				if (ret) { throw int( ret - 1000 ); }
-
-				break;
 			}
-			else if ( !strncmp( authList, passId, strlen( passId ) ) )
+			else if ( !strcmp( authorizationMethod, passId ) )
 			{
 				FSPromptData data;
 				data.visible = false;
 				data.prompt = utf8_to_unicode( "Password:" ).data();
 
 				if ( !info->Prompt(
-				        utf8_to_unicode( "SFTP_" ).data(),
-				        carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).data(),
-				        &data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
+						utf8_to_unicode( "SFTP_" ).data(),
+						carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).data(),
+						&data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
 
-				int ret;
 				WHILE_EAGAIN_( ret, libssh2_userauth_password( sshSession,
-				                                               ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
-				                                               ( char* )FSString( data.prompt.Data() ).Get( _operParam.charset ) ) );
+															   ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
+															   ( char* )FSString( data.prompt.Data() ).Get( _operParam.charset ) ) );
 
-				if ( ret ) { throw int( ret - 1000 ); }
-
-				break; //!!!
+				if ( ret == 0 ) { break; }
 			}
-			else if ( !strncmp( authList, kInterId, strlen( kInterId ) ) )
+			else if ( !strcmp( authorizationMethod, kInterId ) )
 			{
 				MutexLock lock( &kbdIntMutex );
 				kbdIntInfo = info;
 				kbdIntParam = &_operParam;
 
-				int ret;
 				WHILE_EAGAIN_( ret,
-				               libssh2_userauth_keyboard_interactive( sshSession,
-				                                                      ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
-				                                                      KbIntCallback )
-				             );
+							   libssh2_userauth_keyboard_interactive( sshSession,
+																	  ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
+																	  KbIntCallback )
+							 );
 
-				if ( ret ) { throw int( ret - 1000 ); }
-
-				break; //!!!
+				if ( ret == 0 ) { break; }
 			}
 
-			char* s = authList;
-
-			while ( *s && *s != ',' ) { s++; }
-
-			if ( !*s ) { break; }
-
-			authList = s + 1;
 		};
 
+		if ( ret != 0 ) { throw int( ret - 1000 ); }
 
 		while ( true )
 		{
@@ -478,9 +463,9 @@ bool FSSftp::Equal( FS* fs )
 	}
 
 	return !CmpStr<const unicode_t>( _infoParam.server.Data(), f->_infoParam.server.Data() ) &&
-	       !CmpStr<const unicode_t>( _infoParam.user.Data(), f->_infoParam.user.Data() ) &&
-	       _infoParam.port == f->_infoParam.port &&
-	       _infoParam.charset == f->_infoParam.charset;
+		   !CmpStr<const unicode_t>( _infoParam.user.Data(), f->_infoParam.user.Data() ) &&
+		   _infoParam.port == f->_infoParam.port &&
+		   _infoParam.charset == f->_infoParam.charset;
 }
 
 
@@ -752,8 +737,8 @@ int FSSftp::OpenRead ( FSPath& path, int flags, int* err, FSCInfo* info )
 		while ( true )
 		{
 			fd = libssh2_sftp_open( sftpSession, ( char* )path.GetString( _operParam.charset, '/' ),
-			                        LIBSSH2_FXF_READ,
-			                        0 );
+									LIBSSH2_FXF_READ,
+									0 );
 
 			if ( fd ) { break; }
 
@@ -813,9 +798,9 @@ int FSSftp::OpenCreate  ( FSPath& path, bool overwrite, int mode, int flags, int
 		while ( true )
 		{
 			fd = libssh2_sftp_open( sftpSession,
-			                        ( char* )path.GetString( _operParam.charset, '/' ),
-			                        LIBSSH2_FXF_CREAT | LIBSSH2_FXF_WRITE | ( overwrite ? LIBSSH2_FXF_TRUNC : LIBSSH2_FXF_EXCL ),
-			                        mode );
+									( char* )path.GetString( _operParam.charset, '/' ),
+									LIBSSH2_FXF_CREAT | LIBSSH2_FXF_WRITE | ( overwrite ? LIBSSH2_FXF_TRUNC : LIBSSH2_FXF_EXCL ),
+									mode );
 
 			if ( fd ) { break; }
 
@@ -1375,7 +1360,7 @@ int FSSftp::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 	   int ret;
 	   WHILE_EAGAIN_COUNT( ret, libssh2_sftp_statvfs( sftpSession, fullPath, strlen( fullPath ), &st ), 2 );
 	   if ( ret == LIBSSH2_ERROR_EAGAIN )
-	      throw( int( 0 ) );
+		  throw( int( 0 ) );
 	   printf( "FSSftp::StatVfs 4 \n" );
 	   CheckSFTP( ret );
 	   printf( "FSSftp::StatVfs 5 \n" );

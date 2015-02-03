@@ -387,6 +387,10 @@ public:
 
 	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal );
 
+	void IncreaseFontSize( MODE Mode );
+	void DecreaseFontSize( MODE Mode );
+	void AdjustFontSize( std::string* FontURI, float Coef );
+
 private:
 	bool ProcessCommand_CD( const unicode_t* cmd );
 	bool ProcessCommand_CLS( const unicode_t* cmd );

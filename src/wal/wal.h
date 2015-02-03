@@ -453,6 +453,8 @@ namespace wal
 	/// Unicode normalization
 	std::vector<unicode_t> normalize_unicode_NFC( const unicode_t* str );
 	std::vector<char>      normalize_utf8_NFC( const char* str );
+
+	std::string GetEnvVariable( const char* VarName );
 }; //namespace wal
 
 #endif

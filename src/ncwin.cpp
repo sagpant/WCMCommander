@@ -3002,22 +3002,11 @@ bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 {
 	if ( !Out ) { return false; }
 
-#if _MSC_VER > 1700
-	char* home;
-	size_t size;
-	_dupenv_s( &home, &size, EnvVarName );
-#else
-	const char* home = getenv( EnvVarName );
-#endif
+	std::string Value = GetEnvVariable( EnvVarName );
 
-	if ( !home ) { return false; }
+	if ( Value.empty() ) return false;
 
-	*Out = utf8_to_unicode( home );
-
-#if _MSC_VER > 1700
-	// deallocate after _dupenv_s()
-	free( home );
-#endif
+	*Out = utf8_to_unicode( Value.c_str() );
 
 	return true;
 }
@@ -3268,6 +3257,81 @@ void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabled
 #endif
 }
 
+void NCWin::AdjustFontSize( std::string* FontURI, float Coef )
+{
+	if ( !FontURI ) return;
+		
+	const char* Font = FontURI->data();
+
+	if ( !Font || !*Font ) return;
+
+	int Size = 0;
+	char FontName[0xFFFF];
+	memset( FontName, 0, sizeof( FontName ) );
+
+	if ( Lsscanf( Font, "-%i:%65534c", &Size, FontName ) != 2) return;
+
+	if ( Coef < 1.0f )
+	{
+		if (Size > 30) Size = int(Size * Coef);
+	}
+	else
+	{
+		if (Size < 140) Size = int(Size * Coef);
+	}
+
+	char Buf[4096];
+
+	Lsnprintf(Buf, sizeof( Buf ), "-%i:%s", Size, FontName);
+
+	*FontURI = std::string( Buf );
+
+	InitFonts();
+	SendConfigChanged();
+	StylesChanged(this);
+}
+
+void NCWin::DecreaseFontSize( MODE Mode )
+{
+	const float Coef = 1.0f / 1.1f;
+
+	switch ( Mode )
+	{
+	case VIEW:
+		AdjustFontSize( &g_WcmConfig.viewerFontUri, Coef );
+		break;
+	case EDIT:
+		AdjustFontSize( &g_WcmConfig.editorFontUri, Coef );
+		break;
+	case PANEL:
+		AdjustFontSize( &g_WcmConfig.panelFontUri, Coef );
+		break;
+	default:
+		break;
+	}
+
+}
+
+void NCWin::IncreaseFontSize( MODE Mode )
+{
+	const float Coef = 1.1f;
+
+	switch (Mode)
+	{
+	case VIEW:
+		AdjustFontSize( &g_WcmConfig.viewerFontUri, Coef );
+		break;
+	case EDIT:
+		AdjustFontSize( &g_WcmConfig.editorFontUri, Coef );
+		break;
+	case PANEL:
+		AdjustFontSize( &g_WcmConfig.panelFontUri, Coef );
+		break;
+	default:
+		break;
+	}
+}
+
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 {
 	DebugKeyboard( pEvent, pressed, g_DebugKeyboard );
@@ -3365,6 +3429,24 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				}
 
 				return true;
+
+#if !defined( __APPLE__ )
+				case FC( VK_UP, KM_CTRL ):
+					if (pEvent->IsFromMouseWheel())
+					{
+						IncreaseFontSize( _mode );
+					}
+					return true;
+#endif
+
+#if !defined( __APPLE__ )
+				case FC( VK_DOWN, KM_CTRL ):
+					if ( pEvent->IsFromMouseWheel() )
+					{
+						DecreaseFontSize( _mode );
+					}
+					return true;
+#endif
 
 				case FC( VK_DOWN, KM_SHIFT ):
 					_panel->KeyDown( shift, &_shiftSelectType );
