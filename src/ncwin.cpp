@@ -2986,22 +2986,11 @@ bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
 {
 	if ( !Out ) { return false; }
 
-#if _MSC_VER > 1700
-	char* home;
-	size_t size;
-	_dupenv_s( &home, &size, EnvVarName );
-#else
-	const char* home = getenv( EnvVarName );
-#endif
+	std::string Value = GetEnvVariable( EnvVarName );
 
-	if ( !home ) { return false; }
+	if ( Value.empty() ) return false;
 
-	*Out = utf8_to_unicode( home );
-
-#if _MSC_VER > 1700
-	// deallocate after _dupenv_s()
-	free( home );
-#endif
+	*Out = utf8_to_unicode( Value.c_str() );
 
 	return true;
 }

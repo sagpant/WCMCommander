@@ -304,9 +304,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 		static unicode_t userSymbol[] = { '@', 0 };
 
 		int ret = 0;
-		for ( char* authorizationMethod = strtok( authList, "," );
-			  authorizationMethod != NULL;
-			  authorizationMethod = strtok(NULL, ",") )
+		for ( char* authorizationMethod = strtok( authList, "," ); authorizationMethod != NULL; authorizationMethod = strtok(NULL, ",") )
 		{
 			if ( !strcmp( authorizationMethod, publickey ) )
 			{

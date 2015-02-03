@@ -476,25 +476,26 @@ DWORD RegReadInt( const char* sect, const  char* what, DWORD def )
 	return def;
 }
 
-std::vector<char> RegReadString( char const* sect, const char* what, const char* def )
+std::string RegReadString( char const* sect, const char* what, const char* def )
 {
 	HKEY hsect = GetSection( sect );
 
-	if ( !hsect ) { return def ? new_char_str( def ) : std::vector<char>( 0 ); }
+	if ( !hsect ) { return def ? def : std::string(); }
 
-	std::vector<char> strValue;
+	std::string strValue;
 	DWORD dwType, dwCount;
-	LONG lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,
-	                                NULL, &dwCount );
+	LONG lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType, NULL, &dwCount );
 
 	if ( lResult == ERROR_SUCCESS )
 	{
 		ASSERT( dwType == REG_SZ );
-		strValue.resize( dwCount + 1 );
-		strValue[dwCount] = 0;
 
-		lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,
-		                           ( LPBYTE )strValue.data(), &dwCount );
+		char* Buf = (char*)alloca( dwCount + 1 );
+		Buf[dwCount] = 0;
+
+		lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType, ( LPBYTE )Buf, &dwCount );
+
+		strValue = std::string( Buf );
 	}
 
 	RegCloseKey( hsect );
@@ -505,7 +506,7 @@ std::vector<char> RegReadString( char const* sect, const char* what, const char*
 		return strValue;
 	}
 
-	return def ? new_char_str( def ) : std::vector<char>( 0 );
+	return def ? def : std::string();
 }
 
 int RegGetBinSize( const char* sect, const char* what )
@@ -598,11 +599,11 @@ bool LoadStringList( const char* section, std::vector< std::string >& list )
 	for ( int i = 1; ; i++ )
 	{
 		Lsnprintf( name, sizeof( name ), "v%i", i );
-		std::vector<char> s = RegReadString( section, name, "" );
+		std::string s = RegReadString( section, name, "" );
 
-		if ( !s.data() || !s[0] ) { break; }
+		if ( s.empty() ) { break; }
 
-		list.push_back( std::string( s.data() ) );
+		list.push_back( s );
 	}
 
 	return true;
@@ -655,7 +656,7 @@ clWcmConfig::clWcmConfig()
 	, systemAutoComplete( true )
 	, systemAutoSaveSetup( true )
 	, systemShowHostName( false )
-	, systemLang( new_char_str( "+" ) )
+	, systemLang( "+" )
 
 	, panelShowHiddenFiles( true )
 	, panelCaseSensitive( false )
@@ -688,9 +689,6 @@ clWcmConfig::clWcmConfig()
 	, windowWidth( 0 )
 	, windowHeight( 0 )
 {
-	leftPanelPath = new_char_str( "" );
-	rightPanelPath = new_char_str( "" );
-
 #ifndef _WIN32
 	MapBool( sectionSystem, "ask_open_exec", &systemAskOpenExec, systemAskOpenExec );
 #endif
@@ -754,14 +752,14 @@ clWcmConfig::clWcmConfig()
 
 void clWcmConfig::ImpCurrentFonts()
 {
-	panelFontUri = new_char_str( g_PanelFont.ptr() ? g_PanelFont->uri() : "" );
-	viewerFontUri = new_char_str( g_ViewerFont.ptr() ? g_ViewerFont->uri() : "" );
-	editorFontUri = new_char_str( g_EditorFont.ptr() ? g_EditorFont->uri() : "" );
-	dialogFontUri  = new_char_str( g_DialogFont.ptr() ? g_DialogFont->uri() : "" );
-	terminalFontUri  = new_char_str( g_TerminalFont.ptr() ? g_TerminalFont->uri() : "" );
-	helpTextFontUri  = new_char_str( g_HelpTextFont.ptr() ? g_HelpTextFont->uri() : "" );
-	helpBoldFontUri  = new_char_str( g_HelpBoldFont.ptr() ? g_HelpBoldFont->uri() : "" );
-	helpHeadFontUri  = new_char_str( g_HelpHeadFont.ptr() ? g_HelpHeadFont->uri() : "" );
+	panelFontUri = g_PanelFont.ptr() ? g_PanelFont->uri() : "";
+	viewerFontUri = g_ViewerFont.ptr() ? g_ViewerFont->uri() : "";
+	editorFontUri = g_EditorFont.ptr() ? g_EditorFont->uri() : "";
+	dialogFontUri  = g_DialogFont.ptr() ? g_DialogFont->uri() : "";
+	terminalFontUri  = g_TerminalFont.ptr() ? g_TerminalFont->uri() : "";
+	helpTextFontUri  = g_HelpTextFont.ptr() ? g_HelpTextFont->uri() : "";
+	helpBoldFontUri  = g_HelpBoldFont.ptr() ? g_HelpBoldFont->uri() : "";
+	helpHeadFontUri  = g_HelpHeadFont.ptr() ? g_HelpHeadFont->uri() : "";
 }
 
 void clWcmConfig::MapInt( const char* Section, const char* Name, int* pInt, int def )
@@ -776,7 +774,7 @@ void clWcmConfig::MapBool( const char* Section, const char* Name, bool* pBool, b
 	m_MapList.push_back( Node );
 }
 
-void clWcmConfig::MapStr( const char* Section, const char* Name, std::vector<char>* pStr, const char* def )
+void clWcmConfig::MapStr( const char* Section, const char* Name, std::string* pStr, const char* def )
 {
 	sNode Node = sNode::CreateStrNode( Section, Name, pStr, def );
 	m_MapList.push_back( Node );
@@ -1410,8 +1408,8 @@ void clWcmConfig::Save( NCWin* nc )
 {
 	if ( nc )
 	{
-		leftPanelPath = new_char_str( nc->GetLeftPanel( )->UriOfDir().GetUtf8() );
-		rightPanelPath = new_char_str( nc->GetRightPanel( )->UriOfDir( ).GetUtf8() );
+		leftPanelPath = nc->GetLeftPanel( )->UriOfDir().GetUtf8();
+		rightPanelPath = nc->GetRightPanel( )->UriOfDir( ).GetUtf8();
 		crect Rect = nc->ScreenRect();
 		windowX = Rect.top;
 		windowY = Rect.left;
@@ -1744,14 +1742,14 @@ class StyleOptDialog: public NCVertDialog
 public:
 	struct Node
 	{
-		std::vector<char> name;
+		std::string name;
 		cfont* oldFont;
-		std::vector<char>* pUri;
+		std::string* pUri;
 		clPtr<cfont> newFont;
 		bool fixed;
 		Node(): oldFont( 0 ) {}
-		Node( const char* n, bool fix,  cfont* old, std::vector<char>* uri )
-			: name( new_char_str( n ) )
+		Node( const char* n, bool fix,  cfont* old, std::string* uri )
+			: name( n )
 			, oldFont( old )
 			, pUri( uri )
 			, fixed( fix )
@@ -1937,7 +1935,7 @@ bool StyleOptDialog::Command( int id, int subId, Win* win, void* data )
 		if ( count <= 0 || cur < 0 || cur >= count ) { return true; }
 
 		LOGFONT lf;
-		std::vector<char>* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
+		std::string* pUri = pList->get( fontList.GetCurrentInt() ).pUri;
 		cfont::UriToLogFont( &lf, pUri && pUri->data() ?  pUri->data() : 0 );
 
 		CHOOSEFONT cf;
@@ -2070,7 +2068,7 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 		{
 			if ( list[i].newFont.ptr() && list[i].newFont->uri()[0] && list[i].pUri )
 			{
-				*( list[i].pUri ) = new_char_str( list[i].newFont->uri() );
+				*( list[i].pUri ) = list[i].newFont->uri();
 			}
 		}
 
@@ -2406,7 +2404,7 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 		if ( !s ) { s = "+"; }
 
 		bool langChanged = strcmp( dlg.m_CurLangId.data( ), s ) != 0;
-		g_WcmConfig.systemLang = new_char_str( dlg.m_CurLangId.data( ) );
+		g_WcmConfig.systemLang = dlg.m_CurLangId.data( );
 
 		if ( langChanged )
 		{

@@ -48,7 +48,7 @@ private:
 		{
 			int* m_Int;
 			bool* m_Bool;
-			std::vector<char>* m_Str;
+			std::string* m_Str;
 		} m_Current;
 
 		int GetDefaultInt() const { return m_Default.m_Int; }
@@ -73,7 +73,7 @@ private:
 			N.m_Default.m_Bool = DefaultValue;
 			return N;
 		}
-		static sNode CreateStrNode( const char* Section, const char* Name, std::vector<char>* pStr, const char* DefaultValue )
+		static sNode CreateStrNode( const char* Section, const char* Name, std::string* pStr, const char* DefaultValue )
 		{
 			sNode N( MT_STR, Section, Name );
 			N.m_Current.m_Str = pStr;
@@ -101,7 +101,7 @@ public:
 	bool systemAutoComplete;
 	bool systemAutoSaveSetup;
 	bool systemShowHostName;
-	std::vector<char> systemLang; //"+" - auto "-" -internal eng.
+	std::string systemLang; //"+" - auto "-" -internal eng.
 	#pragma endregion
 
 	#pragma region Panel settings
@@ -146,22 +146,22 @@ public:
 	#pragma endregion
 
 	#pragma region Fonts
-	std::vector<char> panelFontUri;
-	std::vector<char> viewerFontUri;
-	std::vector<char> editorFontUri;
-	std::vector<char> dialogFontUri;
-	std::vector<char> terminalFontUri;
-	std::vector<char> helpTextFontUri;
-	std::vector<char> helpBoldFontUri;
-	std::vector<char> helpHeadFontUri;
+	std::string panelFontUri;
+	std::string viewerFontUri;
+	std::string editorFontUri;
+	std::string dialogFontUri;
+	std::string terminalFontUri;
+	std::string helpTextFontUri;
+	std::string helpBoldFontUri;
+	std::string helpHeadFontUri;
 
 	/// store properties of the currently active fonts in ...Uri fields
 	void ImpCurrentFonts();
 	#pragma endregion
 
 	#pragma region Paths of the panels to be restored on the next startup
-	std::vector<char> leftPanelPath;
-	std::vector<char> rightPanelPath;
+	std::string leftPanelPath;
+	std::string rightPanelPath;
 	#pragma endregion
 
 	clWcmConfig();
@@ -171,7 +171,7 @@ public:
 private:
 	void MapInt( const char* Section, const char* Name, int* pInt, int DefaultValue );
 	void MapBool( const char* Section, const char* Name, bool* pInt, bool DefaultValue );
-	void MapStr( const char* Section, const char* Name, std::vector<char>* pStr, const char* DefaultValue = NULL );
+	void MapStr( const char* Section, const char* Name, std::string* pStr, const char* DefaultValue = NULL );
 
 private:
 	std::vector<sNode> m_MapList;
