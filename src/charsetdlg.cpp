@@ -56,9 +56,9 @@ void InitOperCharsets()
 		if ( !strcmp( "ru", lang ) )
 		{
 #ifdef WIN32
+			csList.append( charset_table[CS_UTF8] );
 			csList.append( charset_table[CS_WIN1251] );
 			csList.append( charset_table[CS_CP866] );
-			csList.append( charset_table[CS_UTF8] );
 #else
 			csList.append( charset_table[CS_UTF8] );
 			csList.append( charset_table[CS_WIN1251] );
