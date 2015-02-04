@@ -76,6 +76,7 @@
     <ClCompile Include="src/usermenu.cpp" />
     <ClCompile Include="src/swl\swl_combobox.cpp" />
     <ClCompile Include="src\vfs-tmp.cpp" />
+    <ClCompile Include="src\urlparser\LUrlParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/charsetdlg.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="src/strmasks.h" />
     <ClInclude Include="src/usermenu.h" />
     <ClInclude Include="src\vfs-tmp.h" />
+    <ClInclude Include="src\urlparser\LUrlParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src/wcm.rc" />
