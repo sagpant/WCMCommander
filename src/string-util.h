@@ -173,6 +173,29 @@ template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, 
 	return str;
 }
 
+template <class T> inline  std::vector<T> carray_cat(const T* a1, const T* a2, const T* a3, const T* a4, const T* a5, const T* a6, const T* a7, const T* a8)
+{
+	X(1);
+	X(2);
+	X(3);
+	X(4);
+	X(5);
+	X(6);
+	X(7)
+	X(8)
+		std::vector<T> str(n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + 1);
+	T* s = str.data();
+	CP(1);
+	CP(2);
+	CP(3);
+	CP(4);
+	CP(5);
+	CP(6);
+	CP(7);
+	CP(8);
+	*s = 0;
+	return str;
+}
 
 #undef X
 #undef CP

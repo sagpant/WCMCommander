@@ -253,6 +253,7 @@ namespace wal
 		virtual void EventSize( cevent_size* pEvent );
 		void Clear();
 		void SetText( const unicode_t* txt, bool mark = false );
+		void SetText( const std::string& utf8txt, bool mark = false );
 		void Insert( unicode_t t );
 		void Insert( const unicode_t* txt );
 		bool IsEmpty() const;
@@ -260,6 +261,7 @@ namespace wal
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
 		void SetReplaceMode( bool ReplaceMode ) { m_ReplaceMode = ReplaceMode; }
 		std::vector<unicode_t> GetText() const;
+		std::string GetTextStr() const;
 		void SetPasswordMode( bool enable = true ) { passwordMode = enable; Invalidate(); }
 		void SetShowSpaces( bool enable = true ) { showSpaces = enable; Invalidate(); }
 		virtual int UiGetClassId();

@@ -443,6 +443,13 @@ namespace wal
 		return p;
 	}
 
+	std::string EditLine::GetTextStr() const
+	{
+		std::vector<unicode_t> V = GetText();
+
+		return unicode_to_utf8_string( V.data() );
+	}
+
 	void EditLine::EventSize( cevent_size* pEvent )
 	{
 		first = 0;
@@ -837,6 +844,11 @@ namespace wal
 		cursorVisible = true;
 		text.Set( txt, mark );
 		Invalidate();
+	}
+
+	void EditLine::SetText( const std::string& utf8txt, bool mark )
+	{
+		SetText( utf8str_to_unicode(utf8txt).data(), mark );
 	}
 
 	void EditLine::Insert( unicode_t t )

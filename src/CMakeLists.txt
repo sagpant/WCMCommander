@@ -158,6 +158,7 @@ SET(wcm_COMMON_SOURCES
 	wal/wal_sys_api.cpp
 	wal/wal_tmpls.cpp
 	wcm-config.cpp
+	urlparser/LUrlParser.cpp
 )
 
 SET(wcm_HEADERS
@@ -223,6 +224,7 @@ SET(wcm_HEADERS
 	wal/wal_sys_api.h
 	wal/wal_tmpls.h
 	wcm-config.h
+	urlparser/LUrlParser.h
 )
 
 SET(wcm_RESOURCES

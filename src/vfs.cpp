@@ -65,8 +65,8 @@ static void TT_to_FILETIME( time_t t, FILETIME& ft )
 {
 	LONGLONG ll;
 	ll = Int32x32To64( t, 10000000 ) + 116444736000000000ll;
-	ft.dwLowDateTime = ( DWORD )ll;
-	ft.dwHighDateTime = ll >> 32;
+	ft.dwLowDateTime = ( DWORD )(ll & 0xFFFFFFFF );
+	ft.dwHighDateTime = ( DWORD )(( ll >> 32 ) & 0xFFFFFFFF );
 }
 
 //!!! Херня какая-то в преобразовании, надо разбираться

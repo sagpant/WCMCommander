@@ -14,6 +14,7 @@
 #include "vfs-sftp.h"
 #include "vfs-tmp.h"
 #include "string-util.h"
+#include "urlparser/LUrlParser.h"
 
 static unicode_t rootPathStr[] = {'/', 0};
 
@@ -65,7 +66,6 @@ clPtr<FS> ParzeSmbURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, i
 
 #endif
 
-
 clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
 {
 	path.Set( rootPathStr );
@@ -74,55 +74,39 @@ clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, i
 
 	FSFtpParam param;
 
-	const unicode_t* userDelimiter = FindFirstChar( uri, '@' );
+	LUrlParser::clParseURL URL = LUrlParser::clParseURL::ParseURL( unicode_to_utf8_string( uri ) );
 
-	if ( *userDelimiter )
-	{
-		param.user = FSString( CS_UNICODE, uri, userDelimiter - uri ).GetUnicode();
-		uri = userDelimiter + 1;
-		param.anonymous = false;
-	}
-	else
-	{
-		param.anonymous = true;
-	}
+	if ( !URL.IsValid() ) return clPtr<FS>();
+	
+	param.user = URL.m_UserName;
+	param.pass = URL.m_Password;
+	param.anonymous = param.user.empty();
+	param.server = std::string( URL.m_Host );
 
+	URL.GetPort( &param.port );
 
-	const unicode_t* host_port_End = FindFirstChar( uri, '/' );
-	const unicode_t* host_End = FindFirstChar( uri, ':' );
+	std::vector<unicode_t> Path = utf8str_to_unicode( URL.m_Path );
 
-	FSString host( CS_UNICODE, uri, ( ( host_End < host_port_End ) ? host_End :  host_port_End )  - uri );
-
-	int port  = 0;
-
-	for ( const unicode_t* s = host_End + 1; s < host_port_End; s++ )
-		if ( *s >= '0' && *s <= '9' ) { port = port * 10 + ( *s - '0' ); }
-		else { break; }
-
-	if ( port > 0 && port < 65536 ) { param.port = port; }
-
-	param.server = host.GetUnicode();
-
-	uri = host_port_End;
-
-	FSString link = uri;
+	FSString link = Path.data();
 
 	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
 	for ( int i = 0; i < count; i++ )
+	{
 		if ( checkFS[i].Ptr() && checkFS[i]->Type() == FS::FTP )
 		{
 			FSFtp* p = ( FSFtp* )checkFS[i].Ptr();
 			FSFtpParam checkParam;
 			p->GetParam( &checkParam );
 
-			if (  !CmpStr<const unicode_t>( param.server.Data(), checkParam.server.Data() ) &&
-			      ( param.anonymous == checkParam.anonymous && ( param.anonymous || !CmpStr<const unicode_t>( param.user.Data(), checkParam.user.Data() ) ) ) &&
-			      param.port == checkParam.port )
+			if ( param.server == checkParam.server &&
+			     ( param.anonymous == checkParam.anonymous && ( param.anonymous || (param.user == checkParam.user) ) ) &&
+			     param.port == checkParam.port )
 			{
 				return checkFS[i];
 			}
 		}
+	}
 
 	return new FSFtp( &param );
 }
@@ -137,36 +121,23 @@ clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, 
 
 	FSSftpParam param;
 
-	const unicode_t* userDelimiter = FindFirstChar( uri, '@' );
+	LUrlParser::clParseURL URL = LUrlParser::clParseURL::ParseURL( unicode_to_utf8_string(uri) );
 
-	if ( *userDelimiter )
-	{
-		param.user = FSString( CS_UNICODE, uri, userDelimiter - uri ).GetUnicode();
-		uri = userDelimiter + 1;
-	}
+	if ( !URL.IsValid())  return clPtr<FS>();
 
-	const unicode_t* host_port_End = FindFirstChar( uri, '/' );
-	const unicode_t* host_End = FindFirstChar( uri, ':' );
+	param.user = URL.m_UserName;
+	param.server = URL.m_Host;
 
-	FSString host( CS_UNICODE, uri, ( ( host_End < host_port_End ) ? host_End :  host_port_End )  - uri );
+	URL.GetPort( &param.port );
 
-	int port  = 0;
+	std::vector<unicode_t> Path = utf8str_to_unicode( URL.m_Path );
 
-	for ( const unicode_t* s = host_End + 1; s < host_port_End; s++ )
-		if ( *s >= '0' && *s <= '9' ) { port = port * 10 + ( *s - '0' ); }
-		else { break; }
-
-	if ( port > 0 && port < 65536 ) { param.port = port; }
-
-	param.server = host.GetUnicode();
-
-	uri = host_port_End;
-
-	FSString link = uri;
+	FSString link = Path.data();
 
 	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
 	for ( int i = 0; i < count; i++ )
+	{
 		if ( checkFS[i].Ptr() && checkFS[i]->Type() == FS::SFTP )
 		{
 			FSSftp* p = ( FSSftp* )checkFS[i].Ptr();
@@ -174,14 +145,12 @@ clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, 
 
 			p->GetParam( &checkParam );
 
-
-			if (  !CmpStr<const unicode_t>( param.server.Data(), checkParam.server.Data() ) &&
-			      !CmpStr<const unicode_t>( param.user.Data(), checkParam.user.Data() ) &&
-			      param.port == checkParam.port )
+			if ( param.server == checkParam.server && param.user == checkParam.user && param.port == checkParam.port )
 			{
 				return checkFS[i];
 			}
 		}
+	}
 
 	return new FSSftp( &param );
 }
@@ -202,7 +171,7 @@ clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int 
 
 	if ( uri[0] == 'f' && uri[1] == 't' && uri[2] == 'p' && uri[3] == ':' && uri[4] == '/' && uri[5] == '/' )
 	{
-		return ParzeFtpURI( uri + 6, path, checkFS, count );
+		return ParzeFtpURI( uri, path, checkFS, count );
 	}
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
