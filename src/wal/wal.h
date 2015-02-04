@@ -37,6 +37,8 @@ namespace wal
 
 	std::vector<unicode_t> utf8_to_unicode( const char* s );
 	std::vector<char> unicode_to_utf8( const unicode_t* u );
+	std::string unicode_to_utf8_string( const unicode_t* u );
+	std::vector<unicode_t> utf8str_to_unicode( const std::string& s );
 
 	bool unicode_is_equal( const unicode_t* Str, const unicode_t* SubStr );
 	int unicode_strcmp(const unicode_t* s1, const unicode_t* s2);

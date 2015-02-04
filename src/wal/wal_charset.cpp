@@ -421,7 +421,7 @@ namespace wal
 			return *s;
 		}
 
-		unicode_t t;
+		uint32_t t;
 		int n;
 
 		if ( ( *s & 0xE0 ) == 0xC0 )
@@ -452,7 +452,8 @@ namespace wal
 			t = ( t << 6 ) + ( *s & 0x3F );
 		}
 
-		return t;
+		// FIXME: should use UTF-32 here
+		return t & 0xFFFF;
 	}
 
 

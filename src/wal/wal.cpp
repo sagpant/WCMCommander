@@ -106,6 +106,11 @@ namespace wal
 		return unicodeBuf;
 	}
 
+	std::vector<unicode_t> utf8str_to_unicode( const std::string& s )
+	{
+		return utf8_to_unicode( s.c_str() );
+	}
+
 	std::vector<char> unicode_to_utf8( const unicode_t* u )
 	{
 		if ( !u ) { return std::vector<char>(); }
@@ -114,6 +119,16 @@ namespace wal
 		std::vector<char> s( size + 1 );
 		unicode_to_utf8( s.data(), u );
 		return s;
+	}
+
+	std::string unicode_to_utf8_string( const unicode_t* u )
+	{
+		if ( !u ) { return std::string(); }
+
+		int size = utf8_string_buffer_len( u );
+		char* s = (char*)alloca( size + 1 );
+		unicode_to_utf8( s, u );
+		return std::string( s );
 	}
 
 	bool unicode_is_equal( const unicode_t* s, const unicode_t* ss )

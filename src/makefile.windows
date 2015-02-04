@@ -97,13 +97,17 @@ OBJS = \
 	$(OBJDIR)/wal_sys_api.o\
 	$(OBJDIR)/wal_tmpls.o \
 	$(OBJDIR)/wcm-config.o \
-	$(OBJDIR)/wcm.res
+	$(OBJDIR)/wcm.res \
+	$(OBJDIR)/LUrlParser.o
 
 all:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
 	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
 
 $(OBJDIR)/wcm.res: $(HW) $(HS) $(HN) src/wcm.rc
 	windres src/wcm.rc -O coff -o $(OBJDIR)/wcm.res
+
+$(OBJDIR)/LUrlParser.o: $(HW) $(HS) $(HN) src/urlparser/LUrlParser.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) src/urlparser/LUrlParser.cpp -o $(OBJDIR)/LUrlParser.o
 
 $(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) src/dircalc.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/dircalc.cpp -o $(OBJDIR)/dircalc.o

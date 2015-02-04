@@ -78,6 +78,7 @@ public:
 	FSString( const FSString& a ): _primary( a._primary ), _temp( a._temp ) {}
 	FSString( const unicode_t* u ): _primary( u ) {};
 	FSString( const char* utf8str ): _primary( utf8str ) {};
+	FSString( const std::string& utf8str ):FSString(utf8str.c_str()) {};
 	FSString( int cs, const void* p ) { _primary.set( cs, p ); }
 	FSString( int cs, const void* p, int len ) { _primary.set( cs, p, len );  }
 

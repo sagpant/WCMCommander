@@ -1165,6 +1165,18 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	}
 
 	gc.TextOutF( x, y, Name.data() );
+
+	cpoint Size = gc.GetTextExtents( Name.data() );
+
+	// show special mark for long file names: https://github.com/corporateshark/WalCommander/issues/272
+	if ( Size.x > rect.Width() )
+	{
+		int MarkColor = UiGetColor( uiHotkeyColor, uiItem, &ucl, 0x0 );
+		gc.SetTextColor( MarkColor );
+		unicode_t Mark[] = { '}', 0 };
+		cpoint Offset = gc.GetTextExtents( Mark );
+		gc.TextOutF( rect.right - Offset.x, y, Mark );
+	}
 }
 
 void PanelWin::SetCurrent( int n )
