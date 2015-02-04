@@ -274,10 +274,10 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 			if ( ret )
 			{
 				userName = FSString( sys_charset_id, ret );
-				_operParam.user = userName.GetUnicode();
+				_operParam.user = userName.GetUtf8();
 
 				MutexLock infoLock( &infoMutex );
-				_infoParam.user = userName.GetUnicode();
+				_infoParam.user = userName.GetUtf8();
 			}
 
 #endif
