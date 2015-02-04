@@ -1707,6 +1707,17 @@ void PanelWin::LoadPathStringSafe( const char* path )
 	this->LoadPath( fs, fspath, 0, 0, PanelWin::SET );
 }
 
+static void dbg_printf_fspath(const char* label, FSPath& path)
+{
+	dbg_printf("%s:(%d): ", label, path.Count());
+	for (int i = 0; i < path.Count(); i++)
+	{
+		const char* s = path.GetItem(i)->GetUtf8();
+		dbg_printf("%s:", s ? s : "null");
+	}
+	dbg_printf("\n");
+}
+
 void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType )
 {
 //printf("LoadPath '%s'\n", paramPath.GetUtf8());
@@ -1716,7 +1727,11 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 //	int err;
 
 //	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;Retain
-	dbg_printf( "PanelWin::LoadPath paramPath=%s\n", paramPath.GetUtf8() );
+	if (fs==0)
+		dbg_printf_fspath("PanelWin::LoadPath fs is null, paramPath=", paramPath);
+	else
+		dbg_printf("PanelWin::LoadPath() fsUri=%s\n", (fs->Uri(paramPath)).GetUtf8());
+	
 
 	try
 	{
@@ -1817,6 +1832,7 @@ void PanelWin::OperThreadStopped()
 				break;
 
 			default:
+				dbg_printf_fspath("PanelWin::OperThreadStopped _operData.path=", _operData.path);
 				_place.Set( _operData.fs, _operData.path, false );
 				break;
 		};
