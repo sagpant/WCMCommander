@@ -21,6 +21,7 @@
 
 #define __STDC_FORMAT_MACROS
 #include <stdint.h>
+
 #if !defined(_MSC_VER) || _MSC_VER >= 1700
 #  include <inttypes.h>
 #endif
@@ -33,11 +34,20 @@
 
 class TextInStream
 {
+private:
 	int bufSize;
 	std::vector<char> buffer;
 	int pos;
 	int count;
-	bool FillBuffer() { if ( pos < count ) { return true; } if ( count <= 0 ) { return false; } count = Read( buffer.data(), bufSize ); pos = 0; return count > 0; }
+	bool FillBuffer()
+	{
+		if ( pos < count ) { return true; }
+		if ( count <= 0 ) { return false; }
+		count = Read( buffer.data(), bufSize );
+		pos = 0;
+		return count > 0;
+	}
+
 public:
 	TextInStream( int _bSize = 1024 )
 		: bufSize( _bSize > 0 ? _bSize : 1024 )
@@ -48,7 +58,12 @@ public:
 	}
 	~TextInStream() {}
 
-	int GetC() { FillBuffer(); return pos < count ? buffer[pos++] : EOF; }
+	int GetC()
+	{
+		FillBuffer();
+		return pos < count ? buffer[pos++] : EOF;
+	}
+
 	bool GetLine( char* s, int size );
 
 protected:
@@ -102,6 +117,7 @@ bool TextInStream::GetLine( char* s, int size )
 
 class TextOutStream
 {
+private:
 	int bufSize;
 	std::vector<char> buffer;
 	int pos;
@@ -172,10 +188,12 @@ static FSPath configDirPath( CS_UTF8, "???" );
 
 class IniHash
 {
-	cstrhash< cstrhash< std::vector<char> > > hash;
-	std::vector<char>* Find( const char* section, const char* var );
-	std::vector<char>* Create( const char* section, const char* var );
+private:
+	cstrhash< cstrhash< std::string > > hash;
+	std::string* Find( const char* section, const char* var );
+	std::string* Create( const char* section, const char* var );
 	void Delete( const char* section, const char* var );
+
 public:
 	IniHash();
 	void SetStrValue( const char* section, const char* var, const char* value );
@@ -192,29 +210,28 @@ public:
 
 IniHash::IniHash() {}
 
-std::vector<char>* IniHash::Find( const char* section, const char* var )
+std::string* IniHash::Find( const char* section, const char* var )
 {
-	cstrhash< std::vector<char> >* h = hash.exist( section );
+	cstrhash< std::string >* h = hash.exist( section );
 
 	if ( !h ) { return 0; }
 
 	return h->exist( var );
 }
 
-std::vector<char>* IniHash::Create( const char* section, const char* var ) { return &( hash[section][var] ); }
+std::string* IniHash::Create( const char* section, const char* var ) { return &( hash[section][var] ); }
 void IniHash::Delete( const char* section, const char* var ) { hash[section].del( var, false ); }
-void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; std::vector<char>* p = Create( section, var ); if ( p ) { *p = new_char_str( value ); } }
+void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; std::string* p = Create( section, var ); if ( p ) { *p = value; } }
 void IniHash::SetIntValue( const char* section, const char* var, int value ) { char buf[64]; int_to_char<int>( value, buf ); SetStrValue( section, var, buf ); }
 void IniHash::SetBoolValue( const char* section, const char* var, bool value ) { SetIntValue( section, var, value ? 1 : 0 ); }
-const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->data() ) ? p->data() : def; }
-int IniHash::GetIntValue( const char* section, const char* var, int def ) { std::vector<char>* p =  Find( section, var ); return ( p && p->data() ) ? atoi( p->data() ) : def; }
+const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { std::string* p =  Find( section, var ); return ( p && p->data() ) ? p->data() : def; }
+int IniHash::GetIntValue( const char* section, const char* var, int def ) { std::string* p =  Find( section, var ); return ( p && p->data() ) ? atoi( p->data() ) : def; }
 bool IniHash::GetBoolValue( const char* section, const char* var, bool def ) { int n = GetIntValue( section, var, def ? 1 : 0 ); return n ? true : false; }
 
 void IniHash::Clear() { hash.clear(); }
 
 void IniHash::Load( const sys_char_t* fileName )
 {
-//	Clear();
 	SysTextFileIn in;
 
 	try
@@ -233,7 +250,7 @@ void IniHash::Load( const sys_char_t* fileName )
 	}
 
 	char buf[4096];
-	std::vector<char> section;
+	std::string section;
 
 	while ( in.GetLine( buf, sizeof( buf ) ) )
 	{
@@ -260,12 +277,12 @@ void IniHash::Load( const sys_char_t* fileName )
 
 			*t = 0;
 
-			section = new_char_str( s );
+			section = s;
 
 		}
 		else
 		{
-			if ( !section.data() ) { continue; }
+			if ( section.empty() ) { continue; }
 
 			char* t = s;
 
@@ -311,7 +328,7 @@ void IniHash::Save( const sys_char_t* fileName )
 			out.Put( "\n[" );
 			out.Put( secList[i] );
 			out.Put( "]\n" );
-			cstrhash< std::vector<char> >* h = hash.exist( secList[i] );
+			cstrhash< std::string >* h = hash.exist( secList[i] );
 
 			if ( !h ) { continue; }
 
@@ -322,7 +339,7 @@ void IniHash::Save( const sys_char_t* fileName )
 			{
 				out.Put( varList[j] );
 				out.PutC( '=' );
-				std::vector<char>* p = h->exist( varList[j] );
+				std::string* p = h->exist( varList[j] );
 
 				if ( p && p->data() ) { out.Put( p->data() ); }
 
@@ -355,7 +372,7 @@ bool LoadStringList( const char* section, std::vector< std::string >& list )
 
 			while ( *s > 0 && *s <= ' ' ) { s++; }
 
-			if ( *s ) { list.push_back( std::string( new_char_str( s ).data() ) ); }
+			if ( *s ) { list.push_back( std::string( s ) ); }
 		}
 	}
 	catch ( cexception* ex )
@@ -805,6 +822,11 @@ public:
 	explicit clConfigWriter( IniHash& hash ) : m_Hash( hash ) {}
 #endif
 
+	void Write( const char* KeyNamePattern, int i, const std::string&  Data )
+	{
+		this->Write( KeyNamePattern, i, Data.c_str() );
+	}
+
 	void Write( const char* KeyNamePattern, int i, const char* Data )
 	{
 		char Buf[4096];
@@ -851,14 +873,14 @@ public:
 	explicit clConfigReader( IniHash& hash ): m_Hash( hash ) {}
 #endif
 
-	std::vector<unicode_t> Read( const char* KeyNamePattern, int i )
+	std::string Read( const char* KeyNamePattern, int i )
 	{
 		char Buf[4096];
 		Lsnprintf( Buf, sizeof( Buf ), KeyNamePattern, i );
 #ifdef _WIN32
-		std::vector<unicode_t> Result = utf8_to_unicode( RegReadString( m_SectionName, Buf, "" ).data( ) );
+		std::string Result = RegReadString( m_SectionName, Buf, "" );
 #else
-		std::vector<unicode_t> Result = utf8_to_unicode( m_Hash.GetStrValue( m_SectionName, Buf, "" ) );
+		std::string Result = m_Hash.GetStrValue( m_SectionName, Buf, "" );
 #endif
 		return Result;
 	}
@@ -912,23 +934,23 @@ void SaveFileAssociations( NCWin* nc
 	{
 		const clNCFileAssociation& A = Assoc[i];
 
-		std::vector<char> Mask_utf8 = unicode_to_utf8( A.GetMask().data() );
-		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
-		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetExecuteCommand().data() );
-		std::vector<char> ExecuteSecondary_utf8 = unicode_to_utf8( A.GetExecuteCommandSecondary().data() );
-		std::vector<char> View_utf8 = unicode_to_utf8( A.GetViewCommand().data() );
-		std::vector<char> ViewSecondary_utf8 = unicode_to_utf8( A.GetViewCommandSecondary().data() );
-		std::vector<char> Edit_utf8 = unicode_to_utf8( A.GetEditCommand().data() );
-		std::vector<char> EditSecondary_utf8 = unicode_to_utf8( A.GetEditCommandSecondary().data() );
+		std::string Mask_utf8 = unicode_to_utf8_string( A.GetMask().data() );
+		std::string Description_utf8 = unicode_to_utf8_string( A.GetDescription().data() );
+		std::string Execute_utf8 = unicode_to_utf8_string( A.GetExecuteCommand().data() );
+		std::string ExecuteSecondary_utf8 = unicode_to_utf8_string( A.GetExecuteCommandSecondary().data() );
+		std::string View_utf8 = unicode_to_utf8_string( A.GetViewCommand().data() );
+		std::string ViewSecondary_utf8 = unicode_to_utf8_string( A.GetViewCommandSecondary().data() );
+		std::string Edit_utf8 = unicode_to_utf8_string( A.GetEditCommand().data() );
+		std::string EditSecondary_utf8 = unicode_to_utf8_string( A.GetEditCommandSecondary().data() );
 
-		Cfg.Write( "Mask%i", i, Mask_utf8.data( ) );
-		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
-		Cfg.Write( "Execute%i", i, Execute_utf8.data( ) );
-		Cfg.Write( "ExecuteSecondary%i", i, ExecuteSecondary_utf8.data( ) );
-		Cfg.Write( "View%i", i, View_utf8.data( ) );
-		Cfg.Write( "ViewSecondary%i", i, ViewSecondary_utf8.data( ) );
-		Cfg.Write( "Edit%i", i, Edit_utf8.data( ) );
-		Cfg.Write( "EditSecondary%i", i, EditSecondary_utf8.data( ) );
+		Cfg.Write( "Mask%i", i, Mask_utf8 );
+		Cfg.Write( "Description%i", i, Description_utf8 );
+		Cfg.Write( "Execute%i", i, Execute_utf8 );
+		Cfg.Write( "ExecuteSecondary%i", i, ExecuteSecondary_utf8 );
+		Cfg.Write( "View%i", i, View_utf8 );
+		Cfg.Write( "ViewSecondary%i", i, ViewSecondary_utf8 );
+		Cfg.Write( "Edit%i", i, Edit_utf8 );
+		Cfg.Write( "EditSecondary%i", i, EditSecondary_utf8 );
 		Cfg.WriteBool( "HasTerminal%i", i, A.GetHasTerminal() );
 	}
 
@@ -957,27 +979,27 @@ void LoadFileAssociations( NCWin* nc
 
 	while ( true )
 	{
-		std::vector<unicode_t> Mask = Cfg.Read( "Mask%i", i );
-		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
-		std::vector<unicode_t> Execute = Cfg.Read( "Execute%i", i );
-		std::vector<unicode_t> ExecuteSecondary = Cfg.Read( "ExecuteSecondary%i", i );
-		std::vector<unicode_t> View = Cfg.Read( "View%i", i );
-		std::vector<unicode_t> ViewSecondary = Cfg.Read( "ViewSecondary%i", i );
-		std::vector<unicode_t> Edit = Cfg.Read( "Edit%i", i );
-		std::vector<unicode_t> EditSecondary = Cfg.Read( "EditSecondary%i", i );
+		std::string Mask = Cfg.Read( "Mask%i", i );
+		std::string Description = Cfg.Read( "Description%i", i );
+		std::string Execute = Cfg.Read( "Execute%i", i );
+		std::string ExecuteSecondary = Cfg.Read( "ExecuteSecondary%i", i );
+		std::string View = Cfg.Read( "View%i", i );
+		std::string ViewSecondary = Cfg.Read( "ViewSecondary%i", i );
+		std::string Edit = Cfg.Read( "Edit%i", i );
+		std::string EditSecondary = Cfg.Read( "EditSecondary%i", i );
 		bool HasTerminal = Cfg.ReadBool( "HasTerminal%i", i, true );
 
-		if ( !Mask.data() || !*Mask.data() ) { break; }
+		if ( Mask.empty() ) { break; }
 
 		clNCFileAssociation A;
-		A.SetMask( Mask );
-		A.SetDescription( Description );
-		A.SetExecuteCommand( Execute );
-		A.SetExecuteCommandSecondary( ExecuteSecondary );
-		A.SetViewCommand( View );
-		A.SetViewCommandSecondary( ViewSecondary );
-		A.SetEditCommand( Edit );
-		A.SetEditCommandSecondary( EditSecondary );
+		A.SetMask( utf8str_to_unicode( Mask ) );
+		A.SetDescription( utf8str_to_unicode( Description ) );
+		A.SetExecuteCommand( utf8str_to_unicode( Execute ) );
+		A.SetExecuteCommandSecondary( utf8str_to_unicode( ExecuteSecondary ) );
+		A.SetViewCommand( utf8str_to_unicode( View ) );
+		A.SetViewCommandSecondary( utf8str_to_unicode( ViewSecondary ) );
+		A.SetEditCommand( utf8str_to_unicode( Edit ) );
+		A.SetEditCommandSecondary( utf8str_to_unicode( EditSecondary ) );
 		A.SetHasTerminal( HasTerminal );
 		Assoc.push_back( A );
 
@@ -1008,11 +1030,11 @@ void SaveUserMenu( NCWin* nc
 	{
 		const clNCUserMenuItem& A = Items[i];
 
-		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().GetRawText() );
-		std::vector<char> Execute_utf8 = unicode_to_utf8( A.GetCommand().data() );
+		std::string Description_utf8 = unicode_to_utf8_string( A.GetDescription().GetRawText() );
+		std::string Execute_utf8 = unicode_to_utf8_string( A.GetCommand().data() );
 
-		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
-		Cfg.Write( "Execute%i", i, Execute_utf8.data( ) );
+		Cfg.Write( "Description%i", i, Description_utf8 );
+		Cfg.Write( "Execute%i", i, Execute_utf8 );
 	}
 
 	// end marker
@@ -1040,14 +1062,14 @@ void LoadUserMenu( NCWin* nc
 
 	while ( true )
 	{
-		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
-		std::vector<unicode_t> Execute = Cfg.Read( "Execute%i", i );
+		std::string Description = Cfg.Read( "Description%i", i );
+		std::string Execute = Cfg.Read( "Execute%i", i );
 
-		if ( !Description.data() || !*Execute.data() ) { break; }
+		if ( Description.empty() ) { break; }
 
 		clNCUserMenuItem A;
-		A.SetDescription( Description );
-		A.SetCommand( Execute );
+		A.SetDescription( utf8str_to_unicode( Description ) );
+		A.SetCommand( utf8str_to_unicode( Execute ) );
 		Items.push_back( A );
 
 		i++;
@@ -1077,14 +1099,14 @@ void SaveFileHighlightingRules( NCWin* nc
 	{
 		const clNCFileHighlightingRule& A = Rules[i];
 
-		std::vector<char> Mask_utf8 = unicode_to_utf8( A.GetMask().data() );
-		std::vector<char> Description_utf8 = unicode_to_utf8( A.GetDescription().data() );
+		std::string Mask_utf8 = unicode_to_utf8_string( A.GetMask().data() );
+		std::string Description_utf8 = unicode_to_utf8_string( A.GetDescription().data() );
 
 		char Buf[0xFFFF];
 		Lsnprintf( Buf, sizeof( Buf ) - 1, "Min = %" PRIu64 " Max = %" PRIu64 " Attribs = %" PRIu64, A.GetSizeMin(), A.GetSizeMax(), A.GetAttributesMask() );
 
-		Cfg.Write( "Mask%i", i, Mask_utf8.data( ) );
-		Cfg.Write( "Description%i", i, Description_utf8.data( ) );
+		Cfg.Write( "Mask%i", i, Mask_utf8 );
+		Cfg.Write( "Description%i", i, Description_utf8 );
 		Cfg.Write( "SizeAttribs%i", i, Buf );
 		Cfg.WriteInt( "ColorNormal%i", i, A.GetColorNormal() );
 		Cfg.WriteInt( "ColorNormalBackground%i", i, A.GetColorNormalBackground() );
@@ -1122,20 +1144,18 @@ void LoadFileHighlightingRules( NCWin* nc
 
 	while ( true )
 	{
-		std::vector<unicode_t> Mask = Cfg.Read( "Mask%i", i );
-		std::vector<unicode_t> Description = Cfg.Read( "Description%i", i );
+		std::string Mask = Cfg.Read( "Mask%i", i );
+		std::string Description = Cfg.Read( "Description%i", i );
 
-		std::vector<unicode_t> Line = Cfg.Read( "SizeAttribs%i", i );
-
-		std::vector<char> Line_utf8 = unicode_to_utf8( Line.data() );
+		std::string Line = Cfg.Read( "SizeAttribs%i", i );
 
 		uint64_t SizeMin, SizeMax, AttribsMask;
 
 		int NumRead = 0;
 
-		if ( Line.data() && *Line.data( ) )
+		if ( !Line.empty() )
 		{
-			NumRead = Lsscanf( Line_utf8.data(), "Min = %" PRIu64 " Max = %" PRIu64 " Attribs = %" PRIu64, &SizeMin, &SizeMax, &AttribsMask );
+			NumRead = Lsscanf( Line.c_str(), "Min = %" PRIu64 " Max = %" PRIu64 " Attribs = %" PRIu64, &SizeMin, &SizeMax, &AttribsMask );
 		}
 
 		if ( NumRead != 3 )
@@ -1148,8 +1168,8 @@ void LoadFileHighlightingRules( NCWin* nc
 		if ( !Mask.data() || !*Mask.data() ) { break; }
 
 		clNCFileHighlightingRule R;
-		R.SetMask( Mask );
-		R.SetDescription( Description );
+		R.SetMask( utf8str_to_unicode( Mask ) );
+		R.SetDescription( utf8str_to_unicode( Description ) );
 		R.SetSizeMin( SizeMin );
 		R.SetSizeMax( SizeMax );
 		R.SetAttributesMask( AttribsMask );
@@ -1191,7 +1211,7 @@ void SaveCommandsHistory( NCWin* nc
 	{
 		const unicode_t* Hist = ( *nc->GetHistory() )[Count - i - 1];
 
-		Cfg.Write( "Command%i", i, unicode_to_utf8( Hist ).data( ) );
+		Cfg.Write( "Command%i", i, unicode_to_utf8_string( Hist ) );
 	}
 }
 
@@ -1216,11 +1236,11 @@ void LoadCommandsHistory( NCWin* nc
 
 	while ( true )
 	{
-		std::vector<unicode_t> Cmd = Cfg.Read( "Command%i", i );
+		std::string Cmd = Cfg.Read( "Command%i", i );
 
-		if ( !Cmd.data() || !*Cmd.data() ) { break; }
+		if ( Cmd.empty() ) { break; }
 
-		nc->GetHistory()->Put( Cmd.data() );
+		nc->GetHistory()->Put( utf8str_to_unicode( Cmd ).data() );
 
 		i++;
 	}
@@ -1375,7 +1395,7 @@ void SaveEditorPositions()
 		std::vector<unicode_t> FileName = i->first;
 		sEditorScrollCtx       Ctx      = i->second;
 
-		std::vector<char> FileName_utf8 = unicode_to_utf8( FileName.data() );
+		std::string FileName_utf8 = unicode_to_utf8_string( FileName.data() );
 
 		char Buf[0xFFFF];
 		Lsnprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
@@ -1395,7 +1415,7 @@ void SaveViewerPositions()
 		std::vector<unicode_t> FileName = i->first;
 		int                    Line     = i->second;
 
-		std::vector<char> FileName_utf8 = unicode_to_utf8( FileName.data() );
+		std::string FileName_utf8 = unicode_to_utf8_string( FileName.data() );
 
 		char Buf[0xFFFF];
 		Lsnprintf( Buf, sizeof( Buf ) - 1, "L = %i FN = %s", Line, FileName_utf8.data() );
@@ -2084,10 +2104,10 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 
 struct LangListNode
 {
-	std::vector<char> id;
-	std::vector<char> name;
+	std::string id;
+	std::string name;
 	LangListNode() {}
-	LangListNode( const char* i, const char* n ): id( new_char_str( i ) ), name( new_char_str( n ) ) {}
+	LangListNode( const char* i, const char* n ): id( i ), name( n ) {}
 };
 
 class CfgLangDialog: public NCDialog
@@ -2095,7 +2115,7 @@ class CfgLangDialog: public NCDialog
 	TextList _list;
 	ccollect<LangListNode>* nodeList;
 public:
-	CfgLangDialog( NCDialogParent* parent, char* id, ccollect<LangListNode>* nl )
+	CfgLangDialog( NCDialogParent* parent, const char* id, ccollect<LangListNode>* nl )
 		:  NCDialog( createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Language" ) ).data(), bListOkCancel ),
 		   _list( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 ),
 		   nodeList( nl )
@@ -2243,7 +2263,7 @@ class SysOptDialog: public NCVertDialog
 {
 	Layout m_iL;
 public:
-	std::vector<char> m_CurLangId;
+	std::string m_CurLangId;
 	ccollect<LangListNode> m_List;
 	void SetCurLang( const char* id );
 
@@ -2268,7 +2288,7 @@ public:
 
 void SysOptDialog::SetCurLang( const char* id )
 {
-	m_CurLangId = new_char_str( id );
+	m_CurLangId = std::string( id );
 
 	if ( id[0] == '-' )
 	{
@@ -2364,7 +2384,7 @@ bool SysOptDialog::Command( int id, int subId, Win* win, void* data )
 {
 	if ( id == 1000 )
 	{
-		CfgLangDialog dlg( ( NCDialogParent* )Parent(), m_CurLangId.data(), &m_List );
+		CfgLangDialog dlg( ( NCDialogParent* )Parent(), m_CurLangId.c_str(), &m_List );
 
 		if ( dlg.DoModal() == CMD_OK )
 		{
