@@ -13,6 +13,7 @@
 #include "strconfig.h"
 
 #include <sys/stat.h>
+#include <time.h>
 
 #ifdef _WIN32
 class FSTime
@@ -22,7 +23,14 @@ class FSTime
 	FILETIME ft;
 	time_t tt;
 public:
-	FSTime(): flags( 0 ) {}
+	enum TIMESTAMP { TIME_CURRENT };
+	FSTime() : flags(0) {}
+	FSTime(TIMESTAMP timestamp)
+	{
+		time_t t;
+		time(&t);
+		SetTimeT(t);
+	}
 	FSTime( time_t t ): flags( TIME_T_OK ), tt( t ) {}
 	FSTime( FILETIME t ): flags( FILETIME_OK ), ft( t ) {}
 	time_t GetTimeT();
@@ -515,7 +523,7 @@ public:
 	FS( int t ): _type( t ) { }
 	int Type() const { return _type; }
 
-	static void SetError( int* p, int err ) { if ( p ) { *p = err; } }
+	static int SetError(int* p, int err) { if (p) { *p = err; }; return err; }
 
 	virtual unsigned Flags()      = 0;
 	virtual bool IsEEXIST( int err )      = 0;

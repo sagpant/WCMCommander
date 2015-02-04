@@ -184,6 +184,7 @@ public:
 	FSPath(): cacheCs( -2 ), cacheSize( 0 ), cacheSplitter( -1 ) {};
 
 	void Copy( const FSPath& );
+	void Copy(const FSPath&, int elementCount);
 
 	FSPath( const FSPath& a ): cacheCs( -2 ), cacheSize( 0 ) { Copy( a ); }
 	FSPath( int cs, const void* v ): cacheCs( -2 ), cacheSize( 0 ) { _Set( cs, v ); }

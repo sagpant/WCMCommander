@@ -6,26 +6,55 @@
 
 struct FSTmpNode
 {
-	FSString tmpFSString; // how it appears in tmp panel
-	FSPath baseFSPath; // what stands behind the tmp item
-	FSStat baseFSNodeStat; // stat: isDir, size, etc
-	FSTmpNode(const unicode_t* _tmpUnicodeStr, FSPath* _baseFSPath, FSStat* _baseFSNodeStat) 
-	  : tmpFSString(_tmpUnicodeStr), baseFSPath(*_baseFSPath), baseFSNodeStat(*_baseFSNodeStat){}
+	enum NODE_TYPE {NODE_FILE, NODE_DIR};
+	NODE_TYPE nodeType;
+	FSString name; // how it appears in tmp panel
+	FSStat fsStat;
+	struct FSTmpNodeDir* parentDir;
+	virtual ~FSTmpNode(){};
+protected:
+	FSTmpNode(NODE_TYPE _nodeType, const unicode_t* _name, FSTmpNodeDir* _parentDir)
+		: nodeType(_nodeType), name(_name), parentDir(_parentDir){}
 };
+
+struct FSTmpNodeFile: public FSTmpNode
+{
+	FSPath baseFSPath; // what stands behind the item
+	FSTmpNodeFile(FSPath* _baseFSPath, FSStat* _baseFSNodeStat, FSTmpNodeDir* _parentDir, const unicode_t* _name = 0);
+	virtual ~FSTmpNodeFile(){};
+};
+
+struct FSTmpNodeDir : public FSTmpNode
+{
+	std::list<FSTmpNode> content;
+	FSTmpNodeDir(const unicode_t* _name = 0, FSTmpNodeDir* _parentDir = 0);
+	FSTmpNodeFile* findByBasePath(FSPath* basePath, bool isRecursive=true);
+	FSTmpNode* findByFsPath(FSPath* basePath, int basePathLevel=0);
+	FSTmpNode* findByName(FSString* name, bool isRecursive = true);
+	bool Add(FSTmpNode* fsTmpNode);
+	bool Remove(FSString* name, bool searchRecursive=true);
+	bool Rename(FSString* oldName, FSString* newName)
+	{
+		FSTmpNode* n = findByName(newName, false);
+		if (!n)
+			return false;
+		else
+			n->name = *newName;
+	}
+	virtual ~FSTmpNodeDir(){}
+};
+
 
 class FSTmp : public FS
 {
 	clPtr<FS> baseFS;
-	std::list<FSTmpNode> tmpList;
-	FSTmpNode* findByBasePath(FSPath* basePath);
-	FSTmpNode* findByTmpFSString(FSString* tmpFSString);
-	int RemoveFromLocalList(FSString* tmpFSString);
+	FSTmpNodeDir rootDir;
 
 public:
 	static FSPath rootPathName;
 	virtual unsigned Flags() { return baseFS->Flags(); };
-	virtual bool IsEEXIST(int err){ return baseFS->IsEEXIST(err); };
-	virtual bool IsENOENT(int err){ return baseFS->IsENOENT(err); };
+	virtual bool IsEEXIST(int err){ return err == ERROR_FILE_EXISTS || baseFS->IsEEXIST(err); };
+	virtual bool IsENOENT(int err){ return err == ERROR_FILE_NOT_FOUND || baseFS->IsENOENT(err); };
 	virtual bool IsEXDEV(int err) { return baseFS->IsEXDEV(err); };
 	virtual FSString StrError(int err) { return baseFS->StrError(err); }
 	virtual bool Equal(FS* fs){ return fs && fs->Type() == Type(); }
@@ -41,9 +70,7 @@ public:
 		{	return baseFS->Write(fd, buf, size, err, info);	}
 	virtual int Seek(int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet, int* err, FSCInfo* info)
 		{	return baseFS->Seek( fd, mode, pos, pRet, err, info);	}
-	virtual int MkDir(FSPath& path, int mode, int* err, FSCInfo* info)
-		{	return -1;	}
-
+	virtual int MkDir(FSPath& path, int mode, int* err, FSCInfo* info);
 	virtual int Delete(FSPath& path, int* err, FSCInfo* info);
 	virtual int RmDir(FSPath& path, int* err, FSCInfo* info);
 
@@ -61,6 +88,6 @@ public:
 	virtual FSString Uri(FSPath& path);
 
 	bool AddNode(FSPath& srcPath, FSNode* fsNode);
-	FSTmp(clPtr<FS> _baseFS) : FS(TMP), baseFS(_baseFS) {}
+	FSTmp(clPtr<FS> _baseFS) : FS(TMP), baseFS(_baseFS){}
 	virtual ~FSTmp(){}
 };
