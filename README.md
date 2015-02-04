@@ -15,6 +15,8 @@ http://wcm.linderdaum.com
 
 walcommander@linderdaum.com
 
+Discussion group: https://groups.google.com/d/forum/wal-commander
+
 =============================
 
 The purpose of this project is to create a multi-platform open source file manager (Windows, Linux, FreeBSD, OS X) mimicking the 
