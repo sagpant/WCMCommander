@@ -325,14 +325,14 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 					continue;
 				}
 
-				WHILE_EAGAIN_( ret, libssh2_userauth_publickey_fromfile ( sshSession,
-						charUserName, public_key.GetUtf8(), private_key.GetUtf8(), "" ) );
+				WHILE_EAGAIN_( ret, libssh2_userauth_publickey_fromfile ( sshSession, charUserName, public_key.GetUtf8(), private_key.GetUtf8(), "" ) );
 
-				if (ret == 0)
+				if ( !ret )
 				{
 					fprintf(stderr, "You shouldn't use keys with an empty passphrase!\n");
 					break;
 				}
+
 				// TODO: prompt for key password. Copied from SO, didn't work:
 				// http://stackoverflow.com/questions/14952702/
 //				else if (ret == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED)
@@ -359,7 +359,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 //					}
 //				}
 
-				if ( ret != 0 )
+				if ( ret )
 				{
 					// http://www.libssh2.org/libssh2_session_last_error.html
 					// Do I get it right that when want_buf==0 I don't need to release the buffer?
@@ -383,7 +383,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 															   ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
 															   ( char* )FSString( data.prompt.Data() ).Get( _operParam.charset ) ) );
 
-				if ( ret == 0 ) { break; }
+				if ( !ret ) { break; }
 			}
 			else if ( !strcmp( authorizationMethod, kInterId ) )
 			{
@@ -427,7 +427,6 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 	{
 		if ( err ) { *err = e; }
 
-		//if (sftpSession) ??? похоже закрытие сессии все решает
 		if ( sshSession ) { libssh2_session_free( sshSession ); }
 
 		sshSession = 0;
@@ -440,7 +439,6 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 void FSSftp::CloseSession()
 {
-	//if (sftpSession) ??? похоже закрытие сессии все решает
 	if ( sshSession ) { libssh2_session_free( sshSession ); }
 
 	sshSession = 0;

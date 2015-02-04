@@ -11,6 +11,7 @@
 
 #include "vfspath.h"
 #include "strconfig.h"
+#include "globals.h"
 
 #include <sys/stat.h>
 
@@ -383,13 +384,13 @@ struct FSFtpParam
 	{
 		conf.Set( "SERVER", unicode_to_utf8( server.Data() ).data() );
 		conf.Set( "USER", unicode_to_utf8( user.Data() ).data() );
+		conf.Set( "PASSWORD", g_WcmConfig.systemStorePasswords ? unicode_to_utf8( pass.Data() ).data() : "" );
 		conf.Set( "PORT", port );
 		conf.Set( "ANONYMOUS", anonymous ? 1 : 0 );
 		conf.Set( "PASSIVE", passive ? 1 : 0 );
 
 		conf.Set( "CHARSET", charset_table.NameById( charset ) );
 	}
-
 
 	void SetConf( StrConfig& conf )
 	{
@@ -400,6 +401,10 @@ struct FSFtpParam
 		s = conf.GetStrVal( "USER" );
 
 		if ( s ) { user.Set( utf8_to_unicode( s ).data() ); }
+
+		s = conf.GetStrVal( "PASSWORD" );
+
+		if ( s ) { pass.Set( utf8_to_unicode( s ).data() ); }
 
 		int n = conf.GetIntVal( "PORT" );
 
@@ -427,7 +432,7 @@ struct FSSftpParam
 	volatile int port;
 	volatile int charset;
 	UFString<> user;
-//	UFString<> pass;
+	UFString<> pass;
 	volatile bool isSet;
 	FSSftpParam(): port( 22 ),
 #ifdef _WIN32
@@ -441,6 +446,7 @@ struct FSSftpParam
 	{
 		conf.Set( "SERVER", unicode_to_utf8( server.Data() ).data() );
 		conf.Set( "USER", unicode_to_utf8( user.Data() ).data() );
+		conf.Set( "PASSWORD", g_WcmConfig.systemStorePasswords ? unicode_to_utf8( pass.Data() ).data() : "" );
 		conf.Set( "PORT", port );
 		conf.Set( "CHARSET", charset_table.NameById( charset ) );
 	}
@@ -454,6 +460,10 @@ struct FSSftpParam
 		s = conf.GetStrVal( "USER" );
 
 		if ( s ) { user.Set( utf8_to_unicode( s ).data() ); }
+
+		s = conf.GetStrVal( "PASSWORD" );
+
+		if ( s ) { pass.Set( utf8_to_unicode( s ).data() ); }
 
 		int n = conf.GetIntVal( "PORT" );
 

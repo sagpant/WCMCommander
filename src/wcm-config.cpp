@@ -656,6 +656,7 @@ clWcmConfig::clWcmConfig()
 	, systemAutoComplete( true )
 	, systemAutoSaveSetup( true )
 	, systemShowHostName( false )
+	, systemStorePasswords( false )
 	, systemLang( "+" )
 
 	, panelShowHiddenFiles( true )
@@ -698,6 +699,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionSystem, "auto_complete", &systemAutoComplete, systemAutoComplete );
 	MapBool( sectionSystem, "auto_save_setup", &systemAutoSaveSetup, systemAutoSaveSetup );
 	MapBool( sectionSystem, "show_hostname", &systemShowHostName, systemShowHostName );
+	MapBool( sectionSystem, "store_passwords", &systemStorePasswords, systemStorePasswords );
 	MapStr( sectionSystem,  "lang", &systemLang );
 
 	MapBool( sectionSystem, "show_toolbar", &styleShowToolBar, styleShowToolBar );
@@ -2252,6 +2254,7 @@ public:
 	SButton  m_AutoCompleteButton;
 	SButton  m_AutoSaveSetupButton;
 	SButton  m_ShowHostNameButton;
+	SButton  m_StorePasswordsButton;
 
 	StaticLabel m_LangStatic;
 	StaticLine m_LangVal;
@@ -2302,6 +2305,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	, m_AutoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable &autocomplete" ) ).data(), 0, g_WcmConfig.systemAutoComplete )
 	, m_AutoSaveSetupButton( 0, this, utf8_to_unicode( _LT( "Auto &save setup" ) ).data(), 0, g_WcmConfig.systemAutoSaveSetup )
 	, m_ShowHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, g_WcmConfig.systemShowHostName )
+	, m_StorePasswordsButton( 0, this, utf8_to_unicode( _LT( "Store &passwords" ) ).data(), 0, g_WcmConfig.systemStorePasswords )
 	, m_LangStatic( 0, this, utf8_to_unicode( _LT( "&Language:" ) ).data( ), &m_LangButton )
 	, m_LangVal( 0, this, utf8_to_unicode( "______________________" ).data( ) )
 	, m_LangButton( 0, this, utf8_to_unicode( ">" ).data( ), 1000 )
@@ -2316,10 +2320,11 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	m_iL.AddWinAndEnable( &m_AutoCompleteButton, 4, 0, 4, 2 );
 	m_iL.AddWinAndEnable( &m_AutoSaveSetupButton, 5, 0, 5, 2 );
 	m_iL.AddWinAndEnable( &m_ShowHostNameButton, 6, 0, 6, 2 );
+	m_iL.AddWinAndEnable( &m_StorePasswordsButton, 7, 0, 7, 2 );
 
-	m_iL.AddWinAndEnable( &m_LangStatic, 7, 0 );
-	m_iL.AddWinAndEnable( &m_LangVal, 7, 2 );
-	m_iL.AddWinAndEnable( &m_LangButton, 7, 1 );
+	m_iL.AddWinAndEnable( &m_LangStatic, 8, 0 );
+	m_iL.AddWinAndEnable( &m_LangVal, 8, 2 );
+	m_iL.AddWinAndEnable( &m_LangButton, 8, 1 );
 
 	m_iL.SetColGrowth( 2 );
 
@@ -2336,6 +2341,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	order.append( &m_AutoCompleteButton );
 	order.append( &m_AutoSaveSetupButton );
 	order.append( &m_ShowHostNameButton );
+	order.append( &m_StorePasswordsButton );
 	order.append( &m_LangButton );
 
 	SetPosition();
@@ -2399,6 +2405,7 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.systemAutoComplete = dlg.m_AutoCompleteButton.IsSet( );
 		g_WcmConfig.systemAutoSaveSetup = dlg.m_AutoSaveSetupButton.IsSet( );
 		g_WcmConfig.systemShowHostName = dlg.m_ShowHostNameButton.IsSet( );
+		g_WcmConfig.systemStorePasswords = dlg.m_StorePasswordsButton.IsSet( );
 		const char* s = g_WcmConfig.systemLang.data();
 
 		if ( !s ) { s = "+"; }
