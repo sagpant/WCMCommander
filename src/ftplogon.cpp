@@ -60,9 +60,9 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	   passiveButton( 0, this, utf8_to_unicode( _LT( "Passi&ve mode" ) ).data(), 0, params.passive ),
 	   anonymousButton( 0, this, utf8_to_unicode( _LT( "&Anonymous logon" ) ).data(), 0, params.anonymous )
 {
-	serverEdit.SetText( params.server.Data(), true );
-	userEdit.SetText( params.user.Data(), true );
-	passwordEdit.SetText( params.pass.Data(), true );
+	serverEdit.SetText( params.server, true );
+	userEdit.SetText( params.user, true );
+	passwordEdit.SetText( params.pass, true );
 
 	char buf[0x100];
 	Lsnprintf( buf, sizeof( buf ), "%i", params.port );
@@ -77,7 +77,7 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	serverEdit.Enable();
 	serverEdit.Show();
 
-	if ( !focus && !params.server.Data()[0] ) { serverEdit.SetFocus(); focus = true; }
+	if ( !focus && !params.server.c_str()[0] ) { serverEdit.SetFocus(); focus = true; }
 
 
 	iL.AddWin( &anonymousButton, 1, 0, 1, 2 );
@@ -93,7 +93,7 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 
 	userEdit.Show();
 
-	if ( !focus && !params.user.Data()[0] ) { userEdit.SetFocus(); focus = true; }
+	if ( !focus && !params.user.c_str()[0] ) { userEdit.SetFocus(); focus = true; }
 
 	passwordEdit.SetPasswordMode();
 	iL.AddWin( &passwordText, 3, 0, 3, 0 );
@@ -105,7 +105,7 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 
 	passwordEdit.Show();
 
-	if ( !focus && !params.pass.Data()[0] ) { passwordEdit.SetFocus(); focus = true; }
+	if ( !focus && !params.pass.c_str()[0] ) { passwordEdit.SetFocus(); focus = true; }
 
 	iL.AddWin( &portText, 4, 0, 4, 0 );
 	portText.Enable();
@@ -215,10 +215,10 @@ bool GetFtpLogon( NCDialogParent* parent, FSFtpParam& params )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params.server  = dlg.serverEdit.GetText().data();
-		params.user = dlg.userEdit.GetText().data();
-		params.pass = dlg.passwordEdit.GetText().data();
-		params.port = atoi( unicode_to_utf8( dlg.portEdit.GetText().data() ).data() );
+		params.server  = dlg.serverEdit.GetTextStr();
+		params.user = dlg.userEdit.GetTextStr();
+		params.pass = dlg.passwordEdit.GetTextStr();
+		params.port = atoi( dlg.portEdit.GetTextStr().c_str() );
 		params.anonymous = dlg.anonymousButton.IsSet();
 		params.passive = dlg.passiveButton.IsSet();
 		params.isSet   = true;

@@ -187,19 +187,20 @@ void KbIntCallback(
 		for ( i = 0; i < num_prompts; i++ )
 		{
 			pData[i].visible = prompts[i].echo != 0;
-			pData[i].prompt = utf8_to_unicode( CopyToStrZ( prompts[i].text, prompts[i].length ).data() ).data();
+			pData[i].prompt = std::string( prompts[i].text, prompts[i].length );
 		}
-
-		static unicode_t userSymbol[] = { '@', 0 };
 
 		if ( !kbdIntInfo->Prompt(
 				utf8_to_unicode( "SFTP" ).data(),
-				carray_cat<unicode_t>( kbdIntParam->user.Data(), userSymbol, kbdIntParam->server.Data() ).data(),
-				pData.data(), num_prompts ) ) { return; }
+				utf8str_to_unicode( kbdIntParam->user + "@" + kbdIntParam->server ).data(),
+				pData.data(), num_prompts ) )
+		{
+			return;
+		}
 
 		for ( i = 0; i < num_prompts; i++ )
 		{
-			std::vector<char> str = new_char_str( ( char* )FSString( pData[i].prompt.Data() ).Get( kbdIntParam->charset ) );
+			std::vector<char> str = new_char_str( ( char* )FSString( pData[i].prompt.c_str() ).Get( kbdIntParam->charset ) );
 
 			if ( str.data() )
 			{
@@ -241,7 +242,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 		unsigned ip;
 		int e;
 
-		if ( !GetHostIp( unicode_to_utf8( _operParam.server.Data() ).data(), &ip, &e ) )
+		if ( !GetHostIp( _operParam.server.c_str(), &ip, &e ) )
 		{
 			throw int( e );
 		}
@@ -261,9 +262,9 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 		FSString userName = "";
 
-		if ( _operParam.user.Data()[0] )
+		if ( !_operParam.user.empty() )
 		{
-			userName = _operParam.user.Data();
+			userName = _operParam.user.c_str();
 		}
 		else
 		{
@@ -372,16 +373,16 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 			{
 				FSPromptData data;
 				data.visible = false;
-				data.prompt = utf8_to_unicode( "Password:" ).data();
+				data.prompt = "Password:";
 
 				if ( !info->Prompt(
 						utf8_to_unicode( "SFTP_" ).data(),
-						carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, _operParam.server.Data() ).data(),
+						carray_cat<unicode_t>( userName.GetUnicode(), userSymbol, utf8str_to_unicode(_operParam.server).data() ).data(),
 						&data, 1 ) ) { throw int( SSH_INTERROR_STOPPED ); }
 
 				WHILE_EAGAIN_( ret, libssh2_userauth_password( sshSession,
-															   ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
-															   ( char* )FSString( data.prompt.Data() ).Get( _operParam.charset ) ) );
+															   ( char* )FSString( _operParam.user.c_str() ).Get( _operParam.charset ),
+															   ( char* )FSString( data.prompt.c_str() ).Get( _operParam.charset ) ) );
 
 				if ( !ret ) { break; }
 			}
@@ -393,7 +394,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 
 				WHILE_EAGAIN_( ret,
 							   libssh2_userauth_keyboard_interactive( sshSession,
-																	  ( char* )FSString( _operParam.user.Data() ).Get( _operParam.charset ),
+																	  ( char* )FSString( _operParam.user.c_str() ).Get( _operParam.charset ),
 																	  KbIntCallback )
 							 );
 
@@ -470,8 +471,8 @@ bool FSSftp::Equal( FS* fs )
 		return false;
 	}
 
-	return !CmpStr<const unicode_t>( _infoParam.server.Data(), f->_infoParam.server.Data() ) &&
-		   !CmpStr<const unicode_t>( _infoParam.user.Data(), f->_infoParam.user.Data() ) &&
+	return _infoParam.server == f->_infoParam.server &&
+		   _infoParam.user == f->_infoParam.user &&
 		   _infoParam.port == f->_infoParam.port &&
 		   _infoParam.charset == f->_infoParam.charset;
 }
@@ -1389,14 +1390,10 @@ FSString FSSftp::Uri( FSPath& path )
 	char port[0x100];
 	Lsnprintf( port, sizeof( port ), ":%i", _infoParam.port );
 
-	FSString server( _infoParam.server.Data() );
-
-	FSString user( _infoParam.user.Data() );
-	a = carray_cat<char>( "sftp://", user.GetUtf8(), "@",  server.GetUtf8(), port, path.GetUtf8( '/' ) );
+	a = carray_cat<char>( "sftp://", _infoParam.user.c_str(), "@", _infoParam.server.c_str(), port, path.GetUtf8( '/' ) );
 
 	return FSString( CS_UTF8, a.data() );
 }
-
 
 
 FSSftp::~FSSftp()

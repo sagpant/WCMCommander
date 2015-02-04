@@ -4,6 +4,8 @@
  * walcommander@linderdaum.com
  */
 
+#include <algorithm>
+
 #include "vfs-ftp.h"
 
 #include "swl.h"
@@ -381,15 +383,18 @@ int FSFtp::GetFreeNode( int* err, FSCInfo* info )
 			unsigned ip; // = inet_addr(unicode_to_utf8(_param.server.Data()).ptr());
 			int e;
 
-			if ( !GetHostIp( unicode_to_utf8( _param.server.Data() ).data(), &ip, &e ) )
+			if ( !GetHostIp( _param.server.c_str(), &ip, &e ) )
 			{
 				throw int( e );
 			}
 
-			p->pFtpNode->Connect( ntohl( ip ), _param.port,
-			                      _param.anonymous ? "anonymous" : ( char* )FSString( _param.user.Data() ).Get( _param.charset ),
-			                      _param.anonymous ? "anonymous@" : ( char* )FSString( _param.pass.Data() ).Get( _param.charset ),
-			                      _param.passive );
+			FSString User = FSString( _param.user.c_str() );
+			FSString Pass = FSString( _param.pass.c_str() );
+
+			const char* UserStr = _param.anonymous ? "anonymous" : (char*)User.Get( _param.charset );
+			const char* PassStr = _param.anonymous ? "anonymous@" : (char*)Pass.Get( _param.charset );
+
+			p->pFtpNode->Connect( ntohl( ip ), _param.port, UserStr, PassStr, _param.passive );
 		}
 		catch ( int e )
 		{
@@ -438,9 +443,8 @@ bool FSFtp::Equal( FS* fs )
 		return false;
 	}
 
-	return !CmpStr<const unicode_t>( _infoParam.server.Data(), f->_infoParam.server.Data() ) &&
-	       ( _infoParam.anonymous == f->_infoParam.anonymous &&
-	         ( _infoParam.anonymous || !CmpStr<const unicode_t>( _infoParam.user.Data(), f->_infoParam.user.Data() ) ) ) &&
+	return _infoParam.server == f->_infoParam.server &&
+	       ( _infoParam.anonymous == f->_infoParam.anonymous && ( _infoParam.anonymous || _infoParam.user == f->_infoParam.user ) ) &&
 	       _infoParam.port == f->_infoParam.port &&
 	       _infoParam.charset == f->_infoParam.charset;
 }
@@ -1501,12 +1505,23 @@ FSString FSFtp::Uri( FSPath& path )
 	char port[0x100];
 	Lsnprintf( port, sizeof( port ), ":%i", _param.port );
 
-	FSString server( _param.server.Data() );
+	FSString server( _param.server.c_str() );
+
+	std::string PathStr( path.GetUtf8() );
+	std::replace( PathStr.begin(), PathStr.end(), '\\', '/' );
 
 	if ( !_param.anonymous )
 	{
-		FSString user( _param.user.Data() );
-		a = carray_cat<char>( "ftp://", user.GetUtf8(), "@",  server.GetUtf8(), port, path.GetUtf8() );
+		FSString user( _param.user );
+		FSString pass( _param.pass );
+		if ( g_WcmConfig.systemStorePasswords && !pass.IsEmpty() )
+		{
+			a = carray_cat<char>( "ftp://", user.GetUtf8(), ":", pass.GetUtf8(), "@", server.GetUtf8(), port, PathStr.c_str() );
+		}
+		else
+		{
+			a = carray_cat<char>( "ftp://", user.GetUtf8(), "@", server.GetUtf8(), port, PathStr.c_str() );
+		}
 	}
 	else
 	{

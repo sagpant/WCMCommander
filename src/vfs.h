@@ -345,27 +345,14 @@ struct FSSmbParam
 	}
 };
 
-template <int SIZE = 128> class UFString
-{
-	volatile unicode_t data[SIZE];
-public:
-	void Set( const unicode_t* strZ ) { volatile unicode_t* s = data; int n = SIZE - 1; for ( ; *strZ && n > 0; s++, strZ++, n-- ) { *s = *strZ; } *s = 0; }
-	UFString() { data[0] = 0; }
-	UFString( const unicode_t* strZ ) { Set( strZ ); }
-	UFString& operator = ( const unicode_t* strZ ) { Set( strZ ); return *this;}
-	const unicode_t* Data() { return const_cast<unicode_t*>( data ); }
-	~UFString() {}
-};
-
-
 struct FSFtpParam
 {
-	UFString<> server;
+	std::string server;
 	volatile int port;
 	volatile int charset;
 	volatile bool anonymous;
-	UFString<> user;
-	UFString<> pass;
+	std::string user;
+	std::string pass;
 	volatile bool passive;
 	volatile bool isSet;
 
@@ -382,9 +369,9 @@ struct FSFtpParam
 
 	void GetConf( StrConfig& conf )
 	{
-		conf.Set( "SERVER", unicode_to_utf8( server.Data() ).data() );
-		conf.Set( "USER", unicode_to_utf8( user.Data() ).data() );
-		conf.Set( "PASSWORD", g_WcmConfig.systemStorePasswords ? unicode_to_utf8( pass.Data() ).data() : "" );
+		conf.Set( "SERVER", server.c_str() );
+		conf.Set( "USER", user.c_str() );
+		conf.Set( "PASSWORD", g_WcmConfig.systemStorePasswords ? pass.c_str() : "" );
 		conf.Set( "PORT", port );
 		conf.Set( "ANONYMOUS", anonymous ? 1 : 0 );
 		conf.Set( "PASSIVE", passive ? 1 : 0 );
@@ -396,15 +383,15 @@ struct FSFtpParam
 	{
 		const char* s = conf.GetStrVal( "SERVER" );
 
-		if ( s ) { server.Set( utf8_to_unicode( s ).data() ); }
+		if ( s ) { server = s; }
 
 		s = conf.GetStrVal( "USER" );
 
-		if ( s ) { user.Set( utf8_to_unicode( s ).data() ); }
+		if ( s ) { user = s; }
 
 		s = conf.GetStrVal( "PASSWORD" );
 
-		if ( s ) { pass.Set( utf8_to_unicode( s ).data() ); }
+		if ( s ) { pass = s; }
 
 		int n = conf.GetIntVal( "PORT" );
 
@@ -428,11 +415,11 @@ struct FSFtpParam
 
 struct FSSftpParam
 {
-	UFString<> server;
+	std::string server;
 	volatile int port;
 	volatile int charset;
-	UFString<> user;
-	UFString<> pass;
+	std::string user;
+//	std::string pass;
 	volatile bool isSet;
 	FSSftpParam(): port( 22 ),
 #ifdef _WIN32
@@ -444,9 +431,9 @@ struct FSSftpParam
 
 	void GetConf( StrConfig& conf )
 	{
-		conf.Set( "SERVER", unicode_to_utf8( server.Data() ).data() );
-		conf.Set( "USER", unicode_to_utf8( user.Data() ).data() );
-		conf.Set( "PASSWORD", g_WcmConfig.systemStorePasswords ? unicode_to_utf8( pass.Data() ).data() : "" );
+		conf.Set( "SERVER", server.c_str() );
+		conf.Set( "USER", user.c_str() );
+//		conf.Set( "PASSWORD", g_WcmConfig.systemStorePasswords ? pass.c_str() : "" );
 		conf.Set( "PORT", port );
 		conf.Set( "CHARSET", charset_table.NameById( charset ) );
 	}
@@ -455,15 +442,15 @@ struct FSSftpParam
 	{
 		const char* s = conf.GetStrVal( "SERVER" );
 
-		if ( s ) { server.Set( utf8_to_unicode( s ).data() ); }
+		if ( s ) { server = s; }
 
 		s = conf.GetStrVal( "USER" );
 
-		if ( s ) { user.Set( utf8_to_unicode( s ).data() ); }
+		if ( s ) { user = s; }
 
-		s = conf.GetStrVal( "PASSWORD" );
+//		s = conf.GetStrVal( "PASSWORD" );
 
-		if ( s ) { pass.Set( utf8_to_unicode( s ).data() ); }
+//		if ( s ) { pass = s; }
 
 		int n = conf.GetIntVal( "PORT" );
 
@@ -478,7 +465,7 @@ struct FSSftpParam
 struct FSPromptData
 {
 	volatile bool visible;
-	UFString<32> prompt;
+	std::string prompt;
 };
 
 class FSCInfo

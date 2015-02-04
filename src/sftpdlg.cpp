@@ -62,8 +62,8 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 
 	   charsetButton( 0, this, utf8_to_unicode( ">" ).data() , 1000 )
 {
-	serverEdit.SetText( params.server.Data(), true );
-	userEdit.SetText( params.user.Data(), true );
+	serverEdit.SetText( utf8str_to_unicode( params.server ).data(), true );
+	userEdit.SetText( utf8str_to_unicode( params.user ).data(), true );
 //	passwordEdit.SetText(params.pass.Data(), true);
 
 	char buf[0x100];
@@ -79,7 +79,7 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 	serverEdit.Enable();
 	serverEdit.Show();
 
-	if ( !focus && !params.server.Data()[0] ) { serverEdit.SetFocus(); focus = true; }
+	if ( !focus && !params.server.c_str()[0] ) { serverEdit.SetFocus(); focus = true; }
 
 	iL.AddWin( &userText, 2, 0, 2, 0 );
 	userText.Enable();
@@ -88,7 +88,7 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 	userEdit.Enable();
 	userEdit.Show();
 
-	if ( !focus && !params.user.Data()[0] ) { userEdit.SetFocus(); focus = true; }
+	if ( !focus && !params.user.c_str()[0] ) { userEdit.SetFocus(); focus = true; }
 
 	/*
 	   passwordEdit.SetPasswordMode();
@@ -164,9 +164,9 @@ bool GetSftpLogon( NCDialogParent* parent, FSSftpParam& params )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params.server  = dlg.serverEdit.GetText().data();
-		params.user = dlg.userEdit.GetText().data();
-//		params.pass   = dlg.passwordEdit.GetText().ptr();
+		params.server  = unicode_to_utf8_string( dlg.serverEdit.GetText().data() );
+		params.user =  unicode_to_utf8_string( dlg.userEdit.GetText().data() );
+//		params.pass   =  unicode_to_utf8_string( dlg.passwordEdit.GetText().ptr() );
 		params.port = atoi( unicode_to_utf8( dlg.portEdit.GetText().data() ).data() );
 		params.isSet   = true;
 		params.charset = dlg.charset;
@@ -219,7 +219,7 @@ FSPromptDialog::FSPromptDialog( PromptCBData* data )
 	for ( int i = 0; i < data->count; i++ )
 	{
 		Node node;
-		node.prompt = new StaticLine( 0, this, data->prompts[i].prompt.Data() );
+		node.prompt = new StaticLine( 0, this, utf8str_to_unicode( data->prompts[i].prompt ).data() );
 		node.ansver = new EditLine( 0, this, 0, 0, 16 );
 
 		if ( !data->prompts[i].visible ) { node.ansver->SetPasswordMode(); }
@@ -254,7 +254,7 @@ bool GetPromptAnswer( PromptCBData* data )
 
 	for ( int i = 0; i < data->count; i++ )
 	{
-		data->prompts[i].prompt = dlg.list[i].ansver->GetText().data();
+		data->prompts[i].prompt = dlg.list[i].ansver->GetTextStr();
 	}
 
 	return true;
