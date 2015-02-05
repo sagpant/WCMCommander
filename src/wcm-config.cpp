@@ -14,6 +14,7 @@
 #include "ncwin.h"
 #include "ltext.h"
 #include "globals.h"
+#include "folder-history.h"
 
 #ifdef _WIN32
 #  include "w32util.h"
@@ -1384,6 +1385,7 @@ void clWcmConfig::Load( NCWin* nc )
 
 	LoadEditorPositions();
 	LoadViewerPositions();
+    LoadFoldersHistory();
 }
 
 void SaveEditorPositions()
@@ -1498,6 +1500,7 @@ void clWcmConfig::Save( NCWin* nc )
 
 	SaveEditorPositions();
 	SaveViewerPositions();
+    SaveFoldersHistory();
 }
 
 

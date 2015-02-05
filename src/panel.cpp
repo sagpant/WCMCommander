@@ -37,6 +37,7 @@
 
 #include "vfs-smb.h"
 #include "ltext.h"
+#include "folder-history.h"
 
 int uiPanelSearchWin = GetUiID( "PanelSearchWin" );
 
@@ -1730,8 +1731,10 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 	if (fs==0)
 		dbg_printf_fspath("PanelWin::LoadPath fs is null, paramPath=", paramPath);
 	else
-		dbg_printf("PanelWin::LoadPath() fsUri=%s\n", (fs->Uri(paramPath)).GetUtf8());
-	
+	{
+		dbg_printf("PanelWin::LoadPath() fsUri=%s current=%s ", (fs->Uri(paramPath)).GetUtf8(), current ? current->GetUtf8() : "null");
+		dbg_printf_fspath(", paramPath=", paramPath);
+	}
 
 	try
 	{
@@ -1780,6 +1783,8 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 		ex->destroy();
 		GetNCWin()->NotifyCurrentPathInfo();
 	}
+
+    AddFolderToHistory(&fs, &paramPath);
 }
 
 void PanelWin::OperThreadSignal( int info )

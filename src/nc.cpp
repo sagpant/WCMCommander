@@ -440,7 +440,7 @@ int main( int argc, char** argv )
 
 		AppRun();
 
-		dbg_printf( "App Quit!!!" );
+		dbg_printf( "App Quit!!!\n" );
 
 	}
 	catch ( cexception* ex )

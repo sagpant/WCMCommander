@@ -271,8 +271,12 @@
 		<Unit filename="src/shell.h" />
 		<Unit filename="src/shl.cpp" />
 		<Unit filename="src/shl.h" />
-		<Unit filename="src/shortcuts.cpp" />
-		<Unit filename="src/shortcuts.h" />
+		<Unit filename="src/path-list.cpp" />
+		<Unit filename="src/path-list.h" />
+		<Unit filename="src/folder-shortcuts.cpp" />
+		<Unit filename="src/folder-shortcuts.h" />
+		<Unit filename="src/folder-history.cpp" />
+		<Unit filename="src/folder-history.h" />
 		<Unit filename="src/small.ico" />
 		<Unit filename="src/smblogon.cpp" />
 		<Unit filename="src/smblogon.h" />
