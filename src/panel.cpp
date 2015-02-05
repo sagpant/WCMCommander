@@ -37,6 +37,7 @@
 
 #include "vfs-smb.h"
 #include "ltext.h"
+#include "folder-history.h"
 
 int uiPanelSearchWin = GetUiID( "PanelSearchWin" );
 
@@ -1765,6 +1766,8 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 		ex->destroy();
 		GetNCWin()->NotifyCurrentPathInfo();
 	}
+
+    AddFolderToHistory(&fs, &paramPath);
 }
 
 void PanelWin::OperThreadSignal( int info )

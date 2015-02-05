@@ -45,13 +45,69 @@ else
 LIBS += -l stdc++
 endif
 
-HW = src/wal/wal_tmpls.h src/wal/wal.h src/wal/wal_sys_api.h
-HS = src/swl/swl.h src/swl/swl_internal.h src/swl/swl_layout.h src/swl/swl_winbase.h src/swl/swl_wincore.h src/swl/swl_wincore_internal.h 
-HN = src/libconf.h src/nc.h src/ncwin.h src/panel.h src/ncdialogs.h src/terminal.h src/termwin.h src/ncedit.h src/nchistory.h src/shell.h \
- src/operthread.h src/operwin.h src/vfs.h src/vfspath.h src/vfs-smb.h src/vfs-tmp.h src/vfs-uri.h src/fileopers.h src/mfile.h src/eloadsave.h src/smblogon.h src/ext-app.h \
- src/wcm-config.h src/panel_list.h src/tcp_sock.h src/vfs-ftp.h src/ftplogon.h src/charsetdlg.h src/vfs-sftp.h src/sftpdlg.h src/color-style.h src/filesearch.h \
- src/help.h src/ux_util.h src/strconfig.h src/shortcuts.h src/fontdlg.h src/ncfonts.h src/shl.h src/toolbar.h src/ncview.h src/search-dlg.h src/search-tools.h \
- src/shell-tools.h src/t-emulator.h src/dircalc.h src/ltext.h
+HW = \
+	src/wal/wal_tmpls.h \
+	src/wal/wal.h \
+	src/wal/wal_sys_api.h
+
+HS = \
+	src/swl/swl.h \
+	src/swl/swl_internal.h \
+	src/swl/swl_layout.h \
+	src/swl/swl_winbase.h \
+	src/swl/swl_wincore.h \
+	src/swl/swl_wincore_internal.h 
+
+HN = \
+	src/libconf.h \
+	src/nc.h \
+	src/ncwin.h \
+	src/panel.h \
+	src/ncdialogs.h \
+	src/terminal.h \
+	src/termwin.h \
+	src/ncedit.h \
+	src/nchistory.h \
+	src/shell.h \
+	src/operthread.h \
+	src/operwin.h \
+	src/vfs.h \
+	src/vfspath.h \
+	src/vfs-smb.h \
+	src/vfs-tmp.h \
+	src/vfs-uri.h \
+	src/fileopers.h \
+	src/mfile.h \
+	src/eloadsave.h \
+	src/smblogon.h \
+	src/ext-app.h \
+	src/wcm-config.h \
+	src/panel_list.h \
+	src/tcp_sock.h \
+	src/vfs-ftp.h \
+	src/ftplogon.h \
+	src/charsetdlg.h \
+	src/vfs-sftp.h \
+	src/sftpdlg.h \
+	src/color-style.h \
+	src/filesearch.h \
+	src/help.h \
+	src/ux_util.h \
+	src/strconfig.h \
+	src/path-list.h \
+	src/folder-shortcuts.h \
+	src/folder-history.h \
+	src/fontdlg.h \
+	src/ncfonts.h \
+	src/shl.h \
+	src/toolbar.h \
+	src/ncview.h \
+	src/search-dlg.h \
+	src/search-tools.h \
+	src/shell-tools.h \
+	src/t-emulator.h \
+	src/dircalc.h \
+	src/ltext.h
 
 CFLAGS += -I src -I src/wal -I src/swl
 
@@ -97,7 +153,9 @@ OBJS = \
 	$(OBJDIR)/shell-tools.o \
 	$(OBJDIR)/shell.o \
 	$(OBJDIR)/shl.o \
-	$(OBJDIR)/shortcuts.o \
+	$(OBJDIR)/path-list.o \
+	$(OBJDIR)/folder-shortcuts.o \
+	$(OBJDIR)/folder-history.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
 	$(OBJDIR)/strmasks.o \
@@ -227,8 +285,14 @@ $(OBJDIR)/ltext.o: $(HW) $(HS) $(HN) src/ltext.cpp
 $(OBJDIR)/ncfonts.o: $(HW) $(HS) $(HN) src/ncfonts.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/ncfonts.cpp -o $(OBJDIR)/ncfonts.o
 	
-$(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) src/shortcuts.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/shortcuts.cpp -o $(OBJDIR)/shortcuts.o
+$(OBJDIR)/path-list.o: $(HW) $(HS) $(HN) src/path-list.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/path-list.cpp -o $(OBJDIR)/path-list.o
+
+$(OBJDIR)/folder-shortcuts.o: $(HW) $(HS) $(HN) src/folder-shortcuts.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/folder-shortcuts.cpp -o $(OBJDIR)/folder-shortcuts.o
+
+$(OBJDIR)/folder-history.o: $(HW) $(HS) $(HN) src/folder-history.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/folder-history.cpp -o $(OBJDIR)/folder-history.o
 
 $(OBJDIR)/fileassociations.o: $(HW) $(HS) $(HN) src/fileassociations.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/fileassociations.cpp -o $(OBJDIR)/fileassociations.o

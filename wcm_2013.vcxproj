@@ -217,7 +217,7 @@
     <ClCompile Include="src/sftpdlg.cpp" />
     <ClCompile Include="src/shell-tools.cpp" />
     <ClCompile Include="src/shl.cpp" />
-    <ClCompile Include="src/shortcuts.cpp" />
+    <ClCompile Include="src\folder-shortcuts.cpp" />
     <ClCompile Include="src/smblogon.cpp" />
     <ClCompile Include="src/stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -265,6 +265,8 @@
     <ClCompile Include="src/wcm-config.cpp" />
     <ClCompile Include="src\urlparser\LUrlParser.cpp" />
     <ClCompile Include="src\vfs-tmp.cpp" />
+    <ClCompile Include="src\folder-history.cpp" />
+    <ClCompile Include="src\path-list.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/charsetdlg.h" />
@@ -303,7 +305,7 @@
     <ClInclude Include="src/shell-tools.h" />
     <ClInclude Include="src/shell.h" />
     <ClInclude Include="src/shl.h" />
-    <ClInclude Include="src/shortcuts.h" />
+    <ClInclude Include="src\folder-shortcuts.h" />
     <ClInclude Include="src/smblogon.h" />
     <ClInclude Include="src/stdafx.h" />
     <ClInclude Include="src/strconfig.h" />
@@ -336,6 +338,8 @@
     <ClInclude Include="src/wcm-config.h" />
     <ClInclude Include="src\urlparser\LUrlParser.h" />
     <ClInclude Include="src\vfs-tmp.h" />
+    <ClInclude Include="src\folder-history.h" />
+    <ClInclude Include="src\path-list.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src/wcm.rc" />

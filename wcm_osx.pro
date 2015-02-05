@@ -58,7 +58,9 @@ SOURCES += src/nc.cpp \
     src/shell-tools.cpp \
     src/shell.cpp \
     src/shl.cpp \
-    src/shortcuts.cpp \
+    src/path-list.cpp \
+    src/folder-shortcuts.cpp \
+    src/folder-history.cpp \
     src/smblogon.cpp \
     src/strconfig.cpp \
     src/strmasks.cpp \
@@ -131,7 +133,9 @@ HEADERS += \
     src/shell-tools.h \
     src/shell.h \
     src/shl.h \
-    src/shortcuts.h \
+    src/path-list.h \
+    src/folder-shortcuts.h \
+    src/folder-history.h \
     src/smblogon.h \
     src/strconfig.h \
     src/string-util.h \
