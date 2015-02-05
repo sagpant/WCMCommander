@@ -17,15 +17,15 @@
 
 
 //TODO: move to common string utils class?
-int PathList::CmpNoCase(const unicode_t* a, const unicode_t* b)
+int PathList::Compare(const unicode_t* a, const unicode_t* b, bool ignoreCase)
 {
     unicode_t au = 0;
     unicode_t bu = 0;
 
     for (; *a; a++, b++)
     {
-        au = UnicodeLC(*a);
-        bu = UnicodeLC(*b);
+        au = (ignoreCase ? UnicodeLC(*a) : *a);
+        bu = (ignoreCase ? UnicodeLC(*b) : *b);
 
         if (au != bu)
         {
@@ -93,6 +93,12 @@ PathListWin::PathListWin(Win* parent, PathList& dataList)
     ls.y.minimal = 400;
 
     SetLSize(ls);
+
+    if (m_dataList.GetCount() > 0)
+    {
+        SetCount(m_dataList.GetCount());
+        SetCurrent(0);
+    }
 }
 
 void PathListWin::Sort()
@@ -106,7 +112,7 @@ void PathListWin::Sort()
 
         for (int i = 0; i < m_dataList.GetCount(); i++)
         {
-            if (!PathList::CmpNoCase(sel, m_dataList.GetData(i)->name.data()))
+            if (!PathList::Compare(sel, m_dataList.GetData(i)->name.data(), true))
             {
                 SetCurrent(i);
                 Invalidate();

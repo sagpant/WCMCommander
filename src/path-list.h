@@ -23,15 +23,15 @@ public:
 
         bool operator <= (const Data& a)
         {
-            return PathList::CmpNoCase(name.data(), a.name.data()) <= 0;
+            return (PathList::Compare(name.data(), a.name.data(), true) <= 0);
         }
     };
 
-    static int CmpNoCase(const unicode_t* a, const unicode_t* b);
+    static int Compare(const unicode_t* a, const unicode_t* b, bool ignoreCase);
 
 private:
     ccollect<Data> m_list;
-
+    
 public:
     void GetStrings(std::vector<std::string>& list);
 
@@ -50,6 +50,20 @@ public:
     int GetCount()
     {
         return m_list.count();
+    }
+
+    // Returns index of element with the specified name, or -1 if no such found
+    int FindByName(const unicode_t* name)
+    {
+        for (int i = 0; i < GetCount(); i++)
+        {
+            if (!PathList::Compare(name, GetData(i)->name.data(), false))
+            {
+                return i;
+            }
+        }
+        
+        return -1;
     }
 
     bool Add(const unicode_t* name, clPtr<StrConfig> p)
