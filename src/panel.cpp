@@ -948,15 +948,15 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 		{
 			if ( i.IsRulePassed( p->GetUnicodeName(), p->Size(), 0 ) )
 			{
-				if ( active )
+				if ( isSelected )
 				{
-					color_bg = i.GetColorUnderCursorNormalBackground();
-					color_text = i.GetColorUnderCursorNormal();
+					color_bg = active ? i.GetColorUnderCursorSelectedBackground() : i.GetColorSelectedBackground();
+					color_text = active ? i.GetColorUnderCursorSelected() : i.GetColorSelected();
 				}
 				else
 				{
-					color_bg = i.GetColorNormalBackground();
-					color_text = i.GetColorNormal();
+					color_bg = active ? i.GetColorUnderCursorNormalBackground() : i.GetColorNormalBackground();
+					color_text = active ? i.GetColorUnderCursorNormal() : i.GetColorNormal();
 				}
 
 				break;
