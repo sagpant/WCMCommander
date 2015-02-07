@@ -72,7 +72,11 @@ void PanelList::Mark( const unicode_t* mask, bool enable )
 
 		if ( !p ) { continue; }
 
+#if defined( _WIN32 ) || defined(__APPLE__)
+		bool ok = accmask_nocase( p->GetUnicodeName(), mask );
+#else
 		bool ok = accmask( p->GetUnicodeName(), mask );
+#endif
 
 		if ( ok )
 		{
