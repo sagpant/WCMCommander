@@ -294,6 +294,7 @@ private:
 	void Copy( bool shift );
 	void Move( bool shift );
 	void Mark( bool enable );
+	void MarkSameExt( bool enable );
 	void CtrlEnter();
 	void CtrlF();
 	void CtrlL();
