@@ -19,6 +19,17 @@ template<class T> inline const T* find_right_char( const T* s, T c )
 	return p;
 }
 
+/// get file extension
+inline std::string GetFileExt( const unicode_t* uri )
+{
+	if ( !uri ) { return std::string(); }
+
+	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
+
+	if ( !ext || !*ext ) { return std::string(); }
+
+	return unicode_to_utf8_string( ext );
+}
 
 inline std::vector<wchar_t> UnicodeToUtf16( const unicode_t* s )
 {
@@ -42,6 +53,26 @@ inline std::vector<unicode_t> Utf16ToUnicode( const wchar_t* s )
 
 	*d = 0;
 	return p;
+}
+
+inline std::wstring widen( const std::string& utf8 )
+{
+#if defined(_WIN32)
+	int Len = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.length(), nullptr, 0);
+
+	if ( Len > 0 )
+	{
+		wchar_t* Out = (wchar_t*)alloca( Len * sizeof(wchar_t) );
+		
+		MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), utf8.length(), Out, Len );
+
+		return std::wstring( Out, Len );
+	}
+
+	return std::wstring();
+#else
+	return std::wstring( utf8str_to_unicode( utf8 ).data() );
+#endif
 }
 
 inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
