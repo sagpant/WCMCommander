@@ -55,6 +55,7 @@ inline std::vector<unicode_t> Utf16ToUnicode( const wchar_t* s )
 	return p;
 }
 
+// convert UTF-8 to UCS-2
 inline std::wstring widen( const std::string& utf8 )
 {
 #if defined(_WIN32)
@@ -72,6 +73,29 @@ inline std::wstring widen( const std::string& utf8 )
 	return std::wstring();
 #else
 	return std::wstring( utf8str_to_unicode( utf8 ).data() );
+#endif
+}
+
+// convert UCS-2 to UTF-8
+inline std::string narrow( const std::wstring& ucs2 )
+{
+#if defined(_WIN32)
+	std::string ret;
+
+	int Len = WideCharToMultiByte( CP_UTF8, 0, ucs2.c_str(), ucs2.length(), nullptr, 0, nullptr, nullptr );
+
+	if ( Len > 0 )
+	{
+		char* Out = (char*)alloca( Len );
+
+		WideCharToMultiByte( CP_UTF8, 0, ucs2.c_str(), ucs2.length(), Out, Len, nullptr, nullptr );
+
+		return std::string( Out, Len );
+	}
+
+	return std::string();
+#else
+	return unicode_to_utf8_string( ucs2.c_str() );
 #endif
 }
 
