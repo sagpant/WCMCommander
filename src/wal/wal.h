@@ -118,11 +118,8 @@ namespace wal
 		friend class MutexLock;
 		friend class Cond;
 		mutex_t _mutex;
-#ifdef _WIN32
-		volatile bool _static;
-#endif
 	public:
-		Mutex( bool stat = false );
+		Mutex();
 		void Lock();
 		void Unlock();
 		~Mutex();
@@ -236,11 +233,8 @@ namespace wal
 //
 /// Mutex
 //
-	inline Mutex::Mutex( bool stat )
+	inline Mutex::Mutex()
 	{
-#ifdef _WIN32
-		_static = stat;
-#endif
 		mutex_create( &_mutex );
 	}
 
@@ -256,16 +250,7 @@ namespace wal
 
 	inline Mutex::~Mutex()
 	{
-#ifdef _WIN32
-
-		if ( !_static )
-		{
-			mutex_delete( &_mutex );
-		}
-
-#else
 		mutex_delete( &_mutex );
-#endif
 	}
 
 
