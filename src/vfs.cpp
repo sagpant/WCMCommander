@@ -505,7 +505,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 
 	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).data(), &ent );
 
-#ifdef _DEBUG
+#if defined( _DEBUG ) & 0
 	std::vector<wchar_t> wpath = FindPathStr( _drive, path.GetUnicode(), L"\\*" );
 	char s[1024];
 	toStr( s, wpath.data() );
