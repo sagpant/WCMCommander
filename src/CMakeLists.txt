@@ -66,6 +66,11 @@ ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 ADD_DEFINITIONS(-DUNIX_CONFIG_DIR_PATH="${CMAKE_INSTALL_PREFIX}/${DATADIR}")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unused-parameter -Wno-unknown-pragmas")
 
+IF(APPLE)
+	SET(CMAKE_EXE_LINKER_FLAGS "-framework Foundation -w")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
+ENDIF(APPLE)
+
 # sources
 IF(MINGW)
 	SET(wcm_PLATFORM_SOURCES

@@ -2,7 +2,7 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-
+#include <Foundation/Foundation.h>
 #include <X11/Xutil.h>
 
 #include "swl.h"

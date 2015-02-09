@@ -112,7 +112,7 @@ class Terminal
 //	int _maxRows;
 
 //output
-	thread_t outputThread;
+  wal::thread_t outputThread;
 	Mutex _outputMutex;
 	Cond _outputCond;
 

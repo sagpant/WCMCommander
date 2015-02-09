@@ -838,7 +838,7 @@ struct ViewerEvent
 {
 	enum
 	{
-		NO = 0,
+		NONE = 0,
 		SET, //set offset, track must be in first line
 		VTRACK, HTRACK,
 		UP, DOWN, LEFT, RIGHT,
@@ -856,7 +856,7 @@ struct ViewerEvent
 	ViewerEvent( int t ): type( t ), track( 0 ), e( 0 ) {}
 	ViewerEvent( int t, int64_t tr ): type( t ), track( tr ), e( 0 ) {}
 	ViewerEvent( int t, int64_t tr, int64_t n1 ): type( t ), track( tr ), e( n1 ) {}
-	void Clear() { type = NO; }
+	void Clear() { type = NONE; }
 };
 
 

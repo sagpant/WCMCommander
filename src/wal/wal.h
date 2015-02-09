@@ -5,6 +5,8 @@
 #ifndef _____WAL_H
 #define _____WAL_H
 
+#import <Foundation/Foundation.h>
+
 #include "wal_tmpls.h"
 #include "wal_sys_api.h"
 
