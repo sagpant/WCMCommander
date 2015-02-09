@@ -18,43 +18,43 @@ static const char shortcursSection[] = "shortcuts";
 class FolderShortcutsWin : public PathListWin
 {
 public:
-    FolderShortcutsWin(Win* parent, PathList& dataList)
-        : PathListWin(parent, dataList)
-    {
-        Load();
-    }
+	FolderShortcutsWin( Win* parent, PathList& dataList )
+		: PathListWin( parent, dataList )
+	{
+		Load();
+	}
 
-    virtual ~FolderShortcutsWin() {}
+	virtual ~FolderShortcutsWin() {}
 
 private:
-    void Load()
-    {
-        std::vector<std::string> list;
-        LoadStringList(shortcursSection, list);
+	void Load()
+	{
+		std::vector<std::string> list;
+		LoadStringList( shortcursSection, list );
 
-        m_dataList.SetStrings(list);
-        Sort();
+		m_dataList.SetStrings( list );
+		Sort();
 
-        SetCount(m_dataList.GetCount());
-        SetCurrent(0);
-    }
+		SetCount( m_dataList.GetCount() );
+		SetCurrent( 0 );
+	}
 
-    void Save()
-    {
-        std::vector<std::string> list;
-        m_dataList.GetStrings(list);
+	void Save()
+	{
+		std::vector<std::string> list;
+		m_dataList.GetStrings( list );
 
-        SaveStringList(shortcursSection, list);
-    }
+		SaveStringList( shortcursSection, list );
+	}
 
 protected:
-    virtual void OnItemListChanged()
-    {
-        Save();
-        Sort();
+	virtual void OnItemListChanged()
+	{
+		Save();
+		Sort();
 
-        PathListWin::OnItemListChanged();
-    }
+		PathListWin::OnItemListChanged();
+	}
 };
 
 
@@ -62,144 +62,148 @@ protected:
 #define CMD_MINUS   1001
 #define CMD_RENAME  1002
 
-ButtonDataNode buttonsData[] = {
-    { "&Insert", CMD_PLUS },
-    { "&Delete", CMD_MINUS },
-    { "&Rename", CMD_RENAME },
-    { 0, 0 }
+ButtonDataNode buttonsData[] =
+{
+	{ "&Insert", CMD_PLUS },
+	{ "&Delete", CMD_MINUS },
+	{ "&Rename", CMD_RENAME },
+	{ 0, 0 }
 };
 
 class FolderShortcutsDlg : public PathListDlg
 {
 private:
-    PathList                m_dataList;
-    FolderShortcutsWin      m_shortcutsWin;
-    Layout                  m_lo;
-    
-    clPtr<FS>*              m_fs;
-    FSPath*                 m_path;
+	PathList                m_dataList;
+	FolderShortcutsWin      m_shortcutsWin;
+	Layout                  m_lo;
+
+	clPtr<FS>*              m_fs;
+	FSPath*                 m_path;
 
 public:
-	FolderShortcutsDlg(NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath)
-    : PathListDlg(parent, m_shortcutsWin, _LT("Folder Shortcuts"), buttonsData)
-	 , m_shortcutsWin(this, m_dataList)
-    , m_lo(10, 10)
-	 , m_fs(fp)
-	 , m_path(pPath)
-   {
-        m_listWin.Show();
-        m_listWin.Enable();
+	FolderShortcutsDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath )
+		: PathListDlg( parent, m_shortcutsWin, _LT( "Folder Shortcuts" ), buttonsData )
+		, m_shortcutsWin( this, m_dataList )
+		, m_lo( 10, 10 )
+		, m_fs( fp )
+		, m_path( pPath )
+	{
+		m_listWin.Show();
+		m_listWin.Enable();
 
-        m_lo.AddWin(&m_shortcutsWin, 0, 0, 9, 0);
-        m_lo.SetLineGrowth(9);
-        AddLayout(&m_lo);
+		m_lo.AddWin( &m_shortcutsWin, 0, 0, 9, 0 );
+		m_lo.SetLineGrowth( 9 );
+		AddLayout( &m_lo );
 
-        SetPosition();
-        m_shortcutsWin.SetFocus();
-    }
+		SetPosition();
+		m_shortcutsWin.SetFocus();
+	}
 
-    virtual ~FolderShortcutsDlg() {}
+	virtual ~FolderShortcutsDlg() {}
 
-    virtual bool Command(int id, int subId, Win* win, void* data);
+	virtual bool Command( int id, int subId, Win* win, void* data );
 
-    virtual bool OnKey(cevent_key* pEvent)
-    {
-        if (pEvent->Type() == EV_KEYDOWN)
-        {
-            if (pEvent->Key() == VK_INSERT)
-            {
-                Command(CMD_PLUS, 0, this, 0);
-                return true;
-            }
+	virtual bool OnKey( cevent_key* pEvent )
+	{
+		if ( pEvent->Type() == EV_KEYDOWN )
+		{
+			if ( pEvent->Key() == VK_INSERT )
+			{
+				Command( CMD_PLUS, 0, this, 0 );
+				return true;
+			}
 
-            if (pEvent->Key() == VK_DELETE)
-            {
-                Command(CMD_MINUS, 0, this, 0);
-                return true;
-            }
-        }
+			if ( pEvent->Key() == VK_DELETE )
+			{
+				Command( CMD_MINUS, 0, this, 0 );
+				return true;
+			}
+		}
 
-        return PathListDlg::OnKey(pEvent);
-    }
+		return PathListDlg::OnKey( pEvent );
+	}
 };
 
-bool FolderShortcutsDlg::Command(int id, int subId, Win* win, void* data)
+bool FolderShortcutsDlg::Command( int id, int subId, Win* win, void* data )
 {
-    if (id == CMD_MINUS)
-    {
-        PathList::Data* data = m_listWin.GetCurrentData();
-        if (!data || !data->name.data())
-        {
-            return true;
-        }
+	if ( id == CMD_MINUS )
+	{
+		PathList::Data* data = m_listWin.GetCurrentData();
 
-        if (NCMessageBox((NCDialogParent*)Parent(), _LT("Delete item"), 
-            carray_cat<char>(_LT("Delete '"), unicode_to_utf8(data->name.data()).data(), "' ?").data(),
-            false, bListOkCancel) == CMD_OK)
-        {
-            m_listWin.DeleteCurrentItem();
-        }
+		if ( !data || !data->name.data() )
+		{
+			return true;
+		}
 
-        return true;
-    }
+		if ( NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Delete item" ),
+		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( data->name.data() ).data(), "' ?" ).data(),
+		                   false, bListOkCancel ) == CMD_OK )
+		{
+			m_listWin.DeleteCurrentItem();
+		}
 
-    if (id == CMD_RENAME)
-    {
-        PathList::Data* data = m_listWin.GetCurrentData();
-        if (!data || !data->name.data())
-        {
-            return true;
-        }
+		return true;
+	}
 
-        std::vector<unicode_t> name = InputStringDialog((NCDialogParent*)Parent(), 
-            utf8_to_unicode(_LT("Rename item")).data(), data->name.data());
+	if ( id == CMD_RENAME )
+	{
+		PathList::Data* data = m_listWin.GetCurrentData();
 
-        if (name.data())
-        {
-            m_listWin.RenameCurrentItem(name.data());
-        }
+		if ( !data || !data->name.data() )
+		{
+			return true;
+		}
 
-        return true;
-    }
+		std::vector<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(),
+		                                                 utf8_to_unicode( _LT( "Rename item" ) ).data(), data->name.data() );
 
-    if (id == CMD_PLUS)
-    {
-        if (m_fs && m_fs->Ptr() && m_path)
-        {
-            PathList::Data data;
-            if (!PathListFSToData(data, m_fs, m_path))
-            {
-                return false;
-            }
+		if ( name.data() )
+		{
+			m_listWin.RenameCurrentItem( name.data() );
+		}
 
-            std::vector<unicode_t> name = InputStringDialog((NCDialogParent*)Parent(), 
-                utf8_to_unicode(_LT("Enter shortcut name")).data(), data.name.data());
+		return true;
+	}
 
-            if (name.data())
-            {
-                m_listWin.InsertItem(name.data(), data.conf);
-            }
-        }
+	if ( id == CMD_PLUS )
+	{
+		if ( m_fs && m_fs->Ptr() && m_path )
+		{
+			PathList::Data data;
 
-        return true;
-    }
+			if ( !PathListFSToData( data, m_fs, m_path ) )
+			{
+				return false;
+			}
 
-    return PathListDlg::Command(id, subId, win, data);
+			std::vector<unicode_t> name = InputStringDialog( ( NCDialogParent* )Parent(),
+			                                                 utf8_to_unicode( _LT( "Enter shortcut name" ) ).data(), data.name.data() );
+
+			if ( name.data() )
+			{
+				m_listWin.InsertItem( name.data(), data.conf );
+			}
+		}
+
+		return true;
+	}
+
+	return PathListDlg::Command( id, subId, win, data );
 }
 
 
-bool FolderShortcutDlg(NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath)
+bool FolderShortcutDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath )
 {
-    FolderShortcutsDlg dlg(parent, fp, pPath);
-    dlg.SetEnterCmd(0);
+	FolderShortcutsDlg dlg( parent, fp, pPath );
+	dlg.SetEnterCmd( 0 );
 
-    const int res = dlg.DoModal();
-    PathList::Data* data = dlg.GetSelected();
+	const int res = dlg.DoModal();
+	PathList::Data* data = dlg.GetSelected();
 
-    if (res == CMD_OK && data && fp && pPath)
-    {
-        return PathListDataToFS(data, fp, pPath);
-    }
+	if ( res == CMD_OK && data && fp && pPath )
+	{
+		return PathListDataToFS( data, fp, pPath );
+	}
 
-    return false;
+	return false;
 }

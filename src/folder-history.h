@@ -14,6 +14,6 @@ void LoadFoldersHistory();
 
 void SaveFoldersHistory();
 
-void AddFolderToHistory(clPtr<FS>* fs, FSPath* path);
+void AddFolderToHistory( clPtr<FS>* fs, FSPath* path );
 
-bool FolderHistoryDlg(NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath);
+bool FolderHistoryDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath );

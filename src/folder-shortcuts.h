@@ -10,4 +10,4 @@
 #include "vfs.h"
 
 
-bool FolderShortcutDlg(NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath);
+bool FolderShortcutDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath );
