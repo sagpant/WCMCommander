@@ -1020,7 +1020,7 @@ namespace wal
 
 
 		crect position; // in parent coordinates
-		crect exposeRect;
+//		crect exposeRect;
 		void AddExposeRect( crect r );
 		SHOW_TYPE showType;
 
@@ -1052,6 +1052,7 @@ namespace wal
 
 
 	public:
+    crect exposeRect;
 		Win( WTYPE t, unsigned hints = 0, Win* _parent = nullptr, const crect* rect = nullptr, int uiNId = 0 );
 
 		WinID GetID() { return handle; }

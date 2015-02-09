@@ -19,6 +19,9 @@
 #endif
 
 @interface WALView : NSView
+
+@property (nonatomic, assign) Win *win;
+
 @end
 
 @implementation WALView
@@ -26,6 +29,16 @@
 - (BOOL)isFlipped
 {
   return YES;
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+		if ( !_win->exposeRect.IsEmpty() )
+    {
+      wal::GC gc( _win );
+      _win->Paint( gc, _win->exposeRect );
+      _win->exposeRect.Zero();
+    }
 }
 
 @end
@@ -491,12 +504,14 @@ namespace wal
 	{
 		if ( !w ) { return; }
 
-		if ( !w->exposeRect.IsEmpty() )
-		{
-			GC gc( w );
-			w->Paint( gc, w->exposeRect );
-			w->exposeRect.Zero();
-		}
+    [w->view setNeedsDisplay:YES];
+
+//		if ( !w->exposeRect.IsEmpty() )
+//		{
+//			GC gc( w );
+//			w->Paint( gc, w->exposeRect );
+//			w->exposeRect.Zero();
+//		}
 	}
 
 
@@ -2426,6 +2441,7 @@ Nah:
 
     CGRect frame = CGRectMake(r.left, r.top, r.right - r.left, r.bottom - r.top);
     view = [[WALView alloc] initWithFrame:frame];
+    [(WALView *)view setWin:this];
 
     if (t == Win::WT_MAIN) {
       NSUInteger windowStyle = (NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask | NSMiniaturizableWindowMask);
@@ -2948,6 +2964,9 @@ stopped:
 
 	Win::~Win()
 	{
+    [window release];
+    [view release];
+
 		if ( captureWinId == handle )
 		{
 			captureWinId = 0;
