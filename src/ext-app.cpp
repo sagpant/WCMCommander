@@ -12,15 +12,17 @@
 #include "string-util.h"
 #include "w32util.h"
 
-static std::vector<wchar_t> GetOpenApp( wchar_t* ext )
+static std::vector<wchar_t> GetOpenApp( const std::string& ext )
 {
-	if ( !ext ) { return std::vector<wchar_t>(); }
+	if ( ext.empty() ) { return std::vector<wchar_t>(); }
 
 	RegKey key;
 
-	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext ).data() ) )
+	std::string Key = "software\\classes\\" + ext;
+
+	if ( !key.Open( HKEY_CURRENT_USER, widen(Key).c_str() ) )
 	{
-		key.Open( HKEY_CLASSES_ROOT, ext );
+		key.Open( HKEY_CLASSES_ROOT, widen(ext).c_str() );
 	}
 
 	std::vector<wchar_t> p = key.GetString();
@@ -71,17 +73,6 @@ static std::vector<unicode_t> CfgStringToCommand( const wchar_t* cfgCmd, const u
 	return res;
 }
 
-static std::vector<wchar_t> GetFileExt( const unicode_t* uri )
-{
-	if ( !uri ) { return std::vector<wchar_t>(); }
-
-	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
-
-	if ( !ext || !*ext ) { return std::vector<wchar_t>(); }
-
-	return UnicodeToUtf16( ext );
-}
-
 static std::vector<unicode_t> NormalizeStr( unicode_t* s )
 {
 	if ( !s ) { return std::vector<unicode_t>(); }
@@ -98,15 +89,17 @@ static std::vector<unicode_t> NormalizeStr( unicode_t* s )
 
 clPtr<AppList> GetAppList( const unicode_t* uri )
 {
-	std::vector<wchar_t> ext = GetFileExt( uri );
+	std::string ext = GetFileExt( uri );
 
-	if ( !ext.data() ) { return 0; }
+	if ( ext.empty() ) { return 0; }
 
 	RegKey key;
 
-	if ( !key.Open( HKEY_CURRENT_USER, carray_cat<wchar_t>( L"software\\classes\\", ext.data() ).data() ) )
+	std::string Key = "software\\classes\\" + ext;
+
+	if ( !key.Open( HKEY_CURRENT_USER, widen(Key).c_str() ) )
 	{
-		key.Open( HKEY_CLASSES_ROOT, ext.data() );
+		key.Open( HKEY_CLASSES_ROOT, widen(ext).c_str() );
 	}
 
 	std::vector<wchar_t> p = key.GetString();

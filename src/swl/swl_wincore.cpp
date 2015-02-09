@@ -1437,8 +1437,8 @@ namespace wal
 
 /////////////////////////// cicon //////////////////////////////////
 
-	static Mutex iconCopyMutex( true );
-	static Mutex iconListMutex( true );
+	Mutex iconCopyMutex;
+	Mutex iconListMutex;
 
 	static std::unordered_map< int, ccollect< clPtr< cicon > > > cmdIconList;
 

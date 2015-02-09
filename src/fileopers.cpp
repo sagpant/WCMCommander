@@ -1300,7 +1300,7 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 	{
 		// copy and move work the same way
 		FSTmp* destTmpFS = static_cast<FSTmp*>(destFs);
-		destTmpFS->AddNode(srcPath, srcNode);
+		destTmpFS->AddNode(srcPath, srcNode, destPath);
 		return true;
 	}
 

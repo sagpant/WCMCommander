@@ -10,29 +10,21 @@ struct FSTmpNode
 	NODE_TYPE nodeType;
 	FSString name; // how it appears in tmp panel
 	FSStat fsStat;
-	struct FSTmpNodeDir* parentDir;
-	virtual ~FSTmpNode(){};
-protected:
-	FSTmpNode(NODE_TYPE _nodeType, const unicode_t* _name, FSTmpNodeDir* _parentDir)
+	struct FSTmpNode* parentDir;
+	FSPath baseFSPath; // what stands behind file item
+	std::list<FSTmpNode> content; // content of a dir node
+	FSTmpNode(NODE_TYPE _nodeType, const unicode_t* _name, FSTmpNode* _parentDir)
 		: nodeType(_nodeType), name(_name), parentDir(_parentDir){}
-};
+	// file type node
+	FSTmpNode(FSPath* _baseFSPath, FSStat* _baseFSNodeStat, FSTmpNode* _parentDir, const unicode_t* _name = 0);
+	// dir type node
+	FSTmpNode(const unicode_t* _name = 0, FSTmpNode* _parentDir = 0);
 
-struct FSTmpNodeFile: public FSTmpNode
-{
-	FSPath baseFSPath; // what stands behind the item
-	FSTmpNodeFile(FSPath* _baseFSPath, FSStat* _baseFSNodeStat, FSTmpNodeDir* _parentDir, const unicode_t* _name = 0);
-	virtual ~FSTmpNodeFile(){};
-};
-
-struct FSTmpNodeDir : public FSTmpNode
-{
-	std::list<FSTmpNode> content;
-	FSTmpNodeDir(const unicode_t* _name = 0, FSTmpNodeDir* _parentDir = 0);
-	FSTmpNodeFile* findByBasePath(FSPath* basePath, bool isRecursive=true);
-	FSTmpNode* findByFsPath(FSPath* basePath, int basePathLevel=0);
+	FSTmpNode* findByBasePath(FSPath* basePath, bool isRecursive = true);
+	FSTmpNode* findByFsPath(FSPath* basePath, int basePathLevel = 0);
 	FSTmpNode* findByName(FSString* name, bool isRecursive = true);
 	bool Add(FSTmpNode* fsTmpNode);
-	bool Remove(FSString* name, bool searchRecursive=true);
+	bool Remove(FSString* name, bool searchRecursive = true);
 	bool Rename(FSString* oldName, FSString* newName)
 	{
 		FSTmpNode* n = findByName(newName, false);
@@ -41,17 +33,15 @@ struct FSTmpNodeDir : public FSTmpNode
 		else
 			n->name = *newName;
 	}
-	virtual ~FSTmpNodeDir(){}
 };
-
 
 class FSTmp : public FS
 {
 	clPtr<FS> baseFS;
-	FSTmpNodeDir rootDir;
+	FSTmpNode rootDir;
 
 public:
-	static FSPath rootPathName;
+	static FSPath FSTmp::rootPathName;
 	virtual unsigned Flags() { return baseFS->Flags(); };
 	virtual bool IsEEXIST(int err){ return err == ERROR_FILE_EXISTS || baseFS->IsEEXIST(err); };
 	virtual bool IsENOENT(int err){ return err == ERROR_FILE_NOT_FOUND || baseFS->IsENOENT(err); };
@@ -87,7 +77,7 @@ public:
 
 	virtual FSString Uri(FSPath& path);
 
-	bool AddNode(FSPath& srcPath, FSNode* fsNode);
+	bool AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath);
 	FSTmp(clPtr<FS> _baseFS) : FS(TMP), baseFS(_baseFS){}
 	virtual ~FSTmp(){}
 };

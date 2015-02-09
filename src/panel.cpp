@@ -948,15 +948,15 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 		{
 			if ( i.IsRulePassed( p->GetUnicodeName(), p->Size(), 0 ) )
 			{
-				if ( active )
+				if ( isSelected )
 				{
-					color_bg = i.GetColorUnderCursorNormalBackground();
-					color_text = i.GetColorUnderCursorNormal();
+					color_bg = active ? i.GetColorUnderCursorSelectedBackground() : i.GetColorSelectedBackground();
+					color_text = active ? i.GetColorUnderCursorSelected() : i.GetColorSelected();
 				}
 				else
 				{
-					color_bg = i.GetColorNormalBackground();
-					color_text = i.GetColorNormal();
+					color_bg = active ? i.GetColorUnderCursorNormalBackground() : i.GetColorNormalBackground();
+					color_text = active ? i.GetColorUnderCursorNormal() : i.GetColorNormal();
 				}
 
 				break;
@@ -1170,13 +1170,13 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	cpoint Size = gc.GetTextExtents( Name.data() );
 
 	// show special mark for long file names: https://github.com/corporateshark/WalCommander/issues/272
-	if ( Size.x > rect.Width() )
+	if ( x + Size.x > rect.right )
 	{
 		int MarkColor = UiGetColor( uiHotkeyColor, uiItem, &ucl, 0x0 );
 		gc.SetTextColor( MarkColor );
 		unicode_t Mark[] = { '}', 0 };
 		cpoint Offset = gc.GetTextExtents( Mark );
-		gc.TextOutF( rect.right - Offset.x, y, Mark );
+		gc.TextOutF( rect.right - Offset.x + 2, y, Mark );
 	}
 }
 

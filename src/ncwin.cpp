@@ -2318,6 +2318,17 @@ void NCWin::Mark( bool enable )
 	_panel->Mark( str.data(), enable );
 }
 
+void NCWin::MarkSameExt( bool enable )
+{
+	if ( _mode != PANEL ) { return; }
+
+	std::string FileExt = GetFileExt( _panel->GetCurrentFileName() );
+
+	std::string Mask = "*" + FileExt;
+
+	_panel->Mark( utf8str_to_unicode(Mask).data(), enable );
+}
+
 void NCWin::OnOffShl()
 {
 	g_WcmConfig.editShl = !g_WcmConfig.editShl;
@@ -3529,6 +3540,14 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				case FC( VK_RIGHT, KM_SHIFT ):
 				case VK_RIGHT:
 					_panel->KeyRight( shift, &_shiftSelectType );
+					return true;
+
+				case FC( VK_SUBTRACT, KM_CTRL ):
+					MarkSameExt( false );
+					return true;
+
+				case FC( VK_ADD, KM_CTRL ):
+					MarkSameExt( true );
 					return true;
 
 				case VK_ADD:

@@ -1,8 +1,10 @@
 #include "vfs-tmp.h"
 
 
+
 static void dbg_prinf_fspath(const char* label, FSPath& path)
 {
+#ifdef _DEBUG
 	dbg_printf("%s:(%d): ", label, path.Count());
 	for (int i = 0; i < path.Count(); i++)
 	{
@@ -10,35 +12,43 @@ static void dbg_prinf_fspath(const char* label, FSPath& path)
 		dbg_printf("%s:", s ? s : "null");
 	}
 	dbg_printf("\n");
+#endif
 }
 
-FSPath FSTmp::rootPathName({ DIR_SPLITTER, 0 });
+#ifdef _WIN32
+const char rootStr[] = "\\";
+#else
+const char rootStr[] = "/";
+#endif
+static FSString rootFSStr(rootStr);
+FSPath FSTmp::rootPathName(rootFSStr);
 
-FSTmpNodeFile::FSTmpNodeFile(FSPath* _baseFSPath, FSStat* _baseFSNodeStat, FSTmpNodeDir* _parentDir, const unicode_t* _name)
-: FSTmpNode(NODE_FILE, _name, _parentDir), baseFSPath(*_baseFSPath)
+FSTmpNode::FSTmpNode(FSPath* _baseFSPath, FSStat* _baseFSNodeStat, FSTmpNode* _parentDir, const unicode_t* _name)
+: FSTmpNode(NODE_FILE, _name, _parentDir)
 {
+	baseFSPath = *_baseFSPath;
 	fsStat=*_baseFSNodeStat;
+	//fsStat.link = _baseFSPath->GetUnicode();
 	if (!_name)
 		name = _baseFSPath->GetUnicode();
 }
 
-FSTmpNodeDir::FSTmpNodeDir(const unicode_t* _name, FSTmpNodeDir* _parentDir)
+FSTmpNode::FSTmpNode(const unicode_t* _name, FSTmpNode* _parentDir)
 : FSTmpNode(NODE_DIR, _name, _parentDir)
 {
 	fsStat.mode |= S_IFDIR;
 	fsStat.mtime = FSTime(FSTime::TIME_CURRENT);
 }
 
-FSTmpNodeFile* FSTmpNodeDir::findByBasePath(FSPath* basePath, bool isRecursive)
+FSTmpNode* FSTmpNode::findByBasePath(FSPath* basePath, bool isRecursive)
 {
 	// first, try all file nodes in current dir
 	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
 	{
 		if ((*it).nodeType == FSTmpNode::NODE_FILE)
 		{
-			FSTmpNodeFile* n = (FSTmpNodeFile*)(&(*it));
-			if (n->baseFSPath.Equals(basePath))
-				return n;
+			if ((*it).baseFSPath.Equals(basePath))
+				return &(*it);
 		} 
 	}
 	// only if not found in current dir, try inside subdirs
@@ -48,7 +58,7 @@ FSTmpNodeFile* FSTmpNodeDir::findByBasePath(FSPath* basePath, bool isRecursive)
 		{
 			if ((*it).nodeType == FSTmpNode::NODE_DIR)
 			{
-				FSTmpNodeFile* n = ((FSTmpNodeDir*)&(*it))->findByBasePath(basePath, isRecursive);
+				FSTmpNode* n = (*it).findByBasePath(basePath, isRecursive);
 				if (n)
 					return n;
 			}
@@ -57,10 +67,10 @@ FSTmpNodeFile* FSTmpNodeDir::findByBasePath(FSPath* basePath, bool isRecursive)
 	return 0;
 }
 
-FSTmpNode* FSTmpNodeDir::findByFsPath(FSPath* fsPath, int fsPathLevel)
+FSTmpNode* FSTmpNode::findByFsPath(FSPath* fsPath, int fsPathLevel)
 {
 	FSString* curName = fsPath->GetItem(fsPathLevel);
-	if (curName == 0 && parentDir == 0) // request to find root node, and we are root
+	if (parentDir == 0 && fsPathLevel == fsPath->Count()-1 && (curName == 0 || curName->GetUnicode() == 0 || curName->GetUnicode()[0] == 0)) // request to find root node, and we are root
 		return this;
 
 	if (name.Cmp(*curName) == 0)
@@ -73,10 +83,10 @@ FSTmpNode* FSTmpNodeDir::findByFsPath(FSPath* fsPath, int fsPathLevel)
 		{
 			FSString* childName = fsPath->GetItem(fsPathLevel + 1);
 			FSTmpNode* n = findByName(childName, false);
-			if (fsPath->Count() <= fsPathLevel + 1) // no further recursion
+			if (fsPath->Count() <= fsPathLevel + 2) // no further recursion
 				return n;
 			else if (n->nodeType == NODE_DIR) // recurse into subdir
-				return findByFsPath(fsPath, fsPathLevel + 1);
+				return n->findByFsPath(fsPath, fsPathLevel + 1);
 			else
 				return 0;
 		}
@@ -86,11 +96,14 @@ FSTmpNode* FSTmpNodeDir::findByFsPath(FSPath* fsPath, int fsPathLevel)
 }
 
 
-FSTmpNode* FSTmpNodeDir::findByName(FSString* name, bool isRecursive)
+FSTmpNode* FSTmpNode::findByName(FSString* name, bool isRecursive)
 {
-	// first, try all nodes in current dir
+	dbg_printf("FSTmpNodeDir::findByName name=%s\n",name->GetUtf8());
+	// first, try all nodes in current	
 	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
 	{
+		dbg_printf("FSTmpNodeDir::findByName *it.name=%s\n", (*it).name.GetUtf8());
+
 		if ((*it).name.Cmp(*name)==0)
 			return &(*it);
 	}
@@ -101,7 +114,7 @@ FSTmpNode* FSTmpNodeDir::findByName(FSString* name, bool isRecursive)
 		{
 			if ((*it).nodeType == FSTmpNode::NODE_DIR)
 			{
-				FSTmpNode* n = ((FSTmpNodeDir*)&(*it))->findByName(name, isRecursive);
+				FSTmpNode* n = (*it).findByName(name, isRecursive);
 				if (n)
 					return n;
 			}
@@ -110,7 +123,7 @@ FSTmpNode* FSTmpNodeDir::findByName(FSString* name, bool isRecursive)
 	return 0;
 }
 
-bool FSTmpNodeDir::Remove(FSString* name, bool searchRecursive)
+bool FSTmpNode::Remove(FSString* name, bool searchRecursive)
 {
 	// first, try all nodes in current dir
 	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
@@ -128,7 +141,7 @@ bool FSTmpNodeDir::Remove(FSString* name, bool searchRecursive)
 		{
 			if ((*it).nodeType == FSTmpNode::NODE_DIR)
 			{
-				bool ret = ((FSTmpNodeDir*)&(*it))->Remove(name, searchRecursive);
+				bool ret = (*it).Remove(name, searchRecursive);
 				if (ret)
 					return true;
 			}
@@ -137,7 +150,7 @@ bool FSTmpNodeDir::Remove(FSString* name, bool searchRecursive)
 	return false;
 }
 
-bool FSTmpNodeDir::Add(FSTmpNode* fsTmpNode)
+bool FSTmpNode::Add(FSTmpNode* fsTmpNode)
 {
 	if (findByName(&fsTmpNode->name))
 		return false;
@@ -149,12 +162,18 @@ bool FSTmpNodeDir::Add(FSTmpNode* fsTmpNode)
 int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 {
 	list->Clear();
-	for (std::list<FSTmpNode>::iterator it = rootDir.content.begin(); it != rootDir.content.end(); ++it)
+	FSTmpNode* n = rootDir.findByFsPath(&path);
+	if (!n || n->nodeType != FSTmpNode::NODE_DIR)
+	{
+		return FS::SetError(err, ERROR_FILE_NOT_FOUND);
+	}
+
+	for (std::list<FSTmpNode>::iterator it = n->content.begin(); it != n->content.end(); ++it)
 	{
 		clPtr<FSNode> pNode = new FSNode();
 
-		pNode->name=(std::string("file:") + it->name.GetUtf8()).c_str();
-		pNode->st = it->fsStat;
+		pNode->name=(std::string("") + (*it).name.GetUtf8()).c_str();
+		pNode->st = (*it).fsStat;
 
 		list->Append(pNode);
 	}
@@ -167,12 +186,10 @@ int FSTmp::Stat(FSPath& path, FSStat* st, int* err, FSCInfo* info)
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (!n)
 	{
-		*err = -1;
-		return *err;
+		return FS::SetError(err, ERROR_FILE_NOT_FOUND);
 	}
 	*st = n->fsStat;
-	*err = 0;
-	return 0;
+	return FS::SetError(err, 0);
 }
 
 int FSTmp::StatVfs(FSPath& path, FSStatVfs* st, int* err, FSCInfo* info)
@@ -197,7 +214,8 @@ int FSTmp::OpenRead(FSPath& path, int flags, int* err, FSCInfo* info)
 	}
 	else
 	{
-		return baseFS->OpenRead(((FSTmpNodeFile*)n)->baseFSPath, flags, err, info);
+		dbg_prinf_fspath("FSTmp::OpenRead baseFSPath=", n->baseFSPath);
+		return baseFS->OpenRead(n->baseFSPath, flags, err, info);
 	}
 }
 	
@@ -219,10 +237,10 @@ int FSTmp::Rename(FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info)
 	{
 		if (n->nodeType == FSTmpNode::NODE_FILE)
 		{
-			int ret = baseFS->Rename(((FSTmpNodeFile*)(n))->baseFSPath, newpath, err, info);
+			int ret = baseFS->Rename(n->baseFSPath, newpath, err, info);
 			if (ret != 0)
 				return ret;
-			((FSTmpNodeFile*)(n))->name = newpath.GetUnicode();
+			n->name = newpath.GetUnicode();
 			return SetError(err, 0);
 		}
 		else
@@ -243,16 +261,18 @@ int FSTmp::Delete(FSPath& path, int* err, FSCInfo* info)
 	}
 	else
 	{
+		/*
 		if (n->nodeType == FSTmpNode::NODE_FILE)
 		{ // remove file at base FS
-			int ret = baseFS->Delete(((FSTmpNodeFile*)n)->baseFSPath, err, info);
+			int ret = baseFS->Delete(n->baseFSPath, err, info);
 			if (ret != 0)
 				return ret;
 		}
+		*/
 		// remove from tmpfs list
 		for (std::list<FSTmpNode>::iterator it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
 		{ 
-			if (it->name.Cmp(*dName) == 0)
+			if ((*it).name.Cmp(*dName) == 0)
 			{
 				n->parentDir->content.erase(it);
 				return FS::SetError(err, 0);
@@ -264,16 +284,15 @@ int FSTmp::Delete(FSPath& path, int* err, FSCInfo* info)
 
 int FSTmp::RmDir(FSPath& path, int* err, FSCInfo* info)
 {
-	
+	FSTmpNode* n = rootDir.findByFsPath(&path);
 	FSString* dirName = path.GetItem(path.Count() - 1);
-	FSTmpNode* n = rootDir.findByName(dirName);
 
-	for (std::list<FSTmpNode>::iterator it = n->parentDir->content.begin(); it != n->parentDir->content.begin(); ++it)
+	for (std::list<FSTmpNode>::iterator it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
 	{
-		if (it->name.Cmp(*dirName) == 0)
+		if ((*it).name.Cmp(*dirName) == 0)
 		{
 			n->parentDir->content.erase(it);
-			return *err = 0;
+			return FS::SetError(err, 0);
 		}
 	}
 	return FS::SetError(err, ERROR_FILE_NOT_FOUND);
@@ -291,9 +310,9 @@ int FSTmp::SetFileTime(FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCIn
 		fsTemp->fsStat.mtime = mTime;
 
 		if (fsTemp->nodeType == FSTmpNode::NODE_FILE)
-			return baseFS->SetFileTime(((FSTmpNodeFile*)fsTemp)->baseFSPath, aTime, mTime, err, info);
+			return baseFS->SetFileTime(fsTemp->baseFSPath, aTime, mTime, err, info);
 		else
-			return *err = 0;
+			return FS::SetError(err, 0);
 			
 	}
 }
@@ -306,9 +325,21 @@ FSString FSTmp::Uri(FSPath& path)
 	return FSString(uri.c_str());
 };
 
-bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode)
+bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath)
 {
-	return rootDir.Add(&FSTmpNodeFile(&srcPath, &fsNode->st, &rootDir));
+	FSPath parentDir = destPath;
+	parentDir.Pop();
+	dbg_printf("FSTmp::AddNode srcPath.Count()=%d, parentDir.Count()=%d\n", srcPath.Count(), parentDir.Count());
+	dbg_prinf_fspath("FSTmp::AddNode srcPath=", srcPath);
+	dbg_prinf_fspath("FSTmp::AddNode parentDir=", parentDir);
+
+	FSTmpNode* dn = rootDir.findByFsPath(&parentDir);
+	if (!dn || dn->nodeType != FSTmpNode::NODE_DIR)
+	{
+		return false;
+	}
+
+	return dn->Add(&FSTmpNode(&srcPath, &fsNode->st, dn));
 }
 
 int FSTmp::MkDir(FSPath& path, int mode, int* err, FSCInfo* info)
@@ -318,7 +349,7 @@ int FSTmp::MkDir(FSPath& path, int mode, int* err, FSCInfo* info)
 	FSTmpNode* parent = rootDir.findByFsPath(&parentPath);
 	if (!parent)
 		return SetError(err, ERROR_FILE_NOT_FOUND);
-	FSTmpNodeDir* parentDir = (FSTmpNodeDir*)parent;
-	parentDir->Add(&FSTmpNodeDir(path.GetItem(path.Count() - 1)->GetUnicode(), parentDir));
+	FSTmpNode* parentDir = parent;
+	parentDir->Add(&FSTmpNode(path.GetItem(path.Count() - 1)->GetUnicode(), parentDir));
 	return SetError(err, 0);
 }
