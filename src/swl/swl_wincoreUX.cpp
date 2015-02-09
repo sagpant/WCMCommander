@@ -2,7 +2,8 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
+#import <Quartz/Quartz.h>
 #include <X11/Xutil.h>
 
 #include "swl.h"
@@ -16,6 +17,18 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #endif
+
+@interface WALView : NSView
+@end
+
+@implementation WALView
+
+- (BOOL)isFlipped
+{
+  return YES;
+}
+
+@end
 
 #if defined( __APPLE__ )
 const unsigned int MetaMask = 0x0010;
@@ -1342,6 +1355,9 @@ namespace wal
 
 		while ( true )
 		{
+      NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES];
+      [NSApp sendEvent:event];
+
 			wth_DoEvents();
 
 			if ( appExit ) { return 0; }
@@ -2394,6 +2410,9 @@ Nah:
 		layout( 0 ),
 		uiNameId( uiNId ),
 
+  window(nil),
+  view(nil),
+
 		reparent( 0 ),
 		exposeRect( 0, 0, 0, 0 )
 	{
@@ -2405,6 +2424,24 @@ Nah:
 
 		position = r;
 
+    CGRect frame = CGRectMake(r.left, r.top, r.right - r.left, r.bottom - r.top);
+    view = [[WALView alloc] initWithFrame:frame];
+
+    if (t == Win::WT_MAIN) {
+      NSUInteger windowStyle = (NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask | NSMiniaturizableWindowMask);
+      window = [[NSWindow alloc] initWithContentRect:frame
+                                           styleMask:windowStyle
+                                             backing:NSBackingStoreBuffered
+                                               defer:NO];
+      window.contentView = view;
+      window.title = @"Wal Commander GitHub Edition";
+      [window orderFrontRegardless];
+    } else if (t == Win::WT_CHILD) {
+      view.wantsLayer = YES;
+      view.layer.borderColor = [[NSColor blackColor] CGColor];
+      view.layer.borderWidth = 1;
+      [parent->window.contentView addSubview:view];
+    }
 
 		XSetWindowAttributes attrs;
 
@@ -2641,6 +2678,9 @@ stopped:
 		if ( w <= 0 ) { w = 1; }
 
 		if ( h <= 0 ) { h = 1; }
+
+    CGRect frame = CGRectMake(rect.left, rect.top, w, h);
+    view.frame = frame;
 
 		XMoveResizeWindow( display, GetID() , rect.left, rect.top, w, h );
 

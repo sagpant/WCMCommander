@@ -1836,7 +1836,7 @@ void PanelWin::OperThreadStopped()
 		bool foundCurrent = false;
 
 		// restore cursor location
-		// try to find exact match on name 
+		// try to find exact match on name
 		if (!_operCurrentStr.IsEmpty())
 		{
 			int n = _list.Find(_operCurrentStr, HideDotsInDir());
@@ -1869,7 +1869,7 @@ void PanelWin::OperThreadStopped()
 		{
 			SetCurrent(_operCursorLoc);
 		}
-		
+
 		if (!foundCurrent)
 		{
 			SetCurrent( 0 );

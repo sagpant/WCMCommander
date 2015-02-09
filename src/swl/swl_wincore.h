@@ -4,6 +4,9 @@
 
 #pragma once
 
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
+
 #if defined( _MSC_VER )
 #  pragma warning( disable:4100 ) // C4100 : unreferenced formal parameter
 #endif
@@ -980,6 +983,7 @@ namespace wal
 		};
 
 	private:
+
 		static WinID focusWinId;
 
 		WinID handle;
@@ -1007,6 +1011,7 @@ namespace wal
 		void PopupTreeList( ccollect<WinID>& list ); //добавляет в список текущее окно и его попапы
 
 		Win* FocusNPChild( bool next );
+
 
 #ifdef _WIN32
 
@@ -1041,6 +1046,10 @@ namespace wal
 			CaptureSD(): h( None ) {};
 		};
 #endif
+
+    NSWindow *window;
+    NSView *view;
+
 
 	public:
 		Win( WTYPE t, unsigned hints = 0, Win* _parent = nullptr, const crect* rect = nullptr, int uiNId = 0 );
