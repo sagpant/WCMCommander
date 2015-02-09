@@ -80,14 +80,13 @@ private:
     FSPath*                 m_path;
 
 public:
-    FolderShortcutsDlg(NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath)
-        : m_shortcutsWin(this, m_dataList),
-        PathListDlg(parent, m_shortcutsWin, _LT("Folder Shortcuts"), buttonsData),
-        
-        m_lo(10, 10),
-        m_fs(fp),
-        m_path(pPath)
-    {
+	FolderShortcutsDlg(NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath)
+    : PathListDlg(parent, m_shortcutsWin, _LT("Folder Shortcuts"), buttonsData)
+	 , m_shortcutsWin(this, m_dataList)
+    , m_lo(10, 10)
+	 , m_fs(fp)
+	 , m_path(pPath)
+   {
         m_listWin.Show();
         m_listWin.Enable();
 

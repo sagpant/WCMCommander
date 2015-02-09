@@ -72,9 +72,8 @@ private:
 
 public:
     FoldersHistoryDlg(NCDialogParent* parent, PathList& dataList)
-        : m_historyWin(this, dataList),
-        PathListDlg(parent, m_historyWin, _LT("Folders History"), 0),
-
+     : PathListDlg(parent, m_historyWin, _LT("Folders History"), 0),
+		m_historyWin(this, dataList),
         m_lo(10, 10)
     {
         m_listWin.Show();
