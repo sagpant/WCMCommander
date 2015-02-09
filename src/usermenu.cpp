@@ -319,7 +319,7 @@ bool clUserMenuWin::Command( int id, int subId, Win* win, void* data )
 		if ( !p ) { return true; }
 
 		if ( NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Delete item" ),
-		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( p->GetDescription().GetRawText() ).data() , "' ?" ).data(),
+		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( p->GetDescription().GetRawText() ).data() , "'?" ).data(),
 		                   false, bListOkCancel ) == CMD_OK )
 		{
 			m_ListWin.Del();
