@@ -785,6 +785,7 @@ namespace wal
 
 		void _Init( Drawable id );
 	public:
+    CGContextRef context; // TODO(frantic): make private
 		Drawable GetXDrawable() { return winId; }
 
 #endif
@@ -1052,7 +1053,7 @@ namespace wal
 
 
 	public:
-    crect exposeRect;
+    crect exposeRect; // TODO(frantic): back to private
 		Win( WTYPE t, unsigned hints = 0, Win* _parent = nullptr, const crect* rect = nullptr, int uiNId = 0 );
 
 		WinID GetID() { return handle; }

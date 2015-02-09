@@ -36,6 +36,7 @@
 		if ( !_win->exposeRect.IsEmpty() )
     {
       wal::GC gc( _win );
+      gc.context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
       _win->Paint( gc, _win->exposeRect );
       _win->exposeRect.Zero();
     }
@@ -2016,6 +2017,7 @@ Nah:
 
 	void GC::_Init( Drawable id )
 	{
+    context = nil;
 		curFont = 0;
 		valueMask = 0;
 		lineX = 0;
@@ -2260,6 +2262,13 @@ Nah:
 
 		if ( charCount <= 0 ) { return; }
 
+    if (context) {
+      char buf[400];
+      unicode_to_utf8( buf, s );
+      NSString *string = [NSString stringWithUTF8String:buf];
+      [string drawAtPoint:NSMakePoint(x, y) withAttributes:@{}];
+    }
+
 #ifdef USEFREETYPE
 
 		if ( curFont && curFont->type == cfont::TYPE_FT )
@@ -2292,6 +2301,13 @@ Nah:
 		}
 
 		if ( charCount <= 0 ) { return; }
+
+    if (context) {
+      char buf[400];
+      unicode_to_utf8( buf, s );
+      NSString *string = [NSString stringWithUTF8String:buf];
+      [string drawAtPoint:NSMakePoint(x, y) withAttributes:@{}];
+    }
 
 #ifdef USEFREETYPE
 
@@ -2875,6 +2891,7 @@ stopped:
 
 			char buf[400];
 			unicode_to_utf8( buf, u );
+      window.title = [NSString stringWithUTF8String:buf];
 			XStoreName( display, handle, buf );
 		}
 	}
