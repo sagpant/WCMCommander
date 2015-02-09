@@ -63,7 +63,7 @@ std::map<std::vector<unicode_t>, int> g_ViewPosHash;
 
 const int CMD_SWITCH = 32167;
 
-static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {nullptr, 0}};
+static ButtonDataNode bYesNoSwitchToEditor[] = { { "&Yes", CMD_YES}, { "&No", CMD_NO}, { "&Switch to editor", CMD_SWITCH}, {nullptr, 0}};
 
 ButtonWinData panelNormalButtons[] =
 {
@@ -904,7 +904,7 @@ void NCWin::PanelEnter(bool Shift)
 		if ( g_WcmConfig.systemAskOpenExec && cmd.data() )
 		{
 
-			ButtonDataNode bListOpenExec[] = { {"Open", CMD_OPEN_FILE}, {"Execute", CMD_EXEC_FILE}, {"Cancel", CMD_CANCEL}, {0, 0}};
+			ButtonDataNode bListOpenExec[] = { {"&Open", CMD_OPEN_FILE}, {"&Execute", CMD_EXEC_FILE}, {"&Cancel", CMD_CANCEL}, {0, 0}};
 
 			static unicode_t emptyStr[] = {0};
 
