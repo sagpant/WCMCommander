@@ -32,6 +32,7 @@ struct FSTmpNode
 			return false;
 		else
 			n->name = *newName;
+		return true;
 	}
 };
 #ifdef _WIN32

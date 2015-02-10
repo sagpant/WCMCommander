@@ -80,7 +80,7 @@ FSTmpNode* FSTmpNode::findByFsPath(FSPath* fsPath, int fsPathLevel)
 		}
 	}
 	else
-		return false;
+		return 0;
 }
 
 
