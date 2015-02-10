@@ -1,27 +1,11 @@
 #include "vfs-tmp.h"
 
-
-
-static void dbg_prinf_fspath(const char* label, FSPath& path)
-{
-#ifdef _DEBUG
-	dbg_printf("%s:(%d): ", label, path.Count());
-	for (int i = 0; i < path.Count(); i++)
-	{
-		const char* s = path.GetItem(i)->GetUtf8();
-		dbg_printf("%s:", s ? s : "null");
-	}
-	dbg_printf("\n");
-#endif
-}
-
-#ifdef _WIN32
-const char rootStr[] = "\\";
-#else
-const char rootStr[] = "/";
-#endif
+static const char rootStr[] = { DIR_SPLITTER , 0};
 static FSString rootFSStr(rootStr);
 FSPath FSTmp::rootPathName(rootFSStr);
+//beware, because of static scope the statement below to replace the above does not work:
+//FSPath FSTmp::rootPathName(FSString({ DIR_SPLITTER, 0 }));
+
 
 FSTmpNode::FSTmpNode(FSPath* _baseFSPath, FSStat* _baseFSNodeStat, FSTmpNode* _parentDir, const unicode_t* _name)
 : FSTmpNode(NODE_FILE, _name, _parentDir)
@@ -98,11 +82,11 @@ FSTmpNode* FSTmpNode::findByFsPath(FSPath* fsPath, int fsPathLevel)
 
 FSTmpNode* FSTmpNode::findByName(FSString* name, bool isRecursive)
 {
-	dbg_printf("FSTmpNodeDir::findByName name=%s\n",name->GetUtf8());
+	//dbg_printf("FSTmpNodeDir::findByName name=%s\n",name->GetUtf8());
 	// first, try all nodes in current	
 	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
 	{
-		dbg_printf("FSTmpNodeDir::findByName *it.name=%s\n", (*it).name.GetUtf8());
+		//dbg_printf("FSTmpNodeDir::findByName *it.name=%s\n", (*it).name.GetUtf8());
 
 		if ((*it).name.Cmp(*name)==0)
 			return &(*it);
@@ -182,7 +166,7 @@ int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 
 int FSTmp::Stat(FSPath& path, FSStat* st, int* err, FSCInfo* info)
 {
-	dbg_prinf_fspath("FSTmp::Stat ", path);
+	//path.dbg_printf("FSTmp::Stat ");
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (!n)
 	{
@@ -194,7 +178,7 @@ int FSTmp::Stat(FSPath& path, FSStat* st, int* err, FSCInfo* info)
 
 int FSTmp::StatVfs(FSPath& path, FSStatVfs* st, int* err, FSCInfo* info)
 {	
-	dbg_prinf_fspath("FSTmp::StatVfs ", path);
+	//path.dbg_printf("FSTmp::StatVfs ");
 	if (rootPathName.Equals(&path))
 	{
 		*st = FSStatVfs();
@@ -206,7 +190,7 @@ int FSTmp::StatVfs(FSPath& path, FSStatVfs* st, int* err, FSCInfo* info)
 
 int FSTmp::OpenRead(FSPath& path, int flags, int* err, FSCInfo* info)
 {
-	dbg_prinf_fspath("FSTmp::OpenRead ", path);
+	//path.dbg_printf("FSTmp::OpenRead ");
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (n == 0 || n->nodeType != FSTmpNode::NODE_FILE)
 	{
@@ -214,7 +198,7 @@ int FSTmp::OpenRead(FSPath& path, int flags, int* err, FSCInfo* info)
 	}
 	else
 	{
-		dbg_prinf_fspath("FSTmp::OpenRead baseFSPath=", n->baseFSPath);
+		//n->baseFSPath.dbg_printf("FSTmp::OpenRead baseFSPath=");
 		return baseFS->OpenRead(n->baseFSPath, flags, err, info);
 	}
 }
@@ -329,9 +313,9 @@ bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath)
 {
 	FSPath parentDir = destPath;
 	parentDir.Pop();
-	dbg_printf("FSTmp::AddNode srcPath.Count()=%d, parentDir.Count()=%d\n", srcPath.Count(), parentDir.Count());
-	dbg_prinf_fspath("FSTmp::AddNode srcPath=", srcPath);
-	dbg_prinf_fspath("FSTmp::AddNode parentDir=", parentDir);
+	//dbg_printf("FSTmp::AddNode srcPath.Count()=%d, parentDir.Count()=%d\n", srcPath.Count(), parentDir.Count());
+	//srcPath.dbg_printf("FSTmp::AddNode srcPath=");
+	//parentDir.dbg_printf("FSTmp::AddNode parentDir=");
 
 	FSTmpNode* dn = rootDir.findByFsPath(&parentDir);
 	if (!dn || dn->nodeType != FSTmpNode::NODE_DIR)

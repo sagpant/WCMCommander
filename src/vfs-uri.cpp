@@ -157,23 +157,7 @@ clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, 
 
 #endif
 
-static void dbg_prinf_fspath(const char* label, FSPath& path)
-{
-	dbg_printf("%s:(%d): ", label, path.Count());
-	for (int i = 0; i < path.Count(); i++)
-	{
-		const char* s = path.GetItem(i)->GetUtf8();
-		dbg_printf("%s:", s ? s : "null");
-	}
-	dbg_printf("\n");
-}
-
-static void dbg_prinf_unicode(const char* label, const unicode_t* u)
-{
-	FSString s(u);
-	dbg_printf("%s:%s:\n", label, s.GetUtf8());
-}
-
+#if 0
 struct DbgPrint
 {
 	FSPath& pout;
@@ -182,18 +166,19 @@ struct DbgPrint
 		: label(_label), pout(_pout)
 	{
 		dbg_printf("in: ");
-		dbg_prinf_unicode(label, pin);
+		FSString::dbg_prinf_unicode(label, pin);
 	}
 	~DbgPrint()
 	{
 		dbg_printf("out: ");
-		dbg_prinf_fspath(label, pout);
+		pout.dbg_prinf(label);
 	}
 };
+#endif
 
 clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count)
 {
-	DbgPrint dbgPrintf("ParzeURI", uri, path);
+	//DbgPrint dbgPrintf("ParzeURI", uri, path);
 #ifdef LIBSMBCLIENT_EXIST
 
 	if ( uri[0] == 's' && uri[1] == 'm' && uri[2] == 'b' && uri[3] == ':' && uri[4] == '/' && uri[5] == '/' )

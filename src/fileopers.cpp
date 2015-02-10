@@ -1300,6 +1300,11 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 	{
 		// copy and move work the same way
 		FSTmp* destTmpFS = static_cast<FSTmp*>(destFs);
+		if (!destTmpFS->baseFsIs(srcFs))
+		{
+			RedMessage(_LT("Temporary panel can store only files from the same file system:\n"));
+			return false;
+		}
 		destTmpFS->AddNode(srcPath, srcNode, destPath);
 		return true;
 	}
@@ -1535,6 +1540,20 @@ bool OperCFThread::CopyNode( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 	return true;
 }
 
+static void stripPath(FSString& fromStr, FSString& toStr)
+{
+	const unicode_t* fromU = fromStr.GetUnicode();
+	// XXX may be to strip both '/', and '\' as we may copy from Win to Unix?
+	// XXX better to add FS::GetDirStriller(), and pass the DIR_SPLITTER character as a parameter
+	const unicode_t* lastDelim = unicode_strrchr(fromU, DIR_SPLITTER);
+	if (lastDelim != 0)
+	{
+		toStr = FSString(lastDelim + 1);
+	}
+	else
+		toStr = fromStr;
+}
+
 bool OperCFThread::Copy( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs, FSPath& __destPath, cstrhash<bool, unicode_t>& resList )
 {
 	if ( list->Count() <= 0 ) { return true; }
@@ -1577,9 +1596,10 @@ bool OperCFThread::Copy( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 		for ( FSNode* node = list->First(); node; node = node->next )
 		{
 			if ( Info()->Stopped() ) { return false; }
-
+			FSString nameLessPath; // in tmp panel name has full path.
+			stripPath(node->Name(), nameLessPath);
 			srcPath.SetItemStr( srcPos, node->Name() );
-			destPath.SetItemStr( destPos, node->Name() );
+			destPath.SetItemStr(destPos, nameLessPath);
 
 			if ( !CopyNode( srcFs, srcPath, node, destFs, destPath, false ) ) { return false; }
 
@@ -1592,7 +1612,9 @@ bool OperCFThread::Copy( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 
 		if ( exist && st.IsDir() )
 		{
-			destPath.SetItemStr( destPos, list->First()->Name() );
+			FSString nameLessPath; // in tmp panel name has full path.
+			stripPath(list->First()->Name(), nameLessPath);
+			destPath.SetItemStr(destPos, nameLessPath);
 		}
 
 		srcPath.SetItemStr( srcPos, list->First()->Name() );

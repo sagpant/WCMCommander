@@ -78,6 +78,7 @@ public:
 	virtual FSString Uri(FSPath& path);
 
 	bool AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath);
+	bool baseFsIs(clPtr<FS> fs) { return baseFS == fs;}
 	FSTmp(clPtr<FS> _baseFS) : FS(TMP), baseFS(_baseFS){}
 	virtual ~FSTmp(){}
 };

@@ -205,7 +205,15 @@ namespace wal
 		return ( unicode_t* )( *s ? s : 0 );
 	}
 
-	unicode_t* unicode_strcpy( unicode_t* d, const unicode_t* s )
+	unicode_t* unicode_strrchr(const unicode_t* s, unicode_t c)
+	{
+		const unicode_t* ps = s + unicode_strlen(s);
+		while (*ps != c && ps != s) { ps--; }
+
+		return (unicode_t*)(*ps == c ? ps : 0);
+	}
+
+	unicode_t* unicode_strcpy(unicode_t* d, const unicode_t* s)
 	{
 		if ( !d || !s ) { return NULL; }
 

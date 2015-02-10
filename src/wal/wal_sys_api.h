@@ -322,6 +322,7 @@ namespace wal
 
 	int unicode_strlen( const unicode_t* s );
 	unicode_t* unicode_strchr( const unicode_t* s, unicode_t c );
+	unicode_t* unicode_strrchr(const unicode_t* s, unicode_t c );
 	unicode_t* unicode_strcpy( unicode_t* d, const unicode_t* s );
 	// copy unlit end of string, or when n chars copid, whichever comes first.
 	// d is always 0-ended
