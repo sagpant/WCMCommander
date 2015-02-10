@@ -157,9 +157,28 @@ clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, 
 
 #endif
 
-clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
+#if 0
+struct DbgPrint
 {
+	FSPath& pout;
+	const char* label;
+	DbgPrint(const char* _label, const unicode_t* pin, FSPath& _pout)
+		: label(_label), pout(_pout)
+	{
+		dbg_printf("in: ");
+		FSString::dbg_prinf_unicode(label, pin);
+	}
+	~DbgPrint()
+	{
+		dbg_printf("out: ");
+		pout.dbg_prinf(label);
+	}
+};
+#endif
 
+clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count)
+{
+	//DbgPrint dbgPrintf("ParzeURI", uri, path);
 #ifdef LIBSMBCLIENT_EXIST
 
 	if ( uri[0] == 's' && uri[1] == 'm' && uri[2] == 'b' && uri[3] == ':' && uri[4] == '/' && uri[5] == '/' )

@@ -153,6 +153,14 @@ public:
 	int Cmp( FSString& a );
 	int CmpNoCase( FSString& a );
 
+	static void dbg_printf_unicode(const char* label, const unicode_t* u)
+	{
+#ifdef _DEBUG
+		FSString s(u);
+		dbg_printf("%s:%s:\n", label, s.GetUtf8());
+#endif
+	}
+
 	~FSString() {};
 };
 
@@ -185,6 +193,7 @@ public:
 	FSPath(): cacheCs( -2 ), cacheSize( 0 ), cacheSplitter( -1 ) {};
 
 	void Copy( const FSPath& );
+	void Copy(const FSPath&, int elementCount);
 
 	FSPath( const FSPath& a ): cacheCs( -2 ), cacheSize( 0 ) { Copy( a ); }
 	FSPath( int cs, const void* v ): cacheCs( -2 ), cacheSize( 0 ) { _Set( cs, v ); }
@@ -216,6 +225,18 @@ public:
 
 	bool Equals(FSPath* that);
 
+	void dbg_printf(const char* label)
+	{
+#ifdef _DEBUG
+		::dbg_printf("%s:(%d): ", label, Count());
+		for (int i = 0; i < Count(); i++)
+		{
+			const char* s = GetItem(i)->GetUtf8();
+			::dbg_printf("%s:", s ? s : "null");
+		}
+		::dbg_printf("\n");
+#endif
+	}
 	~FSPath();
 };
 

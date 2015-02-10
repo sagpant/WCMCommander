@@ -1304,7 +1304,7 @@ bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 	mData.Add( "6. SFTP", nullptr, nullptr, ID_DEV_SFTP );
 #endif
-	mData.Add("7. temporary (alpha test!)", nullptr, nullptr, ID_DEV_TMP);
+	mData.Add("7. temporary", nullptr, nullptr, ID_DEV_TMP);
 
 #ifndef _WIN32  //unix mounts
 	//ID_MNT_UX0
