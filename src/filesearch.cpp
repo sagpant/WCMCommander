@@ -503,16 +503,30 @@ public:
 
 	virtual void DrawItem( wal::GC& gc, int n, crect rect );
 	
-	void FillFoundItemsList(std::list<FSPath>& foundItemsList) const
+	void FillFoundItemsList(std::list<FSPath>& foundItemsList, bool fromTmpFS) const
 	{
-		for (std::vector<SearchItemNode>::const_iterator it = m_ItemList.begin(); it != m_ItemList.end(); ++it)
+		if (fromTmpFS) // put path from names
 		{
-			if (it->fsNode) // m_ItemList has dummy 'dir' entries, where fsNode is null. Skip them
+			for (std::vector<SearchItemNode>::const_iterator it = m_ItemList.begin(); it != m_ItemList.end(); ++it)
 			{
-				FSPath fullPath(m_DirHash.at(it->dirId)->path);
-				fullPath.PushStr(it->fsNode.Ptr()->name);
-				//fullPath.dbg_printf("SearchListWin::GetFoundItemsList adding file:");
-				foundItemsList.push_back(fullPath);
+				if (it->fsNode) // m_ItemList has dummy 'dir' entries, where fsNode is null. Skip them
+				{
+					FSPath fullPath(it->fsNode.Ptr()->name);
+					foundItemsList.push_back(fullPath);
+				}
+			}
+		}
+		else
+		{
+			for (std::vector<SearchItemNode>::const_iterator it = m_ItemList.begin(); it != m_ItemList.end(); ++it)
+			{
+				if (it->fsNode) // m_ItemList has dummy 'dir' entries, where fsNode is null. Skip them
+				{
+					FSPath fullPath(m_DirHash.at(it->dirId)->path);
+					fullPath.PushStr(it->fsNode.Ptr()->name);
+					//fullPath.dbg_printf("SearchListWin::GetFoundItemsList adding file:");
+					foundItemsList.push_back(fullPath);
+				}
 			}
 		}
 	}
@@ -718,7 +732,7 @@ public:
 	virtual void OperThreadSignal( int info );
 	virtual ~SearchFileThreadWin();
 	bool GetCurrentPath( FSPath* p ) { return listWin.GetCurrentPath( p ); }
-	void FillFoundItemsList(std::list<FSPath>& foundItemsList) const { listWin.FillFoundItemsList(foundItemsList);}
+	void FillFoundItemsList(std::list<FSPath>& foundItemsList, bool fromTmpFS) const { listWin.FillFoundItemsList(foundItemsList, fromTmpFS); }
 };
 
 static void SetStaticLineInt( StaticLine& a, int n )
@@ -872,7 +886,7 @@ CoreCommands SearchFile(clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* r
 
 	if (cmd == CMD_PUT_RESULTS_TO_TEMP_PANEL)
 	{
-		dlg.FillFoundItemsList(foundItemsList);
+		dlg.FillFoundItemsList(foundItemsList, f->Type() == FS::TMP);
 		//dbg_printf("filesearch.cpp.SearchFile list for panel:\n");
 		//for (std::list<FSPath>::iterator it = foundItemsList.begin(); it != foundItemsList.end(); ++it)
 		//	it->dbg_printf("");
