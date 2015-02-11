@@ -56,7 +56,7 @@ public:
 	virtual bool IsEXDEV(int err) { return baseFS->IsEXDEV(err); };
 	virtual FSString StrError(int err) { return baseFS->StrError(err); }
 	virtual bool Equal(FS* fs){ return fs && fs->Type() == Type(); }
-
+	bool BaseIsEqual(FS* fs) { return fs && baseFS->Equal( fs->Type() == TMP ? ((FSTmp*)fs)->baseFS.Ptr() : fs ); }
 	virtual int OpenRead(FSPath& path, int flags, int* err, FSCInfo* info);
 	virtual int OpenCreate(FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info);
 	virtual int Rename(FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info);
@@ -86,7 +86,8 @@ public:
 	virtual FSString Uri(FSPath& path);
 
 	bool AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath);
-	bool baseFsIs(clPtr<FS> fs) { return baseFS == fs;}
-	FSTmp(clPtr<FS> _baseFS) : FS(TMP), baseFS(_baseFS){}
+	bool FSTmp::AddNode(FSPath& srcPath, FSPath& destDir);
+	bool baseFsIs(clPtr<FS> fs) { return baseFS == fs; }
+	FSTmp(clPtr<FS> _baseFS);
 	virtual ~FSTmp(){}
 };

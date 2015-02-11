@@ -501,12 +501,14 @@ NCVertDialog::~NCVertDialog() {}
 
 char OkButtonText[] = "Ok";
 char CancelButtonText[] = "Cancel";
+char PanelButtonText[] = "Panel";
 char YesButtonText[] = "Yes";
 char NoButtonText[] = "No";
 
 ButtonDataNode bListOk[] = { {OkButtonText, CMD_OK}, {0, 0}};
 ButtonDataNode bListCancel[] = { {CancelButtonText, CMD_CANCEL}, {0, 0}};
 ButtonDataNode bListOkCancel[] = { {OkButtonText, CMD_OK}, {CancelButtonText, CMD_CANCEL}, {0, 0}};
+ButtonDataNode bListOkCancelPanel[] = { { OkButtonText, CMD_OK }, { CancelButtonText, CMD_CANCEL }, { PanelButtonText, CMD_PUT_RESULTS_TO_TEMP_PANEL }, { 0, 0 } };
 ButtonDataNode bListYesNoCancel[] = { {YesButtonText, CMD_YES}, {NoButtonText, CMD_NO}, {CancelButtonText, CMD_CANCEL}, {0, 0}};
 
 char cmdKillTxt[] = " kill ";

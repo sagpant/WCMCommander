@@ -34,7 +34,8 @@ namespace wal
 		CMD_OK = 1,
 		CMD_CANCEL = 2,
 		CMD_YES = 3,
-		CMD_NO = 4
+		CMD_NO = 4,
+		CMD_PUT_RESULTS_TO_TEMP_PANEL = 5 // XXX should be in global CMD_ID space. There is no one yet
 	};
 
 	struct cpoint;
