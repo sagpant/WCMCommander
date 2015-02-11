@@ -222,8 +222,18 @@ int FSTmp::OpenRead(FSPath& path, int flags, int* err, FSCInfo* info)
 
 int FSTmp::OpenCreate(FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info)
 {
-	// can not create orphan file in TMP panel
-	return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
+	FSTmpNode* n = rootDir.findByFsPath(&path);
+	if (!n) // can not create orphan file in TMP panel
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
+	else if (!overwrite) 
+		return FS::SetError(err, FSTMP_ERROR_FILE_EXISTS);
+	else
+	{
+		int ret = baseFS->OpenCreate(n->baseFSPath, overwrite, mode, flags, err, info);
+		if (ret)
+			Delete(path, err, info);
+		return ret;
+	}
 }
 
 int FSTmp::Rename(FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info)
