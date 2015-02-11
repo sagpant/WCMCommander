@@ -1308,7 +1308,8 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 		}
 		if (srcFs->Type() == FS::TMP && srcNode->IsReg())
 		{
-			FSPath srcFullFSPath(FSString(srcNode->name.GetUnicode()));
+			FSString srcFullFSString(srcNode->name.GetUnicode());
+			FSPath srcFullFSPath(srcFullFSString);
 			srcFullFSPath.dbg_printf("OperCFThread::CopyFile srcFullFSPath=");
 			//destPath.dbg_printf("OperCFThread::CopyFile destPath=");
 			FSPath destDir(destPath);
