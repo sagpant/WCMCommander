@@ -337,7 +337,7 @@ void SaveFileThreadFunc( OperThreadNode* node )
 		if ( !node->Data() ) { return; }
 
 		OperSaveFileData* data = ( ( OperSaveFileData* )node->Data() );
-		OperSaveFileThread thread( "Load editor file", data->Parent(), node );
+		OperSaveFileThread thread( "Save editor file", data->Parent(), node );
 		lock.Unlock();//!!!
 
 		try
@@ -374,7 +374,7 @@ public:
 	clPtr<MemFile> file;
 
 	SaveThreadWin( NCDialogParent* parent )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "Loading file" ).data(), bListCancel ), threadData( parent ) {}
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( "Saving file" ).data(), bListCancel ), threadData( parent ) {}
 	virtual void OperThreadStopped();
 	virtual ~SaveThreadWin();
 };
