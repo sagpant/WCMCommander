@@ -873,11 +873,9 @@ CoreCommands SearchFile(clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* r
 	if (cmd == CMD_PUT_RESULTS_TO_TEMP_PANEL)
 	{
 		dlg.FillFoundItemsList(foundItemsList);
-		dbg_printf("filesearch.cpp.SearchFile list for panel:\n");
-		for (std::list<FSPath>::iterator it = foundItemsList.begin(); it != foundItemsList.end(); ++it)
-		{
-			it->dbg_printf("");
-		}
+		//dbg_printf("filesearch.cpp.SearchFile list for panel:\n");
+		//for (std::list<FSPath>::iterator it = foundItemsList.begin(); it != foundItemsList.end(); ++it)
+		//	it->dbg_printf("");
 		return CMD_PUT_RESULTS_TO_TEMP_PANEL;
 	}
 	else if ( cmd == CMD_OK )

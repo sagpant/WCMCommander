@@ -32,8 +32,8 @@ src/libtester/libsmbtest
 src/obj/wcm.res
 
 #Code::Blocks IDE files
-src/*.depend
-src/*.layout
+*.depend
+*.layout
 
 Debug/
 Release/
