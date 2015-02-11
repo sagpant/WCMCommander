@@ -9,5 +9,6 @@
 #include "fileopers.h"
 #include "ncdialogs.h"
 #include "operwin.h"
+#include <list>
 
-bool SearchFile( clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath );
+CoreCommands SearchFile(clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath, std::list<FSPath>& foundItemsList);

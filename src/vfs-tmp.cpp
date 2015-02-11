@@ -71,6 +71,8 @@ FSTmpNode* FSTmpNode::findByFsPath(FSPath* fsPath, int fsPathLevel)
 		{
 			FSString* childName = fsPath->GetItem(fsPathLevel + 1);
 			FSTmpNode* n = findByName(childName, false);
+			if (n == 0)
+				return 0;
 			if (fsPath->Count() <= fsPathLevel + 2) // no further recursion
 				return n;
 			else if (n->nodeType == NODE_DIR) // recurse into subdir
@@ -145,6 +147,16 @@ bool FSTmpNode::Add(FSTmpNode* fsTmpNode)
 	fsTmpNode->parentDir = this;
 	content.push_back(*fsTmpNode);
 	return true;
+}
+
+FSTmp::FSTmp(clPtr<FS> _baseFS)
+  : FS(TMP)
+{
+	// to prevent build FSTmp on top of another FSTmp
+	if (_baseFS->Type() == FS::TMP)
+		baseFS = ((FSTmp*)_baseFS.Ptr())->baseFS;
+	else
+		baseFS = _baseFS;
 }
 
 int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
@@ -308,8 +320,6 @@ int FSTmp::SetFileTime(FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCIn
 FSString FSTmp::Uri(FSPath& path) 
 { 
 	std::string uri(std::string("tmp://") + baseFS->Uri(path).GetUtf8());
-	if (uri.back() != DIR_SPLITTER)
-		uri += DIR_SPLITTER;
 	return FSString(uri.c_str());
 };
 
@@ -319,7 +329,7 @@ bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath)
 	parentDir.Pop();
 	//dbg_printf("FSTmp::AddNode srcPath.Count()=%d, parentDir.Count()=%d\n", srcPath.Count(), parentDir.Count());
 	//srcPath.dbg_printf("FSTmp::AddNode srcPath=");
-	//parentDir.dbg_printf("FSTmp::AddNode parentDir=");
+	//destPath.dbg_printf("FSTmp::AddNode destPath=");
 
 	FSTmpNode* dn = rootDir.findByFsPath(&parentDir);
 	if (!dn || dn->nodeType != FSTmpNode::NODE_DIR)
@@ -327,6 +337,22 @@ bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath)
 		return false;
 	}
 	FSTmpNode fsTmpNode(&srcPath, &fsNode->st, dn);
+	return dn->Add(&fsTmpNode);
+}
+
+bool FSTmp::AddNode(FSPath& srcPath, FSPath& destDir)
+{
+	FSTmpNode* dn = rootDir.findByFsPath(&destDir);
+	if (!dn || dn->nodeType != FSTmpNode::NODE_DIR)
+	{
+		return false;
+	}
+	FSStat st;
+	if (baseFS->Stat(srcPath, &st, 0, 0)!=0)
+		return false;
+	if (!st.IsReg())
+		return false;
+	FSTmpNode fsTmpNode(&srcPath, &st, dn);
 	return dn->Add(&fsTmpNode);
 }
 

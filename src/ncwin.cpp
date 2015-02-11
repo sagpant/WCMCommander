@@ -2372,8 +2372,10 @@ void NCWin::Search()
 	if ( _mode != PANEL ) { return; }
 
 	FSPath goPath;
+	std::list<FSPath> foundItemsList;
 
-	if ( SearchFile( _panel->GetFSPtr(), _panel->GetPath(), this, &goPath ) )
+	CoreCommands searchResult = SearchFile(_panel->GetFSPtr(), _panel->GetPath(), this, &goPath, foundItemsList);
+	if (searchResult == CMD_OK)
 	{
 		if ( goPath.Count() > 0 )
 		{
@@ -2381,6 +2383,16 @@ void NCWin::Search()
 			goPath.Pop();
 			_panel->LoadPath( _panel->GetFSPtr(), goPath, &cur, 0, PanelWin::SET );
 		}
+	}
+	else if (searchResult == CMD_PUT_RESULTS_TO_TEMP_PANEL)
+	{
+		clPtr<FSTmp> fs = new FSTmp(_panel->GetFS());
+		FSTmp* pfs = fs.Ptr();
+		for (std::list<FSPath>::iterator it = foundItemsList.begin(); it != foundItemsList.end(); ++it)
+		{
+			pfs->AddNode(*it, FSTmp::rootPathName);
+		}
+		GetOtherPanel()->LoadPath(fs, FSTmp::rootPathName, 0, 0, PanelWin::SET);
 	}
 }
 

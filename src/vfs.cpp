@@ -139,7 +139,11 @@ FSString FSSys::StrError( int err )
 
 bool FSSys::Equal( FS* fs )
 {
-	if ( !fs || fs->Type() != FS::SYSTEM ) { return false; }
+	if ( !fs || fs->Type() != FS::SYSTEM 
+#ifdef _WIN32		
+		|| _drive != ((FSSys*)fs)->_drive
+#endif		
+		) { return false; }
 
 	return true;
 }
