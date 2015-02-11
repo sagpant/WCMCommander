@@ -403,6 +403,7 @@ public:
 	bool SendProgressInfo( int64_t size, int64_t progress, int64_t bytes );
 
 	bool CopyLink( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& path, bool move );
+	// XXX CopyFile/MoveFile are #define'd in winbase.h
 	bool CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& destPath, bool move );
 	bool CopyDir( FS* srcFs, FSPath& __srcPath, FSNode* srcNode, FS* destFs, FSPath& __destPath, bool move );
 	bool CopyNode( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& destPath, bool move );
@@ -1298,15 +1299,24 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 
 	if (destFs->Type() == FS::TYPES::TMP)
 	{
-		// copy and move work the same way
+		// copy and move to tmpfs work the same way. Should we yell on move op instead?
 		FSTmp* destTmpFS = static_cast<FSTmp*>(destFs);
-		if (!destTmpFS->baseFsIs(srcFs))
+		if (!destTmpFS->BaseIsEqual(srcFs))
 		{
 			RedMessage(_LT("Temporary panel can store only files from the same file system:\n"));
 			return false;
 		}
-		destTmpFS->AddNode(srcPath, srcNode, destPath);
-		return true;
+		if (srcFs->Type() == FS::TMP && srcNode->IsReg())
+		{
+			FSPath srcFullFSPath(FSString(srcNode->name.GetUnicode()));
+			srcFullFSPath.dbg_printf("OperCFThread::CopyFile srcFullFSPath=");
+			//destPath.dbg_printf("OperCFThread::CopyFile destPath=");
+			FSPath destDir(destPath);
+			destDir.Pop();
+			return destTmpFS->AddNode(srcFullFSPath, destDir);
+		}
+		else
+			return destTmpFS->AddNode(srcPath, srcNode, destPath);
 	}
 
 	while ( true )
@@ -1522,8 +1532,25 @@ bool OperCFThread::CopyDir( FS* srcFs, FSPath& __srcPath, FSNode* srcNode, FS* d
 	return !move || RmDir( srcFs, __srcPath );
 }
 
+static void stripPathFromLastItem(FSPath& path)
+{
+	FSString* lastItem = path.GetItem(path.Count() - 1);
+	if (lastItem)
+	{
+		const unicode_t* lastU = lastItem->GetUnicode();
+		const unicode_t* lastDelim = unicode_strrchr(lastU, DIR_SPLITTER);
+		if (lastDelim != 0)
+		{
+			path.SetItemStr(path.Count() - 1,FSString(lastDelim + 1));
+		}
+	}
+}
+
 bool OperCFThread::CopyNode( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& destPath, bool move )
 {
+	// XXX blame, blame. In tmp panel name has full path. Strip the path from the last item
+	stripPathFromLastItem(destPath);
+
 	if ( srcNode->st.IsLnk() )
 	{
 		if ( !CopyLink( srcFs, srcPath, srcNode, destFs, destPath, move ) ) { return false; }
@@ -1538,20 +1565,6 @@ bool OperCFThread::CopyNode( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 	}
 
 	return true;
-}
-
-static void stripPath(FSString& fromStr, FSString& toStr)
-{
-	const unicode_t* fromU = fromStr.GetUnicode();
-	// XXX may be to strip both '/', and '\' as we may copy from Win to Unix?
-	// XXX better to add FS::GetDirStriller(), and pass the DIR_SPLITTER character as a parameter
-	const unicode_t* lastDelim = unicode_strrchr(fromU, DIR_SPLITTER);
-	if (lastDelim != 0)
-	{
-		toStr = FSString(lastDelim + 1);
-	}
-	else
-		toStr = fromStr;
 }
 
 bool OperCFThread::Copy( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs, FSPath& __destPath, cstrhash<bool, unicode_t>& resList )
@@ -1596,10 +1609,8 @@ bool OperCFThread::Copy( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 		for ( FSNode* node = list->First(); node; node = node->next )
 		{
 			if ( Info()->Stopped() ) { return false; }
-			FSString nameLessPath; // in tmp panel name has full path.
-			stripPath(node->Name(), nameLessPath);
 			srcPath.SetItemStr( srcPos, node->Name() );
-			destPath.SetItemStr(destPos, nameLessPath);
+			destPath.SetItemStr(destPos, node->Name() );
 
 			if ( !CopyNode( srcFs, srcPath, node, destFs, destPath, false ) ) { return false; }
 
@@ -1612,9 +1623,7 @@ bool OperCFThread::Copy( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 
 		if ( exist && st.IsDir() )
 		{
-			FSString nameLessPath; // in tmp panel name has full path.
-			stripPath(list->First()->Name(), nameLessPath);
-			destPath.SetItemStr(destPos, nameLessPath);
+			destPath.SetItemStr(destPos, list->First()->Name());
 		}
 
 		srcPath.SetItemStr( srcPos, list->First()->Name() );
