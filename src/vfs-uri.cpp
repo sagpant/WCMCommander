@@ -197,7 +197,7 @@ clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int c
 
 	if ( uri[0] == 's' && uri[1] == 'f' && uri[2] == 't' && uri[3] == 'p' && uri[4] == ':' && uri[5] == '/' && uri[6] == '/' )
 	{
-		return ParzeSftpURI( uri + 7, path, checkFS, count );
+		return ParzeSftpURI( uri, path, checkFS, count );
 	}
 
 #endif
