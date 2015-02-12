@@ -74,6 +74,15 @@ public:
 	 , m_ReparsePoint( 0, this, utf8_to_unicode( _LT( "ReparsePoint" ) ).data(), 0, false )
 	 , m_Virtual( 0, this, utf8_to_unicode( _LT( "Virtual" ) ).data(), 0, false )
 #else
+	 , m_UserRead( uiVariable, this, utf8_to_unicode( _LT( "User &read" ) ).data(), 0, false )
+	 , m_UserWrite( uiVariable, this, utf8_to_unicode( _LT( "User &write" ) ).data(), 0, false )
+     , m_UserExecute( uiVariable, this, utf8_to_unicode( _LT( "User e&xecute" ) ).data(), 0, false )
+	 , m_GroupRead( uiVariable, this, utf8_to_unicode( _LT( "&Group read" ) ).data(), 0, false )
+	 , m_GroupWrite( uiVariable, this, utf8_to_unicode( _LT( "Group write" ) ).data(), 0, false )
+	 , m_GroupExecute( uiVariable, this, utf8_to_unicode( _LT( "Group execute" ) ).data(), 0, false )
+	 , m_OthersRead( uiVariable, this, utf8_to_unicode( _LT( "&Others read" ) ).data(), 0, false )
+	 , m_OthersWrite( uiVariable, this, utf8_to_unicode( _LT( "Others write" ) ).data(), 0, false )
+	 , m_OthersExecute( uiVariable, this, utf8_to_unicode( _LT( "Others execute" ) ).data(), 0, false )
 #endif
 	{
 		if ( m_Panel )
@@ -117,6 +126,15 @@ public:
 		m_ReparsePoint.Enable( false );
 		m_Virtual.Enable( false );
 #else
+		m_Layout.AddWinAndEnable( &m_UserRead, 2, 0 );
+		m_Layout.AddWinAndEnable( &m_UserWrite, 3, 0 );
+		m_Layout.AddWinAndEnable( &m_UserExecute, 4, 0 );
+		m_Layout.AddWinAndEnable( &m_GroupRead, 5, 0 );
+		m_Layout.AddWinAndEnable( &m_GroupWrite, 6, 0 );
+		m_Layout.AddWinAndEnable( &m_GroupExecute, 7, 0 );
+		m_Layout.AddWinAndEnable( &m_OthersRead, 8, 0 );
+		m_Layout.AddWinAndEnable( &m_OthersWrite, 9, 0 );
+		m_Layout.AddWinAndEnable( &m_OthersExecute, 10, 0 );
 #endif
 		UpdateAttributes( m_Node );
 		
@@ -138,6 +156,16 @@ public:
 		m_Node->SetAttrSystem( m_System.IsSet() );
 //		m_Node->SetAttrNotIndexed( m_NotIndexed.IsSet() );
 //		m_Node->SetAttrTemporary( m_Temporary.IsSet() );
+#else
+		m_Node->SetAttrUserRead( m_UserRead.IsSet() );
+		m_Node->SetAttrUserWrite( m_UserWrite.IsSet() );
+		m_Node->SetAttrUserExecute( m_UserExecute.IsSet() );
+		m_Node->SetAttrGroupRead( m_GroupRead.IsSet() );
+		m_Node->SetAttrGroupWrite( m_GroupWrite.IsSet() );
+		m_Node->SetAttrGroupExecute( m_GroupExecute.IsSet() );
+		m_Node->SetAttrOthersRead( m_OthersRead.IsSet() );
+		m_Node->SetAttrOthersWrite( m_OthersWrite.IsSet() );
+		m_Node->SetAttrOthersExecute( m_OthersExecute.IsSet() );
 #endif
 
 		return m_Node;
@@ -161,6 +189,15 @@ private:
 		m_ReparsePoint.Change( Node->IsAttrReparsePoint() );
 		m_Virtual.Change( Node->IsAttrVirtual() );
 #else
+		m_UserRead.Change( Node->IsAttrUserRead() );
+		m_UserWrite.Change( Node->IsAttrUserWrite() );
+		m_UserExecute.Change( Node->IsAttrUserExecute() );
+		m_GroupRead.Change( Node->IsAttrGroupRead() );
+		m_GroupWrite.Change( Node->IsAttrGroupWrite() );
+		m_GroupExecute.Change( Node->IsAttrGroupExecute() );
+		m_OthersRead.Change( Node->IsAttrOthersRead() );
+		m_OthersWrite.Change( Node->IsAttrOthersWrite() );
+		m_OthersExecute.Change( Node->IsAttrOthersExecute() );
 #endif
 	}
 
@@ -187,6 +224,15 @@ private:
 	SButton m_ReparsePoint;
 	SButton m_Virtual;
 #else
+	SButton m_UserRead;
+	SButton m_UserWrite;
+	SButton m_UserExecute;
+	SButton m_GroupRead;
+	SButton m_GroupWrite;
+	SButton m_GroupExecute;
+	SButton m_OthersRead;
+	SButton m_OthersWrite;
+	SButton m_OthersExecute;
 #endif
 };
 
@@ -209,6 +255,10 @@ bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel )
 				int Err = 0;
 				FSCInfo Info;
 				fs->StatSetAttr( fspath, &Node->st, &Err, &Info );
+				if ( Err != 0 )
+				{
+					throw_msg( "Error setting file attributes: %s", fs->StrError( Err ).GetUtf8() );
+				}
 			}
 		}
 
