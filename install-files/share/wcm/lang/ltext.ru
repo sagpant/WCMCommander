@@ -260,8 +260,8 @@ id "Free bytes"
 txt "Свободно байт"
 
 #dlg-ctrl-l.cpp:97
-id "System"
-txt "Система"
+id "System info"
+txt "Системная информация"
 
 #dlg-ctrl-l.cpp:118
 id "Processor"
