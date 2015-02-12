@@ -1,5 +1,5 @@
 #ncwin.cpp:610
-id "Apply &command"
+id "A&pply command"
 txt "Применить команду"
 
 #ncwin.cpp:609
