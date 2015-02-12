@@ -33,6 +33,11 @@ const char* helpData_main =
    "Equal panels		@c /r {<sbold>Ctrl-=} @c@n" "<v2>@n"
    "Folder shortcuts	@c /r {<sbold>Ctrl-D} @c@n" "<v2>@n"
    "Toggle info dialog	@c /r {<sbold>Ctrl-L} @c@n" "<v2>@n"
+#if defined(_WIN32)
+	"Adjust font size @c /r {<sbold>Ctrl-WheelUp, Ctrl+WheelDn} @c@n" "<v2>@n"
+#endif
+	"Folders history @c /r {<sbold>Alt-F12} @c@n" "<v2>@n"
+	"Copy the full path of the currently selected item  @c /r {<sbold>Ctrl-Alt-Ins} @c Alt+Shift+Ins, Ctrl+Shift+P @n" "<v2>@n"
    "@e/n"
    "<v10>/n"
    "/c{<shead>Panel/n}"
@@ -53,9 +58,11 @@ const char* helpData_main =
    "Select(Unselect) current file	@c /r {<sbold>Ins} @n" "<v2>@n"
    "				@c /r {<sbold>Shift-Left//Right//Up//Down} @n" "<v2>@n"
    "Select group		@c /r {<sbold>GRAY +} @n" "<v2>@n"
-   "Unselect group		@c /r {<sbold>GRAY -} @n" "<v2>@n"
+   "Deselect group		@c /r {<sbold>GRAY -} @n" "<v2>@n"
    "Invert selection	@c /r {<sbold>GRAY *} @n" "<v2>@n"
    "Quick search		@c /r {<sbold>Alt /<symbol/>} @n"  " (Ctrl-Enter to next)<v2>@n"
+	"Select files with the same extenstion @c /r {<sbold>Ctrl-GRAY +} @n" "<v2>@n"
+	"Deselect files with the same extenstion @c /r {<sbold>Ctrl-GRAY -} @n" "<v2>@n"
    "@e/n"
    "<v10>/n"
    "/c{<shead>Command line/n}"
@@ -71,6 +78,7 @@ const char* helpData_main =
    "Next command		@c /r {<sbold>Ctrl-X}	@c @n" "<v2>@n"
    "Execute 		@c /r {<sbold>Enter}	@c @n" "<v2>@n"
    "Execute (without terminal) @c /r {<sbold>Shift-Enter}	@c @n" "<v2>@n"
+
    "@e/n"
    "<v20>/n"
    ;
@@ -125,5 +133,3 @@ const char* helpData_view =
    "<v20>/n"
 
    "";
-
-
