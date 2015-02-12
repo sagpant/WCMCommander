@@ -608,6 +608,8 @@ NCWin::NCWin()
 	_mdFiles.AddCmd( ID_DELETE, _LT( "&Delete" ), "F8" );
 	_mdFiles.AddSplit();
 	_mdFiles.AddCmd( ID_FILE_ATTRIBUTES, _LT( "File &attributes" ), "Ctrl-A" );
+	_mdFiles.AddCmd( ID_APPLY_COMMAND, _LT( "Apply &command" ), "Ctrl-G" );
+
 	_mdFiles.AddSplit();
 	_mdFiles.AddCmd( ID_GROUP_SELECT, _LT( "Select &group" ), "Gray +" );
 	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "U&nselect group" ), "Gray -" );
@@ -4426,6 +4428,10 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 
 			case ID_FILE_ATTRIBUTES:
 				CtrlA();
+				return true;
+
+			case ID_APPLY_COMMAND:
+				ApplyCommand();
 				return true;
 
 			case ID_GROUP_SELECT:

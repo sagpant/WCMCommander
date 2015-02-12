@@ -1,3 +1,7 @@
+#ncwin.cpp:610
+id "Apply &command"
+txt "Применить команду"
+
 #ncwin.cpp:609
 id "File &attributes"
 txt "Атрибуты файлов"
