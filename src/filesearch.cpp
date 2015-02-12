@@ -502,6 +502,35 @@ public:
 	}
 
 	virtual void DrawItem( wal::GC& gc, int n, crect rect );
+	
+	void FillFoundItemsList(std::list<FSPath>& foundItemsList, bool fromTmpFS) const
+	{
+		if (fromTmpFS) // put path from names
+		{
+			for (std::vector<SearchItemNode>::const_iterator it = m_ItemList.begin(); it != m_ItemList.end(); ++it)
+			{
+				if (it->fsNode) // m_ItemList has dummy 'dir' entries, where fsNode is null. Skip them
+				{
+					FSPath fullPath(it->fsNode.Ptr()->name);
+					foundItemsList.push_back(fullPath);
+				}
+			}
+		}
+		else
+		{
+			for (std::vector<SearchItemNode>::const_iterator it = m_ItemList.begin(); it != m_ItemList.end(); ++it)
+			{
+				if (it->fsNode) // m_ItemList has dummy 'dir' entries, where fsNode is null. Skip them
+				{
+					FSPath fullPath(m_DirHash.at(it->dirId)->path);
+					fullPath.PushStr(it->fsNode.Ptr()->name);
+					//fullPath.dbg_printf("SearchListWin::GetFoundItemsList adding file:");
+					foundItemsList.push_back(fullPath);
+				}
+			}
+		}
+	}
+
 	virtual ~SearchListWin();
 };
 
@@ -635,7 +664,7 @@ class SearchFileThreadWin: public NCDialog
 	void RefreshCounters();
 public:
 	SearchFileThreadWin( NCDialogParent* parent, const char* name, OperSearchData* pD )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListOkCancel ),
+		: NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(name).data(), bListOkCancelPanel),
 		   pData( pD ),
 		   lo( 10, 10 ),
 		   listWin( this, pD->searchFs, dynamic_cast<NCWin*>( parent ) ),
@@ -703,6 +732,7 @@ public:
 	virtual void OperThreadSignal( int info );
 	virtual ~SearchFileThreadWin();
 	bool GetCurrentPath( FSPath* p ) { return listWin.GetCurrentPath( p ); }
+	void FillFoundItemsList(std::list<FSPath>& foundItemsList, bool fromTmpFS) const { listWin.FillFoundItemsList(foundItemsList, fromTmpFS); }
 };
 
 static void SetStaticLineInt( StaticLine& a, int n )
@@ -821,14 +851,14 @@ void SearchFileThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool SearchFile( clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath )
+CoreCommands SearchFile(clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath, std::list<FSPath>& foundItemsList)
 {
 	if ( !DoFileSearchDialog( parent, &searchParams ) )
 	{
-		return false;
+		return CMD_CANCEL;
 	}
 
-	if ( !searchParams.mask.data() || !searchParams.mask[0] ) { return false; }
+	if ( !searchParams.mask.data() || !searchParams.mask[0] ) { return CMD_CANCEL; }
 
 	std::vector<char> utf8Mask = unicode_to_utf8( searchParams.mask.data() );
 
@@ -841,7 +871,7 @@ bool SearchFile( clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath 
 		if ( !megaSearcher->Set( searchParams.txt.data(), searchParams.sens, 0 ) )
 		{
 			NCMessageBox( parent,  _LT( "File search" ) ,  _LT( "can't search this text" ) ,  true );
-			return false;
+			return CMD_CANCEL;
 		}
 	}
 
@@ -854,10 +884,18 @@ bool SearchFile( clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath 
 	int cmd = dlg.DoModal();
 	dlg.StopThread();
 
-	if ( cmd != CMD_OK )
+	if (cmd == CMD_PUT_RESULTS_TO_TEMP_PANEL)
 	{
-		return false;
+		dlg.FillFoundItemsList(foundItemsList, f->Type() == FS::TMP);
+		//dbg_printf("filesearch.cpp.SearchFile list for panel:\n");
+		//for (std::list<FSPath>::iterator it = foundItemsList.begin(); it != foundItemsList.end(); ++it)
+		//	it->dbg_printf("");
+		return CMD_PUT_RESULTS_TO_TEMP_PANEL;
 	}
-
-	return dlg.GetCurrentPath( retPath );
+	else if ( cmd == CMD_OK )
+	{
+		return dlg.GetCurrentPath(retPath) ? CMD_OK : CMD_CANCEL;
+	}
+	else
+		return CMD_CANCEL;
 }

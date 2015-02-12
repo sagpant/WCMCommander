@@ -574,7 +574,7 @@ void SetCmdIcons()
 	cicon::SetCmdIcon(ID_REFRESH, reload_xpm);
 	cicon::SetCmdIcon(ID_CTRL_O, panel_open_close_xpm);
 	cicon::SetCmdIcon(ID_SEARCH_2, find_xpm);
-	cicon::SetCmdIcon(ID_SHORTCUTS, flag_red_xpm);
+	cicon::SetCmdIcon(ID_FOLDER_SHORTCUTS, flag_red_xpm);
 	cicon::SetCmdIcon(ID_HISTORY, hourglass_xpm);
 	cicon::SetCmdIcon(ID_PANEL_EQUAL, stock_equals_xpm);
 	cicon::SetCmdIcon(ID_UNDO, xpm16x16_Undo);

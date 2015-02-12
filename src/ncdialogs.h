@@ -107,6 +107,7 @@ extern ButtonDataNode bListOk[];
 extern ButtonDataNode bListCancel[];
 extern ButtonDataNode bListOkCancel[];
 extern ButtonDataNode bListYesNoCancel[];
+extern ButtonDataNode bListOkCancelPanel[];
 
 enum
 {

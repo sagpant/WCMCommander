@@ -52,6 +52,21 @@ void FSPath::Copy( const FSPath& a )
 	}
 }
 
+void FSPath::Copy(const FSPath& a, int elementCount)
+{
+	cacheCs = -2;
+	data.clear();
+	if (elementCount<0 || elementCount>a.Count())
+		elementCount = a.Count();
+
+	for (int i = 0; i < elementCount; i++)
+	{
+		FSString s;
+		s.Copy(a.data.const_item(i));
+		data.append(s);
+	}
+
+}
 
 void FSPath::_Set( int cs, const void* v )
 {

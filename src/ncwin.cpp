@@ -35,7 +35,8 @@
 #include "string-util.h"
 #include "filesearch.h"
 #include "help.h"
-#include "shortcuts.h"
+#include "folder-shortcuts.h"
+#include "folder-history.h"
 #include "fileassociations.h"
 #include "fileattributes.h"
 #include "fontdlg.h"
@@ -63,7 +64,7 @@ std::map<std::vector<unicode_t>, int> g_ViewPosHash;
 
 const int CMD_SWITCH = 32167;
 
-static ButtonDataNode bYesNoSwitchToEditor[] = { { "Yes", CMD_YES}, { "No", CMD_NO}, { "Switch to editor", CMD_SWITCH}, {nullptr, 0}};
+static ButtonDataNode bYesNoSwitchToEditor[] = { { "&Yes", CMD_YES}, { "&No", CMD_NO}, { "&Switch to editor", CMD_SWITCH}, {nullptr, 0}};
 
 ButtonWinData panelNormalButtons[] =
 {
@@ -293,9 +294,9 @@ void NCWin::SetToolbarPanel()
 	_toolBar.AddSplitter();
 	_toolBar.AddCmd( ID_SEARCH_2,  _LT( "Search files" ) );
 	_toolBar.AddSplitter();
-	_toolBar.AddCmd( ID_SHORTCUTS, _LT( "Show Shortcuts" ) );
+	_toolBar.AddCmd( ID_FOLDER_SHORTCUTS, _LT( "Show Folder Shortcuts" ) );
 	_toolBar.AddSplitter();
-	_toolBar.AddCmd( ID_HISTORY,   _LT( "Show Command history" ) );
+    _toolBar.AddCmd(ID_HISTORY, _LT("Show Command history"));
 	_toolBar.Invalidate();
 }
 
@@ -610,12 +611,14 @@ NCWin::NCWin()
 	_mdFiles.AddCmd( ID_GROUP_UNSELECT, _LT( "U&nselect group" ), "Gray -" );
 	_mdFiles.AddCmd( ID_GROUP_INVERT, _LT( "&Invert selection" ), "Gray *" );
 
-	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Shift F7" );
-	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Shift-F8 (Ctrl-K)" );
+	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Alt-F7" );
+	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Alt-F8 (Ctrl-K)" );
+    _mdCommands.AddCmd( ID_FOLDER_HISTORY, _LT( "F&olders history" ), "Alt-F12" );
+    _mdCommands.AddSplit();
 	_mdCommands.AddCmd( ID_CTRL_O, _LT( "&Panel on/off" ), "Ctrl-O" );
-	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl =" );
+	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl-=" );
 	_mdCommands.AddSplit();
-	_mdCommands.AddCmd( ID_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl D" );
+	_mdCommands.AddCmd( ID_FOLDER_SHORTCUTS, _LT( "Folder &shortcuts" ),   "Ctrl-D" );
 	_mdCommands.AddCmd( ID_FILEASSOCIATIONS, _LT( "File &associations" ) );
 
 	m_Edit.SetFocus();
@@ -902,7 +905,7 @@ void NCWin::PanelEnter(bool Shift)
 		if ( g_WcmConfig.systemAskOpenExec && cmd.data() )
 		{
 
-			ButtonDataNode bListOpenExec[] = { {"Open", CMD_OPEN_FILE}, {"Execute", CMD_EXEC_FILE}, {"Cancel", CMD_CANCEL}, {0, 0}};
+			ButtonDataNode bListOpenExec[] = { {"&Open", CMD_OPEN_FILE}, {"&Execute", CMD_EXEC_FILE}, {"&Cancel", CMD_CANCEL}, {0, 0}};
 
 			static unicode_t emptyStr[] = {0};
 
@@ -1302,7 +1305,7 @@ bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 	mData.Add( "6. SFTP", nullptr, nullptr, ID_DEV_SFTP );
 #endif
-	mData.Add("7. temporary (alpha test!)", nullptr, nullptr, ID_DEV_TMP);
+	mData.Add("7. temporary", nullptr, nullptr, ID_DEV_TMP);
 
 #ifndef _WIN32  //unix mounts
 	//ID_MNT_UX0
@@ -2331,6 +2334,17 @@ void NCWin::Mark( bool enable )
 	_panel->Mark( str.data(), enable );
 }
 
+void NCWin::MarkSameExt( bool enable )
+{
+	if ( _mode != PANEL ) { return; }
+
+	std::string FileExt = GetFileExt( _panel->GetCurrentFileName() );
+
+	std::string Mask = "*" + FileExt;
+
+	_panel->Mark( utf8str_to_unicode(Mask).data(), enable );
+}
+
 void NCWin::OnOffShl()
 {
 	g_WcmConfig.editShl = !g_WcmConfig.editShl;
@@ -2374,8 +2388,10 @@ void NCWin::Search()
 	if ( _mode != PANEL ) { return; }
 
 	FSPath goPath;
+	std::list<FSPath> foundItemsList;
 
-	if ( SearchFile( _panel->GetFSPtr(), _panel->GetPath(), this, &goPath ) )
+	CoreCommands searchResult = SearchFile(_panel->GetFSPtr(), _panel->GetPath(), this, &goPath, foundItemsList);
+	if (searchResult == CMD_OK)
 	{
 		if ( goPath.Count() > 0 )
 		{
@@ -2384,20 +2400,48 @@ void NCWin::Search()
 			_panel->LoadPath( _panel->GetFSPtr(), goPath, &cur, 0, PanelWin::SET );
 		}
 	}
+	else if (searchResult == CMD_PUT_RESULTS_TO_TEMP_PANEL)
+	{
+		clPtr<FSTmp> fs = new FSTmp(_panel->GetFS());
+		FSTmp* pfs = fs.Ptr();
+		for (std::list<FSPath>::iterator it = foundItemsList.begin(); it != foundItemsList.end(); ++it)
+		{
+			pfs->AddNode(*it, FSTmp::rootPathName);
+		}
+		GetOtherPanel()->LoadPath(fs, FSTmp::rootPathName, 0, 0, PanelWin::SET);
+	}
 }
 
-
-void NCWin::Shortcuts()
+void NCWin::FolderShortcuts()
 {
-	if ( _mode != PANEL ) { return; }
+    if (_mode != PANEL)
+    {
+        return;
+    }
 
-	clPtr<FS> ptr = _panel->GetFSPtr();
-	FSPath path = _panel->GetPath();
+    clPtr<FS> ptr  = _panel->GetFSPtr();
+    FSPath    path = _panel->GetPath();
 
-	if ( ShortcutDlg( this, &ptr, &path ) )
-	{
-		_panel->LoadPath( ptr, path, 0, 0, PanelWin::SET );
-	}
+    if (FolderShortcutDlg(this, &ptr, &path))
+    {
+        _panel->LoadPath(ptr, path, 0, 0, PanelWin::SET);
+    }
+}
+
+void NCWin::FolderHistory()
+{
+    if (_mode != PANEL)
+    {
+        return;
+    }
+
+    clPtr<FS> ptr;
+    FSPath    path;
+
+    if (FolderHistoryDlg(this, &ptr, &path))
+    {
+        _panel->LoadPath(ptr, path, 0, 0, PanelWin::SET);
+    }
 }
 
 void NCWin::FileAssociations()
@@ -3526,6 +3570,14 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					_panel->KeyRight( shift, &_shiftSelectType );
 					return true;
 
+				case FC( VK_SUBTRACT, KM_CTRL ):
+					MarkSameExt( false );
+					return true;
+
+				case FC( VK_ADD, KM_CTRL ):
+					MarkSameExt( true );
+					return true;
+
 				case VK_ADD:
 					Mark( true );
 					return true;
@@ -3763,10 +3815,14 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case FC( VK_D, KM_CTRL ):
-				Shortcuts();
+				FolderShortcuts();
 				break;
 
-			case FC( VK_F, KM_CTRL ):
+            case FC(VK_F12, KM_ALT):
+                FolderHistory();
+                break;
+
+            case FC(VK_F, KM_CTRL):
 				CtrlF();
 				break;
 
@@ -4394,11 +4450,15 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 				PanelEqual();
 				return true;
 
-			case ID_SHORTCUTS:
-				Shortcuts();
+			case ID_FOLDER_SHORTCUTS:
+				FolderShortcuts();
 				return true;
 
-			case ID_FILEASSOCIATIONS:
+            case ID_FOLDER_HISTORY:
+                FolderHistory();
+                return true;
+
+            case ID_FILEASSOCIATIONS:
 				FileAssociations();
 				return true;
 

@@ -140,7 +140,11 @@ FSString FSSys::StrError( int err )
 
 bool FSSys::Equal( FS* fs )
 {
-	if ( !fs || fs->Type() != FS::SYSTEM ) { return false; }
+	if ( !fs || fs->Type() != FS::SYSTEM 
+#ifdef _WIN32		
+		|| _drive != ((FSSys*)fs)->_drive
+#endif		
+		) { return false; }
 
 	return true;
 }
@@ -506,7 +510,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 
 	HANDLE handle = FindFirstFileW( FindPathStr( _drive, path.GetUnicode(), L"\\*" ).data(), &ent );
 
-#ifdef _DEBUG
+#if defined( _DEBUG ) & 0
 	std::vector<wchar_t> wpath = FindPathStr( _drive, path.GetUnicode(), L"\\*" );
 	char s[1024];
 	toStr( s, wpath.data() );

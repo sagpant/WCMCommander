@@ -294,6 +294,7 @@ private:
 	void Copy( bool shift );
 	void Move( bool shift );
 	void Mark( bool enable );
+	void MarkSameExt( bool enable );
 	void CtrlEnter();
 	void CtrlA();
 	void CtrlF();
@@ -306,7 +307,8 @@ private:
 	void Search();
 	void Tab( bool forceShellTab );
 	void PanelEqual();
-	void Shortcuts();
+	void FolderShortcuts();
+    void FolderHistory();
 	void FileAssociations();
 	void FileHighlighting();
 	void OnOffShl();

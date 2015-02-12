@@ -2546,7 +2546,7 @@ bool EditWin::Search( const unicode_t* arg, bool sens )
 #define CMD_ALL 1001
 #define CMD_SKIP 1002
 
-static ButtonDataNode bReplaceAllSkipCancel[] = { {"Replace", CMD_REPLACE}, { "All", CMD_ALL}, { "Skip", CMD_SKIP}, {"Cancel", CMD_CANCEL}, {0, 0}};
+static ButtonDataNode bReplaceAllSkipCancel[] = { {"&Replace", CMD_REPLACE}, { "&All", CMD_ALL}, { "&Skip", CMD_SKIP}, {"&Cancel", CMD_CANCEL}, {0, 0}};
 
 bool EditWin::Replace( const unicode_t* from, const unicode_t* to, bool sens )
 {

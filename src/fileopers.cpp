@@ -403,6 +403,7 @@ public:
 	bool SendProgressInfo( int64_t size, int64_t progress, int64_t bytes );
 
 	bool CopyLink( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& path, bool move );
+	// XXX CopyFile/MoveFile are #define'd in winbase.h
 	bool CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& destPath, bool move );
 	bool CopyDir( FS* srcFs, FSPath& __srcPath, FSNode* srcNode, FS* destFs, FSPath& __destPath, bool move );
 	bool CopyNode( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& destPath, bool move );
@@ -1298,10 +1299,25 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 
 	if (destFs->Type() == FS::TYPES::TMP)
 	{
-		// copy and move work the same way
+		// copy and move to tmpfs work the same way. Should we yell on move op instead?
 		FSTmp* destTmpFS = static_cast<FSTmp*>(destFs);
-		destTmpFS->AddNode(srcPath, srcNode);
-		return true;
+		if (!destTmpFS->BaseIsEqual(srcFs))
+		{
+			RedMessage(_LT("Temporary panel can store only files from the same file system:\n"));
+			return false;
+		}
+		if (srcFs->Type() == FS::TMP && srcNode->IsReg())
+		{
+			FSString srcFullFSString(srcNode->name.GetUnicode());
+			FSPath srcFullFSPath(srcFullFSString);
+			//srcFullFSPath.dbg_printf("OperCFThread::CopyFile srcFullFSPath=");
+			//destPath.dbg_printf("OperCFThread::CopyFile destPath=");
+			FSPath destDir(destPath);
+			destDir.Pop();
+			return destTmpFS->AddNode(srcFullFSPath, destDir);
+		}
+		else
+			return destTmpFS->AddNode(srcPath, srcNode, destPath);
 	}
 
 	while ( true )
@@ -1517,8 +1533,25 @@ bool OperCFThread::CopyDir( FS* srcFs, FSPath& __srcPath, FSNode* srcNode, FS* d
 	return !move || RmDir( srcFs, __srcPath );
 }
 
+static void stripPathFromLastItem(FSPath& path)
+{
+	FSString* lastItem = path.GetItem(path.Count() - 1);
+	if (lastItem)
+	{
+		const unicode_t* lastU = lastItem->GetUnicode();
+		const unicode_t* lastDelim = unicode_strrchr(lastU, DIR_SPLITTER);
+		if (lastDelim != 0)
+		{
+			path.SetItemStr(path.Count() - 1,FSString(lastDelim + 1));
+		}
+	}
+}
+
 bool OperCFThread::CopyNode( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* destFs, FSPath& destPath, bool move )
 {
+	// XXX blame, blame. In tmp panel name has full path. Strip the path from the last item
+	stripPathFromLastItem(destPath);
+
 	if ( srcNode->st.IsLnk() )
 	{
 		if ( !CopyLink( srcFs, srcPath, srcNode, destFs, destPath, move ) ) { return false; }
@@ -1577,9 +1610,8 @@ bool OperCFThread::Copy( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 		for ( FSNode* node = list->First(); node; node = node->next )
 		{
 			if ( Info()->Stopped() ) { return false; }
-
 			srcPath.SetItemStr( srcPos, node->Name() );
-			destPath.SetItemStr( destPos, node->Name() );
+			destPath.SetItemStr(destPos, node->Name() );
 
 			if ( !CopyNode( srcFs, srcPath, node, destFs, destPath, false ) ) { return false; }
 
@@ -1592,7 +1624,7 @@ bool OperCFThread::Copy( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 
 		if ( exist && st.IsDir() )
 		{
-			destPath.SetItemStr( destPos, list->First()->Name() );
+			destPath.SetItemStr(destPos, list->First()->Name());
 		}
 
 		srcPath.SetItemStr( srcPos, list->First()->Name() );

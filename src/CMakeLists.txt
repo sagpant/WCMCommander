@@ -119,7 +119,9 @@ SET(wcm_COMMON_SOURCES
 	sftpdlg.cpp
 	shell-tools.cpp
 	shl.cpp
-	shortcuts.cpp
+	path-list.cpp
+	folder-shortcuts.cpp
+	folder-history.cpp
 	smblogon.cpp
 	strconfig.cpp
 	strmasks.cpp
@@ -197,7 +199,9 @@ SET(wcm_HEADERS
 	shell-tools.h
 	shell.h
 	shl.h
-	shortcuts.h
+	path-list.h
+	folder-shortcuts.h
+	folder-history.h
 	smblogon.h
 	strconfig.h
 	swl/swl.h

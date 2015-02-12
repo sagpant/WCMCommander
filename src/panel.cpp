@@ -37,6 +37,7 @@
 
 #include "vfs-smb.h"
 #include "ltext.h"
+#include "folder-history.h"
 
 int uiPanelSearchWin = GetUiID( "PanelSearchWin" );
 
@@ -947,15 +948,15 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 		{
 			if ( i.IsRulePassed( p->GetUnicodeName(), p->Size(), 0 ) )
 			{
-				if ( active )
+				if ( isSelected )
 				{
-					color_bg = i.GetColorUnderCursorNormalBackground();
-					color_text = i.GetColorUnderCursorNormal();
+					color_bg = active ? i.GetColorUnderCursorSelectedBackground() : i.GetColorSelectedBackground();
+					color_text = active ? i.GetColorUnderCursorSelected() : i.GetColorSelected();
 				}
 				else
 				{
-					color_bg = i.GetColorNormalBackground();
-					color_text = i.GetColorNormal();
+					color_bg = active ? i.GetColorUnderCursorNormalBackground() : i.GetColorNormalBackground();
+					color_text = active ? i.GetColorUnderCursorNormal() : i.GetColorNormal();
 				}
 
 				break;
@@ -1169,13 +1170,13 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	cpoint Size = gc.GetTextExtents( Name.data() );
 
 	// show special mark for long file names: https://github.com/corporateshark/WalCommander/issues/272
-	if ( Size.x > rect.Width() )
+	if ( x + Size.x > rect.right )
 	{
 		int MarkColor = UiGetColor( uiHotkeyColor, uiItem, &ucl, 0x0 );
 		gc.SetTextColor( MarkColor );
 		unicode_t Mark[] = { '}', 0 };
 		cpoint Offset = gc.GetTextExtents( Mark );
-		gc.TextOutF( rect.right - Offset.x, y, Mark );
+		gc.TextOutF( rect.right - Offset.x + 2, y, Mark );
 	}
 }
 
@@ -1699,7 +1700,7 @@ void PanelWin::LoadPathStringSafe( const char* path )
 {
 	if ( !path || !*path ) { return; }
 
-	dbg_printf( "PanelWin::LoadPathStringSafe path=%s\n", path );
+	//dbg_printf( "PanelWin::LoadPathStringSafe path=%s\n", path );
 	FSPath fspath;
 
 	clPtr<FS> fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, 0, 0 );
@@ -1716,7 +1717,15 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 //	int err;
 
 //	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;Retain
-	dbg_printf( "PanelWin::LoadPath paramPath=%s\n", paramPath.GetUtf8() );
+	if (fs == 0)
+	{
+	//	paramPath.dbg_printf("PanelWin::LoadPath fs is null, paramPath=");
+	}
+	else
+	{
+		//dbg_printf("PanelWin::LoadPath() fsUri=%s current=%s ", (fs->Uri(paramPath)).GetUtf8(), current ? current->GetUtf8() : "null");
+		//paramPath.dbg_printf(", paramPath=");
+	}
 
 	try
 	{
@@ -1765,6 +1774,8 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 		ex->destroy();
 		GetNCWin()->NotifyCurrentPathInfo();
 	}
+
+    AddFolderToHistory(&fs, &paramPath);
 }
 
 void PanelWin::OperThreadSignal( int info )
@@ -1817,6 +1828,7 @@ void PanelWin::OperThreadStopped()
 				break;
 
 			default:
+				//_operData.path.dbg_printf("PanelWin::OperThreadStopped _operData.path=");
 				_place.Set( _operData.fs, _operData.path, false );
 				break;
 		};
