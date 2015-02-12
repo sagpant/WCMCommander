@@ -1430,9 +1430,13 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 
 int FSSys::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info )
 {
-	// TODO: implement
-	SetError( err, 0 );
-	return -1;
+	// TODO: Complete - at least, add a mc-style chown.
+	int status = chmod( path.GetUtf8(), (mode_t) st->mode );
+	if ( status != 0)
+	{
+		SetError( err, errno );
+	}
+	return status;
 }
 
 int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )

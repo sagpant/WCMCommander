@@ -265,6 +265,38 @@ struct FSNode: public iIntrusiveCounter
 	void SetAttrTemporary( bool a ) { SetAttr( a, FILE_ATTRIBUTE_TEMPORARY ); }
 #else
 	bool IsHidden() { return name.GetUnicode()[0] == '.'; }
+
+    void SetAttr( bool a, int Mask )
+    {
+        if ( a )
+        {
+            st.mode |= Mask;
+        }
+        else
+        {
+            st.mode &= ~Mask;
+        }
+    }
+
+    bool IsAttrUserRead() const { return ( st.mode & S_IRUSR ) != 0; }
+    bool IsAttrUserWrite() const { return ( st.mode & S_IWUSR ) != 0; }
+    bool IsAttrUserExecute() const { return ( st.mode & S_IXUSR ) != 0; }
+    bool IsAttrGroupRead() const { return ( st.mode & S_IRGRP ) != 0; }
+    bool IsAttrGroupWrite() const { return ( st.mode & S_IWGRP ) != 0; }
+    bool IsAttrGroupExecute() const { return ( st.mode & S_IXGRP ) != 0; }
+    bool IsAttrOthersRead() const { return ( st.mode & S_IROTH ) != 0; }
+    bool IsAttrOthersWrite() const { return ( st.mode & S_IWOTH ) != 0; }
+    bool IsAttrOthersExecute() const { return ( st.mode & S_IXOTH ) != 0; }
+
+    void SetAttrUserRead( bool a ) { SetAttr( a, S_IRUSR ); }
+    void SetAttrUserWrite( bool a ) { SetAttr( a, S_IWUSR ); }
+    void SetAttrUserExecute( bool a ) { SetAttr( a, S_IXUSR ); }
+    void SetAttrGroupRead( bool a ) { SetAttr( a, S_IRGRP ); }
+    void SetAttrGroupWrite( bool a ) { SetAttr( a, S_IWGRP ); }
+    void SetAttrGroupExecute( bool a ) { SetAttr( a, S_IXGRP ); }
+    void SetAttrOthersRead( bool a ) { SetAttr( a, S_IROTH ); }
+    void SetAttrOthersWrite( bool a ) { SetAttr( a, S_IWOTH ); }
+    void SetAttrOthersExecute( bool a ) { SetAttr( a, S_IXOTH ); }
 #endif
 	bool IsSelected() const { return isSelected; }
 	void SetSelected() { isSelected = true; }
