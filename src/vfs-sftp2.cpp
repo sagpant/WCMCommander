@@ -1064,7 +1064,7 @@ int FSSftp::RmDir ( FSPath& path, int* err, FSCInfo* info )
 	return 0;
 }
 
-int FSSftp::SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+int FSSftp::SetFileTime ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
 	MutexLock lock( &mutex );
 	int ret = CheckSession( err, info );
@@ -1103,12 +1103,13 @@ void FSSftp::CloseHandle( LIBSSH2_SFTP_HANDLE* h, FSCInfo* info )
 struct SftpAttr
 {
 	LIBSSH2_SFTP_ATTRIBUTES attr;
-	int Permissions() { return ( attr.flags & LIBSSH2_SFTP_ATTR_PERMISSIONS ) ? attr.permissions : 0; }
-	long long Size()  { return ( attr.flags & LIBSSH2_SFTP_ATTR_SIZE ) ? attr.filesize : 0; }
-	int Uid()      { return ( attr.flags & LIBSSH2_SFTP_ATTR_UIDGID ) ? attr.uid : 0; }
-	int Gid()      { return ( attr.flags & LIBSSH2_SFTP_ATTR_UIDGID ) ? attr.gid : 0; }
-	time_t MTime()    { return ( attr.flags & LIBSSH2_SFTP_ATTR_ACMODTIME ) ? attr.mtime : 0; }
-	bool IsLink()     { return ( attr.flags & LIBSSH2_SFTP_ATTR_PERMISSIONS ) != 0 && ( attr.permissions & S_IFMT ) == S_IFLNK; }
+	int Permissions() const { return ( attr.flags & LIBSSH2_SFTP_ATTR_PERMISSIONS ) ? attr.permissions : 0; }
+	long long Size() const { return ( attr.flags & LIBSSH2_SFTP_ATTR_SIZE ) ? attr.filesize : 0; }
+	int Uid() const { return ( attr.flags & LIBSSH2_SFTP_ATTR_UIDGID ) ? attr.uid : 0; }
+	int Gid() const { return ( attr.flags & LIBSSH2_SFTP_ATTR_UIDGID ) ? attr.gid : 0; }
+	time_t MTime() const { return ( attr.flags & LIBSSH2_SFTP_ATTR_ACMODTIME ) ? attr.mtime : 0; }
+	time_t ATime() const { return ( attr.flags & LIBSSH2_SFTP_ATTR_ACMODTIME ) ? attr.atime : 0; }
+	bool IsLink() const { return ( attr.flags & LIBSSH2_SFTP_ATTR_PERMISSIONS ) != 0 && ( attr.permissions & S_IFMT ) == S_IFLNK; }
 };
 
 
@@ -1195,7 +1196,9 @@ int FSSftp::ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 				pNode->st.size = attr.Size();
 				pNode->st.uid = attr.Uid();
 				pNode->st.gid = attr.Gid();
-				pNode->st.mtime = attr.MTime();
+				pNode->st.m_CreationTime = 0;
+				pNode->st.m_LastAccessTime = attr.ATime();
+				pNode->st.m_LastWriteTime = attr.MTime();
 
 				list->Append( pNode );
 			}
@@ -1260,7 +1263,9 @@ int FSSftp::Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info )
 		st->size  = attr.Size();
 		st->uid   = attr.Uid();
 		st->gid   = attr.Gid();
-		st->mtime = attr.MTime();
+		st->m_CreationTime = 0;
+		st->m_LastAccessTime = attr.ATime();
+		st->m_LastWriteTime = attr.MTime();
 	}
 	catch ( int e )
 	{
@@ -1299,7 +1304,8 @@ int FSSftp::FStat ( int fd, FSStat* st, int* err, FSCInfo* info )
 		st->size  = attr.Size();
 		st->uid   = attr.Uid();
 		st->gid   = attr.Gid();
-		st->mtime = attr.MTime();
+		st->m_LastAccessTime = attr.ATime();
+		st->m_LastWriteTime = attr.MTime();
 	}
 	catch ( int e )
 	{

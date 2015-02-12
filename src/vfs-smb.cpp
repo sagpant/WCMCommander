@@ -339,7 +339,7 @@ int FSSmb::RmDir( FSPath& path, int* err, FSCInfo* info )
 }
 
 
-int FSSmb::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+int FSSmb::SetFileTime( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
 	FREPARE_SMB_OPER( lock, info, &_param );
 
@@ -380,7 +380,9 @@ static int InternalStat( FSPath& path, FSStat* fsStat, FSCInfo* info )
 
 	fsStat->mode   = ( st.st_mode & ~( S_IXUSR | S_IXGRP | S_IXOTH ) );
 	fsStat->size   = st.st_size;
-	fsStat->mtime  = st.st_mtime;
+	fsStat->m_CreationTime   = st.st_ctime;
+	fsStat->m_LastAccessTime = st.st_atime;
+	fsStat->m_LastWriteTime  = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 	fsStat->dev = st.st_dev;
@@ -423,7 +425,9 @@ static int InternalFStat( int fd, FSStat* fsStat, FSCInfo* info )
 
 	fsStat->mode   = ( st.st_mode & ~( S_IXUSR | S_IXGRP | S_IXOTH ) );
 	fsStat->size   = st.st_size;
-	fsStat->mtime  = st.st_mtime;
+	fsStat->m_CreationTime   = st.st_ctime;
+	fsStat->m_LastAccessTime = st.st_atime;
+	fsStat->m_LastWriteTime  = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 	fsStat->dev = st.st_dev;

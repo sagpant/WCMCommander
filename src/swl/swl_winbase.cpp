@@ -205,7 +205,7 @@ namespace wal
 
 	StaticLine::StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect, ALIGN al, int w )
 		: Win( Win::WT_CHILD, 0, parent, rect, nId )
-		, text( txt ? new_unicode_str( txt ) : std::vector<wchar_t>() )
+		, text( txt ? new_unicode_str( txt ) : std::vector<unicode_t>() )
 		, align( al )
 		, width( w )
 	{
@@ -231,6 +231,22 @@ namespace wal
 		}
 	}
 
+	void StaticLine::SetText( const unicode_t* txt )
+	{
+		text = wal::new_unicode_str(txt);
+
+		if ( txt )
+		{
+			GC gc(this);
+			SetLSize(LSize(GetStaticTextExtent(gc, txt, GetFont())));
+		}
+		else
+		{
+			SetLSize(LSize(cpoint(0, 0)));
+		}
+		
+		Invalidate();
+	}
 
 	void StaticLine::Paint( GC& gc, const crect& paintRect )
 	{

@@ -28,9 +28,10 @@ int FS::Rename ( FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info )   
 int FS::MkDir  ( FSPath& path, int mode, int* err,  FSCInfo* info )    { SetError( err, 0 ); return -1; }
 int FS::Delete ( FSPath& path, int* err, FSCInfo* info )            { SetError( err, 0 ); return -1; }
 int FS::RmDir  ( FSPath& path, int* err, FSCInfo* info )            { SetError( err, 0 ); return -1; }
-int FS::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )  { SetError( err, 0 ); return -1; }
+int FS::SetFileTime  ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )  { SetError( err, 0 ); return -1; }
 int FS::ReadDir   ( FSList* list, FSPath& path,  int* err, FSCInfo* info )    { SetError( err, 0 ); return -1; }
 int FS::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )         { SetError( err, 0 ); return -1; }
+int FS::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info ) { SetError( err, 0 ); return -1; }
 int FS::FStat( int fd, FSStat* st, int* err, FSCInfo* info )     { SetError( err, 0 ); return -1; }
 int FS::Symlink   ( FSPath& path, FSString& str, int* err, FSCInfo* info )      { SetError( err, 0 ); return -1; }
 int FS::StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info )    { SetError( err, 0 ); return -1; }
@@ -398,7 +399,7 @@ int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 	return -1;
 }
 
-int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+int FSSys::SetFileTime  ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
 	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), FILE_WRITE_ATTRIBUTES , 0, 0, OPEN_EXISTING, 0, 0 );
 
@@ -408,10 +409,11 @@ int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FS
 		return -1;
 	}
 
+	FILETIME ct = cTime;
 	FILETIME at = aTime;
 	FILETIME mt = mTime;
 
-	if ( !::SetFileTime( h, NULL, &at, &mt ) )
+	if ( !::SetFileTime( h, &ct, &at, &mt ) )
 	{
 		SetError( err, GetLastError() );
 		CloseHandle( h );
@@ -545,7 +547,10 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 				pNode->st.dwFileAttributes = ent.dwFileAttributes;
 				pNode->st.size = ( seek_t( ent.nFileSizeHigh ) << 32 ) + ent.nFileSizeLow;
 
-				pNode->st.mtime = ent.ftLastWriteTime;
+				pNode->st.m_CreationTime = ent.ftCreationTime;
+				pNode->st.m_LastAccessTime = ent.ftLastAccessTime;
+				pNode->st.m_LastWriteTime = ent.ftLastWriteTime;
+				
 
 				if ( ent.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 				{
@@ -592,7 +597,9 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 		fsStat->size = 0;
 		fsStat->dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
 		fsStat->mode = S_IFDIR;
-		fsStat->mtime = 0;
+		fsStat->m_CreationTime = 0;
+		fsStat->m_LastAccessTime = 0;
+		fsStat->m_LastWriteTime = 0;
 		fsStat->mode |= 0664;
 		return 0;
 	}
@@ -610,7 +617,9 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	{
 		fsStat->size = ( seek_t( ent.nFileSizeHigh ) << 32 ) + ent.nFileSizeLow;
 		fsStat->dwFileAttributes = ent.dwFileAttributes;
-		fsStat->mtime = ent.ftLastWriteTime;
+		fsStat->m_CreationTime = ent.ftCreationTime;
+		fsStat->m_LastAccessTime = ent.ftLastAccessTime;
+		fsStat->m_LastWriteTime = ent.ftLastWriteTime;
 
 		if ( ent.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 		{
@@ -634,6 +643,15 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	//...
 	SetError( err, 50 );
 	return -1;
+}
+
+int FSSys::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info )
+{
+	const unicode_t* lpFileName = path.GetUnicode();
+
+	DWORD Attr = st->dwFileAttributes;
+
+	return SetFileAttributesW( lpFileName, Attr ) ? 0 : -1;
 }
 
 int64_t FSSys::GetFileSystemFreeSpace( FSPath& path, int* err )
@@ -668,7 +686,9 @@ int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
 
 	fsStat->size = ( seek_t( e.nFileSizeHigh ) << 32 ) + e.nFileSizeLow;
 	fsStat->dwFileAttributes = e.dwFileAttributes;
-	fsStat->mtime = e.ftLastWriteTime;
+	fsStat->m_CreationTime = e.ftCreationTime;
+	fsStat->m_LastAccessTime = e.ftLastAccessTime;
+	fsStat->m_LastWriteTime = e.ftLastWriteTime;
 
 	if ( e.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 	{
@@ -955,7 +975,10 @@ bool WNetEnumerator::Fill( DWORD* pErr )
 }
 
 
-int FSWin32Net::SetFileTime   ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info ) { if ( err ) { *err = ERRNOSUPPORT; } return -1; }
+int FSWin32Net::SetFileTime( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+{
+	if ( err ) { *err = ERRNOSUPPORT; } return -1;
+}
 
 int FSWin32Net::ReadDir ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 {
@@ -1224,7 +1247,7 @@ int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 }
 
 
-int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+int FSSys::SetFileTime  ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
 	struct timeval tv[2];
 	tv[0].tv_sec  = aTime;
@@ -1370,7 +1393,9 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	{
 		fsStat->mode = st_link.st_mode;
 		fsStat->size   = st_link.st_size;
-		fsStat->mtime  = st_link.st_mtime;
+		fsStat->m_CreationTime = st_link.st_ctime;
+		fsStat->m_LastAccessTime = st_link.st_atime;
+		fsStat->m_LastWriteTime = st_link.st_mtime;
 		fsStat->gid = st_link.st_gid;
 		fsStat->uid = st_link.st_uid;
 
@@ -1379,7 +1404,6 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 
 		return 0;
 	}
-
 #endif
 
 	struct stat st;
@@ -1392,7 +1416,9 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 
 	fsStat->mode = st.st_mode;
 	fsStat->size   = st.st_size;
-	fsStat->mtime  = st.st_mtime;
+	fsStat->m_CreationTime = st.st_ctime;
+	fsStat->m_LastAccessTime = st.st_atime;
+	fsStat->m_LastWriteTime = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 
@@ -1400,6 +1426,13 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	fsStat->ino = st.st_ino;
 
 	return 0;
+}
+
+int FSSys::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info )
+{
+	// TODO: implement
+	SetError( err, 0 );
+	return -1;
 }
 
 int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
@@ -1416,7 +1449,9 @@ int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
 
 	fsStat->mode = st.st_mode;
 	fsStat->size   = st.st_size;
-	fsStat->mtime  = st.st_mtime;
+	fsStat->m_CreationTime = st.st_ctime;
+	fsStat->m_LastAccessTime = st.st_atime;
+	fsStat->m_LastWriteTime = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 
@@ -1710,7 +1745,7 @@ int CmpFunc(FSNode* a, FSNode* b)
 	}
 	case SORT_MTIME:
 	{
-								  time_t cmpTime = a->st.mtime - b->st.mtime;
+								  time_t cmpTime = a->st.m_LastWriteTime - b->st.m_LastWriteTime;
 								  if (cmpTime)
 									  return isAscending ? (cmpTime > 0 ? 1 : -1) : (cmpTime > 0 ? -1 : 1);
 								  break;
@@ -1743,7 +1778,7 @@ FSNodeCmpFunc* FSNodeVectorSorter::getCmpFunc(bool isAscending, bool isCaseSensi
 	default: // SORT_NONE
 		break;
 	}
-	return 0;
+	return nullptr;
 }
 
 void FSNodeVectorSorter::Sort(std::vector<FSNode*>& nodeVector, 
@@ -1946,13 +1981,12 @@ unicode_t* FSStat::GetModeStr( unicode_t buf[64] )
 	return buf;
 }
 
-
-unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
+unicode_t* FSTimeToStr( unicode_t ret[64], FSTime TimeValue )
 {
 	char str[64];
 	unicode_t* t = ret;
 #ifdef _WIN32
-	FILETIME mt = mtime;
+	FILETIME mt = TimeValue;
 	FILETIME lt;
 	SYSTEMTIME st;
 
@@ -1962,7 +1996,7 @@ unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
 	           int( st.wDay ), int( st.wMonth ), int( st.wYear ),
 	           int( st.wHour ), int( st.wMinute ), int( st.wSecond ) );
 #else
-	time_t mt = mtime;
+	time_t mt = TimeValue;
 	struct tm* p = localtime( &mt );
 
 	if ( p )
@@ -1988,7 +2022,11 @@ unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
 
 	*t = 0;
 	return ret;
+}
 
+unicode_t* FSStat::GetMTimeStr( unicode_t ret[64] )
+{
+	return FSTimeToStr( ret, m_LastWriteTime );
 }
 
 unicode_t* FSStat::GetPrintableSizeStr( unicode_t buf[64] )

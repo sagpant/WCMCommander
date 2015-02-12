@@ -137,7 +137,9 @@ struct FSStat
 #endif
 	int mode;
 	int64_t size;
-	FSTime mtime;
+	FSTime m_CreationTime;
+	FSTime m_LastAccessTime;
+	FSTime m_LastWriteTime;
 	int uid;
 	int gid;
 
@@ -148,13 +150,14 @@ struct FSStat
 #ifdef _WIN32
 		dwFileAttributes( 0 ),
 #endif
-		mode( 0 ), size( 0 ), mtime( 0 ), uid( -1 ), gid( -1 ), dev( 0 ), ino( 0 )
+		mode( 0 ), size( 0 ), m_CreationTime( 0 ), m_LastAccessTime( 0 ), m_LastWriteTime( 0 ), uid( -1 ), gid( -1 ), dev( 0 ), ino( 0 )
 	{}
 
-	FSStat( const FSStat& a ): mode( a.mode ), size( a.size ), mtime( a.mtime ), uid( a.uid ), gid( a.gid ), dev( a.dev ), ino( a.ino )
+	FSStat( const FSStat& a )
+	: mode( a.mode ), size( a.size ), m_CreationTime( a.m_CreationTime ), m_LastAccessTime( a.m_LastAccessTime ), m_LastWriteTime( a.m_LastWriteTime ), uid( a.uid ), gid( a.gid ), dev( a.dev ), ino( a.ino )
 	{ link.Copy( a.link ); }
 	FSStat& operator = ( const FSStat& a )
-	{  link.Copy( a.link ); mode = a.mode; size = a.size; mtime = a.mtime; uid = a.uid; gid = a.gid; dev = a.dev; ino = a.ino; return *this;}
+	{  link.Copy( a.link ); mode = a.mode; size = a.size; m_CreationTime = a.m_CreationTime; m_LastAccessTime = a.m_LastAccessTime; m_LastWriteTime = a.m_LastWriteTime; uid = a.uid; gid = a.gid; dev = a.dev; ino = a.ino; return *this;}
 
 	bool IsLnk() const { return !link.IsNull(); }
 	bool IsReg() const { return ( mode & S_IFMT ) == S_IFREG; }
@@ -227,7 +230,39 @@ struct FSNode: public iIntrusiveCounter
 	bool IsBad() const { return st.IsBad(); }
 
 #ifdef _WIN32
-	bool IsHidden() { return ( st.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) != 0; }
+	/// should be hidden in panels
+	bool IsHidden() const { return IsAttrHidden() || IsAttrSystem(); }
+	bool IsAttrHidden() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) != 0; }
+	bool IsAttrSystem() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM ) != 0; }
+	bool IsAttrReadOnly() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_READONLY ) != 0; }
+	bool IsAttrArchive() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE ) != 0; }
+	bool IsAttrCompressed() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED ) != 0; }
+	bool IsAttrEncrypted() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_ENCRYPTED ) != 0; }
+	bool IsAttrNotIndexed() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED ) != 0; }
+	bool IsAttrSparse() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_SPARSE_FILE ) != 0; }
+	bool IsAttrTemporary() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY ) != 0; }
+	bool IsAttrOffline() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE ) != 0; }
+	bool IsAttrReparsePoint() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) != 0; }
+	bool IsAttrVirtual() const { return ( st.dwFileAttributes & FILE_ATTRIBUTE_VIRTUAL ) != 0; }
+
+	void SetAttr( bool a, int Mask )
+	{
+		if ( a )
+		{
+			st.dwFileAttributes |= Mask;
+		}
+		else
+		{
+			st.dwFileAttributes &= ~Mask;
+		}
+	}
+
+	void SetAttrReadOnly( bool a ) { SetAttr( a, FILE_ATTRIBUTE_READONLY ); }
+	void SetAttrArchive( bool a ) { SetAttr( a, FILE_ATTRIBUTE_ARCHIVE ); }
+	void SetAttrHidden( bool a ) { SetAttr( a, FILE_ATTRIBUTE_HIDDEN ); }
+	void SetAttrSystem( bool a ) { SetAttr( a, FILE_ATTRIBUTE_SYSTEM ); }
+	void SetAttrNotIndexed( bool a ) { SetAttr( a, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED ); }
+	void SetAttrTemporary( bool a ) { SetAttr( a, FILE_ATTRIBUTE_TEMPORARY ); }
 #else
 	bool IsHidden() { return name.GetUnicode()[0] == '.'; }
 #endif
@@ -540,9 +575,11 @@ public:
 	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info );
 	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info );
 	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info );
-	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
+	virtual int SetFileTime ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
 	virtual int ReadDir  ( FSList* list, FSPath& path,  int* err, FSCInfo* info );
 	virtual int Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info );
+	/// apply attributes to a file
+	virtual int StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
 	virtual int StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info );
@@ -637,9 +674,10 @@ public:
 	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info );
 	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info );
 	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info );
-	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
+	virtual int SetFileTime ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info ) override;
 	virtual int ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info );
 	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
+	virtual int StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info );
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info );
 	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
 	virtual int StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info );
@@ -662,27 +700,27 @@ class FSWin32Net: public FS
 public:
 	enum { ERRNOSUPPORT = -1000 };
 	FSWin32Net( NETRESOURCEW* p ): FS( FS::WIN32NET ), _res( p ) {};
-	virtual unsigned Flags();
-	virtual bool IsEEXIST( int err );
-	virtual bool IsENOENT( int err );
-	virtual bool IsEXDEV( int err );
-	virtual FSString StrError( int err );
-	virtual bool Equal( FS* fs );
-	virtual int OpenRead ( FSPath& path, int flags, int* err, FSCInfo* info );
-	virtual int OpenCreate  ( FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info );
-	virtual int Close ( int fd, int* err, FSCInfo* info );
-	virtual int Read  ( int fd, void* buf, int size, int* err, FSCInfo* info );
-	virtual int Write ( int fd, void* buf, int size, int* err, FSCInfo* info );
-	virtual int Seek  ( int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet,  int* err, FSCInfo* info );
-	virtual int Rename   ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info );
-	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info );
-	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info );
-	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info );
-	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
-	virtual int ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info );
-	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
-	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
-	virtual FSString Uri( FSPath& path );
+	virtual unsigned Flags() override;
+	virtual bool IsEEXIST( int err ) override;
+	virtual bool IsENOENT( int err ) override;
+	virtual bool IsEXDEV( int err ) override;
+	virtual FSString StrError( int err ) override;
+	virtual bool Equal( FS* fs ) override;
+	virtual int OpenRead ( FSPath& path, int flags, int* err, FSCInfo* info ) override;
+	virtual int OpenCreate  ( FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info ) override;
+	virtual int Close ( int fd, int* err, FSCInfo* info ) override;
+	virtual int Read  ( int fd, void* buf, int size, int* err, FSCInfo* info ) override;
+	virtual int Write ( int fd, void* buf, int size, int* err, FSCInfo* info ) override;
+	virtual int Seek  ( int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet,  int* err, FSCInfo* info ) override;
+	virtual int Rename   ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info ) override;
+	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info ) override;
+	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info ) override;
+	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info ) override;
+	virtual int SetFileTime ( FSPath& path, FSTime cTIme, FSTime aTime, FSTime mTime, int* err, FSCInfo* info ) override;
+	virtual int ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info ) override;
+	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info ) override;
+	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info ) override;
+	virtual FSString Uri( FSPath& path ) override;
 	virtual ~FSWin32Net();
 };
 

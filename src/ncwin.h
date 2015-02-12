@@ -296,6 +296,7 @@ private:
 	void Mark( bool enable );
 	void MarkSameExt( bool enable );
 	void CtrlEnter();
+	void CtrlA();
 	void CtrlF();
 	void CtrlL();
 	void HistoryDialog();	

@@ -95,7 +95,7 @@ public:
 #ifdef _WIN32
 		SYSTEM_INFO si;
 		GetNativeSystemInfo( &si );
-		PutLabel( _LT( "System" ) );
+		PutLabel( _LT( "System info" ) );
 		{
 			const char* pt = "";
 

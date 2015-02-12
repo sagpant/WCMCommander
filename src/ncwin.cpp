@@ -38,6 +38,7 @@
 #include "folder-shortcuts.h"
 #include "folder-history.h"
 #include "fileassociations.h"
+#include "fileattributes.h"
 #include "fontdlg.h"
 #include "color-style.h"
 #include "search-dlg.h"
@@ -2008,6 +2009,21 @@ void NCWin::CtrlF()
 	}
 }
 
+void NCWin::CtrlA()
+{
+	if ( _mode != PANEL ) return;
+	if ( !_panel ) return;
+
+	if ( _panel->IsVisible() ) 
+	{
+		if ( FileAttributesDlg( this, _panel ) )
+		{
+			_leftPanel.Reread();
+			_rightPanel.Reread();
+		}
+	}
+}
+
 void NCWin::CtrlL()
 {
 	if ( _mode != PANEL ) { return; }
@@ -3636,6 +3652,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				case FC( VK_GRAVE, KM_CTRL ):
 					Home( _panel );
+					break;
+
+				case FC( VK_A, KM_CTRL ):
+					CtrlA();
 					break;
 
 				case FC( VK_L, KM_CTRL ):

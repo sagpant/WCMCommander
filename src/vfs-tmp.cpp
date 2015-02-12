@@ -22,9 +22,13 @@ FSTmpNode::FSTmpNode(const unicode_t* _name, FSTmpNode* _parentDir)
 {
 	fsStat.mode |= S_IFDIR;
 #ifdef _WIN32	
-	fsStat.mtime = FSTime(FSTime::TIME_CURRENT);
+	fsStat.m_CreationTime = FSTime(FSTime::TIME_CURRENT);
+	fsStat.m_LastAccessTime = FSTime(FSTime::TIME_CURRENT);
+	fsStat.m_LastWriteTime = FSTime(FSTime::TIME_CURRENT);
 #else
-	fsStat.mtime = time(0);
+	fsStat.m_CreationTime = time(0);
+	fsStat.m_LastAccessTime = time(0);
+	fsStat.m_LastWriteTime = time(0);
 #endif
 }
 
@@ -308,7 +312,7 @@ int FSTmp::RmDir(FSPath& path, int* err, FSCInfo* info)
 	return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 }
 
-int FSTmp::SetFileTime(FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info)
+int FSTmp::SetFileTime(FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info)
 {
 	FSTmpNode* fsTemp = rootDir.findByName(path.GetItem(path.Count() - 1));
 	if (fsTemp == 0)
@@ -317,10 +321,12 @@ int FSTmp::SetFileTime(FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCIn
 	}
 	else
 	{
-		fsTemp->fsStat.mtime = mTime;
+		fsTemp->fsStat.m_CreationTime = cTime;
+		fsTemp->fsStat.m_LastAccessTime = aTime;
+		fsTemp->fsStat.m_LastWriteTime = mTime;
 
 		if (fsTemp->nodeType == FSTmpNode::NODE_FILE)
-			return baseFS->SetFileTime(fsTemp->baseFSPath, aTime, mTime, err, info);
+			return baseFS->SetFileTime(fsTemp->baseFSPath, cTime, aTime, mTime, err, info);
 		else
 			return FS::SetError(err, 0);
 			
