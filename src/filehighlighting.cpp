@@ -201,7 +201,7 @@ public:
 		: NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit file highlighting" ) ).data(), bListOkCancel )
 		, m_Panel( Panel )
 		, m_Layout( 21, 3 )
-		, m_MaskText( 0, this, utf8_to_unicode( _LT( "A file &mask or several masks (separated with commas)" ) ).data(), &m_MaskEdit )
+		, m_MaskText( 0, this, utf8_to_unicode( _LT( "A file &mask or several file masks (separated with commas)" ) ).data(), &m_MaskEdit )
 		, m_MaskEdit( 0, this, nullptr, nullptr, 16 )
 		, m_DescriptionText( 0, this, utf8_to_unicode( _LT( "&Description of the file highlighting" ) ).data(), &m_DescriptionEdit )
 		, m_DescriptionEdit( 0, this, nullptr, nullptr, 16 )

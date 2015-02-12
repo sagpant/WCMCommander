@@ -51,7 +51,7 @@ public:
 
 		char hostName[0x100] = "";
 		gethostname( hostName, sizeof( hostName ) );
-		PutValue( _LT( "Computer name:" ), hostName );
+		PutValue( _LT( "Computer name" ), hostName );
 
 #ifdef _WIN32
 #define BUFLEN (0x100)
@@ -70,14 +70,14 @@ public:
 
 		u[i] = 0;
 #undef BUFLEN
-		PutValue( _LT( "User name:" ), u );
+		PutValue( _LT( "User name" ), u );
 #else
 		{
 			const char* user = getenv( "USER" );
 
 			if ( user )
 			{
-				PutValue( _LT( "User name:" ), user );
+				PutValue( _LT( "User name" ), user );
 			}
 
 		}
@@ -86,8 +86,8 @@ public:
 		PutLabel( _LT( "Disk" ) );
 		{
 			unicode_t buf[64];
-			PutValue( _LT( "Total bytes:" ), PrintableSizeStr( buf, statVfs.size ) );
-			PutValue( _LT( "Free bytes:" ), PrintableSizeStr( buf, statVfs.avail ) );
+			PutValue( _LT( "Total bytes" ), PrintableSizeStr( buf, statVfs.size ) );
+			PutValue( _LT( "Free bytes" ), PrintableSizeStr( buf, statVfs.avail ) );
 		}
 
 		PutSpace( 10 );
@@ -116,7 +116,7 @@ public:
 
 			char buf[0x100];
 			Lsnprintf( buf, sizeof( buf ), "%s (%i)", pt, int( si.dwNumberOfProcessors ) );
-			PutValue( _LT( "Processor:" ), buf );
+			PutValue( _LT( "Processor" ), buf );
 		}
 
 		MEMORYSTATUSEX ms;
@@ -126,11 +126,11 @@ public:
 		{
 			PutSpace( 5 );
 			unicode_t buf[64];
-			PutValue( _LT( "Total phisical memory:" ), PrintableSizeStr( buf, ms.ullTotalPhys ) );
-			PutValue( _LT( "Free phisical memory:" ), PrintableSizeStr( buf, ms.ullAvailPhys ) );
+			PutValue( _LT( "Total phisical memory" ), PrintableSizeStr( buf, ms.ullTotalPhys ) );
+			PutValue( _LT( "Free phisical memory" ), PrintableSizeStr( buf, ms.ullAvailPhys ) );
 			PutSpace( 5 );
-			PutValue( _LT( "Total paging file:" ), PrintableSizeStr( buf, ms.ullTotalPageFile ) );
-			PutValue( _LT( "Free paging file:" ), PrintableSizeStr( buf, ms.ullAvailPageFile ) );
+			PutValue( _LT( "Total paging file" ), PrintableSizeStr( buf, ms.ullTotalPageFile ) );
+			PutValue( _LT( "Free paging file" ), PrintableSizeStr( buf, ms.ullAvailPageFile ) );
 		}
 
 #else

@@ -1,3 +1,292 @@
+#smblogon.cpp:44
+id "&Domain:"
+txt "Домен:"
+
+#usermenu.cpp:25
+id "Edit user menu"
+txt "Редактировать меню пользователя"
+
+#usermenu.cpp:27
+id "&Name. Prepend hotkey with &"
+txt "Имя"
+
+#usermenu.cpp:29
+id "E&xecute command"
+txt "Выполнить команду"
+
+#usermenu.cpp:235
+id "User menu"
+txt "Меню пользователя"
+
+#wcm-config.cpp:1584
+id "Show &hidden files"
+txt "Показывать скрытые файлы"
+
+#wcm-config.cpp:1588
+id "Show folder &icons"
+txt "Показывать иконки папок"
+
+#wcm-config.cpp:1589
+id "Show &executable icons"
+txt "Показывать иконки исполнимых файлов"
+
+#wcm-config.cpp:1590
+id "Show &link icons"
+txt "Показывать иконки ссылок"
+
+#wcm-config.cpp:1591
+id "Show &scrollbar"
+txt "Показывать полосы прокрутки"
+
+#wcm-config.cpp:1592
+id "Show spaces as · in names:"
+txt "Показывать пробелы как · в именах:"
+
+#wcm-config.cpp:1593
+id "No"
+txt "Нет"
+
+#wcm-config.cpp:1594
+id "All"
+txt "Все"
+
+#wcm-config.cpp:1595
+id "Trailing only"
+txt "Только в конце"
+
+#ncwin.cpp:295
+id "Show Folder Shortcuts"
+txt "Показывать ярлыки папок"
+
+#ncwin.cpp:587
+id "Sty&les"
+txt "Стили"
+
+#ncwin.cpp:600
+id "&User menu"
+txt "Меню пользователя"
+
+#ncwin.cpp:610
+id "&Invert selection"
+txt "Обратить выделение"
+
+#ncwin.cpp:614
+id "F&olders history"
+txt "Исторя папок"
+
+#ncwin.cpp:1548
+id "Name"
+txt "Имя"
+
+#ncwin.cpp:1549
+id "Extension"
+txt "Расширение"
+
+#ncwin.cpp:1550
+id "Modification time"
+txt "Дата изменения"
+
+#ncwin.cpp:1551
+id "Size"
+txt "Размер"
+
+#ncwin.cpp:1552
+id "Unsorted"
+txt "Не сортировать"
+
+#ncwin.cpp:2135
+id "Copy %d selected file(s) to:"
+txt "Копировать %d выбранных файлов в:"
+
+#ncwin.cpp:2140
+id "Copy file under cursor to:"
+txt "Копировать выбранный файл в:"
+
+#ncwin.cpp:2254
+id "Move %d selected file(s) to:"
+txt "Переместить %d выбранных файлов в:"
+
+#ncwin.cpp:2259
+id "Move file under cursor to:"
+txt "Переместить выбранный файл в:"
+
+#search-dlg.cpp:30
+id "&Case sensitive"
+txt "Учитывать регистр"
+
+#search-dlg.cpp:98
+id "File &mask:"
+txt "Маска:"
+
+#search-dlg.cpp:99
+id "&Text:"
+txt "Текст:"
+
+#wcm-config.cpp:1843
+id "&3D buttons"
+txt "3D кнопки"
+
+#wcm-config.cpp:1851
+id "Show b&uttonbar"
+txt "Показывать нижнюю строку"
+
+#wcm-config.cpp:1852
+id "Show buttonbar &icons"
+txt "Показывать иконки в нижней строке"
+
+#wcm-config.cpp:1853
+id "Show &menubar"
+txt "Показывать строку меню"
+
+#wcm-config.cpp:2328
+id "Auto &save setup"
+txt "Автоматически сохранять настройки"
+
+#wcm-config.cpp:2330
+id "Store &passwords"
+txt "Сохранять пароли"
+
+#ncwin.cpp:1291
+id "2. Home"
+txt "2. Домашний каталог"
+
+#fileopers.cpp:589
+id "Do you want to delete file?\n"
+txt "Удалить файл?"
+
+#fileopers.cpp:1305
+id "Temporary panel can store only files from the same file system:\n"
+txt "Временная панель может хранить файлы только из одной файловой системы:"
+
+#folder-history.cpp:76
+id "Folders History"
+txt "История папок"
+
+#folder-shortcuts.cpp:84
+id "Folder Shortcuts"
+txt "Быстрый доступ к папкам"
+
+
+#filehighlighting.cpp:237
+id "Mask"
+txt "Маска"
+
+#filehighlighting.cpp:238
+id "Reset to default colors"
+txt "Сбросить на цвета по умолчанию"
+
+#ncwin.cpp:589
+id "Files &highlighting"
+txt "Раскраска файлов"
+
+#filehighlighting.cpp:569
+id "Files highlighting"
+txt "Раскраска файлов"
+
+#filehighlighting.cpp:207
+id "Size >= (bytes)"
+txt "Размер >= (байт)"
+
+#filehighlighting.cpp:209
+id "Size <= (bytes)"
+txt "Размер <= (байт)"
+
+#filehighlighting.cpp:211
+id "Colors (hexadecimal BGR)"
+txt "Цвета (шестнадцатиричные BGR)"
+
+#filehighlighting.cpp:213
+id "Normal foreground"
+txt "Обычный текст"
+
+#filehighlighting.cpp:215
+id "Normal background"
+txt "Обычный фон"
+
+#filehighlighting.cpp:217
+id "filename.ext"
+txt ""
+
+#filehighlighting.cpp:219
+id "Selected foreground"
+txt "Выделенный текст"
+
+#filehighlighting.cpp:221
+id "Selected background"
+txt "Выделенный фон"
+
+#filehighlighting.cpp:225
+id "Cursor foreground"
+txt "Текст под курсором"
+
+#filehighlighting.cpp:227
+id "Cursor background"
+txt "Фон под курсором"
+
+#filehighlighting.cpp:231
+id "Selected cursor foreground"
+txt "Выделенный текст под курсором"
+
+#filehighlighting.cpp:233
+id "Selected cursor background"
+txt "Выделенный фон под курсором"
+
+#filehighlighting.cpp:200
+id "Edit file highlighting"
+txt "Редактировать подсветку файлов"
+
+#filehighlighting.cpp:205
+id "&Description of the file highlighting"
+txt "Описание"
+
+#dlg-ctrl-l.cpp:53
+id "Computer name"
+txt "Имя компьютера"
+
+#dlg-ctrl-l.cpp:72
+id "User name"
+txt "Имя пользователя"
+
+#dlg-ctrl-l.cpp:85
+id "Disk"
+txt "Диск"
+
+#dlg-ctrl-l.cpp:88
+id "Total bytes"
+txt "Всего байт"
+
+#dlg-ctrl-l.cpp:89
+id "Free bytes"
+txt "Свободно байт"
+
+#dlg-ctrl-l.cpp:97
+id "System"
+txt "Система"
+
+#dlg-ctrl-l.cpp:118
+id "Processor"
+txt "Процессор"
+
+#dlg-ctrl-l.cpp:128
+id "Total phisical memory"
+txt "Всего физической памяти"
+
+#dlg-ctrl-l.cpp:129
+id "Free phisical memory"
+txt "Свободно физической памяти"
+
+#dlg-ctrl-l.cpp:131
+id "Total paging file"
+txt "Всего файла подкачки"
+
+#dlg-ctrl-l.cpp:132
+id "Free paging file"
+txt "Свободно файла подкачки"
+
+#dlg-ctrl-l.cpp:45
+id "Information"
+txt "Информация"
+
 #panel.cpp:1003
 id "%s bytes in %i files%s"
 txt "%s байт в %i файлах%s"
@@ -23,11 +312,11 @@ id "Add charsets"
 txt "Добавить кодировку"
 
 #charsetdlg.cpp:205
-id "Add..."
+id "&Add..."
 txt "Добавить..."
 
 #ftplogon.cpp:41
-id "Anonymous logon"
+id "&Anonymous logon"
 txt "Анонимный вход"
 
 #wcm-config.cpp:1381
@@ -35,7 +324,7 @@ id "Ask user if Exec/Open conflict"
 txt "Запрашивать при конфликте Exec/Open"
 
 #wcm-config.cpp:857
-id "Auto indent"
+id "Auto &indent"
 txt "Автоотступ"
 
 #wcm-config.cpp:1224
@@ -286,7 +575,7 @@ id "Can`t start viewer in this filesystem"
 txt "Невозможно запустить viewer в этой файловой системе"
 
 #wcm-config.cpp:799
-id "Case sensitive sort"
+id "&Case sensitive sort"
 txt "Учитывать регистр при сортировке"
 
 #search-dlg.cpp:22
@@ -306,7 +595,7 @@ txt "Кодировка"
 
 #ftplogon.cpp:45
 #sftpdlg.cpp:45
-id "Charset:"
+id "&Charset:"
 txt "Кодировка:"
 
 #wcm-config.cpp:971
@@ -375,6 +664,10 @@ txt "Повторить"
 id "DB>Skip All"
 txt "Пропустить все"
 
+#ncdialogs.cpp:145
+id "DB>"
+txt "DB>"
+
 #fileopers.cpp:29
 id "DB>Skip"
 txt "Пропустить"
@@ -393,7 +686,7 @@ id "Del"
 txt "Удалить"
 
 #charsetdlg.cpp:206
-id "Del..."
+id "&Del..."
 txt "Удалить..."
 
 #shortcuts.cpp:351
@@ -474,12 +767,16 @@ id "Editor"
 txt "Редактор"
 
 #wcm-config.cpp:1389
-id "Enable ESC key to show/hide panels"
-txt "Разрешить ESC чтобы показать/спрятать панели"
+id "Enable &ESC key to show/hide panels"
+txt "ESC включает/выключает панели"
 
 #wcm-config.cpp:1390
-id "Enable BACKSPACE key to go up dir"
-txt "Разрешить BACKSPACE для перехода в родительскую папку"
+id "Enable &BACKSPACE key to go up dir"
+txt "BACKSPACE переходит в родительскую папку"
+
+#wcm-config.cpp:2325
+id "Enable &ESC key to clear the command line"
+txt "ESC очищает командную строку"
 
 #wcm-config.cpp:1225
 #wcm-config.cpp:1360
@@ -624,7 +921,7 @@ id "Language"
 txt "Язык"
 
 #wcm-config.cpp:1384
-id "Language:"
+id "&Language:"
 txt "Язык:"
 
 #ncwin.cpp:212
@@ -634,7 +931,7 @@ txt "Левая"
 #ftplogon.cpp:42
 #smblogon.cpp:39
 #sftpdlg.cpp:42
-id "Login:"
+id "&Login:"
 txt "Имя пользователя:"
 
 #ncwin.cpp:163
@@ -669,7 +966,7 @@ id "&Options"
 txt "Настройки"
 
 #charsetdlg.cpp:204
-id "Other..."
+id "&Other..."
 txt "Другие..."
 
 #fileopers.cpp:924
@@ -694,17 +991,17 @@ id "Panel"
 txt "Панель"
 
 #ftplogon.cpp:56
-id "Passive mode"
+id "Passi&ve mode"
 txt "Пассивный режим"
 
 #ftplogon.cpp:43
 #smblogon.cpp:40
-id "Password:"
+id "Pass&word:"
 txt "Пароль:"
 
 #ftplogon.cpp:44
 #sftpdlg.cpp:44
-id "Port:"
+id "&Port:"
 txt "Порт:"
 
 #ncwin.cpp:932
@@ -738,7 +1035,7 @@ id "Replace text"
 txt "Поиск и замена текста"
 
 #search-dlg.cpp:142
-id "Replace with:"
+id "&Replace with:"
 txt "Заменить на:"
 
 #search-dlg.cpp:139
@@ -797,7 +1094,7 @@ id "Save file as ..."
 txt "Сохранить файл как ..."
 
 #wcm-config.cpp:856
-id "Save file position"
+id "Save file &position"
 txt "Сохранять позицию в файле"
 
 #ncwin.cpp:73
@@ -822,7 +1119,7 @@ id "Search files"
 txt "Поиск файлов"
 
 #search-dlg.cpp:141
-id "Search for:"
+id "&Search for:"
 txt "Ищем:"
 
 #ncwin.cpp:75
@@ -860,15 +1157,15 @@ txt "Пометить группу"
 #smblogon.cpp:35
 #smblogon.cpp:37
 #sftpdlg.cpp:41
-id "Server:"
+id "&Server:"
 txt "Сервер:"
 
 #wcm-config.cpp:984
-id "Set X11 font..."
+id "Set &X11 font..."
 txt "Установить X11 шрифт..."
 
 #wcm-config.cpp:983
-id "Set font..."
+id "Set &font..."
 txt "Установить шрифт..."
 
 #shortcuts.cpp:266
@@ -931,7 +1228,7 @@ id "S&tyles"
 txt "Внешний вид"
 
 #wcm-config.cpp:858
-id "Syntax highlighting"
+id "Syntax &highlighting"
 txt "Подсветка синтаксиса"
 
 #wcm-config.cpp:1378
@@ -943,7 +1240,7 @@ id "System settings"
 txt "Системные параметры"
 
 #wcm-config.cpp:859
-id "Tab size:"
+id "&Tab size:"
 txt "Размер табуляции:"
 
 #wcm-config.cpp:1487
@@ -1030,39 +1327,39 @@ id "Edit file associations"
 txt "Редактировать файловую ассоциацию"
 
 #fileassociations.cpp:25
-id "A file mask or several file masks (separated with commas)"
+id "A file &mask or several file masks (separated with commas)"
 txt "Маска или несколько масок (разделенных запятыми)"
 
 #fileassociations.cpp:27
-id "Description of the file association"
+id "&Description of the file association"
 txt "Описание"
 
 #fileassociations.cpp:29
-id "Execute command (used for Enter)"
+id "E&xecute command (used for Enter)"
 txt "Команда выполнения (для Enter)"
 
 #fileassociations.cpp:31
-id "Execute command (used for Ctrl+PgDn)"
+id "Execute command (used for Ctrl+&PgDn)"
 txt "Команда выполнения (для Ctrl+PgDn)"
 
 #fileassociations.cpp:33
-id "View command (used for F3)"
+id "&View command (used for F3)"
 txt "Команда просмотра (для F3)"
 
 #fileassociations.cpp:35
-id "View command (used for Alt+F3)"
+id "View command (used for Alt+F&3)"
 txt "Команда просмотра (для Alt+F3)"
 
 #fileassociations.cpp:37
-id "Edit command (used for F4)"
+id "&Edit command (used for F4)"
 txt "Команда редактирования (для F4)"
 
 #fileassociations.cpp:39
-id "Edit command (used for Alt+F4)"
+id "Edit command (used for Alt+F&4)"
 txt "Команда редактирования (для Alt+F4)"
 
 #fileassociations.cpp:41
-id "Start in this terminal"
+id "Start in &this terminal"
 txt "Запускать в этом терминале"
 
 #fileassociations.cpp:282
@@ -1082,11 +1379,11 @@ id "Quit without saving?"
 txt "Выйти без сохранения?"
 
 #wcm-config.cpp:1331
-id "Select folders"
+id "Select &folders"
 txt "Выбирать папки"
 
 #wcm-config.cpp:1332
-id "Show .. in the root folder"
+id "Show .. in the &root folder"
 txt "Показывать .. в корне"
 
 #wcm-config.cpp:1333
@@ -1098,11 +1395,11 @@ id "Show executable icons"
 txt "Показывать иконки исполнимых файлов"
 
 #wcm-config.cpp:2046
-id "Enable autocomplete"
+id "Enable &autocomplete"
 txt "Включить автодополнение"
 
 #wcm-config.cpp:2047
-id "Show host name"
+id "Show &host name"
 txt "Показывать имя хоста"
 
 #dircalc.cpp:535
