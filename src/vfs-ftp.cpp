@@ -944,7 +944,7 @@ int FSFtp::RmDir  ( FSPath& path, int* err, FSCInfo* info )
 
 
 
-int FSFtp::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+int FSFtp::SetFileTime  ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
 	return 0;
 }

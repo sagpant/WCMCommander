@@ -575,7 +575,7 @@ public:
 	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info );
 	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info );
 	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info );
-	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
+	virtual int SetFileTime ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
 	virtual int ReadDir  ( FSList* list, FSPath& path,  int* err, FSCInfo* info );
 	virtual int Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 	/// apply attributes to a file
@@ -674,7 +674,7 @@ public:
 	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info );
 	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info );
 	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info );
-	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
+	virtual int SetFileTime ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info ) override;
 	virtual int ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info );
 	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 	virtual int StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info );
@@ -700,27 +700,27 @@ class FSWin32Net: public FS
 public:
 	enum { ERRNOSUPPORT = -1000 };
 	FSWin32Net( NETRESOURCEW* p ): FS( FS::WIN32NET ), _res( p ) {};
-	virtual unsigned Flags();
-	virtual bool IsEEXIST( int err );
-	virtual bool IsENOENT( int err );
-	virtual bool IsEXDEV( int err );
-	virtual FSString StrError( int err );
-	virtual bool Equal( FS* fs );
-	virtual int OpenRead ( FSPath& path, int flags, int* err, FSCInfo* info );
-	virtual int OpenCreate  ( FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info );
-	virtual int Close ( int fd, int* err, FSCInfo* info );
-	virtual int Read  ( int fd, void* buf, int size, int* err, FSCInfo* info );
-	virtual int Write ( int fd, void* buf, int size, int* err, FSCInfo* info );
-	virtual int Seek  ( int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet,  int* err, FSCInfo* info );
-	virtual int Rename   ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info );
-	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info );
-	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info );
-	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info );
-	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
-	virtual int ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info );
-	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
-	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info );
-	virtual FSString Uri( FSPath& path );
+	virtual unsigned Flags() override;
+	virtual bool IsEEXIST( int err ) override;
+	virtual bool IsENOENT( int err ) override;
+	virtual bool IsEXDEV( int err ) override;
+	virtual FSString StrError( int err ) override;
+	virtual bool Equal( FS* fs ) override;
+	virtual int OpenRead ( FSPath& path, int flags, int* err, FSCInfo* info ) override;
+	virtual int OpenCreate  ( FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info ) override;
+	virtual int Close ( int fd, int* err, FSCInfo* info ) override;
+	virtual int Read  ( int fd, void* buf, int size, int* err, FSCInfo* info ) override;
+	virtual int Write ( int fd, void* buf, int size, int* err, FSCInfo* info ) override;
+	virtual int Seek  ( int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet,  int* err, FSCInfo* info ) override;
+	virtual int Rename   ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info ) override;
+	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info ) override;
+	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info ) override;
+	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info ) override;
+	virtual int SetFileTime ( FSPath& path, FSTime cTIme, FSTime aTime, FSTime mTime, int* err, FSCInfo* info ) override;
+	virtual int ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info ) override;
+	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info ) override;
+	virtual int Symlink  ( FSPath& path, FSString& str, int* err, FSCInfo* info ) override;
+	virtual FSString Uri( FSPath& path ) override;
 	virtual ~FSWin32Net();
 };
 

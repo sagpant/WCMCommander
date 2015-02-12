@@ -339,7 +339,7 @@ int FSSmb::RmDir( FSPath& path, int* err, FSCInfo* info )
 }
 
 
-int FSSmb::SetFileTime( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+int FSSmb::SetFileTime( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
 	FREPARE_SMB_OPER( lock, info, &_param );
 

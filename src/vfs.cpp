@@ -28,7 +28,7 @@ int FS::Rename ( FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info )   
 int FS::MkDir  ( FSPath& path, int mode, int* err,  FSCInfo* info )    { SetError( err, 0 ); return -1; }
 int FS::Delete ( FSPath& path, int* err, FSCInfo* info )            { SetError( err, 0 ); return -1; }
 int FS::RmDir  ( FSPath& path, int* err, FSCInfo* info )            { SetError( err, 0 ); return -1; }
-int FS::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )  { SetError( err, 0 ); return -1; }
+int FS::SetFileTime  ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )  { SetError( err, 0 ); return -1; }
 int FS::ReadDir   ( FSList* list, FSPath& path,  int* err, FSCInfo* info )    { SetError( err, 0 ); return -1; }
 int FS::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )         { SetError( err, 0 ); return -1; }
 int FS::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info ) { SetError( err, 0 ); return -1; }
@@ -399,7 +399,7 @@ int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 	return -1;
 }
 
-int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+int FSSys::SetFileTime  ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
 	HANDLE h = CreateFileW( SysPathStr( _drive, path.GetUnicode( '\\' ) ).data(), FILE_WRITE_ATTRIBUTES , 0, 0, OPEN_EXISTING, 0, 0 );
 
@@ -409,10 +409,11 @@ int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FS
 		return -1;
 	}
 
+	FILETIME ct = cTime;
 	FILETIME at = aTime;
 	FILETIME mt = mTime;
 
-	if ( !::SetFileTime( h, NULL, &at, &mt ) )
+	if ( !::SetFileTime( h, &ct, &at, &mt ) )
 	{
 		SetError( err, GetLastError() );
 		CloseHandle( h );
@@ -974,7 +975,10 @@ bool WNetEnumerator::Fill( DWORD* pErr )
 }
 
 
-int FSWin32Net::SetFileTime   ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info ) { if ( err ) { *err = ERRNOSUPPORT; } return -1; }
+int FSWin32Net::SetFileTime( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+{
+	if ( err ) { *err = ERRNOSUPPORT; } return -1;
+}
 
 int FSWin32Net::ReadDir ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 {
@@ -1243,7 +1247,7 @@ int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 }
 
 
-int FSSys::SetFileTime  ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
+int FSSys::SetFileTime  ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info )
 {
 	struct timeval tv[2];
 	tv[0].tv_sec  = aTime;

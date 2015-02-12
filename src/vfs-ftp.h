@@ -162,7 +162,7 @@ public:
 	virtual int MkDir ( FSPath& path, int mode, int* err,  FSCInfo* info );
 	virtual int Delete   ( FSPath& path, int* err, FSCInfo* info );
 	virtual int RmDir ( FSPath& path, int* err, FSCInfo* info );
-	virtual int SetFileTime ( FSPath& path, FSTime aTime, FSTime mTime, int* err, FSCInfo* info );
+	virtual int SetFileTime ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info ) override;
 	virtual int ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info );
 	virtual int Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info );
 
