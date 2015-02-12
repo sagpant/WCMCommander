@@ -265,6 +265,7 @@
     <ClCompile Include="src/wal\wal_sys_api.cpp" />
     <ClCompile Include="src/wal\wal_tmpls.cpp" />
     <ClCompile Include="src/wcm-config.cpp" />
+    <ClCompile Include="src\nceditline.cpp" />
     <ClCompile Include="src\urlparser\LUrlParser.cpp" />
     <ClCompile Include="src\folder-history.cpp" />
     <ClCompile Include="src\path-list.cpp" />
@@ -339,6 +340,7 @@
     <ClInclude Include="src/wal/wal_sys_api.h" />
     <ClInclude Include="src/wal/wal_tmpls.h" />
     <ClInclude Include="src/wcm-config.h" />
+    <ClInclude Include="src\nceditline.h" />
     <ClInclude Include="src/urlparser/LUrlParser.h" />
     <ClInclude Include="src/folder-history.h" />
     <ClInclude Include="src/path-list.h" />

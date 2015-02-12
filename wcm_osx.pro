@@ -62,6 +62,7 @@ SOURCES += src/nc.cpp \
     src/path-list.cpp \
     src/folder-shortcuts.cpp \
     src/folder-history.cpp \
+    src/nceditline.cpp \
     src/smblogon.cpp \
     src/strconfig.cpp \
     src/strmasks.cpp \
@@ -138,6 +139,7 @@ HEADERS += \
     src/path-list.h \
     src/folder-shortcuts.h \
     src/folder-history.h \
+    src/nceditline.h \
     src/smblogon.h \
     src/strconfig.h \
     src/string-util.h \
