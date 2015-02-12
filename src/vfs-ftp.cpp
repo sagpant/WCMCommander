@@ -325,7 +325,14 @@ int FSFtp::GetFreeNode( int* err, FSCInfo* info )
 
 	if ( !_param.isSet && info )
 	{
-		if ( info->FtpLogon( &_param ) && _param.isSet )
+		// unlock the mutex before doing a modal window
+		mutex.Unlock();
+
+		bool LogonSuccessful = info->FtpLogon( &_param );
+
+		mutex.Lock();
+
+		if (  LogonSuccessful && _param.isSet )
 		{
 			MutexLock l1( &infoMutex );
 			_infoParam = _param;
