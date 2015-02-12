@@ -1,3 +1,63 @@
+#fileattributes.cpp:55
+id "Attributes"
+txt "Атрибуты"
+
+#fileattributes.cpp:63
+id "Read only"
+txt "Только для чтения"
+
+#fileattributes.cpp:64
+id "Archive"
+txt "Архивный"
+
+#fileattributes.cpp:65
+id "Hidden"
+txt "Скрытый"
+
+#fileattributes.cpp:66
+id "System"
+txt "Системный"
+
+#fileattributes.cpp:67
+id "Compressed"
+txt "Сжатый"
+
+#fileattributes.cpp:68
+id "Encrypted"
+txt "Зашифрованный"
+
+#fileattributes.cpp:69
+id "NotIndexed"
+txt "Неиндексируемый"
+
+#fileattributes.cpp:70
+id "Sparse"
+txt "Разряженный"
+
+#fileattributes.cpp:71
+id "Temporary"
+txt "Временный"
+
+#fileattributes.cpp:72
+id "Offline"
+txt "Оффлайновый"
+
+#fileattributes.cpp:73
+id "ReparsePoint"
+txt "Точка повторного разбора"
+
+#fileattributes.cpp:74
+id "Virtual"
+txt "Виртуальный"
+
+#fileattributes.cpp:87
+id "Change attributes for folder:"
+txt "Изменить атрибуты для папки:"
+
+#fileattributes.cpp:91
+id "Change file attributes for:"
+txt "Изменить атрибуты для:"
+
 #smblogon.cpp:44
 id "&Domain:"
 txt "Домен:"
