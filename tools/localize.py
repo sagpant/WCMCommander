@@ -9,7 +9,7 @@ ExcludeWords = [ "xxx" ]
 
 TotalTextStrings = 0
 
-Words = codecs.open( "../wcm/install-files/share/wcm/lang/ltext.ru", "r", "utf-8" ).readlines()
+Words = codecs.open( "../install-files/share/wcm/lang/ltext.ru", "r", "utf-8" ).readlines()
 Dictionary = []
 
 for Index, Line in enumerate(Words):
@@ -79,7 +79,7 @@ def Scan(Path):
 			if IsCPP or IsH:
 				ScanFile( Item, Path )
 
-Scan( "../wcm" )
+Scan( "../src" )
 
 if TotalTextStrings > 0:
 	print( "Total non-localized strings:", TotalTextStrings )
