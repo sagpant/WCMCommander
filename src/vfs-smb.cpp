@@ -460,7 +460,6 @@ int FSSmb::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 	return -1;
 	/*
 
-	////////////// СЂР°Р±РѕС‚Р°РµС‚, РЅРѕ РїСЂРё РїРµСЂРІРѕРј РІС‹Р·РѕРІРµ РІС‹РґР°РµС‚ "no talloc stackframe around, leaking memory", РҐР—
 	FREPARE_SMB_OPER(lock, info, &_param);
 	ASSERT(vst);
 

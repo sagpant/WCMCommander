@@ -370,7 +370,10 @@ int main( int argc, char** argv )
 
 			const char* langId = g_WcmConfig.systemLang.data() ? g_WcmConfig.systemLang.data() : "+";
 #ifdef _WIN32
-			InitLocale( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "lang" ).data() ).data(), langId );
+			if ( !InitLocale( L"install-files/share/wcm/lang", langId ) )
+			{
+				InitLocale( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "lang" ).data() ).data(), langId );
+			}
 #else
 
 			if ( !InitLocale( "install-files/share/wcm/lang", langId ) )
