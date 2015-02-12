@@ -1,3 +1,7 @@
+#ncwin.cpp:609
+id "File &attributes"
+txt "Атрибуты файлов"
+
 #fileattributes.cpp:55
 id "Attributes"
 txt "Атрибуты"
