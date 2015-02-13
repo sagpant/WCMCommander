@@ -608,7 +608,7 @@ NCWin::NCWin()
 	_mdFiles.AddCmd( ID_DELETE, _LT( "&Delete" ), "F8" );
 	_mdFiles.AddSplit();
 	_mdFiles.AddCmd( ID_FILE_ATTRIBUTES, _LT( "File &attributes" ), "Ctrl-A" );
-	_mdFiles.AddCmd( ID_APPLY_COMMAND, _LT( "Apply &command" ), "Ctrl-G" );
+	_mdFiles.AddCmd( ID_APPLY_COMMAND, _LT( "A&pply command" ), "Ctrl-G" );
 
 	_mdFiles.AddSplit();
 	_mdFiles.AddCmd( ID_GROUP_SELECT, _LT( "Select &group" ), "Gray +" );
