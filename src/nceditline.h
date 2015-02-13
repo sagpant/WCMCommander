@@ -10,36 +10,34 @@
 
 using namespace wal;
 
-typedef ccollect<std::vector<unicode_t>> HistCollect;
 
-
-// editline with history and autocomplete
-class NCEditLine: public ComboBox {
-
+/**
+* Edit line controll with history and autocomplete support.
+*/
+class NCEditLine : public ComboBox
+{
 private:
-    clPtr<HistCollect> _histList;
-	const char *_group;
-	bool _autoMode;
-	void SetCBList(const unicode_t *txt);
-	void LoadHistoryList();
+	const char* m_fieldName;
+	bool m_autoMode;
+
+	//void SetCBList(const unicode_t* txt);
+	//void Clear();
 
 public:
-	NCEditLine(const char *acGroup, int nId, Win *parent, const unicode_t *txt, int cols, int rows, bool up, bool frame3d, bool nofocusframe, crect *rect = 0);
-	
-    virtual ~NCEditLine() {}
+	NCEditLine( const char* fieldName, int nId, Win* parent, const unicode_t* txt,
+		int cols, int rows, bool up, bool frame3d, bool nofocusframe, crect* rect = 0 );
 
-    virtual bool Command(int id, int subId, Win *win, void *d);
-	
-    virtual int UiGetClassId();
-	
-    virtual bool OnOpenBox();
-	
-    virtual void OnCloseBox();
-	
-    void Clear();
+	virtual ~NCEditLine()
+	{
+	}
 
-    void Commit();
+	bool Command( int id, int subId, Win* win, void* d ) override;
+
+	int UiGetClassId() override;
+
+	bool OnOpenBox() override;
+
+	void OnCloseBox() override;
+
+	void UpdateHistory();
 };
-
-
-HistCollect* HistGetList(const char *histGroup);

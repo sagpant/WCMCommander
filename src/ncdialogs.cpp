@@ -13,6 +13,7 @@
 #include "ltext.h"
 #include "unicode_lc.h"
 #include "panel.h"
+#include "nceditline.h"
 
 bool createDialogAsChild //= false;
    = true;
@@ -454,6 +455,12 @@ NCDialog::~NCDialog()
 
 bool NCVertDialog::EventChildKey( Win* child, cevent_key* pEvent )
 {
+    // try to preprocess key combinations like Cntrl + VK_DOWN
+    if ( dynamic_cast<NCEditLine*>(child) && child->EventKey(pEvent) )
+    {
+        return true;
+    }
+
 	if ( pEvent->Type() == EV_KEYDOWN )
 	{
 		if ( pEvent->Key() == VK_UP || pEvent->Key() == VK_DOWN )
@@ -483,9 +490,9 @@ bool NCVertDialog::EventChildKey( Win* child, cevent_key* pEvent )
 
 			return true;
 		}
-	};
+	}
 
-	return NCDialog::EventChildKey( child, pEvent );
+    return NCDialog::EventChildKey( child, pEvent );
 }
 
 

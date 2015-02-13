@@ -6,7 +6,6 @@
 
 namespace wal
 {
-
 	extern int uiClassButton;
 	extern int uiClassEditLine;
 	extern int uiClassMenuBar;
@@ -638,19 +637,22 @@ namespace wal
 			FRAME3D  = 4,
 			NOFOCUSFRAME = 8
 		};
-	private:
+	
+    private:
 		unsigned _flags;
 		CaptureSD captureSD;
 		Layout _lo;
-		struct Node
+		
+        struct Node
 		{
 			std::vector<unicode_t> text;
 			void* data;
 		};
-		EditLine _edit;
+		
+        EditLine _edit;
 		crect _buttonRect;
 		ccollect<Node, 0x100> _list;
-		clPtr<TextList> _box;
+        clPtr<TextList> _box;
 //		int _cols;
 		int _rows;
 		int _current;
@@ -663,14 +665,17 @@ namespace wal
 
 	public:
 		ComboBox( int nId, Win* parent, int cols, int rows, unsigned flags = 0,  crect* rect = 0 );
-		virtual void Paint( GC& gc, const crect& paintRect );
+        virtual ~ComboBox() {}
+		
+        virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
-		virtual bool EventKey( cevent_key* pEvent );
+        virtual bool EventKey( cevent_key* pEvent );
 		virtual bool EventFocus( bool recv );
 		virtual bool Command( int id, int subId, Win* win, void* d );
 		virtual void OnChangeStyles();
 		virtual int UiGetClassId();
-		void Clear();
+		
+        void Clear();
 		void Append( const unicode_t* text, void* data = 0 );
 		void Append( const char* text, void* data = 0 );
 
@@ -690,16 +695,15 @@ namespace wal
 		void MoveCurrent( int n );
 		bool IsBoxOpened() { return _box.ptr() != 0; }
 		void CloseBox();
-		virtual bool OnOpenBox();
+		
+        virtual bool OnOpenBox();
 		virtual void OnCloseBox();
-
-		virtual ~ComboBox();
 	};
 
-//ToolTip один на все приложение, поэтому установка нового, удаляет предыдущий
+//ToolTip is global, setting new one is replaceing previous
 	void ToolTipShow( Win* w, int x, int y, const unicode_t* s );
 	void ToolTipShow( int x, int y, const char* s );
 	void ToolTipHide();
 
 
-}; // namespace wal
+}// namespace wal
