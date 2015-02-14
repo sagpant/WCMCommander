@@ -182,7 +182,7 @@ void StrConfig::Set( const char* name, unsigned value )
 
 const char* StrConfig::GetStrVal( const char* name )
 {
-	std::string s = new_char_str( name );
+	std::string s( name );
 	UpStr( s );
 	std::string* p = varHash.exist( s.data() );
 
@@ -196,7 +196,7 @@ const char* StrConfig::GetStrVal( const char* name )
 
 int StrConfig::GetIntVal( const char* name )
 {
-	std::string s = new_char_str( name );
+	std::string s( name );
 	UpStr( s );
 	std::string* p = varHash.exist( s.data() );
 

@@ -1689,13 +1689,13 @@ void* ViewerThread( void* param )
 		}
 		catch ( cexception* ex )
 		{
-			tData->error = new_char_str( ex->message() );
+			tData->error = ex->message();
 			ex->destroy();
 			WinThreadSignal( 0 );
 		}
 		catch ( ... )
 		{
-			tData->error = new_char_str( "BUG: unhandled exception in void *ViewerThread(void *param)" );
+			tData->error = "BUG: unhandled exception in void *ViewerThread(void *param)";
 			WinThreadSignal( 0 );
 		}
 
@@ -2687,7 +2687,7 @@ void* VSThreadFunc( void* ptr )
 	}
 	catch ( ... )
 	{
-		try { data->err = new_char_str( "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) " ); }
+		try { data->err = "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) "; }
 		catch ( cexception* x ) { x->destroy(); }
 	}
 

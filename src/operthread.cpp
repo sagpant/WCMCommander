@@ -51,7 +51,7 @@ int OperThread::RedMessage( ButtonDataNode* b, const char* str, const char* sysE
 }
 
 int OperThread::RedMessage( const char* s1, ButtonDataNode* buttons, const char* sysErr )
-{ return RedMessage( buttons, new_char_str( s1 ).data(), sysErr ); }
+{ return RedMessage( buttons, s1, sysErr ); }
 
 int OperThread::RedMessage( const char* s1, const char* s2, ButtonDataNode* buttons, const char* sysErr )
 {

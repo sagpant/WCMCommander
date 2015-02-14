@@ -77,7 +77,7 @@ class MimeGlobs
 	void AddMask( const char* s, int m );
 	void ClearMaskList() { while ( maskList ) { MaskNode* p = maskList->next; delete maskList; maskList = p; } }
 public:
-	MimeGlobs( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ), maskList( 0 ) { }
+	MimeGlobs( const char* fname ): fileName( fname ), mtime( 0 ), maskList( 0 ) { }
 	int GetMimeList( const unicode_t* fileName, ccollect<int>& list );
 	void Refresh();
 	~MimeGlobs();
@@ -89,7 +89,7 @@ class MimeSubclasses
 	time_t mtime;
 	std::unordered_map< int, ccollect<int> > hash;
 public:
-	MimeSubclasses( const char* fn ): fileName( new_char_str( fn ) ), mtime( 0 ) { }
+	MimeSubclasses( const char* fn ): fileName( fn ), mtime( 0 ) { }
 	int GetParentList( int mime, ccollect<int>& list );
 	void Refresh();
 	~MimeSubclasses();
@@ -101,7 +101,7 @@ class MimeAliases
 	time_t mtime;
 	std::unordered_map<int, int> data;
 public:
-	MimeAliases( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
+	MimeAliases( const char* fname ): fileName( fname ), mtime( 0 ) { }
 	void Refresh();
 
 	int Check( int mime )
@@ -132,7 +132,7 @@ class AppDefListFile: public iIntrusiveCounter
 	time_t mtime;
 	std::unordered_map<int, ccollect<int, 1> > hash;
 public:
-	AppDefListFile( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
+	AppDefListFile( const char* fname ): fileName( fname ), mtime( 0 ) { }
 	void Refresh();
 	int GetAppList( int mime, ccollect<int>& appList );
 	~AppDefListFile();
@@ -241,7 +241,7 @@ bool ExeFileExist( const char* name )
 
 		if ( !pl ) { return false; }
 
-		std::string paths = new_char_str( pl );
+		std::string paths( pl );
 		char* s = (char*)paths.data();
 
 		while ( *s )
@@ -289,7 +289,7 @@ static int GetMimeID( const char* mimeName )
 	hash[mimeName] = id;
 
 #ifdef MIMEDEBUG
-	mimeIdToNameHash[id] = new_char_str( mimeName );
+	mimeIdToNameHash[id] = mimeName;
 #endif
 	return id;
 }
@@ -308,7 +308,7 @@ static int GetAppID( const char* appName )
 	id++;
 	hash[appName] = id;
 
-	appIdToNameHash[id] = new_char_str( appName );
+	appIdToNameHash[id] = appName;
 	return id;
 }
 
@@ -815,7 +815,7 @@ void AppDefListFile::Refresh()
 //////////////////////////////// AppDB /////////////////////////////////////
 
 AppDB::AppDB( const char* prefix )
-	:  appDefsPrefix( new_char_str( prefix ) ),
+	:  appDefsPrefix( prefix ),
 	   defList( carray_cat<char>( prefix, "defaults.list" ).data() )
 {
 	DIR* d = opendir( prefix );

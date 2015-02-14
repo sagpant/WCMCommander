@@ -1998,7 +1998,7 @@ begin:
 
 			char buf[64];
 			int_to_char<int64_t>( i, buf );
-			s = new_char_str( buf );
+			s = std::string(buf);
 			flags |= STR;
 		}
 

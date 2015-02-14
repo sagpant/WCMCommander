@@ -1400,7 +1400,7 @@ begin:
 							}
 							else
 							{
-								node->shlFileName = new_char_str( parzer.Str() );
+								node->shlFileName = parzer.Str();
 							}
 
 							parzer.Next();

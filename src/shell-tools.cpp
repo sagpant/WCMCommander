@@ -40,7 +40,7 @@ void* ShellLoadDirThreadFunc( void* ptr )
 
 			if ( data->fs->ReadDir( list.ptr(), data->path, &err, &data->info ) )
 			{
-				data->err = new_char_str( data->fs->StrError( err ).GetUtf8() );
+				data->err = data->fs->StrError( err ).GetUtf8();
 			}
 		}
 	}
@@ -48,7 +48,7 @@ void* ShellLoadDirThreadFunc( void* ptr )
 	{
 		MutexLock lock( &data->mutex );
 
-		try { data->err = new_char_str( ex->message() ); }
+		try { data->err = ex->message(); }
 		catch ( cexception* x ) { x->destroy(); }
 
 		ex->destroy();
@@ -57,7 +57,7 @@ void* ShellLoadDirThreadFunc( void* ptr )
 	{
 		MutexLock lock( &data->mutex );
 
-		try { data->err = new_char_str( "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) " ); }
+		try { data->err = "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) "; }
 		catch ( cexception* x ) { x->destroy(); }
 	}
 

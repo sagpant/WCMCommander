@@ -50,14 +50,6 @@ namespace wal
 		return r;
 	}
 
-	std::string new_char_str( const char* s )
-	{
-		if ( !s ) { return std::string(); }
-
-		return std::string( s );
-	}
-
-
 	std::vector<sys_char_t> utf8_to_sys( const char* s )
 	{
 		if ( !s ) { return std::vector<sys_char_t>(); }
@@ -443,7 +435,8 @@ namespace wal
 	{
 #if !defined(_WIN32)
 		uint8_t* NormString = utf8proc_NFC( (const uint8_t*)Str );
-		std::string Result = new_char_str( (const char*)NormString );
+
+		std::string Result = (const char*)NormString;
 
 		free( NormString );
 

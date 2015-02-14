@@ -116,7 +116,7 @@ static void Add( ccollect<char, 0x100>& id, ccollect<char, 0x100>& txt )
 	{
 		id.append( 0 );
 		txt.append( 0 );
-		lText[id.ptr()] = new_char_str( txt.ptr() );
+		lText[id.ptr()] = std::string( txt.ptr() );
 	}
 
 	id.clear();

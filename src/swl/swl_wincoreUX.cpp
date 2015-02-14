@@ -3053,7 +3053,7 @@ stopped:
 		{
 			type = TYPE_X11;
 			data = xfs;
-			_uri = new_char_str( buf );
+			_uri = buf;
 			dbg_printf( "font %s created Ok!!!\n", buf );
 		}
 	}
@@ -3086,7 +3086,7 @@ stopped:
 
 			char buf[1024];
 			snprintf( buf, sizeof( buf ) - 1, "%s-%s %i", name, style, ( ( FTU::FFace* )data )->Size() / 64 );
-			_name = new_char_str( buf );
+			_name = buf;
 			return _name.data();
 		}
 
@@ -3110,7 +3110,7 @@ stopped:
 			{
 				type = TYPE_X11;
 				data = xfs;
-				_uri = new_char_str( s );
+				_uri = s;
 			}
 
 			return;
@@ -3151,7 +3151,7 @@ stopped:
 			{
 				type = TYPE_FT;
 				data = p;
-				_uri = new_char_str( s );
+				_uri = s;
 			}
 
 			return;
@@ -3177,7 +3177,7 @@ stopped:
 			data = p;
 			char buf[1024];
 			snprintf( buf, sizeof( buf ), "+%i:%s", pointSize, fileName );
-			_uri = new_char_str( buf );
+			_uri = buf;
 		}
 
 #endif

@@ -458,7 +458,7 @@ static int CheckFontSize( int n )
 
 void FontDialogFT::ReloadFiltred( const char* filter )
 {
-	std::string filtBuf  = new_char_str( filter );
+	std::string filtBuf( filter );
 	char* s = (char*)filtBuf.data();
 
 	std::vector<std::string> flist;

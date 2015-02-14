@@ -1393,8 +1393,8 @@ namespace wal
 		}
 
 		//...
-		_uri = new_char_str( uriStr );
-		_name = new_char_str( uriStr );
+		_uri = uriStr;
+		_name = uriStr;
 	}
 
 

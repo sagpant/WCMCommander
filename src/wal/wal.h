@@ -22,7 +22,6 @@ namespace wal
 
 	std::vector<unicode_t> new_unicode_str( const unicode_t* );
 	std::vector<sys_char_t> new_sys_str( const sys_char_t* );
-	std::string new_char_str( const char* );
 
 	std::vector<sys_char_t> utf8_to_sys( const char* s );
 	std::string sys_to_utf8( const sys_char_t* s );
