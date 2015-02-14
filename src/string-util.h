@@ -99,6 +99,27 @@ inline std::string narrow( const std::wstring& ucs2 )
 #endif
 }
 
+inline std::vector<unicode_t> TruncateToLength( const std::vector<unicode_t>& Str, size_t MaxLength_Chars, bool InsertEllipsis )
+{
+	size_t Length_Chars  = Str.size();
+
+	if ( Length_Chars > MaxLength_Chars )
+	{
+		std::vector<unicode_t> Result = std::vector<unicode_t>( Str.begin() + ( Length_Chars - MaxLength_Chars ), Str.end() );
+
+		// add ... at the beginning
+		if ( InsertEllipsis )
+		{
+			const unicode_t Prefix[] = { '.', '.', '.' };
+			Result.insert( Result.begin(), Prefix, Prefix + 3 );
+		}
+
+		return Result;
+	}
+
+	return Str;
+}
+
 inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
 {
 	if ( !str ) { return std::vector<wchar_t>(); }
