@@ -9,6 +9,8 @@
 #include "ltext.h"
 #include "globals.h"
 
+#include <algorithm>
+
 class FontExample: public Win
 {
 	std::vector<unicode_t> text;
