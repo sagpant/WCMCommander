@@ -1246,8 +1246,13 @@ bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 
 	std::vector<unicode_t> OtherPanelPath = new_unicode_str( OtherPanel->UriOfDir().GetUnicode() );
 
-	OtherPanelPath = TruncateToLength( OtherPanelPath, 20, true );
+#if defined(_WIN32)
+	size_t MaxLength = 20;
+#else
+	size_t MaxLength = 50;
+#endif
 
+	OtherPanelPath = TruncateToLength( OtherPanelPath, MaxLength, true );
 
 	mData.Add( OtherPanelPath.data(), nullptr, nullptr, ID_DEV_OTHER_PANEL );
 	mData.AddSplitter();
