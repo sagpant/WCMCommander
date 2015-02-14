@@ -1322,7 +1322,16 @@ begin:
 				{
 					p++;
 					int l = p - utf8path.data();
-					dirPath = std::string( utf8path, l ) ;
+					dirPath.resize( l + 1 );
+
+					char* dir = (char*)dirPath.data();
+
+					for ( s = utf8path.data(); s < p; s++, dir++ )
+					{
+						*dir = *s;
+					}
+
+					*dir = 0;
 				}
 			}
 
