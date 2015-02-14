@@ -242,7 +242,7 @@ bool ExeFileExist( const char* name )
 		if ( !pl ) { return false; }
 
 		std::string paths = new_char_str( pl );
-		char* s = paths.data();
+		char* s = (char*)paths.data();
 
 		while ( *s )
 		{
