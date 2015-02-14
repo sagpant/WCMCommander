@@ -1244,9 +1244,12 @@ bool NCWin::SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 #endif
 	clMenuData mData;
 
-	FSString OtherPanelPath = OtherPanel->UriOfDir();
+	std::vector<unicode_t> OtherPanelPath = new_unicode_str( OtherPanel->UriOfDir().GetUnicode() );
 
-	mData.Add( OtherPanelPath.GetUnicode(), nullptr, nullptr, ID_DEV_OTHER_PANEL );
+	OtherPanelPath = TruncateToLength( OtherPanelPath, 20, true );
+
+
+	mData.Add( OtherPanelPath.data(), nullptr, nullptr, ID_DEV_OTHER_PANEL );
 	mData.AddSplitter();
 
 #ifdef _WIN32
@@ -2823,10 +2826,7 @@ void NCWin::NotifyCurrentPathInfo()
 		int Length_Chars  = ( int )Info.size();
 		int NewLength_Chars = std::max( 3, int( Shrink * Length_Chars ) - 3 );
 
-		Info = std::vector<unicode_t>( Info.begin() + ( Length_Chars - NewLength_Chars ), Info.end() );
-		// add ... at the beginning
-		const unicode_t Prefix[] = { '.', '.', '.' };
-		Info.insert( Info.begin(), Prefix, Prefix + 3 );
+		Info = TruncateToLength( Info, NewLength_Chars, true );
 	}
 
 	// update only if not equal
