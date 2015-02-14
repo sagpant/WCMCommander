@@ -26,7 +26,7 @@ state newline default {
 		words (KEYWORD) = {
 			'auto',	
 			'break', 
-			'case', 'char', 'const','continue',
+			'case', 'char', 'const', 'constexpr', 'continue',
 			'default', 'do','double',
 			'else',	'enum',	'extern',
 			'float','for',
@@ -58,7 +58,7 @@ state newline default {
 			'namespace',
 			'reinterpret_cast',
 			'static_cast',
-			'true',	'typeid','typename',
+			'true', 'typeid', 'typename',
 			'using',
 			'wchar_t'
 		};
