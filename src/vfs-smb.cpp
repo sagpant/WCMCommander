@@ -495,11 +495,11 @@ FSString FSSmb::Uri( FSPath& path )
 	{
 		if ( _param.user[0] )
 		{
-			a = std::string( "smb://" ) + std::string( _param.user ) + "@" + std::string( _param.server ) + path.GetUtf8();
+			a = std::string( "smb://" ) + std::string( (char*)_param.user ) + "@" + std::string( (char*)_param.server ) + path.GetUtf8();
 		}
 		else
 		{
-			a = std::string( "smb://" ) + std::string( _param.server ) + path.GetUtf8();
+			a = std::string( "smb://" ) + std::string( (char*)_param.server ) + path.GetUtf8();
 		}
 	}
 	else
