@@ -101,8 +101,8 @@ bool UxMntList( wal::ccollect< MntListNode >* pList )
 
 
 			MntListNode node;
-			node.path = new_char_str( w[1] );
-			node.type = new_char_str( w[2] );
+			node.path = w[1];
+			node.type = w[2];
 			pList->append( node );
 
 		}
@@ -121,10 +121,10 @@ void ExecuteDefaultApplication( const unicode_t* Path )
 	if ( !fork() )
 	{
 		signal( SIGINT, SIG_DFL );
-		static char shell[] = "/bin/sh";
-		std::vector<char> utf8 = unicode_to_utf8( Path );
-		std::string command = "open \"" + std::string( utf8.data() ) + "\"";
-		const char* params[] = {shell, "-c", command.c_str(), NULL};
+		static const char shell[] = "/bin/sh";
+		std::string utf8 = unicode_to_utf8( Path );
+		std::string command = "open \"" + utf8 + "\"";
+		const char* params[] = { shell, "-c", command.c_str(), nullptr };
 
 		execv( shell, ( char** ) params );
 

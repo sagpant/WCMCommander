@@ -2522,10 +2522,8 @@ Nah:
 
 		if ( Hint )
 		{
-			std::vector<char> ResName  = new_char_str( "Wal Commander GitHub Edition" );
-			std::vector<char> ResClass = new_char_str( "WalCommander" );
-			Hint->res_name = ResName.data();
-			Hint->res_class = ResClass.data();
+			Hint->res_name = (char*)"Wal Commander GitHub Edition";
+			Hint->res_class = (char*)"WalCommander";
 			XSetClassHint( display, handle, Hint );
 			XFree( Hint );
 		}

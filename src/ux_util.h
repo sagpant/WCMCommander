@@ -12,8 +12,8 @@
 
 struct MntListNode
 {
-	std::vector<char> path; //в системной кодировке
-	std::vector<char> type;
+	std::string path;
+	std::string type;
 };
 
 bool UxMntList( wal::ccollect< MntListNode >* pList );

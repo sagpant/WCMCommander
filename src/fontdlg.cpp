@@ -59,8 +59,8 @@ FontExample::~FontExample() {}
 class FontDialogX: public NCVertDialog
 {
 	Layout iL;
-	ccollect<std::vector<char> > origList;
-	ccollect<char*> sortedList;
+	std::vector<std::string> origList;
+	std::vector<std::string> sortedList;
 public:
 	TextList textList;
 	EditLine filterEdit;
@@ -125,21 +125,19 @@ FontDialogX::FontDialogX( NCDialogParent* parent, bool fixed )
 
 		if ( ret )
 		{
-			int i;
+			for ( size_t i = 0; i < count; i++ ) { origList.emplace_back( ret[i] ); }
 
-			for ( i = 0; i < count; i++ ) { origList.append( new_char_str( ret[i] ) ); }
+			for ( size_t i = 0; i < origList.size(); i++ ) { sortedList.emplace_back( origList[i] ); }
 
-			for ( i = 0; i < origList.count(); i++ ) { sortedList.append( origList[i].data() ); }
-
-			sort2m<char*>( sortedList.ptr(), sortedList.count(), strless< char* > );
+			std::sort( sortedList.begin(), sortedList.end(), std::less<std::string>() );
 		}
 
 		if ( ret ) { XFreeFontNames( ret ); }
 	}
 
-	for ( int i = 0; i < sortedList.count(); i++ )
+	for ( size_t i = 0; i < sortedList.size(); i++ )
 	{
-		textList.Append( utf8_to_unicode( sortedList[i] ).data() );
+		textList.Append( utf8_to_unicode( sortedList[i].c_str() ).data() );
 	}
 
 	//MaximizeIfChild();
@@ -205,10 +203,10 @@ bool FontDialogX::Command( int id, int subId, Win* win, void* data )
 
 		if ( !a.data() ) { return true; }
 
-		std::vector<char> str = unicode_to_utf8( a.data() );
-		char* s = str.data();
+		std::string str = unicode_to_utf8( a.data() );
+		char* s = (char*)str.data();
 
-		ccollect<std::vector<char> > flist;
+		std::vector<std::string > flist;
 
 		while ( *s )
 		{
@@ -225,27 +223,27 @@ bool FontDialogX::Command( int id, int subId, Win* win, void* data )
 					*( t++ ) = 0;
 				}
 
-				flist.append( new_char_str( s ) );
+				flist.emplace_back( s );
 				s = t;
 			}
 		}
 
 		textList.Clear();
 
-		for ( int i = 0; i < sortedList.count(); i++ )
+		for ( size_t i = 0; i < sortedList.size(); i++ )
 		{
-			char* s = sortedList[i];
+			char* s = (char*)sortedList[i].c_str();
 
 			bool ok = true;
 
-			for ( int j = 0; j < flist.count() && ok; j++ )
+			for ( size_t j = 0; j < flist.size() && ok; j++ )
 			{
 				ok = filter_word( s, flist[j].data() );
 			}
 
 			if ( ok )
 			{
-				textList.Append( utf8_to_unicode( sortedList[i] ).data() );
+				textList.Append( utf8_to_unicode( sortedList[i].c_str() ).data() );
 			}
 		}
 
@@ -458,10 +456,10 @@ static int CheckFontSize( int n )
 
 void FontDialogFT::ReloadFiltred( const char* filter )
 {
-	std::vector<char> filtBuf  = new_char_str( filter );
-	char* s = filtBuf.data();
+	std::string filtBuf  = new_char_str( filter );
+	char* s = (char*)filtBuf.data();
 
-	ccollect<std::vector<char> > flist;
+	std::vector<std::string> flist;
 
 	while ( *s )
 	{
@@ -478,7 +476,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 				*( t++ ) = 0;
 			}
 
-			flist.append( new_char_str( s ) );
+			flist.emplace_back( s );
 			s = t;
 		}
 	}
@@ -513,7 +511,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 		bool ok = true;
 
-		for ( int j = 0; j < flist.count() && ok; j++ )
+		for ( size_t j = 0; j < flist.size() && ok; j++ )
 		{
 			ok = filter_word( s, flist[j].data() );
 		}
@@ -671,8 +669,8 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 
 		if ( !a.data() ) { return true; }
 
-		std::vector<char> str = unicode_to_utf8( a.data() );
-		char* s = str.data();
+		std::string str = unicode_to_utf8( a.data() );
+		char* s = (char*)str.data();
 
 		while ( *s && *s <= 32 ) { s++; }
 

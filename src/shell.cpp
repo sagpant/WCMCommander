@@ -42,7 +42,7 @@ Shell::Shell( const char* slave )
 	:  pid( -1 ),
 	   in( -1 ),
 	   out( -1 ),
-	   slaveName( new_char_str( slave ) )
+	   slaveName( slave )
 {
 	Run();
 }
@@ -179,9 +179,10 @@ static void WritePipeStr( int fd, const char* s )
 	}
 }
 
-static std::vector<char> ReadPipeStr( int fd )
+static std::string ReadPipeStr( int fd )
 {
-	std::vector<char> p;
+	std::string p;
+
 	char c;
 
 	while ( true )
@@ -195,7 +196,7 @@ static std::vector<char> ReadPipeStr( int fd )
 	return p;
 }
 
-static bool ReadCmd( int fd, int* pCmd, ccollect<std::vector<char> >& params )
+static bool ReadCmd( int fd, int* pCmd, std::vector<std::string>& params )
 {
 	try
 	{
@@ -205,7 +206,7 @@ static bool ReadCmd( int fd, int* pCmd, ccollect<std::vector<char> >& params )
 
 		for ( int i = 0; i < count; i++ ) //!!!
 		{
-			params.append( ReadPipeStr( fd ) );
+			params.emplace_back( ReadPipeStr( fd ) );
 		}
 	}
 	catch ( int n )
@@ -215,32 +216,15 @@ static bool ReadCmd( int fd, int* pCmd, ccollect<std::vector<char> >& params )
 
 	return true;
 }
-/*
-static bool WriteCmd( int fd, int cmd, ccollect<char*>& list )
-{
-   try
-   {
-      WritePipeChar( fd, cmd );
-      WritePipeChar( fd, list.count() );
 
-      for ( int i = 0; i < list.count(); i++ ) { WritePipeStr( fd, list[i] ); }
-   }
-   catch ( int n )
-   {
-      return false;
-   }
-
-   return true;
-}
-*/
-static bool WriteCmd( int fd, int cmd, ccollect<std::vector<char> >& list )
+static bool WriteCmd( int fd, int cmd, std::vector<std::string>& list )
 {
 	try
 	{
 		WritePipeChar( fd, cmd );
-		WritePipeChar( fd, list.count() );
+		WritePipeChar( fd, list.size() );
 
-		for ( int i = 0; i < list.count(); i++ ) { WritePipeStr( fd, list[i].data() ); }
+		for ( const auto& i : list ) { WritePipeStr( fd, i.data() ); }
 	}
 	catch ( int n )
 	{
@@ -267,11 +251,11 @@ static bool WriteCmd( int fd, int cmd, const char* s )
 	return true;
 }
 
-inline void AddInt( ccollect<std::vector<char> >& list, int n )
+inline void AddInt( std::vector<std::string>& list, int n )
 {
 	char buf[64];
 	sprintf( buf, "%i", n );
-	list.append( new_char_str( buf ) );
+	list.emplace_back( buf );
 }
 
 
@@ -284,7 +268,7 @@ static void ShellProc( int in, int out )
 
 	while ( true )
 	{
-		ccollect<std::vector<char> > pList;
+		std::vector<std::string> pList;
 		int cmd = 0;
 
 		if ( !ReadCmd( in, &cmd, pList ) ) { exit( 1 ); }
@@ -301,9 +285,9 @@ static void ShellProc( int in, int out )
 
 					static char shell[] = "/bin/sh";
 
-					if ( pList.count() )
+					if ( pList.size() )
 					{
-						const char* params[] = {shell, "-c", pList[0].data(), NULL};
+						const char* params[] = { shell, "-c", pList[0].data(), nullptr };
 						execv( shell, ( char** ) params );
 						printf( "error execute %s\n", shell );
 					}
@@ -327,7 +311,7 @@ static void ShellProc( int in, int out )
 
 			case CMD_WAIT:
 			{
-				if ( pList.count() <= 0 ) { printf( "intermnal error 1\n" ); exit( 1 ); }
+				if ( !pList.size() ) { printf( "intermnal error 1\n" ); exit( 1 ); }
 
 				int status = 0;
 				int ret = waitpid( atoi( pList[0].data() ), &status, 0 );
@@ -343,7 +327,7 @@ static void ShellProc( int in, int out )
 
 			case CMD_CD:
 			{
-				if ( pList.count() <= 0 ) { printf( "intermnal error 2\n" ); exit( 1 ); }
+				if ( !pList.size() ) { printf( "intermnal error 2\n" ); exit( 1 ); }
 
 				int ret = chdir( pList[0].data() );
 				pList.clear();
@@ -369,12 +353,13 @@ pid_t Shell::Exec( const char* cmd )
 {
 	if ( !WriteCmd( out, CMD_EXEC, cmd ) ) { Run(); return -1; }
 
-	ccollect<std::vector<char> > list;
+	std::vector<std::string> list;
+
 	int r;
 
 	if ( !ReadCmd( in, &r, list ) ) { Run(); return -1; }
 
-	if ( list.count() <= 0 ) { Run(); return -1; }
+	if ( !list.size() ) { Run(); return -1; }
 
 	return atoi( list[0].data() );
 }
@@ -386,12 +371,13 @@ int Shell::Wait( pid_t pid, int* pStatus )
 
 	if ( !WriteCmd( out, CMD_WAIT, buf ) ) { Run(); return -1; }
 
-	ccollect<std::vector<char> > list;
+	std::vector<std::string> list;
+
 	int r;
 
 	if ( !ReadCmd( in, &r, list ) ) { Run(); return -1; }
 
-	if ( list.count() <= 0 ) { Run(); return -1; }
+	if ( !list.size() ) { Run(); return -1; }
 
 	return atoi( list[0].data() );
 }
@@ -400,12 +386,12 @@ int Shell::CD( const char* path )
 {
 	if ( !WriteCmd( out, CMD_CD, path ) ) { Run(); return -1; }
 
-	ccollect<std::vector<char> > list;
+	std::vector<std::string> list;
 	int r;
 
 	if ( !ReadCmd( in, &r, list ) ) { Run(); return -1; }
 
-	if ( list.count() <= 0 ) { Run(); return -1; }
+	if ( !list.size() ) { Run(); return -1; }
 
 	return atoi( list[0].data() );
 }

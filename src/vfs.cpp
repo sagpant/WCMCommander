@@ -1314,7 +1314,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 #if !defined(_WIN32)
 			if ( sys_charset_id == CS_UTF8 )
 			{
-				std::vector<char> normname = normalize_utf8_NFC( ent.d_name );
+				std::string normname = normalize_utf8_NFC( ent.d_name );
 				pNode->name.Set( sys_charset_id, normname.data() );
 			}
 			else

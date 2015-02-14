@@ -134,8 +134,8 @@ namespace FTU
 		void OutTextF( wal::GC& gc, int x, int y, const unicode_t* text, int count );
 		cpoint GetTextExtents( const unicode_t* text, int count );
 
-		const char* Name() { return face ? face->family_name : 0; }
-		const char* StyleName() { return face ? face->style_name : 0; }
+		const char* Name() { return face ? face->family_name : nullptr; }
+		const char* StyleName() { return face ? face->style_name : nullptr; }
 		unsigned FaceFlags() { return face ? face->face_flags : 0; }
 		unsigned StyleFlags() { return face ? face->style_flags : 0; }
 		int Size() { return _size; }
@@ -622,8 +622,8 @@ clPtr<cfont::FTInfo> cfont::GetFTFileInfo( const char* path )
 	if ( f.Load( path, 0, 100 ) ) { return 0; }
 
 	clPtr<cfont::FTInfo> node = new cfont::FTInfo;
-	node->name = new_char_str( f.Name() );
-	node->styleName = new_char_str( f.StyleName() );
+	node->name = f.Name();
+	node->styleName = f.StyleName();
 
 	node->flags = 0;
 

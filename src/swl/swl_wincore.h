@@ -510,8 +510,8 @@ namespace wal
 		{
 			enum {FIXED_WIDTH = 1};
 			unsigned flags;
-			std::vector<char> name;
-			std::vector<char> styleName;
+			std::string name;
+			std::string styleName;
 		};
 		static clPtr<FTInfo> GetFTFileInfo( const char* path );
 #endif
