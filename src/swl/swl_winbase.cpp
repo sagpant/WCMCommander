@@ -342,7 +342,7 @@ namespace wal
 
 	bool clUnsignedInt64Validator::IsValid( const std::vector<unicode_t>& Str ) const
 	{
-		std::vector<char> utf8 = unicode_to_utf8( Str.data() );
+		std::string utf8 = unicode_to_utf8( Str.data() );
 
 		for ( size_t i = 0; i != utf8.size(); i++ )
 		{

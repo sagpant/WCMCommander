@@ -10,7 +10,7 @@
 
 using namespace wal;
 
-static std::unordered_map< std::string, std::vector<char> > lText;
+static std::unordered_map< std::string, std::string > lText;
 
 const char* LText( const char* index )
 {
@@ -18,7 +18,7 @@ const char* LText( const char* index )
 
 	if ( i == lText.end() ) { return index; }
 
-	std::vector<char>* p = &( i->second );
+	std::string* p = &( i->second );
 
 	return p->data() ? p->data() : index;
 }
@@ -29,7 +29,7 @@ const char* LText( const char* index, const char* def )
 
 	if ( i == lText.end() ) { return def; }
 
-	std::vector<char>* p = &( i->second );
+	std::string* p = &( i->second );
 
 	return p->data() ? p->data() : def;
 }

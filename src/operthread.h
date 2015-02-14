@@ -23,7 +23,7 @@ extern ButtonDataNode bOk[];
 class OperThread
 {
 	OperThreadNode* volatile node;
-	std::vector<char> operName; //++volatile
+	std::string operName; //++volatile
 	NCDialogParent* volatile parentWin;
 public:
 	OperThread( const char* opName, NCDialogParent* p, OperThreadNode* n );

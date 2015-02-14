@@ -860,7 +860,7 @@ CoreCommands SearchFile(clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* r
 
 	if ( !searchParams.mask.data() || !searchParams.mask[0] ) { return CMD_CANCEL; }
 
-	std::vector<char> utf8Mask = unicode_to_utf8( searchParams.mask.data() );
+	std::string utf8Mask = unicode_to_utf8( searchParams.mask.data() );
 
 	clPtr<MegaSearcher> megaSearcher;
 

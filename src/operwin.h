@@ -22,8 +22,9 @@ class OperThreadNode
 
 	OperThreadWin* volatile win;
 
-	std::vector<char> threadInfo; //++volatile !!!
-	OperThreadNode* volatile prev, *volatile next;
+	std::string threadInfo; //++volatile !!!
+	OperThreadNode* volatile prev;
+	OperThreadNode* volatile next;
 	volatile bool stopped;
 	Mutex mutex;
 	void* volatile data;

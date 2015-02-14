@@ -64,7 +64,7 @@ public:
 
 	void Connect( unsigned ip, int port, const char* user, const char* password, bool passive );
 	void Noop();
-	void Ls( ccollect<std::vector<char> >& list );
+	void Ls( ccollect<std::string >& list );
 	void Cwd( const char* path );
 	void OpenRead( const char* fileName );
 	void MkDir( const char* fileName );

@@ -3085,7 +3085,7 @@ std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
 		else if ( *p == '$' )
 		{
 			// skip `$`
-			std::vector<char> EnvVarName = unicode_to_utf8( p + 1 );
+			std::string EnvVarName = unicode_to_utf8( p + 1 );
 
 			for ( auto i = EnvVarName.begin(); i != EnvVarName.end(); i++ )
 			{

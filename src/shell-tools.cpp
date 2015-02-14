@@ -20,7 +20,7 @@ struct ShellLoadDirTD
 	bool threadStopped;
 	FSCSimpleInfo info;
 	clPtr<FSList> list;
-	std::vector<char> err;
+	std::string err;
 	ShellLoadDirTD( clPtr<FS> f, FSPath& p ): fs( f ), path( p ), winClosed( false ), threadStopped( false ) {}
 };
 

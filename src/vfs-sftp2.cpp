@@ -200,7 +200,7 @@ void KbIntCallback(
 
 		for ( i = 0; i < num_prompts; i++ )
 		{
-			std::vector<char> str = new_char_str( ( char* )FSString( pData[i].prompt.c_str() ).Get( kbdIntParam->charset ) );
+			std::string str = ( char* )FSString( pData[i].prompt.c_str() ).Get( kbdIntParam->charset );
 
 			if ( str.data() )
 			{

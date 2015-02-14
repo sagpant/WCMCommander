@@ -50,20 +50,11 @@ namespace wal
 		return r;
 	}
 
-	std::vector<char> new_char_str( const char* s )
+	std::string new_char_str( const char* s )
 	{
-		if ( !s ) { return std::vector<char>(); }
+		if ( !s ) { return std::string(); }
 
-		int len = strlen( s );
-		std::vector<char> r( len + 1 );
-
-		if ( len )
-		{
-			memcpy( r.data(), s, len * sizeof( char ) );
-		}
-
-		r[len] = 0;
-		return r;
+		return std::string( s );
 	}
 
 
@@ -82,17 +73,17 @@ namespace wal
 	};
 
 
-	std::vector<char> sys_to_utf8( const sys_char_t* s )
+	std::string sys_to_utf8( const sys_char_t* s )
 	{
-		if ( !s ) { return std::vector<char>(); }
+		if ( !s ) { return std::string(); }
 
 		int symbolCount = sys_symbol_count( s );
 		std::vector<unicode_t> unicodeBuf( symbolCount + 1 );
 		sys_to_unicode( unicodeBuf.data(), s );
 		int utf8Len = utf8_string_buffer_len( unicodeBuf.data(), symbolCount );
-		std::vector<char> utf8Buf( utf8Len + 1 );
-		unicode_to_utf8( utf8Buf.data(), unicodeBuf.data(), symbolCount );
-		return utf8Buf;
+		char* Buf = (char*)alloca( utf8Len + 1 );
+		unicode_to_utf8( Buf, unicodeBuf.data(), symbolCount );
+		return std::string( Buf );
 	}
 
 
@@ -111,14 +102,14 @@ namespace wal
 		return utf8_to_unicode( s.c_str() );
 	}
 
-	std::vector<char> unicode_to_utf8( const unicode_t* u )
+	std::string unicode_to_utf8( const unicode_t* u )
 	{
-		if ( !u ) { return std::vector<char>(); }
+		if ( !u ) { return std::string(); }
 
 		int size = utf8_string_buffer_len( u );
-		std::vector<char> s( size + 1 );
-		unicode_to_utf8( s.data(), u );
-		return s;
+		char* Buf = (char*)alloca( size + 1 );
+		unicode_to_utf8( Buf, u );
+		return std::string( Buf );
 	}
 
 	std::string unicode_to_utf8_string( const unicode_t* u )
@@ -422,11 +413,11 @@ namespace wal
 
 	int64_t HexStrToInt( const unicode_t* Str )
 	{
-		std::vector<char> utf8 = unicode_to_utf8( Str );
+		std::string utf8 = unicode_to_utf8( Str );
 
 		int64_t i = 0x0;
 
-		std::stringstream Convert( std::string( utf8.data() ) );
+		std::stringstream Convert( utf8 );
 
 		Convert >> std::hex >> i;
 
@@ -436,7 +427,7 @@ namespace wal
 	std::vector<unicode_t> normalize_unicode_NFC( const unicode_t* Str )
 	{
 #if !defined(_WIN32)
-		std::vector<char> UTFstr = unicode_to_utf8( Str );
+		std::string UTFstr = unicode_to_utf8( Str );
 		uint8_t* NormString = utf8proc_NFC( (const uint8_t*)UTFstr.data() );
 		std::vector<unicode_t> Result = utf8_to_unicode( (const char*)NormString );
 
@@ -448,17 +439,17 @@ namespace wal
 #endif
 	}
 
-	std::vector<char> normalize_utf8_NFC( const char* Str )
+	std::string normalize_utf8_NFC( const char* Str )
 	{
 #if !defined(_WIN32)
 		uint8_t* NormString = utf8proc_NFC( (const uint8_t*)Str );
-		std::vector<char> Result = new_char_str( (const char*)NormString );
+		std::string Result = new_char_str( (const char*)NormString );
 
 		free( NormString );
 
 		return Result;
 #else
-		return new_char_str( Str );
+		return std::string( Str );
 #endif
 	}
 

@@ -1669,7 +1669,7 @@ namespace wal
 	class UiStreamFile: public UiStream
 	{
 		std::vector<sys_char_t> _name;
-		std::vector<char> _name_utf8;
+		std::string _name_utf8;
 		BFile _f;
 	public:
 		UiStreamFile( const sys_char_t* s ): _name( new_sys_str( s ) ), _name_utf8( sys_to_utf8( s ) ) { _f.Open( s ); }
@@ -1967,7 +1967,7 @@ begin:
 			if ( !( flags & STR ) ) { return 0; }
 
 			int64_t n = 0;
-			char* t = s.data();
+			const char* t = s.data();
 
 			if ( !t || !*t ) { return 0; }
 

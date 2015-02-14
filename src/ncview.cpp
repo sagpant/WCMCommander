@@ -884,7 +884,7 @@ public:
 
 	VSData ret;
 	VFPos pos;
-	std::vector<char> error;
+	std::string error;
 	int64_t loadStartTime;
 
 	int Id() const {return tid; }
@@ -1886,7 +1886,7 @@ void ViewWin::ThreadSignal( int id, int data )
 
 		if ( threadData->error.data() )
 		{
-			std::vector<char> s = threadData->error;
+			std::string s = threadData->error;
 
 			lock.Unlock(); //!!!
 			ClearFile();
@@ -2559,7 +2559,7 @@ struct VSTData
 	bool winClosed;
 	bool threadStopped;
 	//ret
-	std::vector<char> err;
+	std::string err;
 	seek_t begin;
 	seek_t end;
 
@@ -2680,7 +2680,7 @@ void* VSThreadFunc( void* ptr )
 	}
 	catch ( cexception* ex )
 	{
-		try { data->err = new_char_str( ex->message() ); }
+		try { data->err = ex->message(); }
 		catch ( cexception* x ) { x->destroy(); }
 
 		ex->destroy();

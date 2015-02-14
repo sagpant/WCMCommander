@@ -140,7 +140,7 @@ namespace SHL
 	class ShlStreamFile: public ShlStream
 	{
 		std::vector<sys_char_t> _name;
-		std::vector<char> _name_utf8;
+		std::string _name_utf8;
 		BFile _f;
 	public:
 		ShlStreamFile( sys_char_t* s ): _name( new_sys_str( s ) ), _name_utf8( sys_to_utf8( s ) ) { _f.Open( s ); }
@@ -194,8 +194,8 @@ namespace SHL
 
 		struct Node: public iIntrusiveCounter
 		{
-			std::vector<char> name;
-			std::vector<char> shlFileName;
+			std::string name;
+			std::string shlFileName;
 //		clPtr< StrList > first;
 //		clPtr< StrList > mimes;
 //		clPtr< StrList > masks;
@@ -207,7 +207,7 @@ namespace SHL
 			enum Type { FIRST = 1, MASK = 2 };
 			Type type;
 			StrList list;
-			std::vector<char> id;
+			std::string id;
 		};
 
 		cstrhash<clPtr<Node> > hash;
