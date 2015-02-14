@@ -58,7 +58,7 @@ using namespace wal;
 
 class MimeGlobs
 {
-	std::vector<char> fileName;
+	std::string fileName;
 	time_t mtime;
 
 	std::unordered_map< std::wstring, std::vector<int> > m_ExtMimeHash;
@@ -85,7 +85,7 @@ public:
 
 class MimeSubclasses
 {
-	std::vector<char> fileName;
+	std::string fileName;
 	time_t mtime;
 	std::unordered_map< int, ccollect<int> > hash;
 public:
@@ -97,7 +97,7 @@ public:
 
 class MimeAliases
 {
-	std::vector<char> fileName;
+	std::string fileName;
 	time_t mtime;
 	std::unordered_map<int, int> data;
 public:
@@ -128,7 +128,7 @@ public:
 
 class AppDefListFile: public iIntrusiveCounter
 {
-	std::vector<char> fileName;
+	std::string fileName;
 	time_t mtime;
 	std::unordered_map<int, ccollect<int, 1> > hash;
 public:
@@ -150,7 +150,7 @@ struct AppNode: public iIntrusiveCounter
 
 class AppDB: public iIntrusiveCounter
 {
-	std::vector<char> appDefsPrefix;
+	std::string appDefsPrefix;
 	std::unordered_map<int, clPtr<AppNode> > apps;
 	std::unordered_map<int, ccollect<int> > mimeMapHash;
 
@@ -195,7 +195,7 @@ static void SearchExe( const char* dirName, cstrhash<bool>& hash )
 				continue;
 			}
 
-			std::vector<char> filePath = carray_cat<char>( dirName, "/", ent.d_name );
+			std::string filePath = std::string(dirName) + "/" + std::string(ent.d_name);
 
 			struct stat sb;
 
@@ -241,7 +241,7 @@ bool ExeFileExist( const char* name )
 
 		if ( !pl ) { return false; }
 
-		std::vector<char> paths = new_char_str( pl );
+		std::string paths = new_char_str( pl );
 		char* s = paths.data();
 
 		while ( *s )
@@ -268,7 +268,7 @@ bool ExeFileExist( const char* name )
 //#define MIMEDEBUG
 
 #ifdef MIMEDEBUG
-static std::unordered_map<int, std::vector<char> > mimeIdToNameHash;
+static std::unordered_map<int, std::string > mimeIdToNameHash;
 const char* GetMimeName( int n )
 {
 	auto i = mimeIdToNameHash.find( n );
@@ -294,7 +294,7 @@ static int GetMimeID( const char* mimeName )
 	return id;
 }
 
-static std::unordered_map<int, std::vector<char> > appIdToNameHash;
+static std::unordered_map<int, std::string > appIdToNameHash;
 
 static int GetAppID( const char* appName )
 {
