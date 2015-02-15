@@ -301,7 +301,8 @@ struct FSNode: public iIntrusiveCounter
 	bool IsSelected() const { return isSelected; }
 	void SetSelected() { isSelected = true; }
 	void ClearSelected() { isSelected = false; }
-	const unicode_t* GetUnicodeName() { return name.GetUnicode(); }
+	const unicode_t* GetUnicodeName() const { return name.GetUnicode(); }
+	const char* GetUtf8Name() const { return name.GetUtf8(); }
 
 	int GetUID() const { return st.uid; }
 	int GetGID() const { return st.gid; }

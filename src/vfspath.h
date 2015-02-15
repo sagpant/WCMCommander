@@ -72,7 +72,7 @@ class FSString
 	static unicode_t unicode0;
 	static char char0;
 	cs_string _primary;
-	cs_string _temp;
+	mutable cs_string _temp;
 public:
 	FSString() {};
 	FSString( const FSString& a ): _primary( a._primary ), _temp( a._temp ) {}
@@ -92,9 +92,9 @@ public:
 	void Copy( const FSString& a ) { _temp.clear(); _primary.copy( a._primary ); }
 
 	int PrimaryCS() { return _primary.cs(); }
-	const void* Get( int cs );
-	const unicode_t* GetUnicode() { return ( const unicode_t* )Get( CS_UNICODE ); }
-	const char* GetUtf8() { return ( const char* )Get( CS_UTF8 ); }
+	const void* Get( int cs ) const;
+	const unicode_t* GetUnicode() const { return ( const unicode_t* )Get( CS_UNICODE ); }
+	const char* GetUtf8() const { return ( const char* )Get( CS_UTF8 ); }
 
 	void Set( int cs, const void* p ) { _primary.set( cs, p ); _temp.clear(); }
 	void SetUnicode( const unicode_t* u ) { _temp.clear(); _primary = u; }
@@ -243,7 +243,7 @@ public:
 
 /////////////////////////////////////// FSString
 
-inline const void* FSString::Get( int cs )
+inline const void* FSString::Get( int cs ) const
 {
 	if ( !_primary.str() )
 	{

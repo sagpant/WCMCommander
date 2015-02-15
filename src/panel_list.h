@@ -101,7 +101,7 @@ public:
 	bool SetCase( bool yes ) { if ( caseSensitive == yes ) { return false; } caseSensitive = yes; MakeList(); Sort(); return true; }
 
 
-	FSNode* Get( int n, bool RootDir ) //от n отнимается 1
+	FSNode* Get( int n, bool RootDir ) const //от n отнимается 1
 	{
 		if ( RootDir )
 		{
