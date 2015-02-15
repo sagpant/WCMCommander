@@ -884,7 +884,7 @@ public:
 
 	VSData ret;
 	VFPos pos;
-	std::string error;
+	std::string m_Error;
 	int64_t loadStartTime;
 
 	int Id() const {return tid; }
@@ -1689,13 +1689,13 @@ void* ViewerThread( void* param )
 		}
 		catch ( cexception* ex )
 		{
-			tData->error = ex->message();
+			tData->m_Error = ex->message();
 			ex->destroy();
 			WinThreadSignal( 0 );
 		}
 		catch ( ... )
 		{
-			tData->error = "BUG: unhandled exception in void *ViewerThread(void *param)";
+			tData->m_Error = "BUG: unhandled exception in void *ViewerThread(void *param)";
 			WinThreadSignal( 0 );
 		}
 
@@ -1884,9 +1884,9 @@ void ViewWin::ThreadSignal( int id, int data )
 		MutexLock lock( &threadData->mutex );
 		drawLoading = false;
 
-		if ( threadData->error.data() )
+		if ( !threadData->m_Error.empty() )
 		{
-			std::string s = threadData->error;
+			std::string s = threadData->m_Error;
 
 			lock.Unlock(); //!!!
 			ClearFile();
@@ -2559,13 +2559,13 @@ struct VSTData
 	bool winClosed;
 	bool threadStopped;
 	//ret
-	std::string err;
+	std::string m_Error;
 	seek_t begin;
 	seek_t end;
 
 	VSTData( VFilePtr f, const unicode_t* s, bool sens, charset_struct* cs, bool h, seek_t offset )
 		: mutex(), file( f ), str( new_unicode_str( s ) ), charset( cs ), sensitive( sens ), info(), hex( h ), from( offset ),
-		  winClosed( false ), threadStopped( false ), err(), begin( 0 ), end( 0 )
+		  winClosed( false ), threadStopped( false ), m_Error(), begin( 0 ), end( 0 )
 	{}
 };
 
@@ -2680,14 +2680,14 @@ void* VSThreadFunc( void* ptr )
 	}
 	catch ( cexception* ex )
 	{
-		try { data->err = ex->message(); }
+		try { data->m_Error = ex->message(); }
 		catch ( cexception* x ) { x->destroy(); }
 
 		ex->destroy();
 	}
 	catch ( ... )
 	{
-		try { data->err = "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) "; }
+		try { data->m_Error = "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) "; }
 		catch ( cexception* x ) { x->destroy(); }
 	}
 
@@ -2792,9 +2792,9 @@ bool ViewWin::Search( const unicode_t* str, bool sensitive )
 
 	if ( !dlg.data ) { return true; }
 
-	if ( dlg.data->err.data() )
+	if ( dlg.data->m_Error.c_str() )
 	{
-		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Search" ), dlg.data->err.data(), true );
+		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Search" ), dlg.data->m_Error.c_str(), true );
 		return true;
 	}
 
