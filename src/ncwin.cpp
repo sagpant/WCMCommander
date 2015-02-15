@@ -392,15 +392,33 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 	m_AutoCompleteList.Clear();
 	m_AutoCompleteList.Append( 0 ); // empty line goes first
 
+	int Idx = 0;
+
 	for ( int i = 0; i < _history.Count(); i++ )
 	{
 		const unicode_t* Hist = _history[i];
 
 		if ( unicode_starts_with_and_not_equal( Hist, CurrentCommand.data() ) )
 		{
-			m_AutoCompleteList.Append( Hist, i );
+			m_AutoCompleteList.Append( Hist, Idx++ );
 			HasHistory = true;
 		}
+	}
+
+	const unicode_t* LastWordStart = CurrentCommand.data();;
+	std::vector<unicode_t> LastWord = unicode_get_last_word( CurrentCommand.data(), &LastWordStart, false );
+
+	std::vector<std::string> FileNames = _panel->GetMatchedFileNames( unicode_to_utf8_string(LastWord.data()), 10 );
+
+	// LastWordStart points to the position of word we will autocomplete with a file name
+	std::vector<unicode_t> Prefix( CurrentCommand.data(), LastWordStart );
+	Prefix.push_back( 0 );
+
+	for ( size_t i = 0; i != FileNames.size(); i++ )
+	{
+		std::vector<unicode_t> Name = carray_cat<unicode_t>( Prefix.data(), utf8str_to_unicode( FileNames[i] ).data() );
+		m_AutoCompleteList.Append( Name.data(), Idx++ );
+		HasHistory = true;
 	}
 
 	if ( HasHistory )
