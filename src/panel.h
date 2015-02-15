@@ -282,8 +282,8 @@ public:
 
 	PanelCounter GetSelectedCounter() { return _list.SelectedCounter(); }
 
-	int Count( ) { return _list.Count( HideDotsInDir() ); }
-	const FSNode* Get( int n ) { return _list.Get( n, HideDotsInDir() ); }
+	int Count( ) const { return _list.Count( HideDotsInDir() ); }
+	const FSNode* Get( int n ) const { return _list.Get( n, HideDotsInDir() ); }
 
 	//dir movies
 	/// returns true if the directory was changed
@@ -294,6 +294,8 @@ public:
 
 	virtual void OperThreadSignal( int info );
 	virtual void OperThreadStopped();
+
+	std::vector<std::string> GetMatchedFileNames( const std::string& Prefix, size_t MaxItems ) const;
 
 	clPtr<FSList> GetSelectedList()
 	{

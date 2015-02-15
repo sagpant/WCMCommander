@@ -1997,6 +1997,32 @@ bool PanelWin::EventMouse( cevent_mouse* pEvent )
 	return false;
 }
 
+std::vector<std::string> PanelWin::GetMatchedFileNames( const std::string& Prefix, size_t MaxItems ) const
+{
+	std::vector<std::string> Result;
+
+	if ( Prefix.empty() ) return Result;
+
+	int Count = this->Count();
+
+	for ( int i = 0; i != Count; i++ )
+	{
+		const FSNode* Node = this->Get(i);
+
+		if ( !Node ) continue;
+
+		const char* Name = Node->GetUtf8Name();
+
+		if ( utf8_starts_with_and_not_equal( Name, Prefix.c_str() ) )
+		{
+			Result.push_back( Name );
+			if ( Result.size() >= MaxItems ) break;
+		}
+	}
+
+	return Result;
+}
+
 bool PanelWin::HideDotsInDir() const
 {
 	bool HideDots = !g_WcmConfig.panelShowDotsInRoot;
