@@ -170,6 +170,33 @@ namespace wal
 		}
 	}
 
+	std::vector<unicode_t> unicode_get_last_word( const unicode_t* Str, const unicode_t** LastWordStart, bool UsePathSeparator )
+	{
+		if ( !Str ) return std::vector<unicode_t>();
+
+		std::vector<unicode_t> Result;
+
+		const unicode_t* S = Str;
+		const unicode_t* StartPos = Str;
+
+		while ( *S )
+		{
+			if ( UsePathSeparator )
+			{
+				if ( IsPathSeparator(*S) || *S == ' ' ) StartPos = S+1;
+				if ( LastWordStart ) *LastWordStart = StartPos;
+			}
+			else
+			{
+				if ( *S == ' ' ) StartPos = S+1;
+				if ( LastWordStart ) *LastWordStart = StartPos;
+			}
+			S++;
+		}
+
+		return ( *StartPos ) ? new_unicode_str( StartPos ) : std::vector<unicode_t>();
+	}
+
 	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr )
 	{
 		if ( !Str || !SubStr ) { return false; }
@@ -183,6 +210,23 @@ namespace wal
 			}
 
 		if ( *SS == 0 && *S == 0 ) { return false; }
+
+		return true;
+	}
+
+	bool utf8_starts_with_and_not_equal( const char* Str, const char* SubStr )
+	{
+		if (!Str || !SubStr) { return false; }
+
+		const char* S = Str;
+		const char* SS = SubStr;
+
+		while (*SS != 0) if (*S++ != *SS++)
+		{
+			return false;
+		}
+
+		if (*SS == 0 && *S == 0) { return false; }
 
 		return true;
 	}
