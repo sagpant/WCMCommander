@@ -13,7 +13,7 @@ OperData::~OperData() {}
 
 OperThread::OperThread( const char* opName, NCDialogParent* p, OperThreadNode* n )
 	: node( n )
-	, operName( new_char_str( opName ) )
+	, operName( opName )
 	, parentWin( p )
 {
 	//printf("OperThread create\n");
@@ -41,7 +41,7 @@ static int RedCallBack( void* cbData )
 
 int OperThread::RedMessage( ButtonDataNode* b, const char* str, const char* sysErr )
 {
-	std::vector<char> msg = sysErr ? carray_cat<char>( str, ":\n", sysErr ) : new_char_str( str );
+	std::string msg = sysErr ? std::string(str) + ":\n" + std::string(sysErr) : std::string( str );
 	CbRedMsgData cbParam;
 	cbParam.message = msg.data();
 	cbParam.operName = OperName();
@@ -51,7 +51,7 @@ int OperThread::RedMessage( ButtonDataNode* b, const char* str, const char* sysE
 }
 
 int OperThread::RedMessage( const char* s1, ButtonDataNode* buttons, const char* sysErr )
-{ return RedMessage( buttons, new_char_str( s1 ).data(), sysErr ); }
+{ return RedMessage( buttons, s1, sysErr ); }
 
 int OperThread::RedMessage( const char* s1, const char* s2, ButtonDataNode* buttons, const char* sysErr )
 {

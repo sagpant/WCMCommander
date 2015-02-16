@@ -22,8 +22,9 @@ class OperThreadNode
 
 	OperThreadWin* volatile win;
 
-	std::vector<char> threadInfo; //++volatile !!!
-	OperThreadNode* volatile prev, *volatile next;
+	std::string threadInfo; //++volatile !!!
+	OperThreadNode* volatile prev;
+	OperThreadNode* volatile next;
 	volatile bool stopped;
 	Mutex mutex;
 	void* volatile data;
@@ -34,7 +35,7 @@ class OperThreadNode
 	OperCallback cbFunc;
 public:
 	OperThreadNode( OperThreadWin* w, const char* info, void* d )
-		:  win( w ), threadInfo( new_char_str( info ) ), prev( 0 ), next( 0 ),
+		:  win( w ), threadInfo( info ), prev( 0 ), next( 0 ),
 		   stopped( false ), data( d ),
 		   cbData( 0 ), cbRet( -1 ), cbFunc( 0 )
 	{}

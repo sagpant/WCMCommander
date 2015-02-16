@@ -22,10 +22,9 @@ namespace wal
 
 	std::vector<unicode_t> new_unicode_str( const unicode_t* );
 	std::vector<sys_char_t> new_sys_str( const sys_char_t* );
-	std::vector<char> new_char_str( const char* );
 
 	std::vector<sys_char_t> utf8_to_sys( const char* s );
-	std::vector<char> sys_to_utf8( const sys_char_t* s );
+	std::string sys_to_utf8( const sys_char_t* s );
 
 	std::vector<unicode_t> sys_to_unicode_array( const sys_char_t* s, int size = -1 );
 	std::vector<sys_char_t> unicode_to_sys_array( const unicode_t* s, int size = -1 );
@@ -33,10 +32,10 @@ namespace wal
 	std::vector<sys_char_t> sys_error_str( int err );
 	std::vector<unicode_t> sys_error_unicode( int err );
 
-	std::vector<char> sys_error_utf8( int err );
+	std::string sys_error_utf8( int err );
 
 	std::vector<unicode_t> utf8_to_unicode( const char* s );
-	std::vector<char> unicode_to_utf8( const unicode_t* u );
+	std::string unicode_to_utf8( const unicode_t* u );
 	std::string unicode_to_utf8_string( const unicode_t* u );
 	std::vector<unicode_t> utf8str_to_unicode( const std::string& s );
 
@@ -416,7 +415,7 @@ namespace wal
 		return sys_to_unicode_array( sys_error_str( err, buf, sizeof( buf ) / sizeof( sys_char_t ) ) );
 	}
 
-	inline std::vector<char> sys_error_utf8( int err )
+	inline std::string sys_error_utf8( int err )
 	{
 		sys_char_t buf[0x100];
 		return sys_to_utf8( sys_error_str( err, buf, sizeof( buf ) / sizeof( sys_char_t ) ) );
@@ -441,7 +440,7 @@ namespace wal
 	int64_t HexStrToInt( const unicode_t* Str );
 	/// Unicode normalization
 	std::vector<unicode_t> normalize_unicode_NFC( const unicode_t* str );
-	std::vector<char>      normalize_utf8_NFC( const char* str );
+	std::string            normalize_utf8_NFC( const char* str );
 
 	std::string GetEnvVariable( const char* VarName );
 }; //namespace wal

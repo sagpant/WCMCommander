@@ -241,7 +241,7 @@ void FTPNode::Noop()
 	CheckFtpRet( ReadCode() );
 }
 
-void FTPNode::Ls( ccollect<std::vector<char> >& list )
+void FTPNode::Ls( ccollect<std::string >& list )
 {
 	OpenData( "LIST\r\n" );
 	list.clear();
@@ -249,7 +249,7 @@ void FTPNode::Ls( ccollect<std::vector<char> >& list )
 
 	while ( data.ReadLine( buf, sizeof( buf ) ) )
 	{
-		list.append( new_char_str( buf ) );
+		list.append( std::string( buf ) );
 	}
 
 	data.Close();
@@ -1303,7 +1303,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 	{
 		FSPath path( _path );
 
-		ccollect<std::vector<char> > ftp_list;
+		ccollect<std::string > ftp_list;
 
 		CStopSetter stopSetter( p->pFtpNode.ptr(), info );
 
@@ -1314,7 +1314,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 
 		for ( int i = 0; i < ftp_list.count(); i++ )
 		{
-			char* s = ftp_list[i].data();
+			char* s = (char*)ftp_list[i].data();
 
 			if ( !s ) { continue; }
 
@@ -1406,7 +1406,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 #if !defined(_WIN32)
 				if ( _param.charset == CS_UTF8 )
 				{
-					std::vector<char> normname = normalize_utf8_NFC( fileName );
+					std::string normname = normalize_utf8_NFC( fileName );
 					fsNode->name = FSString( _param.charset, normname.data() );
 				}
 				else
@@ -1508,7 +1508,7 @@ FSString FSFtp::Uri( FSPath& path )
 {
 	MutexLock lock( &mutex );
 
-	std::vector<char> a;
+	std::string a;
 
 	char port[0x100];
 	Lsnprintf( port, sizeof( port ), ":%i", _param.port );
@@ -1524,16 +1524,16 @@ FSString FSFtp::Uri( FSPath& path )
 		FSString pass( _param.pass );
 		if ( g_WcmConfig.systemStorePasswords && !pass.IsEmpty() )
 		{
-			a = carray_cat<char>( "ftp://", user.GetUtf8(), ":", pass.GetUtf8(), "@", server.GetUtf8(), port, PathStr.c_str() );
+			a = std::string("ftp://") + user.GetUtf8() + ":" + pass.GetUtf8() + "@" + server.GetUtf8() + std::string(port) + PathStr;
 		}
 		else
 		{
-			a = carray_cat<char>( "ftp://", user.GetUtf8(), "@", server.GetUtf8(), port, PathStr.c_str() );
+			a = std::string("ftp://") + user.GetUtf8() + "@" + server.GetUtf8() + std::string(port) + PathStr;
 		}
 	}
 	else
 	{
-		a = carray_cat<char>( "ftp://", server.GetUtf8(), port, path.GetUtf8( '/' ) );
+		a = std::string("ftp://") + server.GetUtf8() + std::string(port) + path.GetUtf8( '/' );
 	}
 
 	return FSString( CS_UTF8, a.data() );

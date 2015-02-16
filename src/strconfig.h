@@ -10,7 +10,7 @@
 
 class StrConfig: public iIntrusiveCounter
 {
-	wal::cstrhash<std::vector<char> > varHash;
+	wal::cstrhash<std::string > varHash;
 public:
 	StrConfig();
 	bool Load( const char* s );

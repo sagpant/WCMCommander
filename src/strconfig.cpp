@@ -6,6 +6,7 @@
 
 #include "strconfig.h"
 #include "swl.h"
+#include <algorithm>
 
 using namespace wal;
 
@@ -23,6 +24,11 @@ inline int Upper( int c )
 	if ( c >= 'a' && c <= 'z' ) { return c - 'a' + 'A'; }
 
 	return c;
+}
+
+inline void UpStr(std::string& s)
+{
+	std::transform( s.begin(), s.end(), s.begin(), ::toupper );
 }
 
 inline void UpStr( char* s )
@@ -73,7 +79,7 @@ bool StrConfig::Load( const char* s )
 
 		if ( *s == '\'' || *s == '"' ) { c1 = *s; s++; }
 
-		std::vector<char> value;
+		std::string value;
 
 		while ( *s )
 		{
@@ -161,9 +167,9 @@ std::vector<char> StrConfig::GetConfig()
 
 void StrConfig::Set( const char* name, const char* value )
 {
-	std::vector<char> s = new_char_str( name );
-	UpStr( s.data() );
-	varHash[s.data()] = new_char_str( value );
+	std::string s( name );
+	UpStr( s );
+	varHash[s.data()] = std::string( value );
 }
 
 void StrConfig::Set( const char* name, unsigned value )
@@ -176,9 +182,9 @@ void StrConfig::Set( const char* name, unsigned value )
 
 const char* StrConfig::GetStrVal( const char* name )
 {
-	std::vector<char> s = new_char_str( name );
-	UpStr( s.data() );
-	std::vector<char>* p = varHash.exist( s.data() );
+	std::string s( name );
+	UpStr( s );
+	std::string* p = varHash.exist( s.data() );
 
 	if ( p && p[0].data() )
 	{
@@ -190,9 +196,9 @@ const char* StrConfig::GetStrVal( const char* name )
 
 int StrConfig::GetIntVal( const char* name )
 {
-	std::vector<char> s = new_char_str( name );
-	UpStr( s.data() );
-	std::vector<char>* p = varHash.exist( s.data() );
+	std::string s( name );
+	UpStr( s );
+	std::string* p = varHash.exist( s.data() );
 
 	if ( p && p[0].data() )
 	{

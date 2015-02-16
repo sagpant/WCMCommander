@@ -766,7 +766,7 @@ int FSSftp::ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 #if !defined(_WIN32)
 				if ( _operParam.charset == CS_UTF8 )
 				{
-					std::vector<char> normname = normalize_utf8_NFC( attr->name );
+					std::string normname = normalize_utf8_NFC( attr->name );
 					pNode->name.Set( _operParam.charset, normname.data() );
 				}
 				else
@@ -914,7 +914,7 @@ FSString FSSftp::Uri( FSPath& path )
 {
 	MutexLock lock( &infoMutex ); //infoMutex!!!
 
-	std::vector<char> a;
+	std::string a;
 
 	char port[0x100];
 	snprintf( port, sizeof( port ), ":%i", _infoParam.port );
@@ -922,7 +922,7 @@ FSString FSSftp::Uri( FSPath& path )
 	FSString server( _infoParam.server.Data() );
 
 	FSString user( _infoParam.user.Data() );
-	a = carray_cat<char>( "sftp://", user.GetUtf8(), "@",  server.GetUtf8(), port, path.GetUtf8() );
+	a = std::string( "sftp://" ) + user.GetUtf8() + "@" + server.GetUtf8() + std::string(port) + path.GetUtf8();
 
 	return FSString( CS_UTF8, a.ptr() );
 }

@@ -452,8 +452,8 @@ namespace wal
 		void drop();
 #endif
 
-		std::vector<char> _uri;
-		std::vector<char> _name;
+		std::string _uri;
+		std::string _name;
 	public:
 #ifdef _WIN32
 		static void SetWin32Charset( unsigned );
@@ -510,8 +510,8 @@ namespace wal
 		{
 			enum {FIXED_WIDTH = 1};
 			unsigned flags;
-			std::vector<char> name;
-			std::vector<char> styleName;
+			std::string name;
+			std::string styleName;
 		};
 		static clPtr<FTInfo> GetFTFileInfo( const char* path );
 #endif
@@ -843,10 +843,10 @@ namespace wal
 		enum {INT = 1, STR = 2};
 		int flags;
 		int64_t i;
-		std::vector<char> s;
+		std::string s;
 
 		UiValueNode( int64_t n ): flags( INT ), i( n ) {};
-		UiValueNode( const char* a ): flags( STR ), s( new_char_str( a ) ) {}
+		UiValueNode( const char* a ): flags( STR ), s( a ) {}
 
 		int64_t Int();
 		const char* Str();

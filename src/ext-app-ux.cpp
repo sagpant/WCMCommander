@@ -58,7 +58,7 @@ using namespace wal;
 
 class MimeGlobs
 {
-	std::vector<char> fileName;
+	std::string fileName;
 	time_t mtime;
 
 	std::unordered_map< std::wstring, std::vector<int> > m_ExtMimeHash;
@@ -77,7 +77,7 @@ class MimeGlobs
 	void AddMask( const char* s, int m );
 	void ClearMaskList() { while ( maskList ) { MaskNode* p = maskList->next; delete maskList; maskList = p; } }
 public:
-	MimeGlobs( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ), maskList( 0 ) { }
+	MimeGlobs( const char* fname ): fileName( fname ), mtime( 0 ), maskList( 0 ) { }
 	int GetMimeList( const unicode_t* fileName, ccollect<int>& list );
 	void Refresh();
 	~MimeGlobs();
@@ -85,11 +85,11 @@ public:
 
 class MimeSubclasses
 {
-	std::vector<char> fileName;
+	std::string fileName;
 	time_t mtime;
 	std::unordered_map< int, ccollect<int> > hash;
 public:
-	MimeSubclasses( const char* fn ): fileName( new_char_str( fn ) ), mtime( 0 ) { }
+	MimeSubclasses( const char* fn ): fileName( fn ), mtime( 0 ) { }
 	int GetParentList( int mime, ccollect<int>& list );
 	void Refresh();
 	~MimeSubclasses();
@@ -97,11 +97,11 @@ public:
 
 class MimeAliases
 {
-	std::vector<char> fileName;
+	std::string fileName;
 	time_t mtime;
 	std::unordered_map<int, int> data;
 public:
-	MimeAliases( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
+	MimeAliases( const char* fname ): fileName( fname ), mtime( 0 ) { }
 	void Refresh();
 
 	int Check( int mime )
@@ -128,11 +128,11 @@ public:
 
 class AppDefListFile: public iIntrusiveCounter
 {
-	std::vector<char> fileName;
+	std::string fileName;
 	time_t mtime;
 	std::unordered_map<int, ccollect<int, 1> > hash;
 public:
-	AppDefListFile( const char* fname ): fileName( new_char_str( fname ) ), mtime( 0 ) { }
+	AppDefListFile( const char* fname ): fileName( fname ), mtime( 0 ) { }
 	void Refresh();
 	int GetAppList( int mime, ccollect<int>& appList );
 	~AppDefListFile();
@@ -150,7 +150,7 @@ struct AppNode: public iIntrusiveCounter
 
 class AppDB: public iIntrusiveCounter
 {
-	std::vector<char> appDefsPrefix;
+	std::string appDefsPrefix;
 	std::unordered_map<int, clPtr<AppNode> > apps;
 	std::unordered_map<int, ccollect<int> > mimeMapHash;
 
@@ -195,7 +195,7 @@ static void SearchExe( const char* dirName, cstrhash<bool>& hash )
 				continue;
 			}
 
-			std::vector<char> filePath = carray_cat<char>( dirName, "/", ent.d_name );
+			std::string filePath = std::string(dirName) + "/" + std::string(ent.d_name);
 
 			struct stat sb;
 
@@ -241,8 +241,8 @@ bool ExeFileExist( const char* name )
 
 		if ( !pl ) { return false; }
 
-		std::vector<char> paths = new_char_str( pl );
-		char* s = paths.data();
+		std::string paths( pl );
+		char* s = (char*)paths.data();
 
 		while ( *s )
 		{
@@ -268,7 +268,7 @@ bool ExeFileExist( const char* name )
 //#define MIMEDEBUG
 
 #ifdef MIMEDEBUG
-static std::unordered_map<int, std::vector<char> > mimeIdToNameHash;
+static std::unordered_map<int, std::string > mimeIdToNameHash;
 const char* GetMimeName( int n )
 {
 	auto i = mimeIdToNameHash.find( n );
@@ -289,12 +289,12 @@ static int GetMimeID( const char* mimeName )
 	hash[mimeName] = id;
 
 #ifdef MIMEDEBUG
-	mimeIdToNameHash[id] = new_char_str( mimeName );
+	mimeIdToNameHash[id] = mimeName;
 #endif
 	return id;
 }
 
-static std::unordered_map<int, std::vector<char> > appIdToNameHash;
+static std::unordered_map<int, std::string > appIdToNameHash;
 
 static int GetAppID( const char* appName )
 {
@@ -308,7 +308,7 @@ static int GetAppID( const char* appName )
 	id++;
 	hash[appName] = id;
 
-	appIdToNameHash[id] = new_char_str( appName );
+	appIdToNameHash[id] = appName;
 	return id;
 }
 
@@ -815,7 +815,7 @@ void AppDefListFile::Refresh()
 //////////////////////////////// AppDB /////////////////////////////////////
 
 AppDB::AppDB( const char* prefix )
-	:  appDefsPrefix( new_char_str( prefix ) ),
+	:  appDefsPrefix( prefix ),
 	   defList( carray_cat<char>( prefix, "defaults.list" ).data() )
 {
 	DIR* d = opendir( prefix );

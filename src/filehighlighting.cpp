@@ -412,13 +412,13 @@ public:
 	std::vector<unicode_t> GetDescription() const { return m_DescriptionEdit.GetText(); }
 	uint64_t GetSizeMin() const
 	{
-		std::vector<char> utf8 = unicode_to_utf8( m_SizeMinEdit.GetText().data() );
+		std::string utf8 = unicode_to_utf8( m_SizeMinEdit.GetText().data() );
 		uint64_t Result = strtoull( utf8.data(), nullptr, 10 );
 		return ( Result == ULLONG_MAX ) ? 0 : Result;
 	}
 	uint64_t GetSizeMax() const
 	{
-		std::vector<char> utf8 = unicode_to_utf8( m_SizeMaxEdit.GetText().data() );
+		std::string utf8 = unicode_to_utf8( m_SizeMaxEdit.GetText().data() );
 		uint64_t Result = strtoull( utf8.data(), nullptr, 10 );
 		return ( Result == ULLONG_MAX ) ? 0 : Result;
 	}

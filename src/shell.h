@@ -8,6 +8,8 @@
 
 #ifndef _WIN32
 
+#include <string>
+
 #include "wal.h"
 
 using namespace wal;
@@ -19,7 +21,7 @@ class Shell
 
 	void Stop();
 	void Run();
-	std::vector<char> slaveName;
+	std::string slaveName;
 public:
 	Shell( const char* slave );
 

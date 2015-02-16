@@ -2522,10 +2522,8 @@ Nah:
 
 		if ( Hint )
 		{
-			std::vector<char> ResName  = new_char_str( "Wal Commander GitHub Edition" );
-			std::vector<char> ResClass = new_char_str( "WalCommander" );
-			Hint->res_name = ResName.data();
-			Hint->res_class = ResClass.data();
+			Hint->res_name = (char*)"Wal Commander GitHub Edition";
+			Hint->res_class = (char*)"WalCommander";
 			XSetClassHint( display, handle, Hint );
 			XFree( Hint );
 		}
@@ -3055,7 +3053,7 @@ stopped:
 		{
 			type = TYPE_X11;
 			data = xfs;
-			_uri = new_char_str( buf );
+			_uri = buf;
 			dbg_printf( "font %s created Ok!!!\n", buf );
 		}
 	}
@@ -3088,7 +3086,7 @@ stopped:
 
 			char buf[1024];
 			snprintf( buf, sizeof( buf ) - 1, "%s-%s %i", name, style, ( ( FTU::FFace* )data )->Size() / 64 );
-			_name = new_char_str( buf );
+			_name = buf;
 			return _name.data();
 		}
 
@@ -3112,7 +3110,7 @@ stopped:
 			{
 				type = TYPE_X11;
 				data = xfs;
-				_uri = new_char_str( s );
+				_uri = s;
 			}
 
 			return;
@@ -3153,7 +3151,7 @@ stopped:
 			{
 				type = TYPE_FT;
 				data = p;
-				_uri = new_char_str( s );
+				_uri = s;
 			}
 
 			return;
@@ -3179,7 +3177,7 @@ stopped:
 			data = p;
 			char buf[1024];
 			snprintf( buf, sizeof( buf ), "+%i:%s", pointSize, fileName );
-			_uri = new_char_str( buf );
+			_uri = buf;
 		}
 
 #endif

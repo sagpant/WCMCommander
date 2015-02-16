@@ -489,25 +489,25 @@ int FSSmb::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 FSString FSSmb::Uri( FSPath& path )
 {
 	MutexLock lock( &mutex );
-	std::vector<char> a;
+	std::string a;
 
 	if ( _param.server[0] )
 	{
 		if ( _param.user[0] )
 		{
-			a = carray_cat<char>( "smb://", const_cast<char*>( _param.user ), "@",  const_cast<char*>( _param.server ), path.GetUtf8() );
+			a = std::string( "smb://" ) + std::string( (char*)_param.user ) + "@" + std::string( (char*)_param.server ) + path.GetUtf8();
 		}
 		else
 		{
-			a = carray_cat<char>( "smb://", const_cast<char*>( _param.server ), path.GetUtf8() );
+			a = std::string( "smb://" ) + std::string( (char*)_param.server ) + path.GetUtf8();
 		}
 	}
 	else
 	{
-		a = carray_cat<char>( "smb:/", path.GetUtf8() );
+		a = std::string( "smb:/" ) + path.GetUtf8();
 	}
 
-	return FSString( CS_UTF8, a.data() );
+	return FSString( CS_UTF8, a.c_str() );
 }
 
 int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
@@ -597,7 +597,7 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 #if !defined(_WIN32)
 			if ( sys_charset_id == CS_UTF8 )
 			{
-				std::vector<char> normname = normalize_utf8_NFC( pEnt->name );
+				std::string normname = normalize_utf8_NFC( pEnt->name );
 				pNode->name.Set( sys_charset_id, normname.data() );
 			}
 			else

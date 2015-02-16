@@ -200,7 +200,7 @@ void KbIntCallback(
 
 		for ( i = 0; i < num_prompts; i++ )
 		{
-			std::vector<char> str = new_char_str( ( char* )FSString( pData[i].prompt.c_str() ).Get( kbdIntParam->charset ) );
+			std::string str = ( char* )FSString( pData[i].prompt.c_str() ).Get( kbdIntParam->charset );
 
 			if ( str.data() )
 			{
@@ -1165,7 +1165,7 @@ int FSSftp::ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 #if !defined(_WIN32)
 				if ( _operParam.charset == CS_UTF8 )
 				{
-					std::vector<char> normname = normalize_utf8_NFC( buf );
+					std::string normname = normalize_utf8_NFC( buf );
 					pNode->name.Set( _operParam.charset, normname.data() );
 				}
 				else
@@ -1391,12 +1391,12 @@ FSString FSSftp::Uri( FSPath& path )
 {
 	MutexLock lock( &infoMutex ); //infoMutex!!!
 
-	std::vector<char> a;
+	std::string a;
 
 	char port[0x100];
 	Lsnprintf( port, sizeof( port ), ":%i", _infoParam.port );
 
-	a = carray_cat<char>( "sftp://", _infoParam.user.c_str(), "@", _infoParam.server.c_str(), port, path.GetUtf8( '/' ) );
+	a = std::string( "sftp://" ) + _infoParam.user + "@" + _infoParam.server + std::string(port) + path.GetUtf8( '/' );
 
 	return FSString( CS_UTF8, a.data() );
 }

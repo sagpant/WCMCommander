@@ -1304,11 +1304,11 @@ begin:
 
 	void ShlConf::Parze( sys_char_t* filePath )
 	{
-		std::vector<char> utf8path = sys_to_utf8( filePath );
+		std::string utf8path = sys_to_utf8( filePath );
 
 		try
 		{
-			std::vector<char> dirPath = new_char_str( "" );
+			std::string dirPath( "" );
 
 			{
 
@@ -1324,7 +1324,7 @@ begin:
 					int l = p - utf8path.data();
 					dirPath.resize( l + 1 );
 
-					char* dir = dirPath.data();
+					char* dir = (char*)dirPath.data();
 
 					for ( s = utf8path.data(); s < p; s++, dir++ )
 					{
@@ -1352,7 +1352,7 @@ begin:
 
 					if ( parzer.Tok() != TOK_STR ) { parzer.Syntax(); }
 
-					std::vector<char> id = new_char_str( parzer.Str() );
+					std::string id = parzer.Str();
 
 					clPtr<Node> node = new Node;
 					parzer.Next();
@@ -1396,11 +1396,11 @@ begin:
 
 								fp[l1 + l2] = 0;
 
-								node->shlFileName = fp;
+								node->shlFileName = std::string( fp.data() );
 							}
 							else
 							{
-								node->shlFileName = new_char_str( parzer.Str() );
+								node->shlFileName = parzer.Str();
 							}
 
 							parzer.Next();
@@ -1464,7 +1464,7 @@ begin:
 						parzer.Syntax( "no syntax id" );
 					}
 
-					rule->id = new_char_str( parzer.Str() );
+					rule->id = parzer.Str();
 					ruleList.append( rule );
 
 					parzer.Next();
