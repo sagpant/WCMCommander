@@ -1780,26 +1780,16 @@ void NCWin::View( bool Secondary )
 
 		clPtr<FSList> list = _panel->GetSelectedList();
 
-		int cur = _panel->Current();
-
-		if ( !cur )
-		{
-			//calc current dir
-			DirCalc( fs, path, list, this );
-			_panel->Repaint();
-			return;
-		};
-
 		FSNode* p =  _panel->GetCurrent();
-
-		if ( !p ) { return; }
-
-		if ( p->IsDir() )
+		// p==0 => no current item => cursor is on '..' => calculate size of current folder
+		if (!p || p->IsDir())
 		{
-			DirCalc( fs, path, list, this );
+			if (p &&  list->Count() ==0 ) // no selection => calculate size of the folder under cursor
+				list->Append(p);
+			DirCalc(fs, path, list, this);
 			_panel->Repaint();
 			return;
-		};
+		}
 
 		path.Push( p->name.PrimaryCS(), p->name.Get( p->name.PrimaryCS() ) );
 
