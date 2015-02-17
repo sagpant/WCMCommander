@@ -195,6 +195,7 @@ class NCWin: public NCDialogParent
 public:
 	friend class PanelWin;
 	enum MODE { PANEL, TERMINAL, VIEW, EDIT };
+//	virtual void Paint( wal::GC& gc, const crect& paintRect );
 
 private:
 	Layout   _lo,

@@ -36,9 +36,16 @@
 		if ( !_win->exposeRect.IsEmpty() )
     {
       wal::GC gc( _win );
-      gc.context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+//      gc.context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+
+      CGColorSpaceRef colorSpaceRGB = CGColorSpaceCreateDeviceRGB();
+      CGContextSetStrokeColorSpace(gc.context, colorSpaceRGB);
+      CGContextSetFillColorSpace(gc.context, colorSpaceRGB);
+
       _win->Paint( gc, _win->exposeRect );
       _win->exposeRect.Zero();
+
+      CGColorSpaceRelease(colorSpaceRGB);
     }
 }
 
@@ -2017,6 +2024,7 @@ Nah:
 
 	void GC::_Init( Drawable id )
 	{
+    m_win = 0;
     context = nil;
 		curFont = 0;
 		valueMask = 0;
@@ -2065,6 +2073,12 @@ Nah:
 		: gc( None )
 	{
 		_Init( win ? win->GetID() : DefaultRootWindow( display ) );
+    m_win = win;
+    if (m_win) {
+      if ([m_win->view lockFocusIfCanDraw]) {
+        context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+      }
+    }
 	}
 
 	GC::GC( SCImage* im )
@@ -2152,6 +2166,15 @@ Nah:
 
 		if ( lineRgb == rgb && width  == gcValues.line_width && s == gcValues.line_style ) { return; }
 
+    if (context) {
+      int r = (rgb & 0xFF0000) >> 16;
+      int g = (rgb & 0x00FF00) >> 8;
+      int b = (rgb & 0x0000FF);
+      CGFloat color[4] = {r / 255.0, g / 255.0, b / 255.0, 1};
+      CGContextSetStrokeColor(context, color);
+      CGContextSetLineWidth(context, width);
+    }
+
 		gcValues.line_width = width;
 		gcValues.line_style = s;
 		valueMask |= GCLineWidth | GCLineStyle;
@@ -2198,6 +2221,16 @@ Nah:
 	void GC::FillRect( crect r )
 	{
 		if ( r.Width() <= 0 || r.Height() <= 0 ) { return; }
+
+    if (context) {
+      int blue = (fillRgb & 0xFF0000) >> 16;
+      int green = (fillRgb & 0x00FF00) >> 8;
+      int red = (fillRgb & 0x0000FF);
+      CGFloat color[4] = {red / 255.0, green / 255.0, blue / 255.0, 1};
+      CGContextSetFillColor(context, color);
+      CGRect rect = CGRectMake(r.left, r.top, r.Width(), r.Height());
+      CGContextFillRect(context, rect);
+    }
 
 		SetFg( fillColor );
 		CheckValues();
@@ -2303,10 +2336,16 @@ Nah:
 		if ( charCount <= 0 ) { return; }
 
     if (context) {
+      int b = (textRgb & 0xFF0000) >> 16;
+      int g = (textRgb & 0x00FF00) >> 8;
+      int r = (textRgb & 0x0000FF);
+      NSColor *color = [NSColor colorWithRed:r green:g blue:b alpha:1];
+
       char buf[400];
       unicode_to_utf8( buf, s );
       NSString *string = [NSString stringWithUTF8String:buf];
-      [string drawAtPoint:NSMakePoint(x, y) withAttributes:@{}];
+      [string drawAtPoint:NSMakePoint(x, y) withAttributes:@{NSFontAttributeName: [NSFont fontWithName:@"Monaco" size:12],
+                                                             NSForegroundColorAttributeName: color}];
     }
 
 #ifdef USEFREETYPE
@@ -2343,6 +2382,11 @@ Nah:
 	void GC::LineTo( int x, int y )
 	{
 		SetFg( lineColor );
+    if (context) {
+      CGContextMoveToPoint(context, lineX, lineY);
+      CGContextAddLineToPoint(context, x, y);
+      CGContextStrokePath(context);
+    }
 		CheckValues();
 		XDrawLine( display, winId, gc, lineX, lineY, x, y );
 		lineX = x;
@@ -2419,7 +2463,7 @@ Nah:
 		XDrawArc( display, winId, gc, r.left, r.top, w, h, 0, 360 * 64 );
 	}
 
-	GC::~GC() { XFreeGC( display, gc ); }
+  GC::~GC() { XFreeGC( display, gc ); if (m_win) [m_win->view unlockFocus]; }
 
 
 //////////////////////////// Win
@@ -2469,9 +2513,9 @@ Nah:
       window.title = @"Wal Commander GitHub Edition";
       [window orderFrontRegardless];
     } else if (t == Win::WT_CHILD) {
-      view.wantsLayer = YES;
-      view.layer.borderColor = [[NSColor blackColor] CGColor];
-      view.layer.borderWidth = 1;
+//      view.wantsLayer = YES;
+//      view.layer.borderColor = [[NSColor blackColor] CGColor];
+//      view.layer.borderWidth = 1;
       [parent->window.contentView addSubview:view];
     }
 

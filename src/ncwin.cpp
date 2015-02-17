@@ -437,6 +437,18 @@ bool IsRoot()
 #endif
 }
 
+// TODO(frantic): remove, used for GC testing only
+//void NCWin::Paint( wal::GC& gc, const crect& paintRect ) {
+//  gc.SetFillColor(0xFF00FF);
+//  gc.FillRect(paintRect);
+//  gc.SetTextColor(0x00FF00);
+//  std::wstring name(L"Hello!");
+//  gc.TextOutF(20, 20, name.c_str());
+//  gc.SetLine(0x808000);
+//  gc.MoveTo(20, 40);
+//  gc.LineTo(50, 40);
+//}
+
 NCWin::NCWin()
 	: NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect )
 	, _lo( 5, 1 )
@@ -1861,7 +1873,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 		{
 			int cur = _panel->Current();
 
-			if ( cur < 0 ) { return; } // on temporary panel 
+			if ( cur < 0 ) { return; } // on temporary panel
 
 			FSNode* p =  _panel->GetCurrent();
 
@@ -2188,9 +2200,9 @@ const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName
 	return NULL;
 }
 
-// XXX case sensitivity should be attribute of a file system, and not the OS. 
+// XXX case sensitivity should be attribute of a file system, and not the OS.
 // We can operate on UNIX sftpFS from Windows.
-// Add smth like IsCaseSensitive() virtual func to FS class 
+// Add smth like IsCaseSensitive() virtual func to FS class
 static bool pathEqual(const unicode_t* p1, const unicode_t* p2)
 {
 #ifdef _WIN32
@@ -2288,7 +2300,7 @@ void NCWin::Move( bool shift )
 	// - we move only one file
 	// - the file is moved to the active folder
 	// - the file is under cursor in active folder
-	// then move cursor to new name of the moved file	
+	// then move cursor to new name of the moved file
 	// This should retain cursor at the renamed file after Shift-F6
 	if (isMoveDone &&
 		list->Count() == 1 &&
@@ -3276,7 +3288,7 @@ void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabled
 void NCWin::AdjustFontSize( std::string* FontURI, float Coef )
 {
 	if ( !FontURI ) return;
-		
+
 	const char* Font = FontURI->data();
 
 	if ( !Font || !*Font ) return;

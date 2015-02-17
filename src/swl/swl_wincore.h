@@ -774,6 +774,7 @@ namespace wal
 		Window winId;
 		int fontAscent;
 		cfont* curFont;
+    Win *m_win;
 
 		unsigned lineRgb, lineColor;
 		unsigned textRgb, textColor;
@@ -1048,11 +1049,11 @@ namespace wal
 		};
 #endif
 
-    NSWindow *window;
-    NSView *view;
-
 
 	public:
+    NSWindow *window;
+    NSView *view;
+    
     crect exposeRect; // TODO(frantic): back to private
 		Win( WTYPE t, unsigned hints = 0, Win* _parent = nullptr, const crect* rect = nullptr, int uiNId = 0 );
 
