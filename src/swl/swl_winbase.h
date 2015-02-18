@@ -474,12 +474,9 @@ namespace wal
 		TLNode( const unicode_t* s, int i = 0, void* p = 0 ) : pixelWidth( -1 ), str( new_unicode_str( s ) ), intData( i ), ptrData( p ) {}
 	};
 
-
-	typedef cfbarray<TLNode, 0x100, 0x100> TLList;
-
 	class TextList: public VListWin
 	{
-		TLList list;
+		std::vector<TLNode> list;
 		bool valid;
 		int fontH;
 		int fontW;
@@ -490,9 +487,9 @@ namespace wal
 		void Append( const unicode_t* txt, int i = 0, void* p = 0 );
 		void DataRefresh();
 
-		const unicode_t* GetCurrentString() { int cnt = list.count(), c = GetCurrent(); return c < 0 || c >= cnt ? 0 : list.get( c ).str.data(); }
-		void* GetCurrentPtr() { int cnt = list.count(), c = GetCurrent(); return c < 0 || c >= cnt ? 0 : list.get( c ).ptrData; }
-		int GetCurrentInt() { int cnt = list.count(), c = GetCurrent(); return c < 0 || c >= cnt ? -1 : list.get( c ).intData; }
+		const unicode_t* GetCurrentString() { int cnt = list.size(), c = GetCurrent(); return c < 0 || c >= cnt ? 0 : list[ c ].str.data(); }
+		void* GetCurrentPtr() { int cnt = list.size(), c = GetCurrent(); return c < 0 || c >= cnt ? 0 : list[ c ].ptrData; }
+		int GetCurrentInt() { int cnt = list.size(), c = GetCurrent(); return c < 0 || c >= cnt ? -1 : list[ c ].intData; }
 
 		void SetHeightRange( LSRange range ); //in characters
 		void SetWidthRange( LSRange range ); //in characters

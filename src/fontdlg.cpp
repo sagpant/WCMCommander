@@ -406,10 +406,11 @@ class FontDialogFT: public NCVertDialog
 	{
 		const char* fileName;
 		cfont::FTInfo* info;
-		bool operator<=( const Node& a ) { return strcmp( info->name.data(), a.info->name.data() ) <= 0; }
+		bool operator<=( const Node& a ) const { return strcmp( info->name.data(), a.info->name.data() ) <= 0; }
+		bool operator<( const Node& a ) const { return strcmp( info->name.data(), a.info->name.data() ) < 0; }
 		Node(): fileName( 0 ), info( 0 ) {}
 	};
-	ccollect<Node> list;
+	std::vector<Node> list;
 	bool fixed;
 	int fontSize;
 public:
@@ -527,8 +528,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 		}
 	}
 
-
-	sort2m<Node>( list.ptr(), list.count() );
+	std::sort( list.begin(), list.end(), std::less<Node>() );
 
 	for ( i = 0; i < list.count(); i++ )
 	{

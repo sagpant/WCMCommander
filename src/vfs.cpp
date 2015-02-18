@@ -1692,7 +1692,7 @@ static int _BSearch(FSNode& n, const std::vector<FSNode*>& nodeVector, int(*CmpF
 
 	int iLeft = 0;
 	int iRight = vsize-1;
-	int cmp = CmpFunc(&n, nodeVector[iLeft]);
+	//int cmp = CmpFunc(&n, nodeVector[iLeft]);
 
 	for (int i = iRight / 2; iLeft <= iRight ; i = (iLeft + iRight) / 2)
 	{

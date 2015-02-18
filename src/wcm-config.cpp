@@ -322,7 +322,8 @@ void IniHash::Save( const sys_char_t* fileName )
 	if ( hash.count() > 0 )
 	{
 		std::vector<const char*> secList = hash.keys();
-		sort2m<const char*>( secList.data(), hash.count(), strless< const char* > );
+
+		std::sort( secList.begin(), secList.end(), strless<const char*> );
 
 		for ( int i = 0; i < hash.count(); i++ )
 		{
@@ -334,7 +335,8 @@ void IniHash::Save( const sys_char_t* fileName )
 			if ( !h ) { continue; }
 
 			std::vector<const char*> varList = h->keys();
-			sort2m<const char*>( varList.data(), h->count(), strless< const char* > );
+
+			std::sort( varList.begin(), varList.end(), strless<const char*> );
 
 			for ( int j = 0; j < h->count(); j++ )
 			{

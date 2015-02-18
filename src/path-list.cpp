@@ -36,9 +36,9 @@ int PathList::Compare(const unicode_t* a, const unicode_t* b, bool ignoreCase)
     return (*a ? (*b ? (au < bu ? -1 : (au == bu ? 0 : 1)) : 1) : (*b ? -1 : 0));
 }
 
-void PathList::GetStrings(std::vector<std::string>& list)
+void PathList::GetStrings(std::vector<std::string>& list) const
 {
-    for (int i = 0; i < m_list.count(); i++)
+    for (size_t i = 0; i < m_list.size(); i++)
     {
         if (m_list[i].conf.ptr() && m_list[i].name.data())
         {
@@ -48,7 +48,7 @@ void PathList::GetStrings(std::vector<std::string>& list)
     }
 }
 
-void PathList::SetStrings(std::vector<std::string>& list)
+void PathList::SetStrings(const std::vector<std::string>& list)
 {
     m_list.clear();
 
@@ -65,7 +65,7 @@ void PathList::SetStrings(std::vector<std::string>& list)
                 Data data;
                 data.conf = cfg;
                 data.name = utf8_to_unicode(name);
-                m_list.append(data);
+                m_list.push_back(data);
             }
         }
     }
@@ -103,7 +103,7 @@ PathListWin::PathListWin(Win* parent, PathList& dataList)
 
 void PathListWin::Sort()
 {
-    PathList::Data* curr = GetCurrentData();
+    const PathList::Data* curr = GetCurrentData();
     m_dataList.Sort();
 
     if (curr)
@@ -126,10 +126,10 @@ static const int uiFcColor = GetUiID("first-char-color");
 
 void PathListWin::DrawItem(wal::GC& gc, int n, crect rect)
 {
-    PathList::Data* curr = m_dataList.GetData(n);
+    const PathList::Data* curr = m_dataList.GetData(n);
     if (curr)
     {
-        unicode_t* name = curr->name.data();
+        const unicode_t* name = curr->name.data();
 
         UiCondList ucl;
         if ((n % 2) == 0)
@@ -168,18 +168,18 @@ int PathListDlg::UiGetClassId() { return uiClassShortcut; }
 
 void PathListDlg::OnSelected()
 {
-    PathList::Data* data = m_listWin.GetCurrentData();
+    const PathList::Data* data = m_ListWin.GetCurrentData();
 
     if (data && data->conf.ptr() && data->name.data())
     {
-        m_selectedData = data;
+        m_SelectedData = data;
         EndModal(CMD_OK);
     }
 }
 
 bool PathListDlg::Command(int id, int subId, Win* win, void* data)
 {
-    if (id == CMD_ITEM_CLICK && win == &m_listWin)
+    if ( id == CMD_ITEM_CLICK && win == &m_ListWin )
     {
         OnSelected();
         return true;
@@ -196,7 +196,7 @@ bool PathListDlg::Command(int id, int subId, Win* win, void* data)
 
 bool PathListDlg::OnKey(cevent_key* pEvent)
 {
-    if (pEvent->Type() == EV_KEYDOWN && pEvent->Key() == VK_RETURN && m_listWin.InFocus())
+    if ( pEvent->Type() == EV_KEYDOWN && pEvent->Key() == VK_RETURN && m_ListWin.InFocus() )
     {
         OnSelected();
         return true;
@@ -206,7 +206,7 @@ bool PathListDlg::OnKey(cevent_key* pEvent)
 }
 
 
-bool PathListDataToFS(PathList::Data* data, clPtr<FS>* fp, FSPath* pPath)
+bool PathListDataToFS(const PathList::Data* data, clPtr<FS>* fp, FSPath* pPath)
 {
     StrConfig* cfg = data->conf.ptr();
     if (!cfg)
