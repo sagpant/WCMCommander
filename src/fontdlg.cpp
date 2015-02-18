@@ -489,9 +489,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 	cstrhash<bool> fontNameHash; //чтоб не задваивались
 
-	int i;
-
-	for ( i = 0; i < fileList->count(); i++ )
+	for ( int i = 0; i < fileList->count(); i++ )
 	{
 		const char* fileName = fileList->get( i ).path.data();
 
@@ -530,7 +528,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 	std::sort( list.begin(), list.end(), std::less<Node>() );
 
-	for ( i = 0; i < list.count(); i++ )
+	for ( size_t i = 0; i < list.size(); i++ )
 	{
 		textList.Append( utf8_to_unicode( carray_cat<char>( list[i].info->name.data(), ", ", list[i].info->styleName.data() ).data() ).data(), i, &list[i] );
 	}
@@ -643,7 +641,7 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 		if ( s && s->fileName )
 		{
 			int n = textList.GetCurrentInt();
-			int fsize = ( n >= 0 && n < (in)list.size() ? CheckFontSize( fontSize ) : 100 );
+			int fsize = ( n >= 0 && n < (int)list.size() ? CheckFontSize( fontSize ) : 100 );
 			example.SetFont( cfont::New( s->fileName, fsize ) );
 		}
 
