@@ -893,16 +893,6 @@ namespace wal
 
 }; //namespace wal
 
-template <class T> inline bool strless( T* a, T* b )
-{
-	T s1 = *a, s2 = *b;
-
-	while ( *s1 && *s1 == *s2 ) { s1++; s2++; };
-
-	return *s1 <= *s2;
-}
-
-
 template <class T> inline char* positive_to_char_decimal( T n, char* s )
 {
 	char c[32];
