@@ -4,6 +4,8 @@
  * walcommander@linderdaum.com
  */
 
+#include <algorithm>
+
 #include <wal.h>
 #include "wcm-config.h"
 #include "color-style.h"
