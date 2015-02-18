@@ -316,9 +316,10 @@ void IniHash::Load( const sys_char_t* fileName )
 	in.Close();
 }
 
-template <class T> inline bool strless( const T* a, const T* b )
+inline bool strless( const char* a, const char* b )
 {
-	T s1 = *a, s2 = *b;
+	const char* s1 = a;
+	const char* s2 = b;
 
 	while ( *s1 && *s1 == *s2 ) { s1++; s2++; };
 
@@ -334,7 +335,7 @@ void IniHash::Save( const sys_char_t* fileName )
 	{
 		std::vector<const char*> secList = hash.keys();
 
-		std::sort( secList.begin(), secList.end(), strless<char> );
+		std::sort( secList.begin(), secList.end(), strless );
 
 		for ( int i = 0; i < hash.count(); i++ )
 		{
@@ -347,7 +348,7 @@ void IniHash::Save( const sys_char_t* fileName )
 
 			std::vector<const char*> varList = h->keys();
 
-			std::sort( varList.begin(), varList.end(), strless<char> );
+			std::sort( varList.begin(), varList.end(), strless );
 
 			for ( int j = 0; j < h->count(); j++ )
 			{
