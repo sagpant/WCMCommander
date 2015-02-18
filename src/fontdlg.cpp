@@ -524,7 +524,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 			Node node;
 			node.fileName = fileName;
 			node.info = Info.info.ptr();
-			list.append( node );
+			list.push_back( node );
 		}
 	}
 
@@ -601,7 +601,7 @@ FontDialogFT::FontDialogFT( NCDialogParent* parent, bool _fixed, ccollect<FileNo
 				uri++;
 				int n = -1;
 
-				for ( int i = 0; i < list.count(); i++ )
+				for ( int i = 0; i < (int)list.size(); i++ )
 					if ( !strcmp( uri, list[i].fileName ) )
 					{
 						n = i;
@@ -643,7 +643,7 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 		if ( s && s->fileName )
 		{
 			int n = textList.GetCurrentInt();
-			int fsize = ( n >= 0 && n < list.count() ? CheckFontSize( fontSize ) : 100 );
+			int fsize = ( n >= 0 && n < (in)list.size() ? CheckFontSize( fontSize ) : 100 );
 			example.SetFont( cfont::New( s->fileName, fsize ) );
 		}
 
@@ -696,7 +696,7 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 		if ( node && node->fileName )
 		{
 			int n = textList.GetCurrentInt();
-			int fsize = ( n >= 0 && n < list.count() ? CheckFontSize( fontSize ) : 100 );
+			int fsize = ( n >= 0 && n < (int)list.size() ? CheckFontSize( fontSize ) : 100 );
 
 			if ( num != fsize )
 			{
