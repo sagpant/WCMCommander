@@ -123,7 +123,7 @@ int64_t OperDirCalcThread::CalcDir( FS* fs, FSPath path )
 
 		OperDirCalcData* data = ( OperDirCalcData* )Node().Data();
 		MutexLock l1( &data->resMutex );
-		
+
 		data->fileCount += fileCount;
 		data->folderCount += folderCount;
 		data->sumSize += sumSize;
@@ -181,11 +181,11 @@ void OperDirCalcThread::Calc()
 
 			bool IsDir = node->IsDir() && !node->st.IsLnk();
 
-			if (IsDir)
+			if ( IsDir )
 			{
-				int64_t Size = CalcDir(fs.Ptr(), path);
+				int64_t Size = CalcDir( fs.Ptr(), path);
 
-				if (Size >= 0 && node && node->originNode) { node->originNode->st.size = Size; }
+				if ( Size >= 0 && node && node->originNode ) { node->originNode->st.size = Size; }
 			}
 		}
 	}
@@ -433,8 +433,8 @@ void DirCalcThreadWin::RefreshCounters()
 		SetStaticLineInt64( fileCountNum, count );
 		curFileCount = count;
 	}
-	
-	if (curFolderCount != folderCount)
+
+	if ( curFolderCount != folderCount )
 	{
 		SetStaticLineInt64( folderCountNum, folderCount );
 		curFolderCount = folderCount;
@@ -443,11 +443,11 @@ void DirCalcThreadWin::RefreshCounters()
 	if ( curSumSize != size )
 	{
 		unicode_t buf[64];
-		sumSizeNum.SetText(PrintableSizeStr(buf, size));
+		sumSizeNum.SetText( PrintableSizeStr( buf, size ) );
 		curSumSize = size;
 	}
 
-	if (curBadDirs != bad) { SetStaticLineInt64(badDirsNum, bad); curBadDirs = bad; }
+	if ( curBadDirs != bad ) { SetStaticLineInt64( badDirsNum, bad ); curBadDirs = bad; }
 }
 
 void DirCalcThreadWin::OperThreadSignal( int info )
@@ -550,14 +550,6 @@ void DirCalcThreadFunc( OperThreadNode* node )
 bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent )
 {
 	bool doCurrentDir = list->Count() == 0;
-	/*
-	if (doCurrentDir)
-	{ // put all from path to the list
-		int err;
-		if (f->ReadDir(list.Ptr(), path, &err, 0) != 0)
-			return false;
-	}
-	*/
 
 	OperDirCalcData data(parent, f, path, list);
 	DirCalcThreadWin dlg(parent, doCurrentDir ? _LT("Current folder metrics") : _LT("Selected folder(s) metrics"), &data, f->Uri(path).GetUnicode());
