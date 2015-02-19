@@ -17,6 +17,11 @@ namespace wal
 		void Check() { if ( ideal < minimal ) { ideal = minimal; } if ( maximal < ideal ) { maximal = ideal; } }
 		void Plus( const LSRange& a ) { minimal += a.minimal; maximal += a.maximal; ideal += a.ideal; }
 
+		bool operator != ( const LSRange& Other ) const
+		{
+			return minimal != Other.minimal || maximal != Other.maximal || ideal != Other.ideal;
+		}
+
 		LSRange& Max( const LSRange& a )
 		{
 			if ( minimal < a.minimal ) { minimal = a.minimal; }
@@ -35,6 +40,10 @@ namespace wal
 
 		LSize() {}
 		LSize( const cpoint& p ): x( p.x, p.x, p.x ), y( p.y, p.y, p.y ) { }
+		bool operator != ( const LSize& Other ) const
+		{
+			return x != Other.x || y != Other.y;
+		}
 		void Set( const crect& rect )
 		{
 			x.minimal = x.maximal = x.ideal = rect.Width();

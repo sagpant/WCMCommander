@@ -235,16 +235,20 @@ namespace wal
 	{
 		text = wal::new_unicode_str(txt);
 
+		LSize NewSize( cpoint(0, 0) );
+
 		if ( txt )
 		{
 			GC gc(this);
-			SetLSize(LSize(GetStaticTextExtent(gc, txt, GetFont())));
-		}
-		else
-		{
-			SetLSize(LSize(cpoint(0, 0)));
+			NewSize = LSize(GetStaticTextExtent(gc, txt, GetFont()));
 		}
 		
+		if ( NewSize != this->GetLSize( ))
+		{
+			SetLSize( NewSize );
+			if ( Parent() ) Parent()->RecalcLayouts();
+		}
+
 		Invalidate();
 	}
 
