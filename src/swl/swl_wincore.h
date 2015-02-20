@@ -68,7 +68,7 @@ namespace wal
 	{
 		int left, top;
 		int right, bottom;
-		crect() {}
+		crect(): left( 0 ), top( 0 ), right( 0 ), bottom( 0 ) {}
 		crect( const cpoint& lt, const cpoint& rb ): left( lt.x ), top( lt.y ), right( rb.x ), bottom( rb.y ) {}
 		crect( int _left, int _top, int _right, int _bottom ): left( _left ), top( _top ), right( _right ), bottom( _bottom ) {}
 		void Set( int _left, int _top, int _right, int _bottom ) {left = _left; right = _right; top = _top; bottom = _bottom;}
