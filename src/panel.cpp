@@ -481,9 +481,9 @@ void PanelWin::OnChangeStyles()
 	}
 }
 
-static int* CheckMode( int* m )
+static int CheckMode( int m )
 {
-	switch ( *m )
+	switch ( m )
 	{
 		case PanelWin::BRIEF:
 		case PanelWin::MEDIUM:
@@ -494,13 +494,13 @@ static int* CheckMode( int* m )
 			break;
 
 		default:
-			*m = PanelWin::MEDIUM;
+			m = PanelWin::MEDIUM;
 	}
 
 	return m;
 }
 
-PanelWin::PanelWin( Win* parent, int* mode )
+PanelWin::PanelWin( Win* parent, int mode )
 	:
 	NCDialogParent( WT_CHILD, 0, 0, parent ),
 	_lo( 7, 4 ),
@@ -676,9 +676,9 @@ void PanelWin::Check()
 
 	int cols;
 
-	CheckMode( _viewMode );
+	_viewMode = CheckMode( _viewMode );
 
-	switch ( *_viewMode )
+	switch ( _viewMode )
 	{
 		case FULL:
 		case FULL_ST:
@@ -693,7 +693,7 @@ void PanelWin::Check()
 		default:
 		{
 			cols = 100;
-			int minChars = ( *_viewMode == BRIEF ) ? MIN_BRIEF_CHARS : MIN_MEDIUM_CHARS;
+			int minChars = ( _viewMode == BRIEF ) ? MIN_BRIEF_CHARS : MIN_MEDIUM_CHARS;
 
 			if ( width < cols * minChars * _letterSize[0].x + ( cols - 1 )*VLINE_WIDTH )
 			{
@@ -702,7 +702,7 @@ void PanelWin::Check()
 				if ( cols < 1 ) { cols = 1; }
 			}
 
-			if ( *_viewMode != BRIEF && cols > 3 ) { cols = 3; }
+			if ( _viewMode != BRIEF && cols > 3 ) { cols = 3; }
 		}
 	};
 
@@ -818,7 +818,7 @@ void PanelWin::DrawVerticalSplitters( wal::GC& gc, const crect& rect )
 {
 	UiCondList ucl;
 
-	if ( *_viewMode == FULL_ST )
+	if ( _viewMode == FULL_ST )
 	{
 		int width = rect.Width();
 
@@ -848,7 +848,7 @@ void PanelWin::DrawVerticalSplitters( wal::GC& gc, const crect& rect )
 		gc.LineTo( dateX, rect.bottom );
 	}
 
-	if ( *_viewMode == FULL_ACCESS )
+	if ( _viewMode == FULL_ACCESS )
 	{
 		int width = rect.Width();
 
@@ -1058,7 +1058,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	}
 
 
-	if ( *_viewMode == FULL_ST )
+	if ( _viewMode == FULL_ST )
 	{
 //		FSNode *p = _list.Get(n);
 
@@ -1100,7 +1100,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	}
 
-	if ( *_viewMode == FULL_ACCESS )
+	if ( _viewMode == FULL_ACCESS )
 	{
 		FSNode* p = _list.Get( n, HideDotsInDir() );
 

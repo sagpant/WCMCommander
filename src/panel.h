@@ -169,7 +169,7 @@ private:
 	int _cols;
 	int _first;
 	int _current;
-	int* _viewMode;
+	int _viewMode;
 	FSStatVfs _vst;
 
 	ccollect<crect, 0x100> _rectList;
@@ -217,7 +217,7 @@ private:
 	int _operCursorLoc;
 
 public:
-	PanelWin( Win* parent, int* mode );
+	PanelWin( Win* parent, int mode );
 	bool IsSelectedPanel();
 	void SelectPanel();
 
@@ -246,8 +246,8 @@ public:
 	bool SetCurrent( FSString& a );
 	void SetCurrent( int n, bool shift, LPanelSelectionType* SelectType, bool SelectLastItem );
 
-	int ViewMode() { return *_viewMode; }
-	void SetViewMode( int m ) { *_viewMode = m; Check(); SetScroll(); Invalidate(); }
+	int ViewMode() { return _viewMode; }
+	void SetViewMode( int m ) { _viewMode = m; Check(); SetScroll(); Invalidate(); }
 
 	void LoadPath( clPtr<FS> fs, FSPath& path, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
 	void LoadPathStringSafe( const char* path );
