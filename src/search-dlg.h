@@ -22,9 +22,8 @@ struct SearchAndReplaceParams
 	{
 	}
 	SearchAndReplaceParams( const SearchAndReplaceParams& a )
-	 : m_SearchChar( 0 )
+	 : m_SearchChar( a.m_SearchChar )
 	{
-		m_SearchChar = a.m_SearchChar;
 		mask = new_unicode_str( a.mask.data() );
 		txt = new_unicode_str( a.txt.data() );
 		to = new_unicode_str( a.to.data() );

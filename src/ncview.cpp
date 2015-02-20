@@ -2792,7 +2792,7 @@ bool ViewWin::Search( const unicode_t* str, bool sensitive )
 
 	if ( !dlg.data ) { return true; }
 
-	if ( dlg.data->m_Error.c_str() )
+	if ( !dlg.data->m_Error.empty() )
 	{
 		NCMessageBox( ( NCDialogParent* )Parent(), _LT( "Search" ), dlg.data->m_Error.c_str(), true );
 		return true;
