@@ -201,6 +201,7 @@ private:
 	         _lpanel,
 	         _ledit;
 	ButtonWin _buttonWin;
+	PanelWin* _panel;
 	PanelWin _leftPanel,
 	         _rightPanel;
 
@@ -226,7 +227,6 @@ private:
 	StringWin _activityNotification;
 
 	StringWin _editPref;
-	PanelWin* _panel;
 
 	MenuData _mdLeft, _mdRight, _mdFiles, _mdOptions, _mdCommands;
 	MenuData _mdLeftSort, _mdRightSort;
