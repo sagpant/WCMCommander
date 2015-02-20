@@ -513,7 +513,8 @@ PanelWin::PanelWin( Win* parent, int mode )
 	_current( 0 ),
 	_viewMode( CheckMode( mode ) ), //MEDIUM),
 	_inOperState( false ),
-	_operData( ( NCDialogParent* )parent )
+	_operData( ( NCDialogParent* )parent ),
+	_operCursorLoc( 0 )
 {
 	_lo.SetLineGrowth( 3 );
 	_lo.SetColGrowth( 1 );
