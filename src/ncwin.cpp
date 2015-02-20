@@ -4274,6 +4274,16 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 						break;
 
 					default:
+						{
+							wchar_t c = pEvent->Char();
+
+							if ( c && c >= 0x20 && ( !alt ) )
+							{
+								searchParams.m_SearchChar = unicode_t(c);
+								g_MainWin->ViewSearch( false );
+								return true;
+							}
+						}
 						return false;
 				}
 

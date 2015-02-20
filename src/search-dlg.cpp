@@ -16,14 +16,14 @@ public:
 	EditLine textEdit;
 	SButton  caseButton;
 
-	SearchParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
+	SearchParamDialog( NCDialogParent* parent, const SearchAndReplaceParams* params );
 	virtual bool Command( int id, int subId, Win* win, void* data );
 	virtual ~SearchParamDialog();
 };
 
 SearchParamDialog::~SearchParamDialog() {}
 
-SearchParamDialog::SearchParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
+SearchParamDialog::SearchParamDialog( NCDialogParent* parent, const SearchAndReplaceParams* params )
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   textLabel( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &textEdit ),
@@ -31,7 +31,15 @@ SearchParamDialog::SearchParamDialog( NCDialogParent* parent, SearchAndReplacePa
 	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
 
 {
-	if ( params->txt.data() ) { textEdit.SetText( params->txt.data(), true ); }
+	if ( params->m_SearchChar )
+	{
+		const unicode_t Str[] = { params->m_SearchChar, 0 };
+		textEdit.SetText( Str, false );
+	}
+	else
+	{
+		if ( params->txt.data() ) { textEdit.SetText( params->txt.data(), true ); }
+	}
 
 	iL.AddWin( &textLabel, 0, 0 );
 	textLabel.Enable();
@@ -62,7 +70,12 @@ bool SearchParamDialog::Command( int id, int subId, Win* win, void* data )
 
 bool DoSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 {
-	SearchParamDialog dlg( parent, params );
+	SearchAndReplaceParams LocalParams(*params);
+
+	// always reset
+	params->m_SearchChar = 0;
+
+	SearchParamDialog dlg( parent, &LocalParams );
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
