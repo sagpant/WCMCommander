@@ -106,7 +106,7 @@ ButtonWinData panelAltButtons[] =
 	{"", 0},
 	{"Find", ID_SEARCH_2},
 	{"History", ID_HISTORY},
-	{"", 0},
+	{"Video", ID_VIDEO},
 	{"", 0},
 	{nullptr, 0}
 };
@@ -297,6 +297,7 @@ void NCWin::SetToolbarPanel()
 	_toolBar.AddCmd( ID_FOLDER_SHORTCUTS, _LT( "Show Folder Shortcuts" ) );
 	_toolBar.AddSplitter();
     _toolBar.AddCmd(ID_HISTORY, _LT("Show Command history"));
+    _toolBar.AddCmd(ID_VIDEO, _LT("Maximize Window"));
 	_toolBar.Invalidate();
 }
 
@@ -635,6 +636,7 @@ NCWin::NCWin()
 
 	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Alt-F7" );
 	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Alt-F8 (Ctrl-K)" );
+	_mdCommands.AddCmd( ID_VIDEO,   _LT( "&Maximize window" ),   "Alt-F9" );
     _mdCommands.AddCmd( ID_FOLDER_HISTORY, _LT( "F&olders history" ), "Alt-F12" );
     _mdCommands.AddSplit();
 	_mdCommands.AddCmd( ID_CTRL_O, _LT( "&Panel on/off" ), "Ctrl-O" );
@@ -3991,6 +3993,11 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				SaveSetupDialog();
 				break;
 
+			case FC(VK_F9, KM_ALT ):
+				this->Show( SHOW_MAXIMIZE );
+				break;
+
+
 			case VK_NUMPAD_CENTER:
 			case VK_F3:
 				View( false );
@@ -4479,6 +4486,10 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 
 			case ID_HISTORY:
 				HistoryDialog();
+				return true;
+
+			case ID_VIDEO:
+				this->Show( SHOW_MAXIMIZE );
 				return true;
 
 			case ID_PANEL_EQUAL:

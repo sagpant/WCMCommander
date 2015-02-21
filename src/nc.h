@@ -111,6 +111,7 @@ enum CommandIDs
 
 	ID_CTRL_O, //panel on/off
 	ID_HISTORY,
+	ID_VIDEO,
 	ID_PANEL_EQUAL,
 	ID_SEARCH_2,
 	ID_FOLDER_SHORTCUTS,

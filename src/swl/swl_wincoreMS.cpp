@@ -782,6 +782,11 @@ namespace wal
 		::InvalidateRect( handle, &r, FALSE );
 	}
 
+	void Win::Maximize()
+	{
+		
+	}
+
 	void Win::Show( SHOW_TYPE type )
 	{
 		switch ( type )
@@ -790,6 +795,9 @@ namespace wal
 				break;
 
 			case SHOW_INACTIVE: ::ShowWindow( handle, SW_SHOWNA );
+				break;
+
+			case SHOW_MAXIMIZE: ::ShowWindow( handle, SW_MAXIMIZE );
 				break;
 		};
 

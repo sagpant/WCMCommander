@@ -977,7 +977,8 @@ namespace wal
 		enum SHOW_TYPE
 		{
 			SHOW_ACTIVE = 0,
-			SHOW_INACTIVE = 1
+			SHOW_INACTIVE = 1,
+			SHOW_MAXIMIZE = 2
 		};
 
 	private:
@@ -1071,6 +1072,7 @@ namespace wal
 			this->Paint( gc, this->ClientRect() );
 		}
 
+		void Maximize();
 		void Show( SHOW_TYPE type = SHOW_ACTIVE );
 		void Hide();
 
