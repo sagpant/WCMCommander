@@ -35,7 +35,7 @@ namespace wal
 
 	void TextList::DrawItem( GC& gc, int n, crect rect )
 	{
-		if ( n >= 0 && n < list.count() )
+		if ( n >= 0 && n < (int)list.size() )
 		{
 			UiCondList ucl;
 
@@ -78,16 +78,15 @@ namespace wal
 	{
 		list.clear();
 		valid = false;
-		SetCount( list.count() );
+		SetCount( list.size() );
 	}
 
 
 	void TextList::Append( const unicode_t* txt, int i, void* p )
 	{
-		TLNode node( txt, i, p );
-		list.append( node );
+		list.emplace_back( txt, i, p );
 		valid = false;
-		SetCount( list.count() );
+		SetCount( (int)list.size() );
 	}
 
 	void TextList::DataRefresh()
@@ -99,9 +98,7 @@ namespace wal
 			gc.Set( GetFont() );
 			int X = 0;
 
-			int cnt = list.count();
-
-			for ( int i = 0; i < cnt; i++ )
+			for ( int i = 0; i < (int)list.size(); i++ )
 			{
 				if ( list[i].pixelWidth < 0 )
 				{
@@ -114,9 +111,9 @@ namespace wal
 				}
 			}
 
-			if ( GetCount() != list.count() )
+			if ( GetCount() != (int)list.size() )
 			{
-				SetCount( list.count() );
+				SetCount( (int)list.size() );
 			}
 
 			if ( X != this->GetItemWidth() )

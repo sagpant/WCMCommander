@@ -74,24 +74,24 @@ private:
 
 public:
 	FoldersHistoryDlg( NCDialogParent* parent, PathList& dataList )
-		: PathListDlg( parent, m_historyWin, _LT( "Folders History" ), 0 ),
-		  m_historyWin( this, dataList ),
-		  m_lo( 10, 10 )
+	 : PathListDlg( parent, m_historyWin, _LT( "Folders History" ), 0 )
+	 , m_historyWin( this, dataList )
+	 , m_lo( 10, 10 )
 	{
-		m_listWin.Show();
-		m_listWin.Enable();
+		m_ListWin.Show();
+		m_ListWin.Enable();
 
-		m_lo.AddWin( &m_listWin, 0, 0, 9, 0 );
+		m_lo.AddWin( &m_ListWin, 0, 0, 9, 0 );
 		m_lo.SetLineGrowth( 9 );
 		AddLayout( &m_lo );
 
 		SetPosition();
-		m_listWin.SetFocus();
+		m_ListWin.SetFocus();
 
 		if ( dataList.GetCount() > 0 )
 		{
 			// select the last item and make it visible
-			m_listWin.MoveCurrent( dataList.GetCount() - 1 );
+			m_ListWin.MoveCurrent( dataList.GetCount() - 1 );
 		}
 	}
 
@@ -105,7 +105,7 @@ bool FolderHistoryDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath )
 	dlg.SetEnterCmd( 0 );
 
 	const int res = dlg.DoModal();
-	PathList::Data* data = dlg.GetSelected();
+	const PathList::Data* data = dlg.GetSelected();
 
 	if ( res == CMD_OK && data && fp && pPath )
 	{

@@ -406,10 +406,11 @@ class FontDialogFT: public NCVertDialog
 	{
 		const char* fileName;
 		cfont::FTInfo* info;
-		bool operator<=( const Node& a ) { return strcmp( info->name.data(), a.info->name.data() ) <= 0; }
+		bool operator<=( const Node& a ) const { return strcmp( info->name.data(), a.info->name.data() ) <= 0; }
+		bool operator<( const Node& a ) const { return strcmp( info->name.data(), a.info->name.data() ) < 0; }
 		Node(): fileName( 0 ), info( 0 ) {}
 	};
-	ccollect<Node> list;
+	std::vector<Node> list;
 	bool fixed;
 	int fontSize;
 public:
@@ -488,9 +489,7 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 
 	cstrhash<bool> fontNameHash; //чтоб не задваивались
 
-	int i;
-
-	for ( i = 0; i < fileList->count(); i++ )
+	for ( int i = 0; i < fileList->count(); i++ )
 	{
 		const char* fileName = fileList->get( i ).path.data();
 
@@ -523,14 +522,13 @@ void FontDialogFT::ReloadFiltred( const char* filter )
 			Node node;
 			node.fileName = fileName;
 			node.info = Info.info.ptr();
-			list.append( node );
+			list.push_back( node );
 		}
 	}
 
+	std::sort( list.begin(), list.end(), std::less<Node>() );
 
-	sort2m<Node>( list.ptr(), list.count() );
-
-	for ( i = 0; i < list.count(); i++ )
+	for ( size_t i = 0; i < list.size(); i++ )
 	{
 		textList.Append( utf8_to_unicode( carray_cat<char>( list[i].info->name.data(), ", ", list[i].info->styleName.data() ).data() ).data(), i, &list[i] );
 	}
@@ -601,7 +599,7 @@ FontDialogFT::FontDialogFT( NCDialogParent* parent, bool _fixed, ccollect<FileNo
 				uri++;
 				int n = -1;
 
-				for ( int i = 0; i < list.count(); i++ )
+				for ( int i = 0; i < (int)list.size(); i++ )
 					if ( !strcmp( uri, list[i].fileName ) )
 					{
 						n = i;
@@ -643,7 +641,7 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 		if ( s && s->fileName )
 		{
 			int n = textList.GetCurrentInt();
-			int fsize = ( n >= 0 && n < list.count() ? CheckFontSize( fontSize ) : 100 );
+			int fsize = ( n >= 0 && n < (int)list.size() ? CheckFontSize( fontSize ) : 100 );
 			example.SetFont( cfont::New( s->fileName, fsize ) );
 		}
 
@@ -696,7 +694,7 @@ bool FontDialogFT::Command( int id, int subId, Win* win, void* data )
 		if ( node && node->fileName )
 		{
 			int n = textList.GetCurrentInt();
-			int fsize = ( n >= 0 && n < list.count() ? CheckFontSize( fontSize ) : 100 );
+			int fsize = ( n >= 0 && n < (int)list.size() ? CheckFontSize( fontSize ) : 100 );
 
 			if ( num != fsize )
 			{

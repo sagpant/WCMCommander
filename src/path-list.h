@@ -6,9 +6,10 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "ncdialogs.h"
 #include "vfs.h"
-
 
 class PathList
 {
@@ -21,39 +22,43 @@ public:
         std::vector<unicode_t> name;
         clPtr<StrConfig> conf;
 
-        bool operator <= (const Data& a)
+        bool operator <= (const Data& a) const
         {
             return (PathList::Compare(name.data(), a.name.data(), true) <= 0);
         }
+		  bool operator < (const Data& a) const
+		  {
+			  return (PathList::Compare(name.data(), a.name.data(), true) < 0);
+		  }
     };
 
     static int Compare(const unicode_t* a, const unicode_t* b, bool ignoreCase);
 
 private:
-    ccollect<Data> m_list;
+    std::vector<Data> m_list;
     
 public:
-    void GetStrings(std::vector<std::string>& list);
+    void GetStrings(std::vector<std::string>& list) const;
 
-    void SetStrings(std::vector<std::string>& list);
+    void SetStrings(const std::vector<std::string>& list);
 
-    PathList::Data* GetData(const int i)
+    const PathList::Data* GetData(const int i) const
     {
-        if (i < 0 || i >= m_list.count())
+        if (i < 0 || i >= (int)m_list.size())
         {
-            return NULL;
+            return nullptr;
         }
 
         return &(m_list[i]);
     }
 
-    int GetCount()
+    int GetCount() const
     {
-        return m_list.count();
+        return (int)m_list.size();
     }
 
     // Returns index of element with the specified name, or -1 if no such found
-    int FindByName(const unicode_t* name)
+    int FindByName(const unicode_t* name) const
     {
         for (int i = 0; i < GetCount(); i++)
         {
@@ -77,24 +82,24 @@ public:
         data.name = new_unicode_str(name);
         data.conf = p;
 
-        m_list.append(data);
+        m_list.push_back(data);
         return true;
     }
 
     bool Remove(const int i)
     {
-        if (i < 0 || i >= m_list.count())
+        if (i < 0 || i >= (int)m_list.size())
         {
             return false;
         }
 
-        m_list.del(i);
+		  m_list.erase( m_list.begin( ) + i );
         return true;
     }
 
     bool Rename(const int i, const unicode_t* name)
     {
-        if (!name || i < 0 || i >= m_list.count())
+        if (!name || i < 0 || i >= (int)m_list.size())
         {
             return false;
         }
@@ -105,10 +110,9 @@ public:
 
     void Sort()
     {
-        const int count = m_list.count();
-        if (count > 0)
+        if ( !m_list.empty() )
         {
-            sort2m<Data>(m_list.ptr(), count);
+				std::sort( m_list.begin(), m_list.end(), std::less<Data>() );
         }
     }
 };
@@ -125,7 +129,7 @@ public:
     virtual ~PathListWin() {}
 
 public:
-    PathList::Data* GetCurrentData()
+    const PathList::Data* GetCurrentData() const
     {
         return m_dataList.GetData(GetCurrent());
     }
@@ -175,21 +179,21 @@ protected:
 class PathListDlg : public NCDialog
 {
 protected:
-    PathListWin&       m_listWin;
-    PathList::Data*    m_selectedData;
+    PathListWin&          m_ListWin;
+    const PathList::Data* m_SelectedData;
 
 public:
-    PathListDlg(NCDialogParent* parent, PathListWin& listWin, const char* szTitle, ButtonDataNode* blist)
-        : NCDialog(::createDialogAsChild, 0, parent, utf8_to_unicode(szTitle).data(), blist),
-        m_listWin(listWin),
-        m_selectedData(0)
+    PathListDlg( NCDialogParent* Parent, PathListWin& ListWin, const char* szTitle, ButtonDataNode* blist )
+     : NCDialog(::createDialogAsChild, 0, Parent, utf8_to_unicode(szTitle).data(), blist)
+	  , m_ListWin( ListWin )
+	  , m_SelectedData(0)
     {
         SetEnterCmd(CMD_OK);
     }
 
     virtual ~PathListDlg() {}
 
-    PathList::Data* GetSelected() { return m_selectedData; }
+    const PathList::Data* GetSelected() const { return m_SelectedData; }
 
     virtual bool Command(int id, int subId, Win* win, void* data);
 
@@ -222,6 +226,6 @@ protected:
 };
 
 
-bool PathListDataToFS(PathList::Data* data, clPtr<FS>* fp, FSPath* pPath);
+bool PathListDataToFS(const PathList::Data* data, clPtr<FS>* fp, FSPath* pPath);
 
 bool PathListFSToData(PathList::Data& data, clPtr<FS>* fs, FSPath* path);

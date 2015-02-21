@@ -4,6 +4,8 @@
  * walcommander@linderdaum.com
  */
 
+#include <algorithm>
+
 #include <wal.h>
 #include "wcm-config.h"
 #include "color-style.h"
@@ -314,6 +316,16 @@ void IniHash::Load( const sys_char_t* fileName )
 	in.Close();
 }
 
+inline bool strless( const char* a, const char* b )
+{
+	const char* s1 = a;
+	const char* s2 = b;
+
+	while ( *s1 && *s1 == *s2 ) { s1++; s2++; };
+
+	return *s1 <= *s2;
+}
+
 void IniHash::Save( const sys_char_t* fileName )
 {
 	SysTextFileOut out;
@@ -322,7 +334,8 @@ void IniHash::Save( const sys_char_t* fileName )
 	if ( hash.count() > 0 )
 	{
 		std::vector<const char*> secList = hash.keys();
-		sort2m<const char*>( secList.data(), hash.count(), strless< const char* > );
+
+		std::sort( secList.begin(), secList.end(), strless );
 
 		for ( int i = 0; i < hash.count(); i++ )
 		{
@@ -334,7 +347,8 @@ void IniHash::Save( const sys_char_t* fileName )
 			if ( !h ) { continue; }
 
 			std::vector<const char*> varList = h->keys();
-			sort2m<const char*>( varList.data(), h->count(), strless< const char* > );
+
+			std::sort( varList.begin(), varList.end(), strless );
 
 			for ( int j = 0; j < h->count(); j++ )
 			{

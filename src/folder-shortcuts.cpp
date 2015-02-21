@@ -88,8 +88,8 @@ public:
 		, m_fs( fp )
 		, m_path( pPath )
 	{
-		m_listWin.Show();
-		m_listWin.Enable();
+		m_ListWin.Show();
+		m_ListWin.Enable();
 
 		m_lo.AddWin( &m_shortcutsWin, 0, 0, 9, 0 );
 		m_lo.SetLineGrowth( 9 );
@@ -128,7 +128,7 @@ bool FolderShortcutsDlg::Command( int id, int subId, Win* win, void* data )
 {
 	if ( id == CMD_MINUS )
 	{
-		PathList::Data* data = m_listWin.GetCurrentData();
+		const PathList::Data* data = m_ListWin.GetCurrentData();
 
 		if ( !data || !data->name.data() )
 		{
@@ -139,7 +139,7 @@ bool FolderShortcutsDlg::Command( int id, int subId, Win* win, void* data )
 		                   carray_cat<char>( _LT( "Delete '" ), unicode_to_utf8( data->name.data() ).data(), "' ?" ).data(),
 		                   false, bListOkCancel ) == CMD_OK )
 		{
-			m_listWin.DeleteCurrentItem();
+			m_ListWin.DeleteCurrentItem();
 		}
 
 		return true;
@@ -147,7 +147,7 @@ bool FolderShortcutsDlg::Command( int id, int subId, Win* win, void* data )
 
 	if ( id == CMD_RENAME )
 	{
-		PathList::Data* data = m_listWin.GetCurrentData();
+		const PathList::Data* data = m_ListWin.GetCurrentData();
 
 		if ( !data || !data->name.data() )
 		{
@@ -159,7 +159,7 @@ bool FolderShortcutsDlg::Command( int id, int subId, Win* win, void* data )
 
 		if ( name.data() )
 		{
-			m_listWin.RenameCurrentItem( name.data() );
+			m_ListWin.RenameCurrentItem( name.data() );
 		}
 
 		return true;
@@ -181,7 +181,7 @@ bool FolderShortcutsDlg::Command( int id, int subId, Win* win, void* data )
 
 			if ( name.data() )
 			{
-				m_listWin.InsertItem( name.data(), data.conf );
+				m_ListWin.InsertItem( name.data(), data.conf );
 			}
 		}
 
@@ -198,7 +198,7 @@ bool FolderShortcutDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath )
 	dlg.SetEnterCmd( 0 );
 
 	const int res = dlg.DoModal();
-	PathList::Data* data = dlg.GetSelected();
+	const PathList::Data* data = dlg.GetSelected();
 
 	if ( res == CMD_OK && data && fp && pPath )
 	{
