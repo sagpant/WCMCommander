@@ -2783,7 +2783,7 @@ stopped:
 		if ( type == SHOW_MAXIMIZE )
 		{
 			XWindowAttributes xwa;
-			XGetWindowAttributes( display, DefaultRootWindow(dpy), &xwa );
+			XGetWindowAttributes( display, DefaultRootWindow(display), &xwa );
 			XMoveResizeWindow( display, GetID(), 0, 0, xwa.width, xwa.height );
 			return;
 		}
