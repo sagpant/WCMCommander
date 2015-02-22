@@ -7,6 +7,11 @@
 	Added: mark truncated file names with the '}' symbol in panels
 	Added: store FTP passwords between sessions
 	Added: folders history (Alt+F12)
+	Added: file attributes dialog (Ctrl+A)
+	Added: command line autocompletion shows file/folder names from the current folder
+	Added: pressing F3 on '..' calculates the size of the current folder
+	Added: typing in the viewer opens the search dialog
+	Added: maximize window (Alt+F9)
 	Hotkey: Ctrl+Alt+Ins, Alt+Shift+Ins, Ctrl+Shift+P to copy the full path of the currently selected item to the clipboard
 	Hotkey: Ctrl+R to refresh the drives list in the drive selection dialog
 	Hotkey: Ctrl+NumPadPlus, Ctrl+NumPadMinus to select and deselect files with the same extension
@@ -15,6 +20,7 @@
 	Improved: hotkeys in all 'red' dialogs
 	Improved: retain cursor position after F5/F6 etc.
 	Improved: rendering of folders with unicode names (normalized unicode strings)
+	Improved: C++11 highlighting in the editor
 	Fixed: button bar text in the editor
 	Fixed: hotkeys in the 'Styles' dialog
 	Fixed: OpenBSD support
@@ -28,6 +34,8 @@
 	Fixed: pressing Alt+key freezes Ctrl/Shift info in the bottom bar
 	Fixed: custom highlighting rules for selected files
 	Fixed: shortcuts in the text search/replace dialogs
+	Fixed: long path truncation in the drive selection dialog
+	Fixed: selection color in the viewer
 
 0.18.1 GitHub Edition
 	Added: file highlighting
