@@ -1,7 +1,68 @@
-wcm (0.18.1-1) unstable; urgency=medium
-  * Added: speed indicator while copying
-  * Hotkey: Ctrl+L to open info dialog
+wcm (0.19.0-1) stable; urgency=medium
+  * Added: Shift+Enter opens a file/folder with the default OS application
+  * Added: bookmarks in the editor (set via RightCtrl+digit, restore via LeftCtrl+digit)
+  * Added: adjust font size with Ctrl+WheelUp, Ctrl+WheelDn (Windows-only)
+  * Added: basic SSH keys SFTP authorization
+  * Added: temporary panel
+  * Added: mark truncated file names with the '}' symbol in panels
+  * Added: store FTP passwords between sessions
+  * Added: folders history (Alt+F12)
+  * Added: file attributes dialog (Ctrl+A)
+  * Added: command line autocompletion shows file/folder names from the current folder
+  * Added: pressing F3 on '..' calculates the size of the current folder
+  * Added: typing in the viewer opens the search dialog
+  * Added: maximize window (Alt+F9)
+  * Hotkey: Ctrl+Alt+Ins, Alt+Shift+Ins, Ctrl+Shift+P to copy the full path of the currently selected item to the clipboard
+  * Hotkey: Ctrl+R to refresh the drives list in the drive selection dialog
+  * Hotkey: Ctrl+NumPadPlus, Ctrl+NumPadMinus to select and deselect files with the same extension
+  * Improved: 'cd' in the command line without arguments should change directory to $HOME
+  * Improved: hotkeys in the F2 user menu
+  * Improved: hotkeys in all 'red' dialogs
+  * Improved: retain cursor position after F5/F6 etc.
+  * Improved: rendering of folders with unicode names (normalized unicode strings)
+  * Improved: C++11 highlighting in the editor
+  * Fixed: button bar text in the editor
+  * Fixed: hotkeys in the 'Styles' dialog
+  * Fixed: OpenBSD support
+  * Fixed: installation issues
+  * Fixed: TrueType fonts antialiasing
+  * Fixed: debug messages in the console
+  * Fixed: mouse interaction bugs
+  * Fixed: graphical issue in the current path under the panels
+  * Fixed: hide the autocompletion window while switching via Ctrl+Tab to the editor/viewer
+  * Fixed: panel width after exiting the editor with Ctrl+Tab
+  * Fixed: pressing Alt+key freezes Ctrl/Shift info in the bottom bar
+  * Fixed: custom highlighting rules for selected files
+  * Fixed: shortcuts in the text search/replace dialogs
+  * Fixed: long path truncation in the drive selection dialog
+  * Fixed: selection color in the viewer
 
+ -- Sergey Kosarevsky <sk@linderdaum.com>  Sat, 21 Feb 2015 23:44:06 -0500
+
+wcm (0.18.1-1) unstable; urgency=medium
+  * Added: file highlighting
+  * Added: speed indicator while copying
+  * Added: color and icon (optional) for soft links
+  * Added: copy multiple selected file names to the clipboard
+  * Added: option to disable setup auto saving
+  * Added: option to show/hide the main menu
+  * Added: show '(Administrator)' in the window caption while running with admin privileges on Windows
+  * Added: show volume label in the drive selection dialog
+  * Added: user menu (F2)
+  * Added: status bar for Alt+... keys in the aditor
+  * Hotkey: Ctrl+L to open info dialog
+  * Hotkey: Ctrl+S to select file (same as Ins)
+  * Hotkey: Ctrl+F12 to select sorting mode
+  * Improved: eye-gouging borders in the main menu
+  * Improved: icons centering in the panels
+  * Fixed: hotkeys in the drive selection dialog
+  * Fixed: up/down in Alt-search
+  * Fixed: numpad Ins and numpad Del
+  * Fixed: keyboard hotkeys in the 'Folder shortcuts' dialog
+  * Development: configs and makefiles moved to the root folder
+  * Development: command line option --debug-keyboard to print keypresses
+  * Development: INSTALL_TO variable to change the installation path
+ 
  -- Sergey Kosarevsky <sk@linderdaum.com>  Mon, 12 Nov 2014 15:56:25 +0300
 
 wcm (0.18.0-1) unstable; urgency=medium
