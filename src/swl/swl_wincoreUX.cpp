@@ -2780,6 +2780,14 @@ stopped:
 
 	void Win::Show( SHOW_TYPE type )
 	{
+		if ( type == SHOW_MAXIMIZE )
+		{
+			XWindowAttributes xwa;
+			XGetWindowAttributes( display, DefaultRootWindow(display), &xwa );
+			XMoveResizeWindow( display, GetID(), 0, 0, xwa.width, xwa.height );
+			return;
+		}
+
 		::XMapWindow( display, GetID() );
 		showType = type; //used in mapping event
 		SetState( S_VISIBLE );
