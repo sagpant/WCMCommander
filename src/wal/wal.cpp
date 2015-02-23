@@ -449,6 +449,8 @@ namespace wal
 
 	int64_t HexStrToInt( const unicode_t* Str )
 	{
+		if ( !Str ) return 0;
+
 		std::string utf8 = unicode_to_utf8( Str );
 
 		int64_t i = 0x0;
@@ -462,6 +464,7 @@ namespace wal
 
 	std::vector<unicode_t> normalize_unicode_NFC( const unicode_t* Str )
 	{
+		if ( !Str ) return std::vector<unicode_t>();
 #if !defined(_WIN32)
 		std::string UTFstr = unicode_to_utf8( Str );
 		uint8_t* NormString = utf8proc_NFC( (const uint8_t*)UTFstr.data() );
@@ -477,6 +480,7 @@ namespace wal
 
 	std::string normalize_utf8_NFC( const char* Str )
 	{
+		if ( !Str ) return std::string();
 #if !defined(_WIN32)
 		uint8_t* NormString = utf8proc_NFC( (const uint8_t*)Str );
 
@@ -492,6 +496,8 @@ namespace wal
 
 std::string GetEnvVariable( const char* VarName )
 {
+	if ( !VarName ) return std::string();
+
 #if _MSC_VER > 1700
 	char* value;
 	size_t size;
