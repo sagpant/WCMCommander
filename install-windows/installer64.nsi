@@ -1,6 +1,6 @@
 SetCompressor /SOLID /FINAL lzma
 
-Name "Wal Commander GitHub Edition 0.18.0 (64-bit)"
+Name "Wal Commander GitHub Edition 0.19.0 (64-bit)"
 
 ; The file to write
 OutFile "WalCommanderGitHub-0.18.0-x64.exe"
