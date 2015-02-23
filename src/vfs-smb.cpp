@@ -594,7 +594,7 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 					InternalStat( path, &pNode->st, info );
 			}
 
-#if !defined(_WIN32)
+#if defined(__APPLE__)
 			if ( sys_charset_id == CS_UTF8 )
 			{
 				std::string normname = normalize_utf8_NFC( pEnt->name );

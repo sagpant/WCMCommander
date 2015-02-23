@@ -484,7 +484,7 @@ namespace wal
 #if !defined(_WIN32)
 		uint8_t* NormString = utf8proc_NFC( (const uint8_t*)Str );
 
-		if(!NormString) return std::string();
+		if(!NormString) return std::string(Str);
 		
 		std::string Result = (const char*)NormString;
 
