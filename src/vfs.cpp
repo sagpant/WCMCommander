@@ -1311,7 +1311,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 			clPtr<FSNode> pNode = new FSNode();
 			path.SetItem( n, sys_charset_id, ent.d_name );
 			Stat( path, &pNode->st, 0, info );
-#if !defined(_WIN32)
+#if defined(__APPLE__)
 			if ( sys_charset_id == CS_UTF8 )
 			{
 				std::string normname = normalize_utf8_NFC( ent.d_name );

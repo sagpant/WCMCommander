@@ -1162,7 +1162,7 @@ int FSSftp::ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 
 				clPtr<FSNode> pNode = new FSNode();
 
-#if !defined(_WIN32)
+#if defined(__APPLE__)
 				if ( _operParam.charset == CS_UTF8 )
 				{
 					std::string normname = normalize_utf8_NFC( buf );
