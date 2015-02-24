@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="wcm" />
+		<Option makefile="makefile" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Linux64">
+				<Option platforms="Unix;" />
+				<Option output="../Debug/Linux64/wcm" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../Debug/Linux64/.objs" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m64" />
+					<Add option="-Isrc/swl -Isrc/wal -Isrc" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
+					<Add directory="wal" />
+					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
+				</Compiler>
+				<Linker>
+					<Add library="freetype" />
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+				</Linker>
+			</Target>
+			<Target title="Release Linux64">
+				<Option platforms="Unix;" />
+				<Option output="../Release/Linux64/wcm" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../Release/Linux64/.objs" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m64" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc" />
+					<Add option="-DNDEBUG" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
+					<Add directory="wal" />
+					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
+				</Compiler>
+				<Linker>
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+					<Add library="freetype" />
+				</Linker>
+			</Target>
+			<Target title="Debug Linux32">
+				<Option platforms="Unix;" />
+				<Option output="../Debug/Linux32/wcm" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../Debug/Linux32/.objs" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m32" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
+					<Add directory="wal" />
+					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
+				</Compiler>
+				<Linker>
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+					<Add library="freetype" />
+				</Linker>
+			</Target>
+			<Target title="Release Linux32">
+				<Option platforms="Unix;" />
+				<Option output="../Release/wcm" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../Release/.objs" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m32" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc" />
+					<Add option="-DNDEBUG" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
+					<Add directory="wal" />
+					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
+				</Compiler>
+				<Linker>
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+					<Add library="freetype" />
+				</Linker>
+			</Target>
+			<Target title="Debug Win32">
+				<Option platforms="Windows;" />
+				<Option output="../build/codeblocks/debugWin32/wcm" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m32" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc" />
+					<Add option="-DNDEBUG" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
+					<Add directory="wal" />
+					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
+				</Compiler>
+				<Linker>
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+					<Add library="freetype" />
+				</Linker>
+			</Target>
+			<Target title="Release Win32">
+				<Option platforms="Windows;" />
+				<Option output="../build/codeblocks/releaseWin32/wcm" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-I/usr/include/freetype2" />
+					<Add option="-m32" />
+					<Add option="-Isrc/swl -Isrc/wal" />
+					<Add option="-DNDEBUG" />
+					<Add option="-DUSEFREETYPE" />
+					<Add option="-DLIBSMB40" />
+					<Add option="-DLIBSMBCLIENT_EXIST" />
+					<Add option="-DLIBSSH2_EXIST" />
+					<Add directory="wal" />
+					<Add directory="swl" />
+					<Add directory="/usr/include/freetype2" />
+				</Compiler>
+				<Linker>
+					<Add library="X11" />
+					<Add library="pthread" />
+					<Add library="ssh2" />
+					<Add library="smbclient" />
+					<Add library="stdc++" />
+					<Add library="freetype" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="src/ReadMe.txt" />
+		<Unit filename="src/Resource.h" />
+		<Unit filename="src/charsetdlg.cpp" />
+		<Unit filename="src/charsetdlg.h" />
+		<Unit filename="src/color-style.cpp" />
+		<Unit filename="src/color-style.h" />
+		<Unit filename="src/dircalc.cpp" />
+		<Unit filename="src/dircalc.h" />
+		<Unit filename="src/dlg-ctrl-l.cpp" />
+		<Unit filename="src/eloadsave.cpp" />
+		<Unit filename="src/eloadsave.h" />
+		<Unit filename="src/ext-app-ux.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
+		<Unit filename="src/ext-app.cpp" />
+		<Unit filename="src/ext-app.h" />
+		<Unit filename="src/fileassociations.cpp" />
+		<Unit filename="src/fileattributes.cpp" />
+		<Unit filename="src/filehighlighting.cpp" />
+		<Unit filename="src/fileopers.cpp" />
+		<Unit filename="src/fileopers.h" />
+		<Unit filename="src/filesearch.cpp" />
+		<Unit filename="src/filesearch.h" />
+		<Unit filename="src/folder-history.cpp" />
+		<Unit filename="src/folder-history.h" />
+		<Unit filename="src/folder-shortcuts.cpp" />
+		<Unit filename="src/folder-shortcuts.h" />
+		<Unit filename="src/fontdlg.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
+		<Unit filename="src/ftplogon.cpp" />
+		<Unit filename="src/ftplogon.h" />
+		<Unit filename="src/globals.cpp" />
+		<Unit filename="src/globals.h" />
+		<Unit filename="src/help.cpp" />
+		<Unit filename="src/help.h" />
+		<Unit filename="src/helpres.cpp" />
+		<Unit filename="src/icon1.ico" />
+		<Unit filename="src/libconf.h" />
+		<Unit filename="src/libconf_win32.h" />
+		<Unit filename="src/ltext.cpp" />
+		<Unit filename="src/ltext.h" />
+		<Unit filename="src/mfile.h" />
+		<Unit filename="src/nc.cpp" />
+		<Unit filename="src/nc.h" />
+		<Unit filename="src/ncdialogs.cpp" />
+		<Unit filename="src/ncdialogs.h" />
+		<Unit filename="src/ncedit.cpp" />
+		<Unit filename="src/ncedit.h" />
+		<Unit filename="src/ncfonts.cpp" />
+		<Unit filename="src/ncfonts.h" />
+		<Unit filename="src/nchistory.cpp" />
+		<Unit filename="src/nchistory.h" />
+		<Unit filename="src/ncview.cpp" />
+		<Unit filename="src/ncview.h" />
+		<Unit filename="src/ncwin.cpp" />
+		<Unit filename="src/ncwin.h" />
+		<Unit filename="src/operthread.cpp" />
+		<Unit filename="src/operthread.h" />
+		<Unit filename="src/operwin.cpp" />
+		<Unit filename="src/operwin.h" />
+		<Unit filename="src/panel-style.cpp" />
+		<Unit filename="src/panel-style.h" />
+		<Unit filename="src/panel.cpp" />
+		<Unit filename="src/panel.h" />
+		<Unit filename="src/panel_list.cpp" />
+		<Unit filename="src/panel_list.h" />
+		<Unit filename="src/path-list.cpp" />
+		<Unit filename="src/path-list.h" />
+		<Unit filename="src/search-dlg.cpp" />
+		<Unit filename="src/search-dlg.h" />
+		<Unit filename="src/search-tools.cpp" />
+		<Unit filename="src/search-tools.h" />
+		<Unit filename="src/sftpdlg.cpp" />
+		<Unit filename="src/sftpdlg.h" />
+		<Unit filename="src/shell-tools.cpp" />
+		<Unit filename="src/shell-tools.h" />
+		<Unit filename="src/shell.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
+		<Unit filename="src/shell.h" />
+		<Unit filename="src/shl.cpp" />
+		<Unit filename="src/shl.h" />
+		<Unit filename="src/small.ico" />
+		<Unit filename="src/smblogon.cpp" />
+		<Unit filename="src/smblogon.h" />
+		<Unit filename="src/stdafx.h" />
+		<Unit filename="src/strconfig.cpp" />
+		<Unit filename="src/strconfig.h" />
+		<Unit filename="src/string-util.h" />
+		<Unit filename="src/strmasks.cpp" />
+		<Unit filename="src/swl/swl.h" />
+		<Unit filename="src/swl/swl_button.cpp" />
+		<Unit filename="src/swl/swl_editline.cpp" />
+		<Unit filename="src/swl/swl_layout.cpp" />
+		<Unit filename="src/swl/swl_menubox.cpp" />
+		<Unit filename="src/swl/swl_menutextinfo.cpp" />
+		<Unit filename="src/swl/swl_popupmenu.cpp" />
+		<Unit filename="src/swl/swl_sbutton.cpp" />
+		<Unit filename="src/swl/swl_scrollbar.cpp" />
+		<Unit filename="src/swl/swl_staticlabel.cpp" />
+		<Unit filename="src/swl/swl_textlist.cpp" />
+		<Unit filename="src/swl/swl_vlist.cpp" />
+		<Unit filename="src/swl/swl_winbase.cpp" />
+		<Unit filename="src/swl/swl_winbase.h" />
+		<Unit filename="src/swl/swl_wincore.cpp" />
+		<Unit filename="src/swl/swl_wincore.h" />
+		<Unit filename="src/swl/swl_wincoreMS.cpp">
+			<Option target="Debug Win32" />
+			<Option target="Release Win32" />
+		</Unit>
+		<Unit filename="src/swl/swl_wincoreUX.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
+		<Unit filename="src/swl/swl_wincore_freetype_inc.h" />
+		<Unit filename="src/swl/swl_wincore_internal.h" />
+		<Unit filename="src/swl/swl_wincore_ui_inc.h" />
+		<Unit filename="src/t-emulator.cpp" />
+		<Unit filename="src/targetver.h" />
+		<Unit filename="src/tcp_sock.cpp" />
+		<Unit filename="src/tcp_sock.h" />
+		<Unit filename="src/terminal.cpp">
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
+		<Unit filename="src/terminal.h" />
+		<Unit filename="src/termwin.cpp" />
+		<Unit filename="src/termwin.h" />
+		<Unit filename="src/toolbar.cpp" />
+		<Unit filename="src/toolbar.h" />
+		<Unit filename="src/unicode_lc.cpp" />
+		<Unit filename="src/urlparser/LUrlParser.cpp" />
+		<Unit filename="src/usermenu.cpp" />
+		<Unit filename="src/utf8proc/utf8proc.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Linux64" />
+			<Option target="Release Linux64" />
+			<Option target="Debug Linux32" />
+			<Option target="Release Linux32" />
+		</Unit>
+		<Unit filename="src/ux_util.cpp" />
+		<Unit filename="src/vfs-ftp.cpp" />
+		<Unit filename="src/vfs-ftp.h" />
+		<Unit filename="src/vfs-sftp.cpp" />
+		<Unit filename="src/vfs-sftp.h" />
+		<Unit filename="src/vfs-sftp2.cpp" />
+		<Unit filename="src/vfs-smb.cpp" />
+		<Unit filename="src/vfs-smb.h" />
+		<Unit filename="src/vfs-tmp.cpp" />
+		<Unit filename="src/vfs-tmp.h" />
+		<Unit filename="src/vfs-uri.cpp" />
+		<Unit filename="src/vfs-uri.h" />
+		<Unit filename="src/vfs.cpp" />
+		<Unit filename="src/vfs.h" />
+		<Unit filename="src/vfspath.cpp" />
+		<Unit filename="src/vfspath.h" />
+		<Unit filename="src/w32cons.cpp">
+			<Option target="Release Win32" />
+			<Option target="Debug Win32" />
+		</Unit>
+		<Unit filename="src/w32cons.h" />
+		<Unit filename="src/w32util.cpp">
+			<Option target="Release Win32" />
+			<Option target="Debug Win32" />
+		</Unit>
+		<Unit filename="src/w32util.h" />
+		<Unit filename="src/wal/wal.cpp" />
+		<Unit filename="src/wal/wal.h" />
+		<Unit filename="src/wal/wal_charset.cpp" />
+		<Unit filename="src/wal/wal_exceptions.cpp" />
+		<Unit filename="src/wal/wal_files.cpp" />
+		<Unit filename="src/wal/wal_sys_api.cpp" />
+		<Unit filename="src/wal/wal_sys_api.h" />
+		<Unit filename="src/wal/wal_tmpls.cpp" />
+		<Unit filename="src/wal/wal_tmpls.h" />
+		<Unit filename="src/wcm-config.cpp" />
+		<Unit filename="src/wcm-config.h" />
+		<Unit filename="src/wcm.ico" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

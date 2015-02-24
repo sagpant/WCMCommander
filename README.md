@@ -4,12 +4,18 @@ Wal Commander
 [![Scan Status](https://scan.coverity.com/projects/2933/badge.svg?flat=1)](https://scan.coverity.com/projects/2933)
 
 Copyright (c) Valery [Wal] Goryachev 2013-2014
-Copyright (c) Sergey Kosarevsky, 2014
+
+Copyright (c) Sergey Kosarevsky, 2014-2015
 
 Maintained by Sergey Kosarevsky
+
 https://github.com/corporateshark/WalCommander
+
 http://wcm.linderdaum.com
+
 walcommander@linderdaum.com
+
+Discussion group: https://groups.google.com/d/forum/wal-commander
 
 =============================
 
@@ -25,7 +31,8 @@ Getting the latest version:
 
 The most feature complete up-to-date version is in the [master](https://github.com/corporateshark/WalCommander/commits/master) branch.
 However, this is mostly untested and can be broken from time to time (not for long).
-If you want a stable release for a day to day usage, check out our latest [releases](https://github.com/corporateshark/WalCommander/releases).
+If you want a stable release for a day to day usage, check out our latest [releases](https://github.com/corporateshark/WalCommander/releases) or
+precompiled [binary packages](http://wcm.linderdaum.com/downloads).
 
 =============================
 

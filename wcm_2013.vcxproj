@@ -1,0 +1,352 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>wcm</ProjectName>
+    <ProjectGuid>{B9B0F7D2-36B9-4409-A2D7-B61548647379}</ProjectGuid>
+    <RootNamespace>wcm</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <SmallerTypeCheck>true</SmallerTypeCheck>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <OpenMPSupport>true</OpenMPSupport>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;libssh2.lib;ssleay32.lib;libeay32.lib;zlib.lib;Mpr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>libssh2\static32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;libssh2\libssh2_debug.lib;Mpr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMPSupport>true</OpenMPSupport>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;libssh2.lib;ssleay32.lib;libeay32.lib;zlib.lib;Mpr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>libssh2\static32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;libssh2\libssh2.lib;Mpr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src/charsetdlg.cpp" />
+    <ClCompile Include="src/color-style.cpp" />
+    <ClCompile Include="src/dircalc.cpp" />
+    <ClCompile Include="src/dlg-ctrl-l.cpp" />
+    <ClCompile Include="src/eloadsave.cpp" />
+    <ClCompile Include="src/ext-app.cpp" />
+    <ClCompile Include="src/globals.cpp" />
+    <ClCompile Include="src/fileassociations.cpp" />
+    <ClCompile Include="src/fileattributes.cpp" />
+    <ClCompile Include="src/filehighlighting.cpp" />
+    <ClCompile Include="src/fileopers.cpp" />
+    <ClCompile Include="src/filesearch.cpp" />
+    <ClCompile Include="src/ftplogon.cpp" />
+    <ClCompile Include="src/help.cpp" />
+    <ClCompile Include="src/helpres.cpp" />
+    <ClCompile Include="src/ltext.cpp" />
+    <ClCompile Include="src/nc.cpp" />
+    <ClCompile Include="src/ncdialogs.cpp" />
+    <ClCompile Include="src/ncedit.cpp" />
+    <ClCompile Include="src/ncfonts.cpp" />
+    <ClCompile Include="src/nchistory.cpp" />
+    <ClCompile Include="src/ncview.cpp" />
+    <ClCompile Include="src/ncwin.cpp" />
+    <ClCompile Include="src/operthread.cpp" />
+    <ClCompile Include="src/operwin.cpp" />
+    <ClCompile Include="src/panel-style.cpp" />
+    <ClCompile Include="src/panel.cpp" />
+    <ClCompile Include="src/panel_list.cpp" />
+    <ClCompile Include="src/search-dlg.cpp" />
+    <ClCompile Include="src/search-tools.cpp" />
+    <ClCompile Include="src/sftpdlg.cpp" />
+    <ClCompile Include="src/shell-tools.cpp" />
+    <ClCompile Include="src/shl.cpp" />
+    <ClCompile Include="src\folder-shortcuts.cpp" />
+    <ClCompile Include="src/smblogon.cpp" />
+    <ClCompile Include="src/stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src/strconfig.cpp" />
+    <ClCompile Include="src/strmasks.cpp" />
+    <ClCompile Include="src/swl\swl_button.cpp" />
+    <ClCompile Include="src/swl\swl_editline.cpp" />
+    <ClCompile Include="src/swl\swl_combobox.cpp" />
+    <ClCompile Include="src/swl\swl_layout.cpp" />
+    <ClCompile Include="src/swl\swl_menubox.cpp" />
+    <ClCompile Include="src/swl\swl_menutextinfo.cpp" />
+    <ClCompile Include="src/swl\swl_popupmenu.cpp" />
+    <ClCompile Include="src/swl\swl_sbutton.cpp" />
+    <ClCompile Include="src/swl\swl_scrollbar.cpp" />
+    <ClCompile Include="src/swl\swl_staticlabel.cpp" />
+    <ClCompile Include="src/swl\swl_textlist.cpp" />
+    <ClCompile Include="src/swl\swl_vlist.cpp" />
+    <ClCompile Include="src/swl\swl_winbase.cpp" />
+    <ClCompile Include="src/swl\swl_wincore.cpp" />
+    <ClCompile Include="src/swl\swl_wincoreMS.cpp" />
+    <ClCompile Include="src/tcp_sock.cpp" />
+    <ClCompile Include="src/termwin.cpp" />
+    <ClCompile Include="src/toolbar.cpp" />
+    <ClCompile Include="src/unicode_lc.cpp" />
+    <ClCompile Include="src/usermenu.cpp" />
+    <ClCompile Include="src/vfs-ftp.cpp" />
+    <ClCompile Include="src/vfs-sftp.cpp" />
+    <ClCompile Include="src/vfs-sftp2.cpp" />
+    <ClCompile Include="src/vfs-smb.cpp" />
+    <ClCompile Include="src/vfs-uri.cpp" />
+    <ClCompile Include="src/vfs.cpp" />
+    <ClCompile Include="src/vfspath.cpp" />
+    <ClCompile Include="src/w32cons.cpp" />
+    <ClCompile Include="src/w32util.cpp" />
+    <ClCompile Include="src/wal\wal.cpp" />
+    <ClCompile Include="src/wal\wal_charset.cpp" />
+    <ClCompile Include="src/wal\wal_exceptions.cpp" />
+    <ClCompile Include="src/wal\wal_files.cpp" />
+    <ClCompile Include="src/wal\wal_sys_api.cpp" />
+    <ClCompile Include="src/wal\wal_tmpls.cpp" />
+    <ClCompile Include="src/wcm-config.cpp" />
+    <ClCompile Include="src\urlparser\LUrlParser.cpp" />
+    <ClCompile Include="src\vfs-tmp.cpp" />
+    <ClCompile Include="src\folder-history.cpp" />
+    <ClCompile Include="src\path-list.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src/charsetdlg.h" />
+    <ClInclude Include="src/color-style.h" />
+    <ClInclude Include="src/dircalc.h" />
+    <ClInclude Include="src/dlg-ctrl-l.h" />
+    <ClInclude Include="src/eloadsave.h" />
+    <ClInclude Include="src/ext-app.h" />
+    <ClInclude Include="src/fileassociations.h" />
+    <ClInclude Include="src/fileattributes.h" />
+    <ClInclude Include="src/filehighlighting.h" />
+    <ClInclude Include="src/fileopers.h" />
+    <ClInclude Include="src/filesearch.h" />
+    <ClInclude Include="src/ftplogon.h" />
+    <ClInclude Include="src/globals.h" />
+    <ClInclude Include="src/help.h" />
+    <ClInclude Include="src/libconf.h" />
+    <ClInclude Include="src/libconf_win32.h" />
+    <ClInclude Include="src/ltext.h" />
+    <ClInclude Include="src/mfile.h" />
+    <ClInclude Include="src/nc.h" />
+    <ClInclude Include="src/ncdialogs.h" />
+    <ClInclude Include="src/ncedit.h" />
+    <ClInclude Include="src/ncfonts.h" />
+    <ClInclude Include="src/nchistory.h" />
+    <ClInclude Include="src/ncview.h" />
+    <ClInclude Include="src/ncwin.h" />
+    <ClInclude Include="src/operthread.h" />
+    <ClInclude Include="src/operwin.h" />
+    <ClInclude Include="src/panel-style.h" />
+    <ClInclude Include="src/panel.h" />
+    <ClInclude Include="src/panel_list.h" />
+    <ClInclude Include="src/Resource.h" />
+    <ClInclude Include="src/search-dlg.h" />
+    <ClInclude Include="src/search-tools.h" />
+    <ClInclude Include="src/sftpdlg.h" />
+    <ClInclude Include="src/shell-tools.h" />
+    <ClInclude Include="src/shell.h" />
+    <ClInclude Include="src/shl.h" />
+    <ClInclude Include="src\folder-shortcuts.h" />
+    <ClInclude Include="src/smblogon.h" />
+    <ClInclude Include="src/stdafx.h" />
+    <ClInclude Include="src/strconfig.h" />
+    <ClInclude Include="src/string-util.h" />
+    <ClInclude Include="src/strmasks.h" />
+    <ClInclude Include="src/swl\swl.h" />
+    <ClInclude Include="src/swl\swl_internal.h" />
+    <ClInclude Include="src/swl\swl_layout.h" />
+    <ClInclude Include="src/swl\swl_winbase.h" />
+    <ClInclude Include="src/swl\swl_wincore.h" />
+    <ClInclude Include="src/swl\swl_wincore_internal.h" />
+    <ClInclude Include="src/targetver.h" />
+    <ClInclude Include="src/tcp_sock.h" />
+    <ClInclude Include="src/terminal.h" />
+    <ClInclude Include="src/termwin.h" />
+    <ClInclude Include="src/toolbar.h" />
+    <ClInclude Include="src/usermenu.h" />
+    <ClInclude Include="src/vfs-ftp.h" />
+    <ClInclude Include="src/vfs-sftp.h" />
+    <ClInclude Include="src/vfs-smb.h" />
+    <ClInclude Include="src/vfs-uri.h" />
+    <ClInclude Include="src/vfs.h" />
+    <ClInclude Include="src/vfspath.h" />
+    <ClInclude Include="src/w32cons.h" />
+    <ClInclude Include="src/w32util.h" />
+    <ClCompile Include="src/wal\IntrusivePtr.h" />
+    <ClInclude Include="src/wal\wal.h" />
+    <ClInclude Include="src/wal\wal_sys_api.h" />
+    <ClInclude Include="src/wal\wal_tmpls.h" />
+    <ClInclude Include="src/wcm-config.h" />
+    <ClInclude Include="src\urlparser\LUrlParser.h" />
+    <ClInclude Include="src\vfs-tmp.h" />
+    <ClInclude Include="src\folder-history.h" />
+    <ClInclude Include="src\path-list.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src/wcm.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

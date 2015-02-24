@@ -1,9 +1,9 @@
 SetCompressor /SOLID /FINAL lzma
 
-Name "Wal Commander GitHub Edition 0.17.0 (64-bit)"
+Name "Wal Commander GitHub Edition 0.19.0 (64-bit)"
 
 ; The file to write
-OutFile "WalCommanderGitHub-0.17.0-x64.exe"
+OutFile "WalCommanderGitHub-0.18.0-x64.exe"
 
 ; The default installation directory
 InstallDir "D:\Program Files\WalCommander"
@@ -11,14 +11,14 @@ InstallDir "D:\Program Files\WalCommander"
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
-Icon ..\wcm\small.ico
+Icon ..\src\small.ico
 
 LicenseText "License Agreement"
 LicenseData ..\LICENSE
 
 !include "MUI2.nsh"
 !define MUI_ABORTWARNING
-!define MUI_ICON "..\wcm\small.ico"
+!define MUI_ICON "..\src\small.ico"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADER_TRANSPARENT_TEXT
@@ -70,7 +70,7 @@ Section "" ;No components page, name is not important
   SetOutPath $INSTDIR
   
   ; Put file there
-  File /r Temp64\*.*
+  File /r Temp\*.*
 
   ; Write the uninstall keys for Windows
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WalCommander" "DisplayName" "Wal Commander GitHub Edition"
@@ -99,7 +99,7 @@ Section "Start Menu Shortcuts"
   
    !insertmacro MUI_STARTMENU_WRITE_END
 
-	CreateShortCut "$DESKTOP\Wal Commnader.lnk" "$INSTDIR\" "" "$INSTDIR\small.ico"
+	CreateShortCut "$DESKTOP\Wal Commander.lnk" "$INSTDIR\" "" "$INSTDIR\small.ico"
 
 ;  CreateShortCut "$DESKTOP\Asteroids.lnk" "$INSTDIR\Launcher2.exe"
 SectionEnd
@@ -109,7 +109,7 @@ SectionEnd
 ; Uninstaller
 
 Function un.onInit
-	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove Wal Commnader GitHub Edition and all of its components?" IDYES +2
+	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove Wal Commander GitHub Edition and all of its components?" IDYES +2
 	Abort
 FunctionEnd
 

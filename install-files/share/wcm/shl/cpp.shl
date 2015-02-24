@@ -1,0 +1,120 @@
+start newline;
+
+chars a [a-zA-Z]; 
+chars d [0-9];
+chars s [\t\ ];
+
+state newline default {
+	rule	<\n>	{ state = newline; };
+	rule	</\*!>	{ state=comment_attn_1; color=ATTN; };
+	rule	</\*>	{ state=comment_1; color=COMMENT; };
+	rule	<//!>	{ state=comment_attn_2; color=ATTN; };
+	rule	<//>	{ state=comment_2; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	
+	rule	<0x[0-9a-fA-F]+>	{ state = default; color = NUM; };
+	rule	<$(d)+[\.]*$(d)*[eE]*$(d)*>	{ state = default; color = NUM; };
+	
+	rule <[!~*+\-=|\>\<&\^?%]+> { state = default; color = OPER; };
+	
+	rule <[{}():;,]> { state = default;  color = KEYWORD; };
+	
+	rule	<[$(a)$(d)_]+>	{ 
+		state = default;  
+		words (KEYWORD) = {
+			'auto',	
+			'break', 
+			'case', 'char', 'const', 'constexpr', 'continue',
+			'default', 'do','double',
+			'else',	'enum',	'extern',
+			'float','for',
+			'goto',
+			'if', 'int',
+			'long',
+			'register', 'return',
+			'short', 'signed', 'sizeof', 'static', 'struct', 'switch',
+			'typedef',
+			'union', 'unsigned', 'nullptr',
+			'void',	'volatile', 'override',
+			'while',
+			'asm',
+			'catch', 'class',
+			'friend',
+			'delete',
+			'inline',
+			'new',
+			'operator',
+			'private', 'protected',	'public',
+			'this',	'throw','template', 'try',
+			'virtual',
+			'bool',
+			'const_cast',
+			'dynamic_cast',
+			'explicit',
+			'false',
+			'mutable',
+			'namespace',
+			'reinterpret_cast',
+			'static_cast',
+			'true', 'typeid', 'typename',
+			'using',
+			'wchar_t'
+		};
+	};
+	
+	rule 	<...> { color = KEYWORD; };
+};
+
+state newline {;
+	rule	<\#>	 {state=pre;	color=PRE; };
+	rule 	<[^$(s)]> { state=default; };
+};
+	
+state comment_1	{
+	color=COMMENT;
+	rule	<\*/>	{ state=default; };
+};
+
+state comment_attn_1	{
+	color = ATTN;
+	rule	<\*/>	{ state=default; };
+};
+
+	
+state comment_2	{
+	color = COMMENT;
+	rule	<\\\n>;
+	rule	<\n>	{state=newline;};
+};
+
+state comment_attn_2	{
+	color = ATTN;
+	rule	<\\\n>;
+	rule	<\n>	{state=newline;};
+};
+
+	
+state pre {
+	color = PRE;
+	rule	</\*>	{ state=comment_1; color=COMMENT; };
+	rule	<//>	{ state=comment_2; color=COMMENT; };
+	rule	<\\\n>;	
+	rule	<\n>	{state=newline; };
+};
+	
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+#	rule	<\\> { color = ATTN; };
+	rule	<\">	{state=default;};
+};
+
+state char {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};
