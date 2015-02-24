@@ -83,7 +83,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/vfs;src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -114,7 +114,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/vfs;src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -135,7 +135,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/vfs;src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -165,7 +165,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src/vfs;src/wal;src/swl;libssh2;src/uriparser/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -248,13 +248,14 @@
     <ClCompile Include="src/toolbar.cpp" />
     <ClCompile Include="src/unicode_lc.cpp" />
     <ClCompile Include="src/usermenu.cpp" />
-    <ClCompile Include="src/vfs-ftp.cpp" />
-    <ClCompile Include="src/vfs-sftp.cpp" />
-    <ClCompile Include="src/vfs-sftp2.cpp" />
-    <ClCompile Include="src/vfs-smb.cpp" />
-    <ClCompile Include="src/vfs-uri.cpp" />
-    <ClCompile Include="src/vfs.cpp" />
-    <ClCompile Include="src/vfspath.cpp" />
+    <ClCompile Include="src/vfs/vfs-ftp.cpp" />
+    <ClCompile Include="src/vfs/vfs-sftp.cpp" />
+    <ClCompile Include="src/vfs/vfs-sftp2.cpp" />
+    <ClCompile Include="src/vfs/vfs-smb.cpp" />
+    <ClCompile Include="src/vfs/vfs-uri.cpp" />
+    <ClCompile Include="src/vfs/vfs.cpp" />
+    <ClCompile Include="src/vfs/vfspath.cpp" />
+    <ClCompile Include="src/vfs/vfs-tmp.cpp" />
     <ClCompile Include="src/w32cons.cpp" />
     <ClCompile Include="src/w32util.cpp" />
     <ClCompile Include="src/wal\wal.cpp" />
@@ -265,7 +266,6 @@
     <ClCompile Include="src/wal\wal_tmpls.cpp" />
     <ClCompile Include="src/wcm-config.cpp" />
     <ClCompile Include="src\urlparser\LUrlParser.cpp" />
-    <ClCompile Include="src\vfs-tmp.cpp" />
     <ClCompile Include="src\folder-history.cpp" />
     <ClCompile Include="src\path-list.cpp" />
   </ItemGroup>
@@ -325,23 +325,23 @@
     <ClInclude Include="src/termwin.h" />
     <ClInclude Include="src/toolbar.h" />
     <ClInclude Include="src/usermenu.h" />
-    <ClInclude Include="src/vfs-ftp.h" />
-    <ClInclude Include="src/vfs-sftp.h" />
-    <ClInclude Include="src/vfs-smb.h" />
-    <ClInclude Include="src/vfs-uri.h" />
-    <ClInclude Include="src/vfs.h" />
-    <ClInclude Include="src/vfspath.h" />
+    <ClInclude Include="src/vfs/vfs-ftp.h" />
+    <ClInclude Include="src/vfs/vfs-sftp.h" />
+    <ClInclude Include="src/vfs/vfs-smb.h" />
+    <ClInclude Include="src/vfs/vfs-uri.h" />
+    <ClInclude Include="src/vfs/vfs.h" />
+    <ClInclude Include="src/vfs/vfspath.h" />
+    <ClInclude Include="src/vfs/vfs-tmp.h" />
     <ClInclude Include="src/w32cons.h" />
     <ClInclude Include="src/w32util.h" />
-    <ClCompile Include="src/wal\IntrusivePtr.h" />
-    <ClInclude Include="src/wal\wal.h" />
-    <ClInclude Include="src/wal\wal_sys_api.h" />
-    <ClInclude Include="src/wal\wal_tmpls.h" />
+    <ClCompile Include="src/wal/IntrusivePtr.h" />
+    <ClInclude Include="src/wal/wal.h" />
+    <ClInclude Include="src/wal/wal_sys_api.h" />
+    <ClInclude Include="src/wal/wal_tmpls.h" />
     <ClInclude Include="src/wcm-config.h" />
-    <ClInclude Include="src\urlparser\LUrlParser.h" />
-    <ClInclude Include="src\vfs-tmp.h" />
-    <ClInclude Include="src\folder-history.h" />
-    <ClInclude Include="src\path-list.h" />
+    <ClInclude Include="src/urlparser/LUrlParser.h" />
+    <ClInclude Include="src/folder-history.h" />
+    <ClInclude Include="src/path-list.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src/wcm.rc" />

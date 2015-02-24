@@ -72,13 +72,13 @@ SOURCES += src/nc.cpp \
     src/unicode_lc.cpp \
     src/usermenu.cpp \
     src/ux_util.cpp \
-    src/vfs-ftp.cpp \
-    src/vfs-sftp.cpp \
-    src/vfs-sftp2.cpp \
-    src/vfs-smb.cpp \
-    src/vfs-tmp.cpp \
-    src/vfs-uri.cpp \
-    src/vfs.cpp \
+    src/vfs/vfs-ftp.cpp \
+    src/vfs/vfs-sftp.cpp \
+    src/vfs/vfs-sftp2.cpp \
+    src/vfs/vfs-smb.cpp \
+    src/vfs/vfs-tmp.cpp \
+    src/vfs/vfs-uri.cpp \
+    src/vfs/vfs.cpp \
     src/vfspath.cpp \
     src/w32util.cpp \
     src/wcm-config.cpp \
@@ -149,13 +149,13 @@ HEADERS += \
     src/unicode_lc.h \
     src/usermenu.cpp \
     src/ux_util.h \
-    src/vfs-ftp.h \
-    src/vfs-sftp.h \
-    src/vfs-smb.h \
-    src/vfs-tmp.h \
-    src/vfs-uri.h \
-    src/vfs.h \
-    src/vfspath.h \
+    src/vfs/vfs-ftp.h \
+    src/vfs/vfs-sftp.h \
+    src/vfs/vfs-smb.h \
+    src/vfs/vfs-tmp.h \
+    src/vfs/vfs-uri.h \
+    src/vfs/vfs.h \
+    src/vfs/vfspath.h \
     src/w32cons.h \
     src/w32util.h \
     src/wcm-config.h
