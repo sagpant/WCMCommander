@@ -71,11 +71,11 @@ HN = \
 	src/shell.h \
 	src/operthread.h \
 	src/operwin.h \
-	src/vfs.h \
-	src/vfspath.h \
-	src/vfs-smb.h \
-	src/vfs-tmp.h \
-	src/vfs-uri.h \
+	src/vfs/vfs.h \
+	src/vfs/vfspath.h \
+	src/vfs/vfs-smb.h \
+	src/vfs/vfs-tmp.h \
+	src/vfs/vfs-uri.h \
 	src/fileopers.h \
 	src/mfile.h \
 	src/eloadsave.h \
@@ -84,10 +84,10 @@ HN = \
 	src/wcm-config.h \
 	src/panel_list.h \
 	src/tcp_sock.h \
-	src/vfs-ftp.h \
+	src/vfs/vfs-ftp.h \
 	src/ftplogon.h \
 	src/charsetdlg.h \
-	src/vfs-sftp.h \
+	src/vfs/vfs-sftp.h \
 	src/sftpdlg.h \
 	src/color-style.h \
 	src/filesearch.h \
@@ -109,7 +109,7 @@ HN = \
 	src/dircalc.h \
 	src/ltext.h
 
-CFLAGS += -I src -I src/wal -I src/swl
+CFLAGS += -I src -I src/wal -I src/swl -I src/vfs
 
 COPTS += -I swl -std=c++11
 #CC = clang
@@ -323,17 +323,17 @@ $(OBJDIR)/ux_util.o: $(HW) $(HS) $(HN) src/ux_util.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/ux_util.cpp -o $(OBJDIR)/ux_util.o
 	
 		
-$(OBJDIR)/vfs.o: $(HW) $(HS) $(HN) src/vfs.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/vfs.cpp -o $(OBJDIR)/vfs.o
+$(OBJDIR)/vfs.o: $(HW) $(HS) $(HN) src/vfs/vfs.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs/vfs.cpp -o $(OBJDIR)/vfs.o
 	
-$(OBJDIR)/vfspath.o: $(HW) $(HS) $(HN) src/vfspath.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/vfspath.cpp -o $(OBJDIR)/vfspath.o
+$(OBJDIR)/vfspath.o: $(HW) $(HS) $(HN) src/vfs/vfspath.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs/vfspath.cpp -o $(OBJDIR)/vfspath.o
 	
-$(OBJDIR)/vfs-smb.o: $(HW) $(HS) $(HN) src/vfs-smb.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-smb.cpp -o $(OBJDIR)/vfs-smb.o
+$(OBJDIR)/vfs-smb.o: $(HW) $(HS) $(HN) src/vfs/vfs-smb.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs/vfs-smb.cpp -o $(OBJDIR)/vfs-smb.o
 	
-$(OBJDIR)/vfs-tmp.o: $(HW) $(HS) $(HN) src/vfs-smb.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-tmp.cpp -o $(OBJDIR)/vfs-tmp.o
+$(OBJDIR)/vfs-tmp.o: $(HW) $(HS) $(HN) src/vfs/vfs-smb.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs/vfs-tmp.cpp -o $(OBJDIR)/vfs-tmp.o
 	
 $(OBJDIR)/tcp_sock.o: $(HW) $(HS) $(HN) src/tcp_sock.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/tcp_sock.cpp -o $(OBJDIR)/tcp_sock.o
@@ -347,17 +347,17 @@ $(OBJDIR)/search-tools.o: $(HW) $(HS) $(HN) src/search-tools.cpp
 $(OBJDIR)/shell-tools.o: $(HW) $(HS) $(HN) src/shell-tools.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/shell-tools.cpp -o $(OBJDIR)/shell-tools.o
 
-$(OBJDIR)/vfs-ftp.o: $(HW) $(HS) $(HN) src/vfs-ftp.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-ftp.cpp -o $(OBJDIR)/vfs-ftp.o
+$(OBJDIR)/vfs-ftp.o: $(HW) $(HS) $(HN) src/vfs/vfs-ftp.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs/vfs-ftp.cpp -o $(OBJDIR)/vfs-ftp.o
 		
-$(OBJDIR)/vfs-uri.o: $(HW) $(HS) $(HN) src/vfs-uri.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-uri.cpp -o $(OBJDIR)/vfs-uri.o
+$(OBJDIR)/vfs-uri.o: $(HW) $(HS) $(HN) src/vfs/vfs-uri.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs/vfs-uri.cpp -o $(OBJDIR)/vfs-uri.o
 
-$(OBJDIR)/vfs-sftp.o: $(HW) $(HS) $(HN) src/vfs-sftp.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-sftp.cpp -o $(OBJDIR)/vfs-sftp.o
+$(OBJDIR)/vfs-sftp.o: $(HW) $(HS) $(HN) src/vfs/vfs-sftp.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs/vfs-sftp.cpp -o $(OBJDIR)/vfs-sftp.o
 
-$(OBJDIR)/vfs-sftp2.o: $(HW) $(HS) $(HN) src/vfs-sftp2.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/vfs-sftp2.cpp -o $(OBJDIR)/vfs-sftp2.o
+$(OBJDIR)/vfs-sftp2.o: $(HW) $(HS) $(HN) src/vfs/vfs-sftp2.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/vfs/vfs-sftp2.cpp -o $(OBJDIR)/vfs-sftp2.o
 		
 $(OBJDIR)/nchistory.o: $(HW) $(HS) $(HN) src/nchistory.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/nchistory.cpp -o $(OBJDIR)/nchistory.o

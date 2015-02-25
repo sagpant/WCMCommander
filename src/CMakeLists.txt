@@ -61,7 +61,7 @@ SET(DATADIR share/wcm CACHE STRING "directory where to install data")
 
 CONFIGURE_FILE(libconf_ux.h.in libconf_ux.h) # noop, flags are passed via compiler args
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-INCLUDE_DIRECTORIES(BEFORE wal swl utf8proc .)
+INCLUDE_DIRECTORIES(BEFORE wal swl vfs utf8proc .)
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 ADD_DEFINITIONS(-DUNIX_CONFIG_DIR_PATH="${CMAKE_INSTALL_PREFIX}/${DATADIR}")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unused-parameter -Wno-unknown-pragmas")
@@ -146,13 +146,13 @@ SET(wcm_COMMON_SOURCES
 	unicode_lc.cpp
 	usermenu.cpp
 	ux_util.cpp
-	vfs-ftp.cpp
-	vfs-sftp2.cpp
-	vfs-smb.cpp
-	vfs-tmp.cpp
-	vfs-uri.cpp
-	vfs.cpp
-	vfspath.cpp
+	vfs/vfs-ftp.cpp
+	vfs/vfs-sftp2.cpp
+	vfs/vfs-smb.cpp
+	vfs/vfs-tmp.cpp
+	vfs/vfs-uri.cpp
+	vfs/vfs.cpp
+	vfs/vfspath.cpp
 	wal/wal.cpp
 	wal/wal_charset.cpp
 	wal/wal_exceptions.cpp
@@ -217,13 +217,13 @@ SET(wcm_HEADERS
 	toolbar.h
 	usermenu.h
 	ux_util.h
-	vfs-ftp.h
-	vfs-sftp.h
-	vfs-smb.h
-	vfs-tmp.h
-	vfs-uri.h
-	vfs.h
-	vfspath.h
+	vfs/vfs-ftp.h
+	vfs/vfs-sftp.h
+	vfs/vfs-smb.h
+	vfs/vfs-tmp.h
+	vfs/vfs-uri.h
+	vfs/vfs.h
+	vfs/vfspath.h
 	wal/wal.h
 	wal/wal_sys_api.h
 	wal/wal_tmpls.h
