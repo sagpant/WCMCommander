@@ -807,7 +807,7 @@ namespace wal
 		{
 			unicode_t c = ctx[i];
 
-			if ( c == 9 ) { c = ' '; }
+			if ( c == 9 || c == 10 || c == 13 ) { c = ' '; }
 
 			if ( c < 32 ) { break; }
 
