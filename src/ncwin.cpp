@@ -395,7 +395,7 @@ void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
 
 	int Idx = 0;
 
-	for ( int i = 0; i < _history.Count(); i++ )
+	for ( size_t i = 0; i < _history.Count(); i++ )
 	{
 		const unicode_t* Hist = _history[i];
 
@@ -3271,6 +3271,8 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 	if ( *p )
 	{
+		_history.ResetToLast();
+
 		if ( !ProcessBuiltInCommands( p ) )
 		{
 #ifndef _WIN32

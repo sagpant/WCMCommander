@@ -13,13 +13,13 @@ void NCHistory::Clear()
 
 void NCHistory::DeleteAll( const unicode_t* Str )
 {
-	int i = 0;
+	size_t i = 0;
 
-	while ( i < m_List.count() )
+	while ( i < m_List.size() )
 	{
 		if ( unicode_is_equal( Str, m_List[i].data() ) )
 		{
-			m_List.del( i );
+			m_List.erase( m_List.begin() + i );
 			continue;
 		}
 
@@ -31,7 +31,7 @@ void NCHistory::Put( const unicode_t* str )
 {
 	m_Current = 0;
 
-	for ( int i = 0; i < m_List.count(); i++ )
+	for ( size_t i = 0; i < m_List.size(); i++ )
 	{
 		const unicode_t* s = str;
 		const unicode_t* t = m_List[i].data();
@@ -47,18 +47,18 @@ void NCHistory::Put( const unicode_t* str )
 		if ( *t == *s )
 		{
 			std::vector<unicode_t> p = m_List[i];
-			m_List.del( i );
-			m_List.insert( 0, p );
+			m_List.erase( m_List.begin() + i );
+			m_List.insert( m_List.begin(), p );
 			return;
 		}
 	}
 
-	const size_t HistorySize = 1000;
+	const size_t MaxHistorySize = 1000;
 
-	if ( m_List.count() > HistorySize )
+	if ( m_List.size() > MaxHistorySize )
 	{
-		m_List.del( m_List.count() - 1 );
+		m_List.pop_back();
 	}
 
-	m_List.insert( 0, new_unicode_str( str ) );
+	m_List.insert( m_List.begin(), new_unicode_str( str ) );
 }
