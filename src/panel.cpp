@@ -2125,7 +2125,14 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 
 	if ( !HideDotsInDir() && !Current() )
 	{
-		if ( !DirUp() )
+		if ( OpenInExplorer )
+		{
+			FS* fs = this->GetFS();
+			FSString URI = fs ? fs->Uri( this->GetPath() ) : FSString();
+			const unicode_t* Path = URI.GetUnicode();
+			ExecuteDefaultApplication( Path );
+		}
+		else if ( !DirUp() )
 		{
 			GetNCWin()->SelectDrive( this, this );
 		}
