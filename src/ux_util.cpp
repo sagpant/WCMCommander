@@ -123,7 +123,11 @@ void ExecuteDefaultApplication( const unicode_t* Path )
 		signal( SIGINT, SIG_DFL );
 		static const char shell[] = "/bin/sh";
 		std::string utf8 = unicode_to_utf8( Path );
+#if defined( __APPLE__)
 		std::string command = "open \"" + utf8 + "\"";
+#else
+		std::string command = "xdg-open \"" + utf8 + "\"";
+#endif
 		const char* params[] = { shell, "-c", command.c_str(), nullptr };
 
 		execv( shell, ( char** ) params );
