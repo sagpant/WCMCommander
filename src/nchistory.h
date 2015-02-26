@@ -12,21 +12,23 @@ using namespace wal;
 
 class NCHistory
 {
-	ccollect< std::vector<unicode_t> > m_List;
-	int m_Current;
-
 public:
 	NCHistory(): m_List(), m_Current( 0 ) {}
+	~NCHistory() {}
 
 	void Clear();
 	void Put( const unicode_t* str );
 	void DeleteAll( const unicode_t* Str );
 
-	int Count() const { return m_List.count(); }
-	const unicode_t* operator[] ( int n ) { return n >= 0 && n < m_List.count() ? m_List[n].data() : 0; }
+	size_t Count() const { return m_List.size(); }
+	const unicode_t* operator[] ( size_t n ) { return n < m_List.size() ? m_List[n].data() : nullptr; }
 
-	unicode_t* Prev() { return ( m_Current < 0 || m_Current >= m_List.count() ) ? 0 : m_List[m_Current++].data(); }
-	unicode_t* Next() { return ( m_Current <= 0 || m_Current > m_List.count() ) ? 0 : m_List[--m_Current].data(); }
+	const unicode_t* Prev() { return ( m_Current < 0  || m_Current >= m_List.size() ) ? nullptr : m_List[m_Current++].data(); }
+	const unicode_t* Next() { return ( m_Current == 0 || m_Current > m_List.size() ) ? nullptr : m_List[--m_Current].data(); }
 
-	~NCHistory() {}
+	void ResetToLast() { m_Current = 0; }
+
+private:
+	std::vector< std::vector<unicode_t> > m_List;
+	size_t m_Current;
 };
