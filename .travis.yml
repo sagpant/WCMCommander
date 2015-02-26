@@ -36,7 +36,6 @@ before_script:
     - sudo update-alternatives --config gcc
     - sudo update-alternatives --config g++
     - gcc -v 
-    - cd ./wcm
 
 compiler:
     - gcc
