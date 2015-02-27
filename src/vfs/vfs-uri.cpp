@@ -34,7 +34,7 @@ static void SetString( char* dest, int len, const char* src )
 	if ( len > 0 ) { *dest = 0; }
 }
 
-clPtr<FS> ParzeSmbURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
+static clPtr<FS> ParzeSmbURI( const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS )
 {
 	path.Set( rootPathStr );
 
@@ -66,7 +66,7 @@ clPtr<FS> ParzeSmbURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, i
 
 #endif
 
-clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
+static clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS )
 {
 	path.Set( rootPathStr );
 
@@ -81,7 +81,7 @@ clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, i
 	param.user = URL.m_UserName;
 	param.pass = URL.m_Password;
 	param.anonymous = param.user.empty();
-	param.server = std::string( URL.m_Host );
+	param.server = URL.m_Host;
 
 	URL.GetPort( &param.port );
 
@@ -91,19 +91,14 @@ clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, i
 
 	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
-	for ( int i = 0; i < count; i++ )
+	for ( const auto& i : checkFS )
 	{
-		if ( checkFS[i].Ptr() && checkFS[i]->Type() == FS::FTP )
+		if ( i && i->Type() == FS::FTP )
 		{
-			FSFtp* p = ( FSFtp* )checkFS[i].Ptr();
-			FSFtpParam checkParam;
-			p->GetParam( &checkParam );
-
-			if ( param.server == checkParam.server &&
-			     ( param.anonymous == checkParam.anonymous && ( param.anonymous || (param.user == checkParam.user) ) ) &&
-			     param.port == checkParam.port )
+			clPtr<FSFtp> p = i.DynamicCast<FSFtp>();
+			if ( p && param == p->GetParamValue() )
 			{
-				return checkFS[i];
+				return i;
 			}
 		}
 	}
@@ -113,7 +108,7 @@ clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, i
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 
-clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count )
+static clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, const std::vector< clPtr<FS> >& checkFS )
 {
 	path.Set( rootPathStr );
 
@@ -136,18 +131,14 @@ clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, 
 
 	if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
-	for ( int i = 0; i < count; i++ )
+	for ( const auto& i : checkFS )
 	{
-		if ( checkFS[i].Ptr() && checkFS[i]->Type() == FS::SFTP )
+		if ( i && i->Type() == FS::SFTP )
 		{
-			FSSftp* p = ( FSSftp* )checkFS[i].Ptr();
-			FSSftpParam checkParam;
-
-			p->GetParam( &checkParam );
-
-			if ( param.server == checkParam.server && param.user == checkParam.user && param.port == checkParam.port )
+			clPtr<FSSftp> p = i.DynamicCast<FSSftp>();
+			if ( p && param == p->GetParamValue() )
 			{
-				return checkFS[i];
+				return i;
 			}
 		}
 	}
@@ -176,35 +167,35 @@ struct DbgPrint
 };
 #endif
 
-clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count)
+clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS )
 {
 	//DbgPrint dbgPrintf("ParzeURI", uri, path);
 #ifdef LIBSMBCLIENT_EXIST
 
 	if ( uri[0] == 's' && uri[1] == 'm' && uri[2] == 'b' && uri[3] == ':' && uri[4] == '/' && uri[5] == '/' )
 	{
-		return ParzeSmbURI( uri + 6, path, checkFS, count );
+		return ParzeSmbURI( uri + 6, path, checkFS );
 	}
 
 #endif
 
 	if ( uri[0] == 'f' && uri[1] == 't' && uri[2] == 'p' && uri[3] == ':' && uri[4] == '/' && uri[5] == '/' )
 	{
-		return ParzeFtpURI( uri, path, checkFS, count );
+		return ParzeFtpURI( uri, path, checkFS );
 	}
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 
 	if ( uri[0] == 's' && uri[1] == 'f' && uri[2] == 't' && uri[3] == 'p' && uri[4] == ':' && uri[5] == '/' && uri[6] == '/' )
 	{
-		return ParzeSftpURI( uri, path, checkFS, count );
+		return ParzeSftpURI( uri, path, checkFS );
 	}
 
 #endif
 
 	if (uri[0] == 't' && uri[1] == 'm' && uri[2] == 'p' && uri[3] == ':' && uri[4] == '/' && uri[5] == '/')
 	{
-		clPtr<FS> baseFS = ParzeURI(uri + 6, path, checkFS, count);
+		clPtr<FS> baseFS = ParzeURI( uri + 6, path, checkFS );
 		return new FSTmp(baseFS);
 	}
 
@@ -259,7 +250,7 @@ clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int c
 
 		if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
-		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
+		return ( checkFS.size() && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
 	}
 
 	if ( c >= 'A' && c <= 'Z' ) { c = c - 'A' + 'a'; }
@@ -270,7 +261,7 @@ clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int c
 
 		if ( !ParzeLink( path, link ) ) { return clPtr<FS>(); }
 
-		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
+		return ( checkFS.size() && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
 	}
 
 	FSString link = uri + 2;

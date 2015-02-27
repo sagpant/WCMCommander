@@ -1703,7 +1703,7 @@ void PanelWin::LoadPathStringSafe( const char* path )
 	//dbg_printf( "PanelWin::LoadPathStringSafe path=%s\n", path );
 	FSPath fspath;
 
-	clPtr<FS> fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, 0, 0 );
+	clPtr<FS> fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, {} );
 
 	this->LoadPath( fs, fspath, 0, 0, PanelWin::SET );
 }
@@ -2164,8 +2164,8 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 		if ( node->extType == FSNode::FILESHARE )
 		{
 			FSPath path;
-			clPtr<FS> newFs = ParzeURI( Utf16ToUnicode( nr->lpRemoteName ).data(), path, 0, 0 );
-			LoadPath( newFs, path, 0, 0, PUSH );
+			clPtr<FS> newFs = ParzeURI( Utf16ToUnicode( nr->lpRemoteName ).data(), path, {} );
+			LoadPath( newFs, path, nullptr, nullptr, PUSH );
 		}
 		else
 		{

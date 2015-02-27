@@ -17,7 +17,7 @@
 
 class FSSftp : public FS
 {
-	Mutex infoMutex;
+	mutable Mutex infoMutex;
 	FSSftpParam _infoParam; //должно быть то же самое что и в operParam просто мьютексв разные, и который просто mutex может блокироваться надолго (на период работы функции)
 
 	Mutex mutex;
@@ -72,6 +72,7 @@ public:
 	virtual ~FSSftp();
 
 	void GetParam( FSSftpParam* p ) { if ( !p ) { return; } MutexLock lock( &infoMutex ); *p = _infoParam; }
+	FSSftpParam GetParamValue() const { MutexLock lock( &infoMutex );	return _infoParam; }
 };
 
 void InitSSH();
@@ -82,7 +83,7 @@ void InitSSH();
 
 class FSSftp : public FS
 {
-	Mutex infoMutex;
+	mutable Mutex infoMutex;
 	FSSftpParam _infoParam; //должно быть то же самое что и в operParam просто мьютексв разные, и который просто mutex может блокироваться надолго (на период работы функции)
 
 	Mutex mutex;
