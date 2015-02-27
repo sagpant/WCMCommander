@@ -48,7 +48,7 @@ public:
 	virtual FSString Uri( FSPath& path );
 	virtual ~FSSmb();
 
-	FSSmbParam GetParamValue( FSSmbParam* p ) const { MutexLock lock( &mutex ); return _param; }
+	FSSmbParam GetParamValue() const { MutexLock lock( &mutex ); return _param; }
 };
 
 #endif
