@@ -43,9 +43,7 @@ public:
 	virtual bool EventMouse( cevent_mouse* pEvent );
 
 	void EndSearch( cevent_key* pEvent );
-
-	virtual ~PanelSearchWin();
-};
+ };
 
 class clPanelPlace
 {
@@ -164,6 +162,9 @@ private:
 	clPtr<PanelSearchWin> _search;
 
 	cpoint _letterSize[2];
+	cpoint _longNameMarkExtents;
+	bool _longNameMarkExtentsValid;
+	int _longNameMarkColor;
 	int _itemHeight;
 	int _rows;
 	int _cols;

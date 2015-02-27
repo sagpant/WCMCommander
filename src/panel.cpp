@@ -39,6 +39,8 @@
 #include "ltext.h"
 #include "folder-history.h"
 
+static const unicode_t g_LongNameMark[] = { '}', 0 };
+
 int uiPanelSearchWin = GetUiID( "PanelSearchWin" );
 
 PanelSearchWin::PanelSearchWin( PanelWin* parent, cevent_key* key )
@@ -237,9 +239,6 @@ bool PanelSearchWin::EventShow( bool show )
 
 	return true;
 }
-
-PanelSearchWin::~PanelSearchWin() {}
-
 
 cevent_key PanelWin::QuickSearch( cevent_key* key )
 {
@@ -442,6 +441,11 @@ void PanelWin::OnChangeStyles()
 	_letterSize[1] = gc.GetTextExtents( ABCString );
 	_letterSize[1].x /= ABCStringLen;
 
+	{
+		UiCondList ucl;
+		_longNameMarkColor = UiGetColor( uiHotkeyColor, uiItem, &ucl, 0x0 );
+		_longNameMarkExtentsValid = false;
+	}
 
 	dirPrefixW = GetTextW( gc, dirPrefix );
 	exePrefixW = GetTextW( gc, exePrefix );
@@ -515,6 +519,8 @@ PanelWin::PanelWin( Win* parent, int* mode )
 	_inOperState( false ),
 	_operData( ( NCDialogParent* )parent )
 {
+	_longNameMarkExtentsValid = false;
+
 	_lo.SetLineGrowth( 3 );
 	_lo.SetColGrowth( 1 );
 
@@ -1172,11 +1178,13 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 	// show special mark for long file names: https://github.com/corporateshark/WalCommander/issues/272
 	if ( x + Size.x > rect.right )
 	{
-		int MarkColor = UiGetColor( uiHotkeyColor, uiItem, &ucl, 0x0 );
-		gc.SetTextColor( MarkColor );
-		unicode_t Mark[] = { '}', 0 };
-		cpoint Offset = gc.GetTextExtents( Mark );
-		gc.TextOutF( rect.right - Offset.x + 2, y, Mark );
+		gc.SetTextColor( _longNameMarkColor );
+		if ( !_longNameMarkExtentsValid )
+		{
+			_longNameMarkExtents = gc.GetTextExtents( g_LongNameMark );
+			_longNameMarkExtentsValid = true;
+		}
+		gc.TextOutF( rect.right - _longNameMarkExtents.x + 2, y, g_LongNameMark );
 	}
 }
 
