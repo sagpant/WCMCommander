@@ -276,7 +276,7 @@ clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<clPtr<F
 
 	if ( uri[0] != '/' )
 	{
-		return ( count > 0 && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
+		return ( checkFS.size() && !checkFS[0].IsNull() ) ? checkFS[0] : clPtr<FS>();
 	}
 
 	return new FSSys(); //systemclPtr<FS>;
