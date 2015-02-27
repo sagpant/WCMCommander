@@ -15,7 +15,7 @@
 
 class FSSmb : public FS
 {
-	Mutex mutex;
+	mutable Mutex mutex;
 	FSSmbParam _param;
 public:
 	FSSmb( FSSmbParam* param = 0 );
@@ -48,7 +48,7 @@ public:
 	virtual FSString Uri( FSPath& path );
 	virtual ~FSSmb();
 
-	void GetParam( FSSmbParam* p ) { if ( !p ) { return; } MutexLock lock( &mutex ); *p = _param; }
+	FSSmbParam GetParamValue( FSSmbParam* p ) const { MutexLock lock( &mutex ); return _param; }
 };
 
 #endif

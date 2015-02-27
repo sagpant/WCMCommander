@@ -71,7 +71,6 @@ public:
 	virtual FSString Uri( FSPath& path );
 	virtual ~FSSftp();
 
-	void GetParam( FSSftpParam* p ) { if ( !p ) { return; } MutexLock lock( &infoMutex ); *p = _infoParam; }
 	FSSftpParam GetParamValue() const { MutexLock lock( &infoMutex );	return _infoParam; }
 };
 
@@ -124,7 +123,7 @@ public:
 	virtual FSString Uri( FSPath& path );
 	virtual ~FSSftp();
 
-	void GetParam( FSSftpParam* p ) { if ( !p ) { return; } MutexLock lock( &infoMutex ); *p = _infoParam; }
+	FSSftpParam GetParamValue() const { MutexLock lock( &infoMutex ); *p = _infoParam; }
 };
 
 void InitSSH();

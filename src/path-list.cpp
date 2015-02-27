@@ -309,8 +309,7 @@ bool PathListFSToData(PathList::Data& data, clPtr<FS>* fs, FSPath* path)
             {
                 cfg->Set("TYPE", "SMB");
                 cfg->Set("Path", path->GetUtf8());
-                FSSmbParam param;
-                ((FSSmb*)fs[0].Ptr())->GetParam(&param);
+                FSSmbParam param = ((FSSmb*)fs[0].Ptr())->GetParamValue();
                 param.GetConf(*cfg.ptr());
             }
             else

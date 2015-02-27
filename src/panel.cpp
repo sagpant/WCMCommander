@@ -2185,8 +2185,7 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 
 	if ( fs->Type() == FS::SAMBA && node->extType == FSNode::SERVER )
 	{
-		FSSmbParam param;
-		( ( FSSmb* )fs.Ptr() )->GetParam( &param );
+		FSSmbParam param = ( ( FSSmb* )fs.Ptr() )->GetParamValue();
 		param.SetServer( node->Name().GetUtf8() );
 		clPtr<FS> smbFs = new FSSmb( &param );
 		FSPath path( CS_UTF8, "/" );
