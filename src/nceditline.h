@@ -18,18 +18,12 @@ class NCEditLine : public ComboBox
 {
 private:
 	const char* m_fieldName;
-	bool m_autoMode;
-
-	//void SetCBList(const unicode_t* txt);
-	//void Clear();
-
+	
 public:
 	NCEditLine( const char* fieldName, int nId, Win* parent, const unicode_t* txt,
 		int cols, int rows, bool up, bool frame3d, bool nofocusframe, crect* rect = 0 );
 
-	virtual ~NCEditLine()
-	{
-	}
+	virtual ~NCEditLine() {}
 
 	bool Command( int id, int subId, Win* win, void* d ) override;
 
@@ -37,7 +31,5 @@ public:
 
 	bool OnOpenBox() override;
 
-	void OnCloseBox() override;
-
-	void UpdateHistory();
+	void AddCurrentTextToHistory();
 };

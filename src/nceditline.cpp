@@ -7,6 +7,7 @@
 #include "nceditline.h"
 #include "wcm-config.h"
 #include "string-util.h"
+#include "unicode_lc.h"
 
 
 typedef ccollect<std::vector<unicode_t>> HistCollect;
@@ -154,7 +155,6 @@ NCEditLine::NCEditLine( const char* fieldName, int nId, Win* parent, const unico
 	int cols, int rows, bool up, bool frame3d, bool nofocusframe, crect* rect )
 	: ComboBox( nId, parent, cols, rows, (up ? ComboBox::MODE_UP : 0) | (frame3d ? ComboBox::FRAME3D : 0) | (nofocusframe ? ComboBox::NOFOCUSFRAME : 0), rect )
 	, m_fieldName( fieldName )
-	, m_autoMode( false )
 {
 	clPtr<ccollect<std::vector<unicode_t>>> histList = 0;
 
@@ -169,14 +169,11 @@ NCEditLine::NCEditLine( const char* fieldName, int nId, Win* parent, const unico
 		for ( int i = 0; i < n; i++ )
 		{
 			const unicode_t *u = histList->get( i ).data();
-			if ( u /*&& AcEqual(txt, u)*/ )
+			if ( u )
 			{
 				Append( u );
 			}
 		}
-
-		//MoveCurrent(-1);
-		//RefreshBox();
 	}
 	else
 	{
@@ -185,116 +182,70 @@ NCEditLine::NCEditLine( const char* fieldName, int nId, Win* parent, const unico
 	}
 }
 
-//void NCEditLine::Clear()
-//{
-//	CloseBox();
-//	
-//    static unicode_t s0 = 0;
-//	SetText(&s0);
-//}
-//
-bool NCEditLine::Command( int id, int subId, Win* win, void* d )
+bool AcEqual( const unicode_t* txt, const unicode_t* element, int chars )
 {
-	/*	if (IsEditLine(win))
-		{
-		if (AcEnabled())
-		{
-		if (IsBoxOpened() && !m_autoMode)
-		{
-		return false;
-		}
-
-		std::vector<unicode_t> text = GetText();
-		//SetCBList(text.data());
-
-		unicode_t *u = text.data();
-		while (*u == ' ' || *u == '\t')
-		{
-		u++;
-		}
-
-		if (Count() > 0 && *u)
-		{
-		m_autoMode = true;
-		OpenBox();
-		}
-		else
-		{
-		CloseBox();
-		}
-		}
-
-		return true;
-		}
-		*/
-	return ComboBox::Command( id, subId, win, d );
-}
-
-bool AcEqual( const unicode_t* txt, const unicode_t* element )
-{
-	if ( !txt )
-	{
-		return true;
-	}
-
-	if ( !element )
+	if ( !txt || !element || chars <= 0 )
 	{
 		return false;
 	}
 
-	while ( *txt && *element && *txt == *element )
+	while ( *txt && *element && UnicodeLC( *txt ) == UnicodeLC( *element ) )
 	{
+		if ( --chars == 0 )
+		{
+			return true;
+		}
+
 		txt++;
 		element++;
 	}
 
-	return (*txt == 0);
+	return false;
 }
 
-//void NCEditLine::SetCBList(const unicode_t* txt)
-//{
-//	Clear();
-//	
-//    if (!m_histList.ptr())
-//    {
-//        return;
-//    }
-//	
-//    const int n = m_histList->count();
-//	for (int i = 0; i < n; i++)
-//	{
-//        const unicode_t *u = m_histList->get(i).data();
-//        if (u && AcEqual(txt, u))
-//        {
-//            Append(u);
-//        }
-//	}
-//
-//	MoveCurrent(-1);
-//	RefreshBox();
-//}
+bool NCEditLine::Command( int id, int subId, Win* win, void* d )
+{
+	if ( id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_INSERTED && IsEditLine( win ) && AcEnabled() )
+	{
+		std::vector<unicode_t> text = GetText();
+		const int cursorPos = GetCursorPos();
+		
+		// try to autocomplete when cursor is at the end of unmarked text
+		if ( (text.size() - 1) == cursorPos )
+		{
+			const int count = Count();
+			for ( int i = 0; i < count; i++ )
+			{
+				const unicode_t* item = ItemText( i );
+				if ( AcEqual( text.data(), item, cursorPos ) )
+				{
+					// append suffix of the history item's text to the current text
+					SetText( carray_cat( text.data(), item + cursorPos ).data() );
+					
+					// select the auto-completed part of text
+					SetCursorPos( carray_len( item ) );
+					SetCursorPos( cursorPos, true );
+					return true;
+				}
+			}
+		}
+	}
+
+	return ComboBox::Command( id, subId, win, d );
+}
 
 bool NCEditLine::OnOpenBox()
 {
-	//   if (!m_histList.ptr())
-	//   {
-	//       return false;
-	//}
-
-	//   SetCBList(m_autoMode ? GetText().data() : 0);
-	//MoveCurrent(-1);
-	RefreshBox();
+	const int count = Count();
+	if ( count > 0 )
+	{
+		MoveCurrent( 0 );
+	}
+	
 	return true;
 }
 
-void NCEditLine::OnCloseBox()
-{
-	ComboBox::OnCloseBox();
-
-	m_autoMode = false;
-}
-
-void NCEditLine::UpdateHistory()
+void NCEditLine::AddCurrentTextToHistory()
 {
 	HistCommit( m_fieldName, GetText().data() );
 }

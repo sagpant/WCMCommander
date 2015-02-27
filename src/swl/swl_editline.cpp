@@ -680,6 +680,7 @@ namespace wal
 					if ( text.Cursor() == 0 ) { return true; }
 
 					text.Backspace( ctrl );
+					SendCommand( SCMD_EDITLINE_DELETED );
 					Changed();
 				}
 				break;
@@ -691,6 +692,7 @@ namespace wal
 					if ( text.Cursor() > text.Count() ) { return true; }
 
 					text.Del( ctrl );
+					SendCommand( SCMD_EDITLINE_DELETED );
 					Changed();
 				}
 				break;
@@ -767,6 +769,7 @@ namespace wal
 							SetText( oldtext.data(), false );
 						}
 
+						SendCommand( SCMD_EDITLINE_INSERTED );
 						Changed();
 					}
 					else { return false; }

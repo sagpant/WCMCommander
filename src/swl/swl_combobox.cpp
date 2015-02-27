@@ -72,6 +72,7 @@ namespace wal
 		_lo.AddWin( &_edit, 1, 1 );
 		_edit.SetClickFocusFlag( false );
 		_edit.SetTabFocusFlag( false );
+		_edit.SetShowSpaces( false );
 		_edit.Enable();
 		_edit.Show( SHOW_INACTIVE );
 		_lo.AddRect( &_buttonRect, 1, 2 );
