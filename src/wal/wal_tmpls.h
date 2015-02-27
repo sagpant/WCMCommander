@@ -788,22 +788,11 @@ namespace wal
 		};
 
 		internal_hash<Node, const CT*, true, P> hash;
-		T defaultValue;
 	public:
 		cstrhash() {};
 
-		cstrhash( const T& def )
-			: defaultValue( def )
-		{
-		}
+		cstrhash( const cstrhash& a ) : hash( a.hash ) {}
 
-		cstrhash( const cstrhash& a )
-			: hash( a.hash ),
-			  defaultValue( a.defaultValue )
-		{
-		}
-
-		void setdefault( const T& def ) { defaultValue = def; }
 		HashIndex count() const { return hash.count(); };
 
 		T* exist( const CT* s )
@@ -819,7 +808,7 @@ namespace wal
 
 			if ( !p )
 			{
-				p = new Node( defaultValue, s, hashKey );
+				p = new Node( T(), s, hashKey );
 				hash.append( hashKey, p );
 			}
 
