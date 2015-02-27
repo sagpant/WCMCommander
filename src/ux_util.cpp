@@ -116,22 +116,39 @@ bool UxMntList( wal::ccollect< MntListNode >* pList )
 	return true;
 }
 
+// for args in the command system("cmd args")
+// "My Document.txt" -> "My\ Document.txt"
+static void escShellStr(std::string& src)
+{
+	std::string dest;
+	for(const char *s = src.data();*s;s++)
+	{
+        // we could safely escape every char here,
+        // though this would obfuscate diagnostic messages
+		if( *s<'+' || *s >=';' && *s<='?' ||  *s >'Z' && *s < 'a'  || *s >'z')
+			dest += "\\";
+		dest += *s;
+	}
+	src = dest;
+}
+
 void ExecuteDefaultApplication( const unicode_t* Path )
 {
+	static const char shell[] = "/bin/sh";
+
+	std::string utf8 = unicode_to_utf8( Path );
+
+#if defined( __APPLE__)
+	std::string command = "open \"" + utf8 + "\"";
+#else
+	escShellStr(utf8);
+	std::string command = "xdg-open " + utf8;
+#endif
+
 	if ( !fork() )
 	{
 		signal( SIGINT, SIG_DFL );
-		static const char shell[] = "/bin/sh";
-		std::string utf8 = unicode_to_utf8( Path );
-#if defined( __APPLE__)
-		std::string command = "open \"" + utf8 + "\"";
-#else
-		std::string command = "xdg-open \"" + utf8 + "\"";
-#endif
-		const char* params[] = { shell, "-c", command.c_str(), nullptr };
-
-		execv( shell, ( char** ) params );
-
+		system(command.data());
 		exit( 1 );
 	}
 }
