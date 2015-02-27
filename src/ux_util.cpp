@@ -134,8 +134,6 @@ static void escShellStr(std::string& src)
 
 void ExecuteDefaultApplication( const unicode_t* Path )
 {
-	static const char shell[] = "/bin/sh";
-
 	std::string utf8 = unicode_to_utf8( Path );
 
 #if defined( __APPLE__)
