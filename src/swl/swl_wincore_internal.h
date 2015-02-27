@@ -15,19 +15,6 @@ namespace wal
 		void EndModal( int _id ) { end = true; id = _id;}
 	};
 
-	struct WINID
-	{
-		WinID handle;
-		WINID( WinID h ): handle( h ) {}
-		operator size_t () const { return ( size_t )( handle ); }
-
-		//описание самой ф-ции как константной обязательно, иначе пиздец!!!
-		bool operator == ( const WINID& a ) const { return handle == a.handle; }
-	private:
-		WINID() {};
-	};
-
-
 #ifdef _WIN32
 
 	class WthInternalEvent

@@ -14,43 +14,44 @@ namespace wal
 
 	struct WINHASHNODE
 	{
-		WINID id;
+		WinID id;
 		Win* win;
+
 		WINHASHNODE( WinID h, Win* w ): id( h ), win( w ) {}
-		const WINID& key() const { return id; };
-	private:
-		WINHASHNODE(): id( 0 ) {}
+		WINHASHNODE(): id( 0 ), win ( nullptr ) {}
+
+		const WinID& key() const { return id; };
 	};
 
-	static chash<WINHASHNODE, WINID> winhash;
+	static std::unordered_map<WinID, WINHASHNODE> winhash;
 	WinID Win::focusWinId = 0;
 
 
 	Win* GetWinByID( WinID hWnd )
 	{
-		WINID id( hWnd );
-		WINHASHNODE* node = winhash.get( id );
+		WinID id( hWnd );
+		auto i = winhash.find(hWnd);
+		const WINHASHNODE* node = ( i == winhash.end() ) ? nullptr : &(i->second);
 		return node ? node->win : 0;
 	}
 
 	int DelWinFromHash( WinID w )
 	{
-		WINID id( w );
-		winhash.del( id, false );
-		return winhash.count();
+		winhash.erase(w);
+		return winhash.size();
 	}
 
 	void AddWinToHash( WinID handle, Win* w )
 	{
 		WINHASHNODE node( handle, w );
-		winhash.put( node );
+		winhash[handle] = node;
 	}
 
 
-	static void ForeachBlock( WINHASHNODE* t, void* data ) { t->win->Block( *( ( WinID* )data ) );}
-	static void ForeachUnblock( WINHASHNODE* t, void* data ) {  t->win->Unblock( *( ( WinID* )data ) );}
-	void AppBlock( WinID w ) { winhash.foreach( ForeachBlock, &w );}
-	void AppUnblock( WinID w ) {  winhash.foreach( ForeachUnblock, &w );}
+	static void ForeachBlock( const WINHASHNODE* t, void* data ) { t->win->Block( *( ( WinID* )data ) );}
+	static void ForeachUnblock( const WINHASHNODE* t, void* data ) {  t->win->Unblock( *( ( WinID* )data ) );}
+	void AppBlock( WinID w ) { for ( const auto& i : winhash ) ForeachBlock( &(i.second), &w ); }
+	void AppUnblock( WinID w ) { for ( const auto& i : winhash ) ForeachUnblock( &(i.second), &w ); }
 
 
 	struct TimerStruct
@@ -2405,7 +2406,7 @@ begin:
 
 	static clPtr<UiRules> globalUiRules;
 
-	static void ClearWinCache( WINHASHNODE* pnode, void* )
+	static void ClearWinCache( const WINHASHNODE* pnode, void* )
 	{
 		if ( pnode->win )
 		{
@@ -2421,7 +2422,7 @@ begin:
 		clPtr<UiRules> rules  = new UiRules();
 		rules->Parze( parzer );
 		globalUiRules = rules;
-		winhash.foreach( ClearWinCache, 0 );
+		for ( const auto& i : winhash ) ClearWinCache( &(i.second), nullptr );
 	}
 
 	void UiReadMem( const char* s )
@@ -2432,7 +2433,7 @@ begin:
 		clPtr<UiRules> rules  = new UiRules();
 		rules->Parze( parzer );
 		globalUiRules = rules;
-		winhash.foreach( ClearWinCache, 0 );
+		for ( const auto& i : winhash ) ClearWinCache( &(i.second), nullptr );
 	}
 
 	void UiCondList::Set( int id, bool yes )

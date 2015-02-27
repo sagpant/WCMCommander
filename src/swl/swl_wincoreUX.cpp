@@ -487,15 +487,16 @@ namespace wal
 	}
 
 
-	static chash<RepaintHashNode, WINID> repaintHash;
-	static void ForeachDrawExpose( RepaintHashNode* t, void* data )
+	static std::unordered_map<WinID, RepaintHashNode> repaintHash;
+
+	static void ForeachDrawExpose( const RepaintHashNode* t, void* data )
 	{
 		DrawExposeRect( GetWinByID( t->id ) );
 	}
 
 	static void PostRepaint()
 	{
-		repaintHash.foreach( ForeachDrawExpose, 0 );
+		for ( const auto& i : repaintHash ) ForeachDrawExpose( &(i.second), nullptr );
 		repaintHash.clear();
 	}
 
@@ -504,7 +505,7 @@ namespace wal
 		if ( !w ) { return; }
 
 		RepaintHashNode node( w->GetID() );
-		repaintHash.put( node );
+		repaintHash[ w->GetID ] = node;
 	}
 
 	static void MovePopups( Win* w, int xDelta, int yDelta )

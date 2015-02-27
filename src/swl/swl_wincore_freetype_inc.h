@@ -65,7 +65,7 @@ namespace FTU
 			XYWH place;
 		};
 
-		chash<Node, NK> hash;
+		std::unordered_map<NK, Node> hash;
 
 		SCImage image;
 		int xPos;
@@ -162,7 +162,10 @@ namespace FTU
 		k.bg = bg;
 		k.fg = fg;
 		k.ch = ch;
-		Node* p = hash.get( k );
+
+		const auto& i = hash.find( k );
+
+		Node* p = ( i == hash.end() ) ? nullptr : &(i.second);
 
 		if ( !p ) { return false; }
 
@@ -196,7 +199,7 @@ namespace FTU
 
 			if ( cHeight < charH ) { cHeight = charH; }
 
-			return hash.put( node );
+			return hash[ node.k ] = node;
 		}
 
 		hash.clear();
