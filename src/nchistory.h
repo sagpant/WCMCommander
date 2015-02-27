@@ -23,7 +23,7 @@ public:
 	size_t Count() const { return m_List.size(); }
 	const unicode_t* operator[] ( size_t n ) { return n < m_List.size() ? m_List[n].data() : nullptr; }
 
-	const unicode_t* Prev() { return ( m_Current < 0  || m_Current >= m_List.size() ) ? nullptr : m_List[m_Current++].data(); }
+	const unicode_t* Prev() { return ( m_Current >= m_List.size() ) ? nullptr : m_List[m_Current++].data(); }
 	const unicode_t* Next() { return ( m_Current == 0 || m_Current > m_List.size() ) ? nullptr : m_List[--m_Current].data(); }
 
 	void ResetToLast() { m_Current = 0; }
