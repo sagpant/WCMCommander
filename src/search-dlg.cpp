@@ -28,7 +28,7 @@ SearchParamDialog::SearchParamDialog( NCDialogParent* parent, const SearchAndRep
 	   iL( 16, 3 ),
 	   textLabel( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &textEdit ),
 	   textEdit( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->m_CaseSensitive )
 
 {
 	if ( params->m_SearchChar )
@@ -38,7 +38,7 @@ SearchParamDialog::SearchParamDialog( NCDialogParent* parent, const SearchAndRep
 	}
 	else
 	{
-		if ( params->txt.data() ) { textEdit.SetText( params->txt.data(), true ); }
+		if ( params->m_SearchText.data() ) { textEdit.SetText( params->m_SearchText.data(), true ); }
 	}
 
 	iL.AddWin( &textLabel, 0, 0 );
@@ -79,8 +79,8 @@ bool DoSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params->sens = dlg.caseButton.IsSet();
-		params->txt = new_unicode_str( dlg.textEdit.GetText().data() );
+		params->m_CaseSensitive = dlg.caseButton.IsSet();
+		params->m_SearchText = dlg.textEdit.GetText();
 		return true;
 	}
 
@@ -113,11 +113,10 @@ SearchFileParamDialog::SearchFileParamDialog( NCDialogParent* parent, SearchAndR
 	   textText( 0, this, utf8_to_unicode( _LT( "&Text:" ) ).data(), &textEdit ),
 	   maskEdit( 0, this, 0, 0, 50 ),
 	   textEdit ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->m_CaseSensitive )
 {
-	if ( params->mask.data() ) { maskEdit.SetText( params->mask.data(), true ); }
-
-	if ( params->txt.data() ) { textEdit.SetText( params->txt.data(), true ); }
+	if ( params->m_SearchMask.data() ) { maskEdit.SetText( params->m_SearchMask.data(), true ); }
+	if ( params->m_SearchText.data() ) { textEdit.SetText( params->m_SearchText.data(), true ); }
 
 	iL.AddWin( &maskText, 0, 0 );
 	maskText.Enable();
@@ -155,9 +154,9 @@ bool DoFileSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params 
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params->sens = dlg.caseButton.IsSet();
-		params->mask = new_unicode_str( dlg.maskEdit.GetText().data() );
-		params->txt = new_unicode_str( dlg.textEdit.GetText().data() );
+		params->m_CaseSensitive = dlg.caseButton.IsSet();
+		params->m_SearchMask = dlg.maskEdit.GetText();
+		params->m_SearchText = dlg.textEdit.GetText();
 		return true;
 	}
 
@@ -190,31 +189,18 @@ ReplaceEditParamDialog::ReplaceEditParamDialog( NCDialogParent* parent, SearchAn
 	   toText( 0, this, utf8_to_unicode( _LT( "&Replace with:" ) ).data(), &toEdit ),
 	   fromEdit ( 0, this, 0, 0, 50 ),
 	   toEdit   ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->sens )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->m_CaseSensitive )
 {
-	if ( params->txt.data() ) { fromEdit.SetText( params->txt.data(), true ); }
+	if ( params->m_SearchText.data() ) { fromEdit.SetText( params->m_SearchText.data(), true ); }
 
-	if ( params->to.data() ) { toEdit.SetText( params->to.data(), true ); }
+	if ( params->m_ReplaceTo.data() ) { toEdit.SetText( params->m_ReplaceTo.data(), true ); }
 
-	iL.AddWin( &fromText, 0, 0 );
-	fromText.Enable();
-	fromText.Show();
-	iL.AddWin( &toText,   1, 0 );
-	toText.Enable();
-	toText.Show();
-
-	iL.AddWin( &fromEdit, 0, 1 );
-	fromEdit.Enable();
-	fromEdit.Show();
+	iL.AddWinAndEnable( &fromText, 0, 0 );
+	iL.AddWinAndEnable( &toText,   1, 0 );
+	iL.AddWinAndEnable( &fromEdit, 0, 1 );
 	fromEdit.SetFocus();
-
-	iL.AddWin( &toEdit,   1, 1 );
-	toEdit.Enable();
-	toEdit.Show();
-
-	iL.AddWin( &caseButton, 2, 1 );
-	caseButton.Enable();
-	caseButton.Show();
+	iL.AddWinAndEnable( &toEdit,   1, 1 );
+	iL.AddWinAndEnable( &caseButton, 2, 1 );
 
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
@@ -232,9 +218,9 @@ bool DoReplaceEditDialog( NCDialogParent* parent, SearchAndReplaceParams* params
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params->sens = dlg.caseButton.IsSet();
-		params->txt = new_unicode_str( dlg.fromEdit.GetText().data() );
-		params->to = new_unicode_str( dlg.toEdit.GetText().data() );
+		params->m_CaseSensitive = dlg.caseButton.IsSet();
+		params->m_SearchText = dlg.fromEdit.GetText();
+		params->m_ReplaceTo =  dlg.toEdit.GetText();
 		return true;
 	}
 

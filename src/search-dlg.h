@@ -10,31 +10,45 @@
 
 struct SearchAndReplaceParams
 {
+	/// if not zero, used to start immediate search in the viewer
 	unicode_t m_SearchChar;
-	std::vector<unicode_t> mask;
-	std::vector<unicode_t> txt;
-	std::vector<unicode_t> to;
-	bool sens;
+	/// file mask, used in the Alt+F7 search dialog
+	std::vector<unicode_t> m_SearchMask;
+	/// string to search, shared across all search dialogs in the app
+	std::vector<unicode_t> m_SearchText;
+	std::vector<unicode_t> m_ReplaceTo;
+	bool m_CaseSensitive;
 	SearchAndReplaceParams()
 	 : m_SearchChar( 0 )
-	 , mask( {'*',0} )
-	 , sens( false )
+	 , m_SearchMask( {'*',0} )
+	 , m_SearchText()
+	 , m_ReplaceTo()
+	 , m_CaseSensitive( false )
 	{
 	}
 	SearchAndReplaceParams( const SearchAndReplaceParams& a )
 	 : m_SearchChar( a.m_SearchChar )
+	 , m_SearchMask( a.m_SearchMask )
+	 , m_SearchText( a.m_SearchText )
+	 , m_ReplaceTo( a.m_ReplaceTo )
+	 , m_CaseSensitive( a.m_CaseSensitive )
 	{
-		mask = new_unicode_str( a.mask.data() );
-		txt = new_unicode_str( a.txt.data() );
-		to = new_unicode_str( a.to.data() );
 	}
 	SearchAndReplaceParams& operator = ( const SearchAndReplaceParams& a )
 	{
-		m_SearchChar = a.m_SearchChar;
-		mask = new_unicode_str( a.mask.data() );
-		txt = new_unicode_str( a.txt.data() );
-		to = new_unicode_str( a.to.data() );
+		SearchAndReplaceParams Tmp( a );
+
+		this->swap( Tmp );
+
 		return *this;
+	}
+	void swap( SearchAndReplaceParams& a )
+	{
+		std::swap( m_SearchChar, a.m_SearchChar );
+		std::swap( m_SearchMask, a.m_SearchMask );
+		std::swap( m_SearchText, a.m_SearchText );
+		std::swap( m_ReplaceTo, a.m_ReplaceTo );
+		std::swap( m_CaseSensitive, a.m_CaseSensitive );
 	}
 };
 
