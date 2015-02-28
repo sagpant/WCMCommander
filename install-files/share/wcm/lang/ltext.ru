@@ -75,8 +75,8 @@ id "Edit user menu"
 txt "Редактировать меню пользователя"
 
 #usermenu.cpp:27
-id "&Name. Prepend hotkey with &"
-txt "Имя"
+id "&Name. Prepend hotkey with the '&' character"
+txt "Имя. Для обозначения горячей клавиши используйте символ '&'"
 
 #usermenu.cpp:29
 id "E&xecute command"

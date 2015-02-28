@@ -25,7 +25,7 @@ public:
 	clEditUserMenuWin( NCDialogParent* parent, const clNCUserMenuItem* Item )
 		: NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Edit user menu" ) ).data(), bListOkCancel )
 		, m_Layout( 17, 2 )
-		, m_DescriptionText( 0, this, utf8_to_unicode( _LT( "&Name. Prepend hotkey with &" ) ).data(), &m_DescriptionEdit )
+		, m_DescriptionText( 0, this, utf8_to_unicode( _LT( "&Name. Prepend hotkey with the '&' character" ) ).data(), &m_DescriptionEdit )
 		, m_DescriptionEdit( 0, this, 0, 0, 16 )
 		, m_CommandText( 0, this, utf8_to_unicode( _LT( "E&xecute command" ) ).data(), &m_CommandEdit )
 		, m_CommandEdit( 0, this, 0, 0, 16 )
