@@ -249,7 +249,7 @@ bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel )
 		if ( Node )
 		{
 			FSPath fspath;
-			clPtr<FS> fs = ParzeURI( Dialog.GetURI().GetUnicode(), fspath, nullptr, 0);
+			clPtr<FS> fs = ParzeURI( Dialog.GetURI().GetUnicode(), fspath, {} );
 			if ( fs )
 			{
 				int Err = 0;

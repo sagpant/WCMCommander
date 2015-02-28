@@ -480,7 +480,7 @@ std::vector<unicode_t> ShellTabKey( NCDialogParent* par, clPtr<FS> fs, FSPath& p
 
 		buf[i] = 0;
 
-		clPtr<FS> f1 = ParzeURI( buf.data(), searchPath, &fs, 1 );
+		clPtr<FS> f1 = ParzeURI( buf.data(), searchPath, { fs } );
 
 		if ( !f1.Ptr() ) { return std::vector<unicode_t>(); }
 

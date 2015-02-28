@@ -484,8 +484,13 @@ struct FSFtpParam
 		isSet = anonymous;
 	}
 
-
-	~FSFtpParam() {}
+	inline bool operator == ( const FSFtpParam& Other ) const
+	{
+		return
+			( this->server == Other.server ) &&
+			( this->anonymous == Other.anonymous && ( this->anonymous || (this->user == Other.user) ) ) &&
+			( this->port == Other.port );
+	}
 };
 
 
@@ -495,7 +500,6 @@ struct FSSftpParam
 	volatile int port;
 	volatile int charset;
 	std::string user;
-//	std::string pass;
 	volatile bool isSet;
 	FSSftpParam(): port( 22 ),
 #ifdef _WIN32
@@ -535,7 +539,13 @@ struct FSSftpParam
 		charset = charset_table.IdByName( conf.GetStrVal( "CHARSET" ) );
 	}
 
-	~FSSftpParam() {}
+	inline bool operator == ( const FSSftpParam& Other ) const
+	{
+		return
+			this->server == Other.server &&
+			this->user == Other.user &&
+			this->port == Other.port;
+	}
 };
 
 struct FSPromptData

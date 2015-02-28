@@ -1120,12 +1120,14 @@ void NCWin::Home( PanelWin* p )
 
 	if ( homeUri.data() )
 	{
-		clPtr<FS> checkFS[2];
-		checkFS[0] = p->GetFSPtr();
-		checkFS[1] = p == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr();
+		const std::vector<clPtr<FS>> checkFS =
+			{
+				p->GetFSPtr(),
+				p == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr()
+			};
 
 		FSPath path;
-		clPtr<FS> fs = ParzeURI( homeUri.data(), path, checkFS, 2 );
+		clPtr<FS> fs = ParzeURI( homeUri.data(), path, checkFS );
 
 		if ( fs.IsNull() )
 		{
@@ -1664,12 +1666,10 @@ void NCWin::CreateDirectory()
 
 		if ( !dir.data() ) { return; }
 
-		clPtr<FS> checkFS[2];
-		checkFS[0] = _panel->GetFSPtr();
-		checkFS[1] = GetOtherPanel()->GetFSPtr();
+		const std::vector<clPtr<FS>> checkFS = { _panel->GetFSPtr(), GetOtherPanel()->GetFSPtr() };
 
 		FSPath path = _panel->GetPath();
-		clPtr<FS> fs = ParzeURI( dir.data(), path, checkFS, 2 );
+		clPtr<FS> fs = ParzeURI( dir.data(), path, checkFS );
 
 		if ( fs.IsNull() )
 		{
@@ -1854,9 +1854,9 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 			savedUri = new_unicode_str( uri.data() );
 
-			clPtr<FS> cFs[2] = {fs, GetOtherPanel()->GetFSPtr() };
+			const std::vector<clPtr<FS>> cFs = { fs, GetOtherPanel()->GetFSPtr() };
 
-			fs = ParzeURI( uri.data(), path, cFs, 2 );
+			fs = ParzeURI( uri.data(), path, cFs );
 
 			if ( !fs.Ptr() ) { return; }
 
@@ -2172,12 +2172,10 @@ void NCWin::Copy( bool shift )
 
 	if ( *a != *b )
 	{
-		clPtr<FS> checkFS[2];
-		checkFS[0] = _panel->GetFSPtr();
-		checkFS[1] = GetOtherPanel()->GetFSPtr();
+		const std::vector<clPtr<FS>> checkFS = { _panel->GetFSPtr(), GetOtherPanel()->GetFSPtr() };
 
 		destPath = srcPath;
-		destFs = ParzeURI( str.data(), destPath, checkFS, 2 );
+		destFs = ParzeURI( str.data(), destPath, checkFS );
 	}
 
 	clPtr<cstrhash<bool, unicode_t> > resList = CopyFiles( srcFs, srcPath, list, destFs, destPath, this );
@@ -2291,12 +2289,10 @@ void NCWin::Move( bool shift )
 
 	if ( *a != *b )
 	{
-		clPtr<FS> checkFS[2];
-		checkFS[0] = _panel->GetFSPtr();
-		checkFS[1] = GetOtherPanel()->GetFSPtr();
+		const std::vector<clPtr<FS>> checkFS = { _panel->GetFSPtr(), GetOtherPanel()->GetFSPtr() };
 
 		destPath = srcPath;
-		destFs = ParzeURI( str.data(), destPath, checkFS, 2 );
+		destFs = ParzeURI( str.data(), destPath, checkFS );
 	}
 
 	bool isMoveDone = MoveFiles( srcFs, srcPath, list, destFs, destPath, this );
@@ -2474,7 +2470,7 @@ bool NCWin::StartEditor( const std::vector<unicode_t> FileName, int Line, int Po
 
 	FSPath fspath;
 
-	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, nullptr, 0 );
+	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, {} );
 
 	if ( !fs.Ptr() ) { return false; }
 
@@ -2502,7 +2498,7 @@ bool NCWin::StartViewer( const std::vector<unicode_t> FileName, int Line )
 
 	FSPath fspath;
 
-	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, nullptr, 0 );
+	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, {} );
 
 	if ( !fs.Ptr() ) { return false; }
 
@@ -2539,9 +2535,7 @@ bool NCWin::EditSave( bool saveAs )
 
 			savedUri = new_unicode_str( uri.data() );
 
-			clPtr<FS> cFs[2] = {fs, GetOtherPanel()->GetFSPtr() };
-
-			fs = ParzeURI( uri.data(), path, cFs, 2 );
+			fs = ParzeURI( uri.data(), path, { fs, GetOtherPanel()->GetFSPtr() } );
 
 			if ( !fs.Ptr() ) { return false; }
 
@@ -3158,10 +3152,6 @@ bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
 
 	if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
 
-	clPtr<FS> checkFS[2];
-	checkFS[0] = _panel->GetFSPtr();
-	checkFS[1] = GetOtherPanel()->GetFSPtr();
-
 	FSPath path = _panel->GetPath();
 
 	ccollect<unicode_t, 0x100> pre;
@@ -3195,7 +3185,13 @@ bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
 	pre.append( 0 );
 	p = pre.ptr();
 
-	clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
+	const std::vector<clPtr<FS>> checkFS =
+	{
+		_panel->GetFSPtr(),
+		GetOtherPanel()->GetFSPtr()
+	};
+
+	clPtr<FS> fs = ParzeURI( p, path, checkFS );
 
 	if ( fs.IsNull() )
 	{

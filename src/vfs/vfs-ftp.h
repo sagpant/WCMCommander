@@ -117,7 +117,7 @@ public:
 //++volatile надо скорректировать
 class FSFtp : public FS
 {
-	Mutex infoMutex;
+	mutable Mutex infoMutex;
 	FSFtpParam _infoParam;
 
 	FtpStatCache statCache; //has own mutex
@@ -169,7 +169,7 @@ public:
 	virtual FSString Uri( FSPath& path );
 	virtual ~FSFtp();
 
-	void GetParam( FSFtpParam* p ) { if ( !p ) { return; } MutexLock lock( &infoMutex ); *p = _infoParam; }
+	FSFtpParam GetParamValue() const { MutexLock lock( &infoMutex ); return _infoParam; }
 
 	virtual unicode_t* GetUserName( int user, unicode_t buf[64] );
 	virtual unicode_t* GetGroupName( int group, unicode_t buf[64] );

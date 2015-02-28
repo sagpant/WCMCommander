@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "vfs.h"
 
 /*
@@ -18,6 +20,6 @@
       в случае ошибки: clPtr<FS> пустой, path - не определен
 */
 
-clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, clPtr<FS>* checkFS, int count );
+clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS );
 
 clPtr<FS> ParzeCurrentSystemURL( FSPath& path );

@@ -288,8 +288,7 @@ bool PathListFSToData(PathList::Data& data, clPtr<FS>* fs, FSPath* path)
     {
         cfg->Set("TYPE", "FTP");
         cfg->Set("Path", path->GetUtf8());
-        FSFtpParam param;
-        ((FSFtp*)fs[0].Ptr())->GetParam(&param);
+        FSFtpParam param = ((FSFtp*)fs[0].Ptr())->GetParamValue();
         param.GetConf(*cfg.ptr());
     }
     else
@@ -299,8 +298,7 @@ bool PathListFSToData(PathList::Data& data, clPtr<FS>* fs, FSPath* path)
         {
             cfg->Set("TYPE", "SFTP");
             cfg->Set("Path", path->GetUtf8());
-            FSSftpParam param;
-            ((FSSftp*)fs[0].Ptr())->GetParam(&param);
+            FSSftpParam param = ((FSSftp*)fs[0].Ptr())->GetParamValue();
             param.GetConf(*cfg.ptr());
         }
         else
@@ -311,8 +309,7 @@ bool PathListFSToData(PathList::Data& data, clPtr<FS>* fs, FSPath* path)
             {
                 cfg->Set("TYPE", "SMB");
                 cfg->Set("Path", path->GetUtf8());
-                FSSmbParam param;
-                ((FSSmb*)fs[0].Ptr())->GetParam(&param);
+                FSSmbParam param = ((FSSmb*)fs[0].Ptr())->GetParamValue();
                 param.GetConf(*cfg.ptr());
             }
             else
