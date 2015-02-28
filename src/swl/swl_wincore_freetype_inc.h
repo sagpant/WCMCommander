@@ -65,7 +65,7 @@ namespace FTU
 			XYWH place;
 		};
 
-		std::unordered_map<NK, Node> hash;
+		std::unordered_map<NK, Node> nodesHash;
 
 		SCImage image;
 		int xPos;
@@ -149,7 +149,7 @@ namespace FTU
 ////////////////////// ImCache //////////////////////////////////////////////////////////////////
 
 	ImCache::ImCache(): xPos( 0 ), yPos( 0 ), cHeight( 0 ) {}
-	void ImCache::Clear() { hash.clear(); xPos = 0; yPos = 0; cHeight = 0; }
+	void ImCache::Clear() { nodesHash.clear(); xPos = 0; yPos = 0; cHeight = 0; }
 
 	inline void  ImCache::CopyArea( wal::GC& gc, Node* p, int x, int y )
 	{
@@ -163,9 +163,9 @@ namespace FTU
 		k.fg = fg;
 		k.ch = ch;
 
-		const auto& i = hash.find( k );
+		const auto& i = nodesHash.find( k );
 
-		Node* p = ( i == hash.end() ) ? nullptr : &(i.second);
+		Node* p = ( i == nodesHash.end() ) ? nullptr : &(i->second);
 
 		if ( !p ) { return false; }
 
@@ -199,10 +199,10 @@ namespace FTU
 
 			if ( cHeight < charH ) { cHeight = charH; }
 
-			return hash[ node.k ] = node;
+			return nodesHash[ node.k ] = node;
 		}
 
-		hash.clear();
+		nodesHash.clear();
 
 		int w = image.Width();
 		int h = image.Height();
@@ -225,7 +225,7 @@ namespace FTU
 		yPos = 0;
 		cHeight = charH;
 
-		return hash[ node.k ] = node;
+		return nodesHash[ node.k ] = node;
 	}
 
 	inline void ImCache::DrawImage( wal::GC& gc, Image32& im, int x, int y )

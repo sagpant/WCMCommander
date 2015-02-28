@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <locale.h>
+#include <set>
 
 #ifdef USEFREETYPE
 #include <ft2build.h>
@@ -465,15 +466,6 @@ namespace wal
 		BaseInit();
 	}
 
-	struct RepaintHashNode
-	{
-		WINID id;
-		RepaintHashNode ( WinID h ): id( h ) {}
-		const WINID& key() const { return id; };
-	private:
-		RepaintHashNode (): id( 0 ) {}
-	};
-
 	void DrawExposeRect( Win* w )
 	{
 		if ( !w ) { return; }
@@ -487,16 +479,16 @@ namespace wal
 	}
 
 
-	static std::unordered_map<WinID, RepaintHashNode> repaintHash;
+	static std::set<WinID> repaintHash;
 
-	static void ForeachDrawExpose( const RepaintHashNode* t, void* data )
+	static void ForeachDrawExpose( WinID id, void* data )
 	{
-		DrawExposeRect( GetWinByID( t->id ) );
+		DrawExposeRect( GetWinByID( id ) );
 	}
 
 	static void PostRepaint()
 	{
-		for ( const auto& i : repaintHash ) ForeachDrawExpose( &(i.second), nullptr );
+		for ( const auto& i : repaintHash ) ForeachDrawExpose( i, nullptr );
 		repaintHash.clear();
 	}
 
@@ -504,8 +496,7 @@ namespace wal
 	{
 		if ( !w ) { return; }
 
-		RepaintHashNode node( w->GetID() );
-		repaintHash[ w->GetID ] = node;
+		repaintHash.insert( w->GetID() );
 	}
 
 	static void MovePopups( Win* w, int xDelta, int yDelta )
