@@ -2606,9 +2606,9 @@ void NCWin::EditSearch( bool next )
 {
 	if ( _mode != EDIT ) { return; }
 
-	if ( ( next || DoSearchDialog( this, &searchParams ) ) && searchParams.txt.data() && searchParams.txt[0] )
+	if ( ( next || DoSearchDialog( this, &searchParams ) ) && searchParams.m_SearchText.data() && searchParams.m_SearchText[0] )
 	{
-		if ( !_editor.Search( searchParams.txt.data(), searchParams.sens ) )
+		if ( !_editor.Search( searchParams.m_SearchText.data(), searchParams.m_CaseSensitive ) )
 		{
 			NCMessageBox( this, _LT( "Search" ), _LT( "String not found" ), true );
 		}
@@ -2619,12 +2619,12 @@ void NCWin::EditReplace()
 {
 	if ( _mode != EDIT ) { return; }
 
-	if ( DoReplaceEditDialog( this, &searchParams ) && searchParams.txt.data() && searchParams.txt[0] )
+	if ( DoReplaceEditDialog( this, &searchParams ) && searchParams.m_SearchText.data() && searchParams.m_SearchText[0] )
 	{
 		static unicode_t empty = 0;
-		unicode_t* to = searchParams.to.data() && searchParams.to[0] ? searchParams.to.data() : &empty;
-
-		if ( !_editor.Replace( searchParams.txt.data(), to, searchParams.sens ) )
+		unicode_t* to = searchParams.m_ReplaceTo.data() && searchParams.m_ReplaceTo[0] ? searchParams.m_ReplaceTo.data() : &empty;
+		
+		if ( !_editor.Replace( searchParams.m_SearchText.data(), to, searchParams.m_CaseSensitive ) )
 		{
 			NCMessageBox( this, _LT( "Replace" ), _LT( "String not found" ), true );
 		}
@@ -2635,9 +2635,9 @@ void NCWin::ViewSearch( bool next )
 {
 	if ( _mode != VIEW ) { return; }
 
-	if ( ( next || DoSearchDialog( this, &searchParams ) ) && searchParams.txt.data() && searchParams.txt[0] )
+	if ( ( next || DoSearchDialog( this, &searchParams ) ) && searchParams.m_SearchText.data() && searchParams.m_SearchText[0] )
 	{
-		if ( !_viewer.Search( searchParams.txt.data(), searchParams.sens ) )
+		if ( !_viewer.Search( searchParams.m_SearchText.data(), searchParams.m_CaseSensitive ) )
 		{
 			NCMessageBox( this, _LT( "Search" ), _LT( "String not found" ), true );
 		}
