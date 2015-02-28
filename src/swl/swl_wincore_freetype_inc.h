@@ -32,13 +32,19 @@ namespace FTU
 		CharInfo() {}
 	};
 
+
+	//кэш изображений (битмапов)
+	class ImCache
+	{
+		enum CONST { MAX_IMAGE_WIDTH = 640, MAX_IMAGE_HEIGHT = 480 };
+
 		struct NK
 		{
 			unsigned bg; //цвет фона
 			unsigned fg; //цвет символа
 			unicode_t ch; //символ
 
-			operator unsigned() const { return bg + fg + ch; }
+			std::size_t operator()( const NK& k ) const { return k.bg + k.fg + k.ch; }
 
 			bool operator == ( const NK& a ) const { return ch == a.ch && bg == a.bg && fg == a.fg; }
 		};
@@ -54,16 +60,10 @@ namespace FTU
 		struct Node
 		{
 			NK k;
-			const NK& key() const { return k; }
 			XYWH place;
 		};
 
-//кэш изображений (битмапов)
-	class ImCache
-	{
-		enum CONST { MAX_IMAGE_WIDTH = 640, MAX_IMAGE_HEIGHT = 480 };
-
-		std::unordered_map<NK, Node> nodesHash;
+		std::unordered_map<NK, Node, NK> nodesHash;
 
 		SCImage image;
 		int xPos;
@@ -197,7 +197,7 @@ namespace FTU
 
 			if ( cHeight < charH ) { cHeight = charH; }
 
-			return nodesHash[ node.k ] = node;
+			return &(nodesHash[ node.k ] = node);
 		}
 
 		nodesHash.clear();
@@ -223,7 +223,7 @@ namespace FTU
 		yPos = 0;
 		cHeight = charH;
 
-		return nodesHash[ node.k ] = node;
+		return &(nodesHash[ node.k ] = node);
 	}
 
 	inline void ImCache::DrawImage( wal::GC& gc, Image32& im, int x, int y )
