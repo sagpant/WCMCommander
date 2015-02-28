@@ -1726,7 +1726,7 @@ void EditWin::Save( MemFile& f )
 {
 	f.Clear();
 	text.Save( f );
-	undoList.Clear();
+	if ( g_WcmConfig.editClearHistoryAfterSaving ) undoList.Clear();
 //	changed = false;
 }
 

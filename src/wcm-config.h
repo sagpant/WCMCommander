@@ -124,6 +124,7 @@ public:
 	bool editAutoIdent;
 	int editTabSize;
 	bool editShl;
+	bool editClearHistoryAfterSaving;
 	#pragma endregion
 
 	#pragma region Terminal settings

@@ -707,6 +707,7 @@ clWcmConfig::clWcmConfig()
 	, editAutoIdent( false )
 	, editTabSize( 3 )
 	, editShl( true )
+	, editClearHistoryAfterSaving( true )
 
 	, terminalBackspaceKey( 0 )
 
@@ -766,6 +767,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionEditor, "auto_ident",   &editAutoIdent, editAutoIdent );
 	MapInt( sectionEditor, "tab_size",   &editTabSize, editTabSize );
 	MapBool( sectionEditor, "highlighting", &editShl, editShl );
+	MapBool( sectionEditor, "editClearHistoryAfterSaving", &editClearHistoryAfterSaving, editClearHistoryAfterSaving );
 
 	MapInt( sectionTerminal, "backspace_key",  &terminalBackspaceKey, terminalBackspaceKey );
 
@@ -1687,6 +1689,7 @@ public:
 	SButton  saveFilePosButton;
 	SButton  autoIdentButton;
 	SButton  shlButton;
+	SButton  clearHistoryButton;
 
 	StaticLabel tabText;
 	EditLine tabEdit;
@@ -1706,6 +1709,7 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	   saveFilePosButton( 0, this, utf8_to_unicode( _LT( "Save file &position" ) ).data(), 0, g_WcmConfig.editSavePos ),
 	   autoIdentButton( 0, this, utf8_to_unicode( _LT( "Auto &indent" ) ).data(), 0, g_WcmConfig.editAutoIdent ),
 	   shlButton( 0, this, utf8_to_unicode( _LT( "Syntax &highlighting" ) ).data(), 0, g_WcmConfig.editShl ),
+	   clearHistoryButton( 0, this, utf8_to_unicode( _LT( "&Clear history after saving" ) ).data(), 0, g_WcmConfig.editClearHistoryAfterSaving ),
 	   tabText( 0, this, utf8_to_unicode( _LT( "&Tab size:" ) ).data(), &tabEdit ),
 	   tabEdit( 0, this, 0, 0, 16 )
 {
@@ -1713,22 +1717,12 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	Lsnprintf( buf, sizeof( buf ) - 1, "%i", g_WcmConfig.editTabSize );
 	tabEdit.SetText( utf8_to_unicode( buf ).data(), true );
 
-	iL.AddWin( &saveFilePosButton, 0, 0, 0, 1 );
-	saveFilePosButton.Enable();
-	saveFilePosButton.Show();
-	iL.AddWin( &autoIdentButton,   1, 0, 1, 1 );
-	autoIdentButton.Enable();
-	autoIdentButton.Show();
-	iL.AddWin( &shlButton,      2, 0, 2, 1 );
-	shlButton.Enable();
-	shlButton.Show();
-
-	iL.AddWin( &tabText,     3, 0, 3, 0 );
-	tabText.Enable();
-	tabText.Show();
-	iL.AddWin( &tabEdit,     3, 1, 4, 1 );
-	tabEdit.Enable();
-	tabEdit.Show();
+	iL.AddWinAndEnable( &saveFilePosButton,  0, 0, 0, 1 );
+	iL.AddWinAndEnable( &autoIdentButton,    1, 0, 1, 1 );
+	iL.AddWinAndEnable( &shlButton,          2, 0, 2, 1 );
+	iL.AddWinAndEnable( &clearHistoryButton, 3, 0, 3, 1 );
+	iL.AddWinAndEnable( &tabText,            4, 0, 4, 0 );
+	iL.AddWinAndEnable( &tabEdit,            4, 1, 5, 1 );
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
 
@@ -1737,6 +1731,7 @@ EditOptDialog::EditOptDialog( NCDialogParent* parent )
 	order.append( &saveFilePosButton );
 	order.append( &autoIdentButton );
 	order.append( &shlButton );
+	order.append( &clearHistoryButton );
 	order.append( &tabEdit );
 	SetPosition();
 }
@@ -1750,6 +1745,7 @@ bool DoEditConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.editSavePos = dlg.saveFilePosButton.IsSet();
 		g_WcmConfig.editAutoIdent = dlg.autoIdentButton.IsSet();
 		g_WcmConfig.editShl = dlg.shlButton.IsSet();
+		g_WcmConfig.editClearHistoryAfterSaving = dlg.clearHistoryButton.IsSet();
 
 		int tabSize = atoi( unicode_to_utf8( dlg.tabEdit.GetText().data() ).data() );
 

@@ -234,7 +234,7 @@ void OperSearchThread::SearchDir( FS* fs, FSPath path, MegaSearcher* pSearcher )
 	FSNodeVectorSorter::Sort(p, true, false, SORT_NAME);
 
 	//check by mask
-	unicode_t* mask = this->searchParams.mask.data();
+	const unicode_t* mask = this->searchParams.m_SearchMask.data();
 
 	int lastPathPos = path.Count();
 
@@ -858,17 +858,17 @@ CoreCommands SearchFile(clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* r
 		return CMD_CANCEL;
 	}
 
-	if ( !searchParams.mask.data() || !searchParams.mask[0] ) { return CMD_CANCEL; }
+	if ( !searchParams.m_SearchMask.data() || !searchParams.m_SearchMask[0] ) { return CMD_CANCEL; }
 
-	std::string utf8Mask = unicode_to_utf8( searchParams.mask.data() );
+	std::string utf8Mask = unicode_to_utf8( searchParams.m_SearchMask.data() );
 
 	clPtr<MegaSearcher> megaSearcher;
 
-	if ( searchParams.txt.data() && searchParams.txt[0] )
+	if ( searchParams.m_SearchText.data() && searchParams.m_SearchText[0] )
 	{
 		megaSearcher = new MegaSearcher();
 
-		if ( !megaSearcher->Set( searchParams.txt.data(), searchParams.sens, 0 ) )
+		if ( !megaSearcher->Set( searchParams.m_SearchText.data(), searchParams.m_CaseSensitive, 0 ) )
 		{
 			NCMessageBox( parent,  _LT( "File search" ) ,  _LT( "can't search this text" ) ,  true );
 			return CMD_CANCEL;
