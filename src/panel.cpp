@@ -1276,7 +1276,7 @@ void PanelWin::SetCurrent( int n, bool Shift, LPanelSelectionType* SelectType, b
 
 	SetScroll();
 
-	if ( fullRedraw )
+	if ( fullRedraw || true )
 	{
 		Invalidate();
 		return;

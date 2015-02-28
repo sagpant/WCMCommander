@@ -2167,12 +2167,12 @@ Nah:
 		if ( lineRgb == rgb && width  == gcValues.line_width && s == gcValues.line_style ) { return; }
 
     if (context) {
-      int r = (rgb & 0xFF0000) >> 16;
+      int b = (rgb & 0xFF0000) >> 16;
       int g = (rgb & 0x00FF00) >> 8;
-      int b = (rgb & 0x0000FF);
+      int r = (rgb & 0x0000FF);
       CGFloat color[4] = {r / 255.0, g / 255.0, b / 255.0, 1};
       CGContextSetStrokeColor(context, color);
-      CGContextSetLineWidth(context, width);
+      CGContextSetLineWidth(context, width == 0 ? 1 : width);
     }
 
 		gcValues.line_width = width;
@@ -2501,6 +2501,7 @@ Nah:
 
     CGRect frame = CGRectMake(r.left, r.top, r.right - r.left, r.bottom - r.top);
     view = [[WALView alloc] initWithFrame:frame];
+//    view.wantsLayer = YES;
     [(WALView *)view setWin:this];
 
     if (t == Win::WT_MAIN) {
@@ -2511,6 +2512,7 @@ Nah:
                                                defer:NO];
       window.contentView = view;
       window.title = @"Wal Commander GitHub Edition";
+      view.wantsLayer = YES;
       [window orderFrontRegardless];
     } else if (t == Win::WT_CHILD) {
 //      view.wantsLayer = YES;
