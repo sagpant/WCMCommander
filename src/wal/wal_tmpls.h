@@ -733,7 +733,6 @@ namespace wal
 			if ( this != &a )
 			{
 				hash = a.hash;
-				defaultValue = a.defaultValue;
 			}
 
 			return *this;
