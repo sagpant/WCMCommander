@@ -225,7 +225,7 @@ namespace FTU
 		yPos = 0;
 		cHeight = charH;
 
-		return hash.put( node );
+		return hash[ node.k ] = node;
 	}
 
 	inline void ImCache::DrawImage( wal::GC& gc, Image32& im, int x, int y )
