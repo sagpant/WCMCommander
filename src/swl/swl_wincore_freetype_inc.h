@@ -32,12 +32,6 @@ namespace FTU
 		CharInfo() {}
 	};
 
-
-//кэш изображений (битмапов)
-	class ImCache
-	{
-		enum CONST { MAX_IMAGE_WIDTH = 640, MAX_IMAGE_HEIGHT = 480 };
-
 		struct NK
 		{
 			unsigned bg; //цвет фона
@@ -46,7 +40,6 @@ namespace FTU
 
 			operator unsigned() const { return bg + fg + ch; }
 
-			//пиздец если саму функцию не описать как конснантную !!!
 			bool operator == ( const NK& a ) const { return ch == a.ch && bg == a.bg && fg == a.fg; }
 		};
 
@@ -64,6 +57,11 @@ namespace FTU
 			const NK& key() const { return k; }
 			XYWH place;
 		};
+
+//кэш изображений (битмапов)
+	class ImCache
+	{
+		enum CONST { MAX_IMAGE_WIDTH = 640, MAX_IMAGE_HEIGHT = 480 };
 
 		std::unordered_map<NK, Node> nodesHash;
 
