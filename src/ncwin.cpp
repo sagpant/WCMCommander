@@ -3938,6 +3938,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case VK_F1:
 				Help( this, "main" );
+				this->RecalcLayouts();
 				break;
 
 			case VK_F2:
