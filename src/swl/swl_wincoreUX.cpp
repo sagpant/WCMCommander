@@ -18,6 +18,33 @@
 #include FT_FREETYPE_H
 #endif
 
+@interface WALWindow : NSWindow
+@end
+
+@implementation WALWindow
+
+- (BOOL)acceptsFirstResponder
+{
+  return YES;
+}
+
+- (BOOL)canBecomeKeyWindow
+{
+  return YES;
+}
+
+- (BOOL)canBecomeMainWindow
+{
+  return YES;
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+  NSLog(@"%@", theEvent);
+}
+
+@end
+
 @interface WALView : NSView
 
 @property (nonatomic, assign) Win *win;
@@ -25,6 +52,21 @@
 @end
 
 @implementation WALView
+
+- (BOOL)acceptsFirstResponder
+{
+  return YES;
+}
+
+- (BOOL)canBecomeKeyView
+{
+  return YES;
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+  NSLog(@"view %@", theEvent);
+}
 
 - (BOOL)isFlipped
 {
@@ -875,13 +917,13 @@ namespace wal
 		switch ( event->type )
 		{
 
-			case KeyPress:
-				KeyEvent( EV_KEYDOWN, ( XKeyEvent* )event );
-				break; //   2
-
-			case KeyRelease:
-				KeyEvent( EV_KEYUP, ( XKeyEvent* ) event );
-				break; //   3
+//			case KeyPress:
+//				KeyEvent( EV_KEYDOWN, ( XKeyEvent* )event );
+//				break; //   2
+//
+//			case KeyRelease:
+//				KeyEvent( EV_KEYUP, ( XKeyEvent* ) event );
+//				break; //   3
 
 			case ButtonPress: //4
 			case ButtonRelease:
@@ -1340,7 +1382,7 @@ namespace wal
 
 				if ( w && event->xclient.message_type == atom_WM_PROTOCOLS && event->xclient.data.l[0] == atom_WM_DELETE_WINDOW )
 				{
-					cevent ev( EV_CLOSE );
+          cevent ev( EV_CLOSE );
 					w->Event( &ev );
 				}
 			}
@@ -1372,14 +1414,54 @@ namespace wal
 
 	void AppExit() { appExit = true; }
 
+  void DoNSEvents(NSEvent *event)
+  {
+    int type, keyMods = 0;
+    switch (event.type) {
+      case NSKeyDown:
+        type = EV_KEYDOWN;
+        break;
+
+      case NSKeyUp:
+        type = EV_KEYUP;
+        break;
+
+      default:
+        return;
+    }
+    unicode_t ch = 0;
+    if (event.characters.length > 0) {
+      ch = (unicode_t)[event.characters characterAtIndex:0];
+    }
+    cevent_key ev( type, event.keyCode, keyMods, 1, ch, false );
+
+    Win* w = GetWinByID( Win::focusWinId );
+
+    if ( w->Type() != Win::WT_MAIN && ChildKeyRecursive( w->Parent(), w, &ev ) )
+    {
+      return;
+    }
+
+    if ( !w->IsEnabled() ) { return; }
+
+    w->EventKey( &ev );
+  }
+
 	int AppRun()
 	{
 		appExit = false;
 
+    [[NSApplication sharedApplication] finishLaunching];
+
 		while ( true )
 		{
-      NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES];
-      [NSApp sendEvent:event];
+      NSEvent *event = [[NSApplication sharedApplication] nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES];
+      [[NSApplication sharedApplication] sendEvent:event];
+
+      if (event) {
+        NSLog(@"%@", event);
+        DoNSEvents(event);
+      }
 
 			wth_DoEvents();
 
@@ -2506,14 +2588,15 @@ Nah:
 
     if (t == Win::WT_MAIN) {
       NSUInteger windowStyle = (NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask | NSMiniaturizableWindowMask);
-      window = [[NSWindow alloc] initWithContentRect:frame
-                                           styleMask:windowStyle
-                                             backing:NSBackingStoreBuffered
-                                               defer:NO];
+      window = [[WALWindow alloc] initWithContentRect:frame
+                                            styleMask:windowStyle
+                                              backing:NSBackingStoreBuffered
+                                                defer:NO];
       window.contentView = view;
       window.title = @"Wal Commander GitHub Edition";
       view.wantsLayer = YES;
-      [window orderFrontRegardless];
+      [window makeKeyAndOrderFront:nil];
+      NSLog(@"%@", window.firstResponder);
     } else if (t == Win::WT_CHILD) {
 //      view.wantsLayer = YES;
 //      view.layer.borderColor = [[NSColor blackColor] CGColor];

@@ -984,9 +984,9 @@ namespace wal
 			SHOW_INACTIVE = 1
 		};
 
-	private:
+		static WinID focusWinId; // TODO(franitc): back to private
 
-		static WinID focusWinId;
+	private:
 
 		WinID handle;
 		Win* parent;
