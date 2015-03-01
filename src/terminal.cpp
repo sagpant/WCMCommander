@@ -88,147 +88,6 @@ TerminalStream::TerminalStream()
 	_slaveName = new_sys_str( slaveName.c_str() );
 }
 
-/*
-static int WritePipe( int fd, int cmd, ... )
-{
-   ccollect<char*> list;
-
-   va_list ap;
-   va_start( ap, cmd );
-
-   while ( true )
-   {
-      char* s = va_arg( ap, char* );
-
-      if ( !s ) { break; }
-
-      list.append( s );
-   }
-
-   va_end( ap );
-
-   int ret;
-   char c = cmd;
-   ret = write( fd, &c, sizeof( char ) );
-
-   if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
-
-   c = list.count();
-   ret = write( fd, &c, sizeof( char ) );
-
-   if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
-
-   for ( int i = 0; i < list.count(); i++ )
-   {
-      char* s = list[i];
-      int l = strlen( s ) + 1;
-      ret = write( fd, s, l );
-
-      if ( ret < 0 || ret != l ) { return -1; }
-   }
-
-   return 0;
-}
-*/
-/*
-static int ReadPipe( int fd, int& cmd, ccollect<std::vector<char> >& params )
-{
-   char c;
-   int ret;
-   ret = read( fd, &c, sizeof( char ) );
-
-   if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
-
-   cmd = c;
-   ret = read( fd, &c, sizeof( char ) );
-
-   if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
-
-   params.clear();
-
-   int count = c;
-
-   for ( int i = 0; i < count; i++ )
-   {
-      ccollect<char> p;
-
-      while ( true )
-      {
-         ret = read( fd, &c, sizeof( char ) );
-
-         if ( ret < 0 || ret != sizeof( char ) ) { return -1; }
-
-         p.append( c );
-
-         if ( !c ) { break; }
-      }
-
-      params.append( p.grab() );
-   }
-
-   return 0;
-}
-*/
-/*
-static void Shell( int in, int out )
-{
-   fcntl( in, F_SETFD, long( FD_CLOEXEC ) );
-   fcntl( out, F_SETFD, long( FD_CLOEXEC ) );
-
-
-   while ( true )
-   {
-      ccollect<std::vector<char> > pList;
-      int cmd = 0;
-
-      if ( ReadPipe( in, cmd, pList ) ) { exit( 1 ); }
-
-      switch ( cmd )
-      {
-         case 1:
-
-         {
-            pid_t pid = fork();
-
-            if ( !pid )
-            {
-               static char shell[] = "/bin/sh";
-
-               if ( pList.count() )
-               {
-                  const char* params[] = {shell, "-c", pList[0].data(), NULL};
-                  execv( shell, ( char** ) params );
-                  printf( "error execute %s\n", shell );
-               }
-               else
-               {
-                  printf( "internal err (no shall paremeters)\n" );
-               }
-
-               exit( 1 );
-            }
-
-            char buf[64];
-            sprintf( buf, "%i", int( pid ) );
-
-            if ( WritePipe( out, 0, buf, ( const char* ) 0 ) ) { exit( 1 ); }
-
-            printf ( "exec '%s' (%i)\n", pList[0].data(), pid );
-
-         }
-         break;
-
-         default:
-            if ( WritePipe( out, 1, "unknown internal shell command", ( const char* )0 ) ) { exit( 1 ); }
-
-            printf( "internal err (unknown shell command)\n" );
-
-            break;
-      };
-   }
-}
-*/
-
 int TerminalStream::Read( char* buf, int size )
 {
 	fd_set fr;
@@ -236,13 +95,9 @@ int TerminalStream::Read( char* buf, int size )
 	FD_SET( _masterFd, &fr );
 	int n = select( _masterFd + 1, &fr, 0, 0, 0 );
 
-//printf("select returned %i (_masterFd = %i)\n", n, _masterFd);
-
 	if ( n < 0 ) { return n; }
 
 	n = read( _masterFd, buf, size );
-
-//printf("terminal readed %i bytes\n", n);
 
 	return n;
 }
@@ -613,5 +468,3 @@ void* TerminalOutputThreadFunc( void* data )
 
 	return nullptr;
 }
-
-
