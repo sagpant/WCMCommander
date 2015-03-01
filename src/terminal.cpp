@@ -12,10 +12,6 @@
 #include "globals.h"
 #include <sys/ioctl.h>
 
-#ifdef _WIN32
-#error
-#endif
-
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -23,66 +19,73 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <cstring>
+
+static void FindLegacyFreeBSDMasterSlave( std::string* masterName, std::string* slaveName, int* masterFd )
+{
+	if ( !masterName || !slaveName || !masterFd ) return;
+
+	static const char p1[] = "prsPRS";
+	static const char p2[] = "0123456789ancdefghijklmnopqrstuv";
+
+	char Buf[1024];
+
+	for ( const char* s1 = p1; *s1; s1++ )
+	{
+		for ( const char* s2 = p2; *s2; s2++ )
+		{
+			snprintf( Buf, sizeof(Buf)-1, "/dev/pty%c%c", *s1, *s2 );
+
+			masterFd = open( Buf, O_RDWR | O_NDELAY );
+
+			if ( masterFd >= 0 )
+			{
+				*masterName = Buf;
+				snprintf( Buf, sizeof(Buf)-1, "/dev/tty%c%c", *s1, *s2 );
+				*slaveName = Buf;
+				return;
+			}
+		}
+	}
+
+	throw_syserr( 0, "INTERNAL ERROR: can`t open any  pseudo terminal file" );
+}
 
 TerminalStream::TerminalStream()
-	:  _masterFd( -1 )
+ :  _masterFd( -1 )
 {
-	char masterName[0x100];
-	strcpy( masterName, "/dev/ptmx" );
-
-	char slaveName[0x100];
-
 	_masterFd = posix_openpt( O_RDWR );
+
+	std::string masterName = "/dev/ptmx";
+	std::string slaveName;
 
 	if ( _masterFd >= 0 )
 	{
-		char* name = ptsname( _masterFd );
+		const char* name = ptsname( _masterFd );
 
 		if ( !name )
 		{
-			throw_syserr( 0, "INTERNAL ERROR: can`t receive slave name for %s", masterName );
+			throw_syserr( 0, "INTERNAL ERROR: can`t receive slave name for %s", masterName.c_str() );
 		}
 
-		strcpy( slaveName, name );
+		slaveName = name;
 	}
 	else
 	{
-		//for old freeBsd
-		static char p1[] = "prsPRS";
-		static char p2[] = "0123456789ancdefghijklmnopqrstuv";
-
-		for ( char* s1 = p1; *s1; s1++ )
-		{
-			for ( char* s2 = p2; *s2; s2++ )
-			{
-				sprintf( masterName, "/dev/pty%c%c", *s1, *s2 );
-				_masterFd = open( masterName, O_RDWR | O_NDELAY );
-
-				if ( _masterFd >= 0 )
-				{
-					sprintf( slaveName, "/dev/tty%c%c", *s1, *s2 );
-					goto Ok;
-				}
-			}
-		}
-
-		throw_syserr( 0, "INTERNAL ERROR: can`t open any  pseudo terminal file" );
-Ok:
-		;
+		FindLegacyFreeBSDMasterSlave( &masterName, &slaveName, &_masterFd );
 	}
 
 	if ( grantpt( _masterFd ) )
 	{
-		throw_syserr( 0, "INTERNAL ERROR: can`t grant  pseudo terminal (%s)", masterName );
+		throw_syserr( 0, "INTERNAL ERROR: can`t grant  pseudo terminal (%s)", masterName.c_str() );
 	}
 
 	if ( unlockpt( _masterFd ) )
 	{
-		throw_syserr( 0, "INTERNAL ERROR: can`t unlock  pseudo terminal (%s)", masterName );
+		throw_syserr( 0, "INTERNAL ERROR: can`t unlock  pseudo terminal (%s)", masterName.c_str() );
 	}
 
-
-	_slaveName = new_sys_str( slaveName );
+	_slaveName = new_sys_str( slaveName.c_str() );
 }
 
 /*
