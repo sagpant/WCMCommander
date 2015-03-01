@@ -36,9 +36,9 @@ static void FindLegacyFreeBSDMasterSlave( std::string* masterName, std::string* 
 		{
 			snprintf( Buf, sizeof(Buf)-1, "/dev/pty%c%c", *s1, *s2 );
 
-			masterFd = open( Buf, O_RDWR | O_NDELAY );
+			*masterFd = open( Buf, O_RDWR | O_NDELAY );
 
-			if ( masterFd >= 0 )
+			if ( *masterFd >= 0 )
 			{
 				*masterName = Buf;
 				snprintf( Buf, sizeof(Buf)-1, "/dev/tty%c%c", *s1, *s2 );
