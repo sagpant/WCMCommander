@@ -33,7 +33,7 @@ namespace FTU
 	};
 
 
-//кэш изображений (битмапов)
+	//кэш изображений (битмапов)
 	class ImCache
 	{
 		enum CONST { MAX_IMAGE_WIDTH = 640, MAX_IMAGE_HEIGHT = 480 };
@@ -44,9 +44,8 @@ namespace FTU
 			unsigned fg; //цвет символа
 			unicode_t ch; //символ
 
-			operator unsigned() const { return bg + fg + ch; }
+			std::size_t operator()( const NK& k ) const { return k.bg + k.fg + k.ch; }
 
-			//пиздец если саму функцию не описать как конснантную !!!
 			bool operator == ( const NK& a ) const { return ch == a.ch && bg == a.bg && fg == a.fg; }
 		};
 
@@ -61,11 +60,10 @@ namespace FTU
 		struct Node
 		{
 			NK k;
-			const NK& key() const { return k; }
 			XYWH place;
 		};
 
-		chash<Node, NK> hash;
+		std::unordered_map<NK, Node, NK> nodesHash;
 
 		SCImage image;
 		int xPos;
@@ -149,7 +147,7 @@ namespace FTU
 ////////////////////// ImCache //////////////////////////////////////////////////////////////////
 
 	ImCache::ImCache(): xPos( 0 ), yPos( 0 ), cHeight( 0 ) {}
-	void ImCache::Clear() { hash.clear(); xPos = 0; yPos = 0; cHeight = 0; }
+	void ImCache::Clear() { nodesHash.clear(); xPos = 0; yPos = 0; cHeight = 0; }
 
 	inline void  ImCache::CopyArea( wal::GC& gc, Node* p, int x, int y )
 	{
@@ -162,7 +160,10 @@ namespace FTU
 		k.bg = bg;
 		k.fg = fg;
 		k.ch = ch;
-		Node* p = hash.get( k );
+
+		const auto& i = nodesHash.find( k );
+
+		Node* p = ( i == nodesHash.end() ) ? nullptr : &(i->second);
 
 		if ( !p ) { return false; }
 
@@ -196,10 +197,10 @@ namespace FTU
 
 			if ( cHeight < charH ) { cHeight = charH; }
 
-			return hash.put( node );
+			return &(nodesHash[ node.k ] = node);
 		}
 
-		hash.clear();
+		nodesHash.clear();
 
 		int w = image.Width();
 		int h = image.Height();
@@ -222,7 +223,7 @@ namespace FTU
 		yPos = 0;
 		cHeight = charH;
 
-		return hash.put( node );
+		return &(nodesHash[ node.k ] = node);
 	}
 
 	inline void ImCache::DrawImage( wal::GC& gc, Image32& im, int x, int y )

@@ -148,7 +148,7 @@ public:
 
 	clPtr<cstrhash<bool, unicode_t> > GetSelectedHash()
 	{
-		clPtr<cstrhash<bool, unicode_t> > hash = new cstrhash<bool, unicode_t>( false );
+		clPtr<cstrhash<bool, unicode_t> > hash = new cstrhash<bool, unicode_t>();
 		int n = listCount;
 
 		for ( int i = 0; i < n; i++ )
