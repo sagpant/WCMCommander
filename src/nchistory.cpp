@@ -25,11 +25,14 @@ void NCHistory::DeleteAll( const unicode_t* Str )
 
 		i++;
 	}
+
+	// Maybe we need to keep m_Current pointing to specific command, if the latter survived?
+	m_Current = -1;
 }
 
 void NCHistory::Put( const unicode_t* str )
 {
-	m_Current = 0;
+	m_Current = -1;
 
 	for ( size_t i = 0; i < m_List.size(); i++ )
 	{
@@ -61,4 +64,36 @@ void NCHistory::Put( const unicode_t* str )
 	}
 
 	m_List.insert( m_List.begin(), new_unicode_str( str ) );
+}
+
+size_t NCHistory::Count() const
+{
+	return m_List.size();
+}
+
+const unicode_t* NCHistory::operator[] ( size_t n )
+{
+	return n < m_List.size() ? m_List[n].data() : nullptr;
+}
+
+const unicode_t* NCHistory::Prev()
+{
+	if ( m_Current >= (int) m_List.size()-1 )
+	{
+		m_Current = (int) m_List.size()-1;
+		return m_List[m_Current].data();
+	}
+	return m_List[++m_Current].data();
+}
+
+const unicode_t* NCHistory::Next()
+{
+	if ( m_Current <= 0 )
+	{
+		m_Current = -1;
+		return nullptr;
+	}
+	return ( m_Current == 0 || m_Current > (int) m_List.size() )
+			? nullptr
+			: m_List[--m_Current].data();
 }
