@@ -13,22 +13,22 @@ using namespace wal;
 class NCHistory
 {
 public:
-	NCHistory(): m_List(), m_Current( 0 ) {}
+	NCHistory(): m_List(), m_Current( -1 ) {}
 	~NCHistory() {}
 
 	void Clear();
 	void Put( const unicode_t* str );
 	void DeleteAll( const unicode_t* Str );
 
-	size_t Count() const { return m_List.size(); }
-	const unicode_t* operator[] ( size_t n ) { return n < m_List.size() ? m_List[n].data() : nullptr; }
+	size_t Count() const;
+	const unicode_t* operator[] ( size_t n );
 
-	const unicode_t* Prev() { return ( m_Current >= m_List.size() ) ? nullptr : m_List[m_Current++].data(); }
-	const unicode_t* Next() { return ( m_Current == 0 || m_Current > m_List.size() ) ? nullptr : m_List[--m_Current].data(); }
+	const unicode_t* Prev();
+	const unicode_t* Next();
 
-	void ResetToLast() { m_Current = 0; }
+	void ResetToLast() { m_Current = -1; }
 
 private:
 	std::vector< std::vector<unicode_t> > m_List;
-	size_t m_Current;
+	int m_Current;
 };
