@@ -33,6 +33,7 @@ SOURCES += src/nc.cpp \
     src/ext-app-ux.cpp \
     src/ext-app.cpp \
     src/fileassociations.cpp \
+    src/fileattributes.cpp \
     src/filehighlighting.cpp \
     src/fileopers.cpp \
     src/filesearch.cpp \
@@ -79,11 +80,12 @@ SOURCES += src/nc.cpp \
     src/vfs/vfs-tmp.cpp \
     src/vfs/vfs-uri.cpp \
     src/vfs/vfs.cpp \
-    src/vfspath.cpp \
+    src/vfs/vfspath.cpp \
     src/w32util.cpp \
     src/wcm-config.cpp \
     src/swl/swl_staticlabel.cpp \
-    src/utf8proc/utf8proc.c
+    src/utf8proc/utf8proc.c \
+    src/urlparser/LUrlParser.cpp
 
 HEADERS += \
     src/swl/swl.h \
@@ -164,6 +166,7 @@ INCLUDEPATH += wcm
 INCLUDEPATH += src
 INCLUDEPATH += src/swl
 INCLUDEPATH += src/wal
+INCLUDEPATH += src/vfs
 INCLUDEPATH += src/utf8proc
 INCLUDEPATH += /opt/X11/include
 INCLUDEPATH += /usr/local/include
