@@ -28,7 +28,7 @@ SearchParamDialog::SearchParamDialog( NCDialogParent* parent, const SearchAndRep
 	   iL( 16, 3 ),
 	   textLabel( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &textEdit ),
 	   textEdit( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->m_CaseSensitive )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 
 {
 	if ( params->m_SearchChar )
@@ -113,7 +113,7 @@ SearchFileParamDialog::SearchFileParamDialog( NCDialogParent* parent, SearchAndR
 	   textText( 0, this, utf8_to_unicode( _LT( "&Text:" ) ).data(), &textEdit ),
 	   maskEdit( 0, this, 0, 0, 50 ),
 	   textEdit ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->m_CaseSensitive )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 {
 	if ( params->m_SearchMask.data() ) { maskEdit.SetText( params->m_SearchMask.data(), true ); }
 	if ( params->m_SearchText.data() ) { textEdit.SetText( params->m_SearchText.data(), true ); }
@@ -189,7 +189,7 @@ ReplaceEditParamDialog::ReplaceEditParamDialog( NCDialogParent* parent, SearchAn
 	   toText( 0, this, utf8_to_unicode( _LT( "&Replace with:" ) ).data(), &toEdit ),
 	   fromEdit ( 0, this, 0, 0, 50 ),
 	   toEdit   ( 0, this, 0, 0, 50 ),
-	   caseButton( 0, this, utf8_to_unicode( _LT( "&Case sensitive" ) ).data(), 0, params->m_CaseSensitive )
+	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 {
 	if ( params->m_SearchText.data() ) { fromEdit.SetText( params->m_SearchText.data(), true ); }
 
