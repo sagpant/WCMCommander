@@ -64,17 +64,34 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(BEFORE wal swl vfs utf8proc .)
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 ADD_DEFINITIONS(-DUNIX_CONFIG_DIR_PATH="${CMAKE_INSTALL_PREFIX}/${DATADIR}")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unused-parameter -Wno-unknown-pragmas")
+
+IF(MSVC)
+	INCLUDE_DIRECTORIES(../libssh2)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /EHsc /RTCc /RTC1 /GS /GR /Oy /Qpar /MP /MTd")
+	SET(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:WINDOWS /NODEFAULTLIB:libcmt /ignore:4099")
+	SET(wcm_LIBS
+		${wcm_LIBS}
+		Ws2_32
+		Mpr
+		../../libssh2/static32/libssh2
+		../../libssh2/static32/ssleay32
+		../../libssh2/static32/libeay32
+		../../libssh2/static32/zlib
+	)
+
+ELSE(MSVC)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unused-parameter -Wno-unknown-pragmas")
+ENDIF(MSVC)
 
 # sources
-IF(MINGW)
+IF(MINGW OR MSVC)
 	SET(wcm_PLATFORM_SOURCES
 		ext-app.cpp
 		swl/swl_wincoreMS.cpp
 		w32cons.cpp
 		w32util.cpp
 	)
-ELSE(MINGW)
+ELSE(MINGW OR MSVC)
 	SET(wcm_PLATFORM_SOURCES
 		ext-app-ux.cpp
 		fontdlg.cpp
@@ -83,7 +100,7 @@ ELSE(MINGW)
 		terminal.cpp
 		utf8proc/utf8proc.c
 	)
-ENDIF(MINGW)
+ENDIF(MINGW OR MSVC)
 
 SET(wcm_COMMON_SOURCES
 	nc.cpp
@@ -240,7 +257,35 @@ ADD_EXECUTABLE(wcm ${wcm_COMMON_SOURCES} ${wcm_PLATFORM_SOURCES} ${wcm_HEADERS} 
 TARGET_LINK_LIBRARIES(wcm ${wcm_LIBS})
 
 # install
-INSTALL(TARGETS wcm RUNTIME DESTINATION ${BINDIR})
-INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/applications/wcm.desktop DESTINATION ${DESKTOPDIR})
-INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/pixmaps/wcm.png DESTINATION ${PIXMAPDIR})
-INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/install-files/share/wcm/ DESTINATION ${DATADIR})
+IF(NOT MSVC)
+	INSTALL(TARGETS wcm RUNTIME DESTINATION ${BINDIR})
+	INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/applications/wcm.desktop DESTINATION ${DESKTOPDIR})
+	INSTALL(FILES ${PROJECT_SOURCE_DIR}/install-files/share/pixmaps/wcm.png DESTINATION ${PIXMAPDIR})
+	INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/install-files/share/wcm/ DESTINATION ${DATADIR})
+ENDIF(NOT MSVC)
+
+# groups
+IF(MSVC)
+	SET(wcm_ALL_FILES
+		${wcm_COMMON_SOURCES}
+		${wcm_PLATFORM_SOURCES}
+		${wcm_HEADERS}
+		${wcm_RESOURCES}
+	)
+	MACRO(SETUP_SOURCE_GROUPS SRC_FILES)
+		FOREACH(FILE ${SRC_FILES}) 
+			GET_FILENAME_COMPONENT(PARENT_DIR "${FILE}" PATH)
+			STRING(REGEX REPLACE "(\\./)?(src|include)/?" "" GROUP "${PARENT_DIR}")
+			STRING(REPLACE "/" "\\" GROUP "${GROUP}")
+			IF ("${FILE}" MATCHES ".*\\.cpp")
+				SET(GROUP "Source Files\\${GROUP}")
+			ELSEIF("${FILE}" MATCHES ".*\\.h")
+				SET(GROUP "Header Files\\${GROUP}")
+			ELSEIF("${FILE}" MATCHES ".*\\.rc")
+				SET(GROUP "Windows Resources\\${GROUP}")
+			ENDIF()
+			SOURCE_GROUP("${GROUP}" FILES "${FILE}")
+		ENDFOREACH()
+	ENDMACRO()
+	SETUP_SOURCE_GROUPS("${wcm_ALL_FILES}")
+ENDIF(MSVC)

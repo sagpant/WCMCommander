@@ -35,6 +35,7 @@ src/obj/wcm.res
 *.depend
 *.layout
 
+build/
 Debug/
 Release/
 
