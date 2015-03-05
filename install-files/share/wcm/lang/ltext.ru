@@ -336,11 +336,11 @@ id "Processor"
 txt "Процессор"
 
 #dlg-ctrl-l.cpp:128
-id "Total phisical memory"
+id "Total physical memory"
 txt "Всего физической памяти"
 
 #dlg-ctrl-l.cpp:129
-id "Free phisical memory"
+id "Free physical memory"
 txt "Свободно физической памяти"
 
 #dlg-ctrl-l.cpp:131
