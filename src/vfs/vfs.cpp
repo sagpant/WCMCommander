@@ -2062,12 +2062,12 @@ unicode_t* FSStat::GetPrintableSizeStr( unicode_t buf[64] )
 		str[2] = 0;
 	}
 
-	char dig[64];
-	unsigned_to_char<seek_t>( num, dig );
+	
+	std::string Str = ToString( num );
 
 	unicode_t* us = buf;
 
-	for ( char* s = dig; *s; s++ )
+	for ( const char* s = Str.c_str(); *s; s++ )
 	{
 		*( us++ ) = *s;
 	}

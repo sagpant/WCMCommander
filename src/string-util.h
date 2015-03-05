@@ -178,6 +178,19 @@ inline std::string ToString( int64_t FromInt64 )
 	return LString( buf );
 }
 
+// convert unsigned integer 12345678 to "12 345 678"
+inline std::string ToStringGrouped( uint64_t FromUInt64, const char* GroupSeparator = " " )
+{
+	std::string Result = ToString( FromUInt64 );
+
+	for ( int Pos = static_cast<int>( Result.length() ) - 3; Pos > 0; Pos -= 3 )
+	{
+		Result.insert( Pos, GroupSeparator );
+	}
+
+	return Result;
+}
+
 template <class T> inline  int carray_len( const T* s )
 {
 	for ( int i = 0; ; i++ )  if ( !*( s++ ) ) { return i; }

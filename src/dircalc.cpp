@@ -322,29 +322,6 @@ public:
 	virtual ~DirCalcThreadWin();
 };
 
-static unicode_t* PrintableSizeStr( unicode_t buf[64], int64_t size )
-{
-	seek_t num = size;
-
-	char dig[64];
-	unsigned_to_char<seek_t>( num, dig );
-	int l = strlen( dig );
-
-	unicode_t* us = buf;
-
-	for ( char* s = dig; l > 0; s++, l-- )
-	{
-		if ( ( l % 3 ) == 0 ) { *( us++ ) = ' '; }
-
-		*( us++ ) = *s;
-	}
-
-	*us = 0;
-
-	return buf;
-}
-
-
 static void SetStaticLineInt64( StaticLine& a, int64_t n )
 {
 	a.SetTextUtf8( ToString( n ) );
@@ -379,8 +356,7 @@ void DirCalcThreadWin::RefreshCounters()
 
 	if ( curSumSize != size )
 	{
-		unicode_t buf[64];
-		sumSizeNum.SetText( PrintableSizeStr( buf, size ) );
+		sumSizeNum.SetTextUtf8( ToStringGrouped( size ) );
 		curSumSize = size;
 	}
 
