@@ -10,8 +10,13 @@
 #	define __STDC_FORMAT_MACROS
 #endif
 
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
+#  include <inttypes.h>
+#endif
+
 #include <stdint.h>
 #include <vector>
+#include <cstdarg>
 
 #include "System/Platform.h"
 #include "System/Types.h"
@@ -151,36 +156,45 @@ inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
 
 inline std::string ToString( uint64_t FromUInt64 )
 {
-	char buf[BUFFER];
+	char Buffer[ BUFFER ];
 
 #ifdef OS_WINDOWS
 #	if _MSC_VER >= 1400
-	_ui64toa_s( FromUInt64, buf, BUFFER - 1, 10 );
+	_ui64toa_s( FromUInt64, Buffer, sizeof(Buffer)-1, 10 );
 #	else
-	_ui64toa( FromUInt64, buf, 10 );
+	_ui64toa( FromUInt64, Buffer, 10 );
 #	endif
 #else
-	Lsnprintf( buf, BUFFER - 1, "%" PRIu64, FromUInt64 );
+	Lsnprintf( Buffer, sizeof(Buffer)-1, "%" PRIu64, FromUInt64 );
 #endif
 
-	return LString( buf );
+	return std::string( Buffer );
 }
 
 inline std::string ToString( int64_t FromInt64 )
 {
-	char buf[BUFFER];
+	char Buffer[ BUFFER ];
 
 #ifdef OS_WINDOWS
 #	if _MSC_VER >= 1400
-	_i64toa_s( FromInt64, buf, BUFFER - 1, 10 );
+	_i64toa_s( FromInt64, Buffer, sizeof(Buffer)-1, 10 );
 #	else
-	_i64toa( FromInt64, buf, 10 );
+	_i64toa( FromInt64, Buffer, 10 );
 #	endif
 #else
-	Lsnprintf( buf, BUFFER - 1, "%" PRIi64, FromInt64 );
+	Lsnprintf( Buffer, sizeof(Buffer)-1, "%" PRIi64, FromInt64 );
 #endif
 
-	return LString( buf );
+	return std::string( Buffer );
+}
+
+inline std::string ToString( int FromInt )
+{
+	char Buffer[ BUFFER ];
+
+	Lsnprintf( Buffer, sizeof(Buffer) - 1, "%i", FromInt );
+
+	return std::string( Buffer );
 }
 
 // convert unsigned integer 12345678 to "12 345 678"
