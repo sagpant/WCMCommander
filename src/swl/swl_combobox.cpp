@@ -132,6 +132,13 @@ namespace wal
 		return _edit.GetText();
 	}
 
+	std::string ComboBox::GetTextStr() const
+	{
+		std::vector<unicode_t> V = GetText();
+
+		return unicode_to_utf8_string( V.data() );
+	}
+
 	void ComboBox::SetText( const unicode_t* txt, bool mark )
 	{
 		if ( this->_flags & READONLY )
@@ -141,6 +148,11 @@ namespace wal
 
 		_edit.SetText( txt, mark );
 		MoveCurrent( -1 );
+	}
+
+	void ComboBox::SetText( const std::string& utf8txt, bool mark )
+	{
+		SetText( utf8str_to_unicode( utf8txt ).data(), mark );
 	}
 
 	void ComboBox::InsertText( unicode_t t )

@@ -690,7 +690,9 @@ namespace wal
 		void Append( const char* text, void* data = 0 );
 
 		std::vector<unicode_t> GetText() const;
+		std::string GetTextStr() const;
 		void SetText( const unicode_t* txt, bool mark = false );
+		void SetText( const std::string& utf8txt, bool mark = false );
 		void InsertText( unicode_t t );
 		void InsertText( const unicode_t* txt );
 		int GetCursorPos() { return _edit.GetCursorPos(); }

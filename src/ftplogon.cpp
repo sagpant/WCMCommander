@@ -7,9 +7,10 @@
 #include "ftplogon.h"
 
 #include "ncdialogs.h"
-#include "operthread.h" //для carray_cat
+#include "operthread.h"
 #include "charsetdlg.h"
 #include "ltext.h"
+#include "nceditline.h"
 
 
 class FtpLogonDialog: public NCVertDialog
@@ -24,8 +25,8 @@ public:
 	StaticLine charsetIdText;
 	int charset;
 
-	EditLine serverEdit;
-	EditLine userEdit;
+	NCEditLine serverEdit;
+	NCEditLine userEdit;
 	EditLine passwordEdit;
 	EditLine portEdit;
 	Button charsetButton;
@@ -52,8 +53,8 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	   charsetText( 0, this, utf8_to_unicode( _LT( "&Charset:" ) ).data(), &charsetButton ),
 	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), // placeholder
 	   charset( params.charset ),
-	   serverEdit  ( 0, this, 0, 0, 16 ),
-	   userEdit ( 0, this, 0, 0, 16 ),
+		serverEdit( "ftp-server", 0, this, 0, 16, 7, false, true, false ),
+		userEdit( "ftp-user", 0, this, 0, 16, 7, false, true, false ),
 	   passwordEdit   ( 0, this, 0, 0, 16 ),
 	   portEdit ( 0, this, 0, 0, 16 ),
 	   charsetButton( 0, this, utf8_to_unicode( ">" ).data() , 1000 ),
@@ -215,8 +216,12 @@ bool GetFtpLogon( NCDialogParent* parent, FSFtpParam& params )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params.server  = dlg.serverEdit.GetTextStr();
+		params.server = dlg.serverEdit.GetTextStr();
+		dlg.serverEdit.AddCurrentTextToHistory();
+		
 		params.user = dlg.userEdit.GetTextStr();
+		dlg.userEdit.AddCurrentTextToHistory();
+		
 		params.pass = dlg.passwordEdit.GetTextStr();
 		params.port = atoi( dlg.portEdit.GetTextStr().c_str() );
 		params.anonymous = dlg.anonymousButton.IsSet();

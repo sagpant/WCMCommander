@@ -11,9 +11,10 @@
 #include "sftpdlg.h"
 
 #include "ncdialogs.h"
-#include "operthread.h" //для carray_cat
+#include "operthread.h"
 #include "charsetdlg.h"
 #include "ltext.h"
+#include "nceditline.h"
 
 
 class SftpLogonDialog: public NCVertDialog
@@ -29,8 +30,8 @@ public:
 
 	int charset;
 
-	EditLine serverEdit;
-	EditLine userEdit;
+	NCEditLine serverEdit;
+	NCEditLine userEdit;
 //	EditLine passwordEdit;
 	EditLine portEdit;
 	Button charsetButton;
@@ -48,23 +49,21 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 	   iL( 16, 3 ),
 	   serverText( 0, this, utf8_to_unicode( _LT( "&Server:" ) ).data(), &serverEdit ),
 	   userText( 0, this, utf8_to_unicode( _LT( "&Login:" ) ).data(), &userEdit ),
-//	passwordText(this, utf8_to_unicode("Password:").ptr()),
+
 	   portText( 0, this, utf8_to_unicode( _LT( "&Port:" ) ).data(), &portEdit ),
 	   charsetText( 0, this, utf8_to_unicode( _LT( "&Charset:" ) ).data(), &charsetButton ),
-	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), //чтоб место забить
+	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), //to fill the place
 
 	   charset( params.charset ),
 
-	   serverEdit  ( 0, this, 0, 0, 16 ),
-	   userEdit ( 0, this, 0, 0, 16 ),
-//	passwordEdit   (this, 0, 0, 16),
+		serverEdit( "sftp-server", 0, this, 0, 16, 7, false, true, false ),
+		userEdit( "sftp-user", 0, this, 0, 16, 7, false, true, false ),
 	   portEdit ( 0, this, 0, 0, 7 ),
 
 	   charsetButton( 0, this, utf8_to_unicode( ">" ).data() , 1000 )
 {
 	serverEdit.SetText( utf8str_to_unicode( params.server ).data(), true );
 	userEdit.SetText( utf8str_to_unicode( params.user ).data(), true );
-//	passwordEdit.SetText(params.pass.Data(), true);
 
 	char buf[0x100];
 	Lsnprintf( buf, sizeof( buf ), "%i", params.port );
@@ -90,13 +89,6 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 
 	if ( !focus && !params.user.c_str()[0] ) { userEdit.SetFocus(); focus = true; }
 
-	/*
-	   passwordEdit.SetPasswordMode();
-	   iL.AddWin(&passwordText, 3, 0, 3, 0);  passwordText.Enable(); passwordText.Show();
-	   iL.AddWin(&passwordEdit, 3, 1, 3, 1);  passwordEdit.Enable(); passwordEdit.Show();
-	   if (!focus && !params.pass.Data()[0]) { passwordEdit.SetFocus(); focus = true; }
-	*/
-
 	iL.AddWin( &portText, 4, 0, 4, 0 );
 	portText.Enable();
 	portText.Show();
@@ -120,7 +112,6 @@ SftpLogonDialog::SftpLogonDialog( NCDialogParent* parent, FSSftpParam& params )
 
 	order.append( &serverEdit );
 	order.append( &userEdit );
-//	order.append(&passwordEdit);
 	order.append( &portEdit );
 	order.append( &charsetButton );
 	SetPosition();
@@ -164,11 +155,14 @@ bool GetSftpLogon( NCDialogParent* parent, FSSftpParam& params )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		params.server  = unicode_to_utf8_string( dlg.serverEdit.GetText().data() );
-		params.user =  unicode_to_utf8_string( dlg.userEdit.GetText().data() );
-//		params.pass   =  unicode_to_utf8_string( dlg.passwordEdit.GetText().ptr() );
-		params.port = atoi( unicode_to_utf8( dlg.portEdit.GetText().data() ).data() );
-		params.isSet   = true;
+		params.server = dlg.serverEdit.GetTextStr();
+		dlg.serverEdit.AddCurrentTextToHistory();
+		
+		params.user = dlg.userEdit.GetTextStr();
+		dlg.userEdit.AddCurrentTextToHistory();
+
+		params.port = atoi( dlg.portEdit.GetTextStr().data() );
+		params.isSet = true;
 		params.charset = dlg.charset;
 		return true;
 	}
