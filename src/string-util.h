@@ -6,6 +6,11 @@
 
 #pragma once
 
+#if !defined( __STDC_FORMAT_MACROS )
+#	define __STDC_FORMAT_MACROS
+#endif
+
+#include <stdint.h>
 #include <vector>
 
 #include "System/Platform.h"
@@ -14,7 +19,7 @@
 #include "wal.h"
 #include "wal_sys_api.h"
 
-const int BUFFER = 255;
+const int BUFFER = 65535;
 
 template<class T> inline const T* find_right_char( const T* s, T c )
 {
@@ -189,6 +194,20 @@ inline std::string ToStringGrouped( uint64_t FromUInt64, const char* GroupSepara
 	}
 
 	return Result;
+}
+
+inline std::string GetFormattedString( const char* Pattern, ... )
+{
+	char Buffer[ BUFFER ];
+
+	va_list p;
+	va_start( p, Pattern );
+
+	Lvsnprintf( Buffer, sizeof(Buffer) - 1, Pattern, p );
+
+	va_end( p );
+
+	return std::string( Buffer );
 }
 
 template <class T> inline  int carray_len( const T* s )

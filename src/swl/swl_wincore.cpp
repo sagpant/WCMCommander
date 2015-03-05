@@ -1766,9 +1766,7 @@ namespace wal
 	{
 		if ( _tok != t )
 		{
-			char buf[64];
-			sprintf( buf, "symbol not found '%c'", t );
-			Syntax( buf );
+			Syntax( GetFormattedString( "symbol not found '%c'", t ).c_str() );
 		}
 
 		Next();
@@ -1782,9 +1780,7 @@ namespace wal
 
 		if ( n < mincount )
 		{
-			char buf[64];
-			sprintf( buf, "symbol not found '%c'", t );
-			Syntax( buf );
+			Syntax( GetFormattedString( "symbol not found '%c'", t ).c_str() );
 		}
 	}
 
