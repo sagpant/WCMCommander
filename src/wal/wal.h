@@ -435,9 +435,9 @@ namespace wal
 	/// n is 0...15
 	char GetHexChar( int n );
 	/// convert int to hexadecimal string
-	std::wstring IntToHexStr( int64_t Value, size_t Padding = 0 );
+	std::wstring IntToHexStr( uint64_t Value, size_t Padding = 0 );
 	/// convert hexadecimal string to int
-	int64_t HexStrToInt( const unicode_t* Str );
+	uint64_t HexStrToInt( const unicode_t* Str );
 	/// Unicode normalization
 	std::vector<unicode_t> normalize_unicode_NFC( const unicode_t* str );
 	std::string            normalize_utf8_NFC( const char* str );
