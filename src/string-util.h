@@ -7,7 +7,14 @@
 #pragma once
 
 #include <vector>
+
+#include "System/Platform.h"
+#include "System/Types.h"
+
+#include "wal.h"
 #include "wal_sys_api.h"
+
+const int BUFFER = 255;
 
 template<class T> inline const T* find_right_char( const T* s, T c )
 {
@@ -137,6 +144,39 @@ inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
 	return p;
 }
 
+inline std::string ToString( uint64_t FromUInt64 )
+{
+	char buf[BUFFER];
+
+#ifdef OS_WINDOWS
+#	if _MSC_VER >= 1400
+	_ui64toa_s( FromUInt64, buf, BUFFER - 1, 10 );
+#	else
+	_ui64toa( FromUInt64, buf, 10 );
+#	endif
+#else
+	Lsnprintf( buf, BUFFER - 1, "%" PRIu64, FromUInt64 );
+#endif
+
+	return LString( buf );
+}
+
+inline std::string ToString( int64_t FromInt64 )
+{
+	char buf[BUFFER];
+
+#ifdef OS_WINDOWS
+#	if _MSC_VER >= 1400
+	_i64toa_s( FromInt64, buf, BUFFER - 1, 10 );
+#	else
+	_i64toa( FromInt64, buf, 10 );
+#	endif
+#else
+	Lsnprintf( buf, BUFFER - 1, "%" PRIi64, FromInt64 );
+#endif
+
+	return LString( buf );
+}
 
 template <class T> inline  int carray_len( const T* s )
 {

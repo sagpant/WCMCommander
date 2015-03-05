@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "System/Platform.h"
+
 #define CHECK_RET( cond, ret_val ) if ( !(cond) ) return (ret_val);
 
 #if _MSC_VER >= 1400

@@ -225,7 +225,7 @@ std::string* IniHash::Find( const char* section, const char* var )
 std::string* IniHash::Create( const char* section, const char* var ) { return &( hash[section][var] ); }
 void IniHash::Delete( const char* section, const char* var ) { hash[section].del( var, false ); }
 void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; std::string* p = Create( section, var ); if ( p ) { *p = value; } }
-void IniHash::SetIntValue( const char* section, const char* var, int value ) { char buf[64]; int_to_char<int>( value, buf ); SetStrValue( section, var, buf ); }
+void IniHash::SetIntValue( const char* section, const char* var, int value ) { SetStrValue( section, var, ToString(value).c_str() ); }
 void IniHash::SetBoolValue( const char* section, const char* var, bool value ) { SetIntValue( section, var, value ? 1 : 0 ); }
 const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { std::string* p =  Find( section, var ); return ( p && p->data() ) ? p->data() : def; }
 int IniHash::GetIntValue( const char* section, const char* var, int def ) { std::string* p =  Find( section, var ); return ( p && p->data() ) ? atoi( p->data() ) : def; }

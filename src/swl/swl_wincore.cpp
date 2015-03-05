@@ -2,12 +2,12 @@
    Copyright (c) by Valery Goryachev (Wal)
 */
 
+#include <string>
+#include <unordered_map>
 
+#include "string-util.h"
 #include "swl.h"
 #include "swl_wincore_internal.h"
-#include <string>
-
-#include <unordered_map>
 
 namespace wal
 {
@@ -1997,9 +1997,7 @@ begin:
 		{
 			if ( !( flags & INT ) ) { return ""; }
 
-			char buf[64];
-			int_to_char<int64_t>( i, buf );
-			s = std::string(buf);
+			s = ToString(i);
 			flags |= STR;
 		}
 

@@ -322,64 +322,6 @@ public:
 	virtual ~DirCalcThreadWin();
 };
 
-/*
-static unicode_t* PrintableSizeStr(unicode_t buf[64], int64_t size)
-{
-   unicode_t str[10];
-   str[0] = 0;
-
-   seek_t num = size;
-
-   if (num >= seek_t(10l)*1024*1024*1024)
-   {
-      num /= seek_t(1024l)*1024*1024;
-      str[0] =' ';
-      str[1] ='G';
-      str[2] ='b';
-      str[3] =0;
-   } else
-   if (num >= 10l*1024*1024)
-   {
-      num /= 1024*1024;
-      str[0] =' ';
-      str[1] ='M';
-      str[2] ='b';
-      str[3] = 0;
-   } else
-   if (num >= 1024*1024)
-   {
-      num /= 1024;
-      str[0] =' ';
-      str[1] ='K';
-      str[2] ='b';
-      str[3] = 0;
-   } else {
-      str[0] =' ';
-      str[1] ='B';
-      str[2] ='y';
-      str[3] ='t';
-      str[4] ='e';
-      str[5] ='s';
-      str[6] = 0;
-
-   }
-
-   char dig[64];
-   unsigned_to_char<seek_t>(num, dig);
-
-   unicode_t *us = buf;
-   for (char *s = dig; *s; s++)
-      *(us++) = *s;
-
-   for (unicode_t *t = str; *t; t++)
-      *(us++) = *t;
-
-   *us = 0;
-
-   return buf;
-}
-*/
-
 static unicode_t* PrintableSizeStr( unicode_t buf[64], int64_t size )
 {
 	seek_t num = size;
@@ -405,18 +347,7 @@ static unicode_t* PrintableSizeStr( unicode_t buf[64], int64_t size )
 
 static void SetStaticLineInt64( StaticLine& a, int64_t n )
 {
-	char buf[64];
-	int_to_char<int64_t>( n, buf );
-	unicode_t ubuf[64];
-
-	for ( int i = 0; i < 64; i++ )
-	{
-		ubuf[i] = buf[i];
-
-		if ( !buf[i] ) { break; }
-	}
-
-	a.SetText( ubuf );
+	a.SetTextUtf8( ToString( n ) );
 }
 
 void DirCalcThreadWin::RefreshCounters()

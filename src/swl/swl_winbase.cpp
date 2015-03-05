@@ -231,6 +231,11 @@ namespace wal
 		}
 	}
 
+	void StaticLine::SetTextUtf8( const std::string& txt )
+	{
+		this->SetText( wal::utf8str_to_unicode(txt).data() );
+	}
+
 	void StaticLine::SetText( const unicode_t* txt )
 	{
 		text = wal::new_unicode_str(txt);

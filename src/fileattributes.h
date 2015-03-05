@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "types.h"
+#include "System/Types.h"
 
 class NCDialogParent;
 class PanelWin;
