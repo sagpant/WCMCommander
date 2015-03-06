@@ -247,21 +247,21 @@ public:
 
 		SetRule( Rule ? *Rule : GetDefaultColors() );
 
-		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
+		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0, 0, 2 );
 
-		m_Layout.AddWinAndEnable( &m_HasMaskButton, 1, 0 );
-		m_Layout.AddWinAndEnable( &m_MaskEdit, 2, 0 );
+		m_Layout.AddWinAndEnable( &m_HasMaskButton, 1, 0, 1, 2 );
+		m_Layout.AddWinAndEnable( &m_MaskEdit, 2, 0, 2, 2 );
 
-		m_Layout.AddWinAndEnable( &m_DescriptionText, 3, 0 );
-		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 4, 0 );
+		m_Layout.AddWinAndEnable( &m_DescriptionText, 3, 0, 2, 2 );
+		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 4, 0, 4, 2 );
 
-		m_Layout.AddWinAndEnable( &m_SizeMinText, 5, 0 );
-		m_Layout.AddWinAndEnable( &m_SizeMinEdit, 6, 0 );
+		m_Layout.AddWinAndEnable( &m_SizeMinText, 5, 0, 5, 0 );
+		m_Layout.AddWinAndEnable( &m_SizeMinEdit, 6, 0, 6, 0 );
 
-		m_Layout.AddWinAndEnable( &m_SizeMaxText, 7, 0 );
-		m_Layout.AddWinAndEnable( &m_SizeMaxEdit, 8, 0 );
+		m_Layout.AddWinAndEnable( &m_SizeMaxText, 5, 1, 5, 1 );
+		m_Layout.AddWinAndEnable( &m_SizeMaxEdit, 6, 1, 6, 1 );
 
-		m_Layout.AddWinAndEnable( &m_ColorText, 10, 0 );
+		m_Layout.AddWinAndEnable( &m_ColorText, 7, 0, 10, 2, Layout::CENTER | Layout::CENTER );
 		// normal
 		m_Layout.AddWinAndEnable( &m_ColorNormalFGText, 12, 0 );
 		m_ColorNormalFGEdit.SetReplaceMode( true );
