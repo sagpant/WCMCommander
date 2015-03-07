@@ -13,6 +13,10 @@ using namespace wal;
 
 typedef std::vector<std::vector<unicode_t>> HistCollect;
 
+void LoadFieldsHistory();
+
+void SaveFieldsHistory();
+
 HistCollect* GetFieldHistCollect( const char* fieldName );
 
 void AddFieldTextToHistory( const char* fieldName, const unicode_t* txt );

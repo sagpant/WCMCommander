@@ -5,12 +5,25 @@
  */
 
 #include "nchistory.h"
+#include "wcm-config.h"
 
 
 #define MAX_FIELD_HISTORY_COUNT	50
 
+static const char fieldHistSection[] = "FieldsHistory";
+
 static cstrhash<HistCollect> g_fieldHistHash;
 
+
+void LoadFieldsHistory()
+{
+	
+}
+
+void SaveFieldsHistory()
+{
+	
+}
 
 inline bool HistoryCanSave()
 {
