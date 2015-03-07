@@ -8,7 +8,15 @@
 
 #include <wal.h>
 
+
 using namespace wal;
+
+typedef std::vector<std::vector<unicode_t>> HistCollect;
+
+HistCollect* GetFieldHistCollect( const char* fieldName );
+
+void AddFieldTextToHistory( const char* fieldName, const unicode_t* txt );
+
 
 class NCHistory
 {
@@ -29,6 +37,6 @@ public:
 	void ResetToLast() { m_Current = -1; }
 
 private:
-	std::vector< std::vector<unicode_t> > m_List;
+	HistCollect m_List;
 	int m_Current;
 };

@@ -6,6 +6,73 @@
 
 #include "nchistory.h"
 
+
+#define MAX_FIELD_HISTORY_COUNT	50
+
+static cstrhash<HistCollect> g_fieldHistHash;
+
+
+inline bool HistoryCanSave()
+{
+	//return wcmConfig.systemSaveHistory;
+	return true;
+}
+
+HistCollect* GetFieldHistCollect( const char* fieldName )
+{
+	if ( !fieldName || !fieldName[0] )
+	{
+		return nullptr;
+	}
+	
+	HistCollect* pList = g_fieldHistHash.exist( fieldName );
+	return pList ? pList : nullptr;
+}
+
+// Returns index of element with the specified text, or -1 if no such found
+int FindHistElement( HistCollect* pList, const unicode_t* text )
+{
+	for (int i = 0, count = pList->size(); i < count; i++)
+	{
+		if (unicode_is_equal( text, pList->at(i).data() ))
+		{
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+void AddFieldTextToHistory( const char* fieldName, const unicode_t* txt )
+{
+	if ( !HistoryCanSave() || !fieldName || !fieldName[0] || !txt || !txt[0] )
+	{
+		return;
+	}
+	
+	std::vector<unicode_t> str = new_unicode_str( txt );
+	
+	HistCollect& list = g_fieldHistHash.get( fieldName );
+	
+	// check if item already exists in the list
+	const int index = FindHistElement( &list, str.data() );
+	if ( index != -1 )
+	{
+		// remove existing item
+		list.erase( list.begin() + index );
+	}
+	
+	// add item to the begining of the list
+	list.insert( list.begin(), str );
+	
+	// limit number of elements in the list
+	while ( list.size() > MAX_FIELD_HISTORY_COUNT )
+	{
+		list.erase( list.end() );
+	}
+}
+
+
 void NCHistory::Clear()
 {
 	m_List.clear();
@@ -83,6 +150,7 @@ const unicode_t* NCHistory::Prev()
 		m_Current = (int) m_List.size()-1;
 		return m_List[m_Current].data();
 	}
+	
 	return m_List[++m_Current].data();
 }
 
@@ -93,6 +161,7 @@ const unicode_t* NCHistory::Next()
 		m_Current = -1;
 		return nullptr;
 	}
+	
 	return ( m_Current == 0 || m_Current > (int) m_List.size() )
 			? nullptr
 			: m_List[--m_Current].data();
