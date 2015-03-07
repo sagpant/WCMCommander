@@ -282,9 +282,15 @@ namespace wal
 				}
 
 				break;
+					
+			default:
+				if ( IsBoxOpened() && _box->EventKey( pEvent ) )
+				{
+					return true;
+				}
+				
+				return _edit.EventKey( pEvent );
 			}
-
-			return _edit.EventKey( pEvent );
 		}
 
 		return Win::EventKey( pEvent );
