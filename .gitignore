@@ -35,6 +35,10 @@ src/obj/wcm.res
 *.depend
 *.layout
 
+#Generated Xcode project files, using command:
+#  cmake -G Xcode ..
+xcode.generated/
+
 build/
 Debug/
 Release/

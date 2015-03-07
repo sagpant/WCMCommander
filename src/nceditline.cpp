@@ -10,9 +10,11 @@
 #include "unicode_lc.h"
 
 
+#define MAX_FIELD_HISTORY_COUNT	50
+
 typedef ccollect<std::vector<unicode_t>> HistCollect;
 
-static cstrhash<clPtr<HistCollect>> histHash;
+static cstrhash<clPtr<HistCollect>> g_histHash;
 
 
 inline bool HistoryCanSave()
@@ -27,120 +29,69 @@ inline bool AcEnabled()
 	return true;
 }
 
-std::vector<char> HistSectionName( const char* fieldName )
-{
-	return carray_cat<char>( "history-field-", fieldName );
-}
-
 HistCollect* HistGetList( const char* fieldName )
 {
-	HistCollect* list = new HistCollect;
-	list->append( utf8_to_unicode( "test" ) );
-	list->append( utf8_to_unicode( "test 2" ) );
-	list->append( utf8_to_unicode( "test 3" ) );
-	return list;
-
 	if ( !fieldName || !fieldName[0] )
 	{
-		return 0;
+		return nullptr;
 	}
-
-	if ( HistoryCanSave() )
-	{
-		std::vector<std::string> list;
-		clPtr<HistCollect> pUList = new HistCollect;
-		LoadStringList( HistSectionName( fieldName ).data(), list );
-
-		const int n = list.size();
-		for ( int i = 0; i < n; i++ )
-		{
-			if ( list[i].data() && list[i][0] )
-			{
-				pUList->append( utf8_to_unicode( list[i].data() ) );
-			}
-		}
-
-		histHash[fieldName] = pUList;
-	}
-
-	clPtr<HistCollect>* pp = histHash.exist( fieldName );
+	
+	clPtr<HistCollect>* pp = g_histHash.exist( fieldName );
 	if ( pp && pp->ptr() )
 	{
 		return pp->ptr();
 	}
-
-	clPtr<HistCollect> pUList = new HistCollect;
-	HistCollect *pList = pUList.ptr();
-	histHash[fieldName] = pUList;
-
-	return pList;
+	
+	return nullptr;
 }
 
-bool HistStrcmp( const unicode_t* a, const unicode_t* b )
+// Returns index of element with the specified name, or -1 if no such found
+int FindByName( HistCollect* pList, const unicode_t* name )
 {
-	while ( *a && *b && *a == *b )
+	for (int i = 0, count = pList->count(); i < count; i++)
 	{
-		a++;
-		b++;
+		if (unicode_is_equal( name, pList->get(i).data() ))
+		{
+			return i;
+		}
 	}
-
-	while ( *a && (*a == ' ' || *a == '\t') )
-	{
-		a++;
-	}
-
-	while ( *b && (*b == ' ' || *b == '\t') )
-	{
-		b++;
-	}
-
-	return (!*a && !*b);
+	
+	return -1;
 }
 
-void HistCommit( const char* fieldName, const unicode_t* txt )
+void AddFieldTextToHistory( const char* fieldName, const unicode_t* txt )
 {
-	if ( !fieldName || !fieldName[0] )
+	if ( !HistoryCanSave() || !fieldName || !fieldName[0] || !txt || !txt[0] )
 	{
 		return;
 	}
 
-	if ( !txt || !txt[0] )
+	std::vector<unicode_t> str = new_unicode_str( txt );
+
+	// get history collection for field
+	HistCollect* pList = HistGetList( fieldName );
+	if ( !pList)
 	{
-		return;
+		clPtr<HistCollect> pUList = new HistCollect;
+		pList = pUList.ptr();
+		g_histHash[fieldName] = pUList;
 	}
-
-	HistCollect *pList = HistGetList( fieldName );
-	clPtr<HistCollect> pUList = new HistCollect;
-	pUList->append( new_unicode_str( txt ) );
-
-	int n = pList->count();
-	for ( int i = 0; i < n; i++ )
+	
+	// check if item already exists in the list
+	const int index = FindByName( pList, str.data() );
+	if ( index != -1 )
 	{
-		if ( !HistStrcmp( txt, pList->get( i ).data() ) )
-		{
-			pUList->append( pList->get( i ) );
-		}
+		// remove existing item
+		pList->del( index );
 	}
-
-	pList = pUList.ptr();
-	histHash[fieldName] = pUList;
-
-	if ( HistoryCanSave() )
+	
+	// add item to the and of the list
+	pList->insert( 0, str );
+	
+	// limit number of elements in the list
+	while ( pList->count() > MAX_FIELD_HISTORY_COUNT )
 	{
-		std::vector<std::string> list;
-		int n = pList->count();
-
-		if ( n > 50 )
-		{
-			n = 50; // limit amount of saved data
-		}
-
-		for ( int i = 0; i < n; i++ )
-		{
-			list.push_back( unicode_to_utf8_string( pList->get( i ).data() ) );
-		}
-
-		SaveStringList( HistSectionName( fieldName ).data(), list );
+		pList->del( pList->count() - 1 );
 	}
 }
 
@@ -153,22 +104,17 @@ int NCEditLine::UiGetClassId()
 
 NCEditLine::NCEditLine( const char* fieldName, int nId, Win* parent, const unicode_t* txt,
 	int cols, int rows, bool up, bool frame3d, bool nofocusframe, crect* rect )
-	: ComboBox( nId, parent, cols, rows, (up ? ComboBox::MODE_UP : 0) | (frame3d ? ComboBox::FRAME3D : 0) | (nofocusframe ? ComboBox::NOFOCUSFRAME : 0), rect )
+	: ComboBox( nId, parent, cols, rows,
+				  (up ? ComboBox::MODE_UP : 0) | (frame3d ? ComboBox::FRAME3D : 0) | (nofocusframe ? ComboBox::NOFOCUSFRAME : 0),
+				  rect )
 	, m_fieldName( fieldName )
 {
-	clPtr<ccollect<std::vector<unicode_t>>> histList = 0;
-
-	if ( m_fieldName && m_fieldName[0] )
+	HistCollect* pList = HistGetList( m_fieldName );
+	if ( pList )
 	{
-		histList = HistGetList( m_fieldName );
-	}
-
-	if ( histList.ptr() )
-	{
-		const int n = histList->count();
-		for ( int i = 0; i < n; i++ )
+		for ( int i = 0, count = pList->count(); i < count; i++ )
 		{
-			const unicode_t *u = histList->get( i ).data();
+			const unicode_t* u = pList->get( i ).data();
 			if ( u )
 			{
 				Append( u );
@@ -211,7 +157,7 @@ bool NCEditLine::Command( int id, int subId, Win* win, void* d )
 		const int cursorPos = GetCursorPos();
 		
 		// try to autocomplete when cursor is at the end of unmarked text
-		if ( (text.size() - 1) == cursorPos )
+		if ( ((int)text.size() - 1) == cursorPos )
 		{
 			const int count = Count();
 			for ( int i = 0; i < count; i++ )
@@ -247,5 +193,5 @@ bool NCEditLine::OnOpenBox()
 
 void NCEditLine::AddCurrentTextToHistory()
 {
-	HistCommit( m_fieldName, GetText().data() );
+	AddFieldTextToHistory( m_fieldName, GetText().data() );
 }
