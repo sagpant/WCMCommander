@@ -40,7 +40,7 @@ txt "Неиндексируемый"
 
 #fileattributes.cpp:70
 id "Sparse"
-txt "Разряженный"
+txt "Разреженный"
 
 #fileattributes.cpp:71
 id "Temporary"
@@ -140,7 +140,7 @@ txt "Обратить выделение"
 
 #ncwin.cpp:614
 id "F&olders history"
-txt "Исторя папок"
+txt "История папок"
 
 #ncwin.cpp:1548
 id "Name"
@@ -261,7 +261,7 @@ txt "Размер <= (байт)"
 
 #filehighlighting.cpp:211
 id "Colors (hexadecimal BGR)"
-txt "Цвета (шестнадцатиричные BGR)"
+txt "Цвета (шестнадцатеричные BGR)"
 
 #filehighlighting.cpp:213
 id "Normal foreground"
