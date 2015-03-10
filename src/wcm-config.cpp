@@ -1326,7 +1326,16 @@ void LoadViewerPositions()
 	}
 }
 
-void clWcmConfig::Load( NCWin* nc )
+bool FileExists( const char* name )
+{
+	struct stat sb;
+
+	if ( stat( name, &sb ) ) { return false; }
+
+	return true;
+}
+
+void clWcmConfig::Load( NCWin* nc, const std::string& StartupDir )
 {
 #ifdef _WIN32
 

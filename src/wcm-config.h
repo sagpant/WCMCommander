@@ -167,7 +167,7 @@ public:
 	#pragma endregion
 
 	clWcmConfig();
-	void Load( NCWin* nc );
+	void Load( NCWin* nc, const std::string& StartupDir );
 	void Save( NCWin* nc );
 
 private:
