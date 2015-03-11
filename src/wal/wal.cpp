@@ -419,7 +419,7 @@ namespace wal
 		return g_HexChars[ n & 0xF ];
 	}
 
-	std::wstring IntToHexStr( int64_t Value, size_t Padding )
+	std::wstring IntToHexStr( uint64_t Value, size_t Padding )
 	{
 		const int BUFFER = 1024;
 
@@ -432,7 +432,7 @@ namespace wal
 		_ui64toa( Value, buf, 16 );
 #  endif
 #else
-		Lsnprintf( buf, BUFFER - 1, "%" PRIu64 "x", Value );
+		Lsnprintf( buf, BUFFER - 1, "%" PRIx64, Value );
 #endif
 
 		std::vector<unicode_t> Str = utf8_to_unicode( buf );
@@ -447,13 +447,13 @@ namespace wal
 		return Result;
 	}
 
-	int64_t HexStrToInt( const unicode_t* Str )
+	uint64_t HexStrToInt( const unicode_t* Str )
 	{
 		if ( !Str ) return 0;
 
 		std::string utf8 = unicode_to_utf8( Str );
 
-		int64_t i = 0x0;
+		uint64_t i = 0x0;
 
 		std::stringstream Convert( utf8 );
 

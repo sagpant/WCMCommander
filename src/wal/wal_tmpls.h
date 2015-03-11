@@ -825,15 +825,4 @@ template <class T>  char* unsigned_to_char( T n, char* s, char terminator = 0 )
 	return s;
 }
 
-template <class T> char* int_to_char( T n, char* s )
-{
-	if ( n < 0 )
-	{
-		*( s++ ) = '-';
-		n = -n;
-	}
-
-	return unsigned_to_char<T>( n, s );
-}
-
 #endif

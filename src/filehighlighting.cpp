@@ -247,21 +247,28 @@ public:
 
 		SetRule( Rule ? *Rule : GetDefaultColors() );
 
-		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0 );
+		m_Layout.AddWinAndEnable( &m_MaskText, 0, 0, 0, 2 );
 
-		m_Layout.AddWinAndEnable( &m_HasMaskButton, 1, 0 );
-		m_Layout.AddWinAndEnable( &m_MaskEdit, 2, 0 );
+		m_Layout.LineSet( 0, 10 );	
 
-		m_Layout.AddWinAndEnable( &m_DescriptionText, 3, 0 );
-		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 4, 0 );
+		m_Layout.AddWinAndEnable( &m_HasMaskButton, 1, 0, 1, 2 );
+		m_Layout.AddWinAndEnable( &m_MaskEdit, 2, 0, 2, 2 );
 
-		m_Layout.AddWinAndEnable( &m_SizeMinText, 5, 0 );
-		m_Layout.AddWinAndEnable( &m_SizeMinEdit, 6, 0 );
+		m_Layout.AddWinAndEnable( &m_DescriptionText, 3, 0, 3, 2 );
+		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 4, 0, 4, 2 );
 
-		m_Layout.AddWinAndEnable( &m_SizeMaxText, 7, 0 );
-		m_Layout.AddWinAndEnable( &m_SizeMaxEdit, 8, 0 );
+		m_Layout.AddWinAndEnable( &m_SizeMinText, 5, 0, 5, 0 );
+		m_Layout.AddWinAndEnable( &m_SizeMinEdit, 6, 0, 6, 0 );
 
-		m_Layout.AddWinAndEnable( &m_ColorText, 10, 0 );
+		m_Layout.AddWinAndEnable( &m_SizeMaxText, 5, 1, 5, 1 );
+		m_Layout.AddWinAndEnable( &m_SizeMaxEdit, 6, 1, 6, 1 );
+
+		m_Layout.LineSet( 7, 10 );	
+
+		m_Layout.AddWinAndEnable( &m_ColorText, 8, 0, 9, 2, Layout::CENTER | Layout::CENTER );
+
+		m_Layout.LineSet( 9, 10 );	
+
 		// normal
 		m_Layout.AddWinAndEnable( &m_ColorNormalFGText, 12, 0 );
 		m_ColorNormalFGEdit.SetReplaceMode( true );
@@ -749,6 +756,9 @@ clFileHighlightingWin::~clFileHighlightingWin()
 
 bool clNCFileHighlightingRule::IsRulePassed( const unicode_t* FileName, uint64_t FileSize, uint64_t Attributes ) const
 {
+	if ( m_SizeMin && FileSize < m_SizeMin ) return false;
+	if ( m_SizeMax && FileSize > m_SizeMax ) return false;
+
 	clMultimaskSplitter Splitter( m_Mask );
 
 	if ( Splitter.CheckAndFetchAllMasks( FileName ) ) { return true; }

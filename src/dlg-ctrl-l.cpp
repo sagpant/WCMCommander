@@ -6,31 +6,7 @@
 
 #include "dlg-ctrl-l.h"
 #include "ltext.h"
-
-#define VALUE_WIDTH 12
-
-static unicode_t* PrintableSizeStr( unicode_t buf[64], int64_t size )
-{
-	seek_t num = size;
-
-	char dig[64];
-	( void )unsigned_to_char<seek_t>( num, dig );
-	int l = strlen( dig );
-
-	unicode_t* us = buf;
-
-	for ( char* s = dig; l > 0; s++, l-- )
-	{
-		if ( ( l % 3 ) == 0 ) { *( us++ ) = ' '; }
-
-		*( us++ ) = *s;
-	}
-
-	*us = 0;
-
-	return buf;
-}
-
+#include "string-util.h"
 
 class DirCtrlL: public NCDialog
 {
@@ -84,12 +60,8 @@ public:
 #endif
 		PutSpace( 10 );
 		PutLabel( _LT( "Disk" ) );
-		{
-			unicode_t buf[64];
-			PutValue( _LT( "Total bytes" ), PrintableSizeStr( buf, statVfs.size ) );
-			PutValue( _LT( "Free bytes" ), PrintableSizeStr( buf, statVfs.avail ) );
-		}
-
+		PutValue( _LT( "Total bytes" ), ToStringGrouped( statVfs.size ).c_str() );
+		PutValue( _LT( "Free bytes" ), ToStringGrouped(statVfs.avail ).c_str() );
 		PutSpace( 10 );
 
 #ifdef _WIN32
@@ -125,12 +97,11 @@ public:
 		if ( GlobalMemoryStatusEx( &ms ) )
 		{
 			PutSpace( 5 );
-			unicode_t buf[64];
-			PutValue( _LT( "Total phisical memory" ), PrintableSizeStr( buf, ms.ullTotalPhys ) );
-			PutValue( _LT( "Free phisical memory" ), PrintableSizeStr( buf, ms.ullAvailPhys ) );
+			PutValue( _LT( "Total physical memory" ), ToStringGrouped( ms.ullTotalPhys ).c_str() );
+			PutValue( _LT( "Free physical memory" ), ToStringGrouped( ms.ullAvailPhys ).c_str() );
 			PutSpace( 5 );
-			PutValue( _LT( "Total paging file" ), PrintableSizeStr( buf, ms.ullTotalPageFile ) );
-			PutValue( _LT( "Free paging file" ), PrintableSizeStr( buf, ms.ullAvailPageFile ) );
+			PutValue( _LT( "Total paging file" ), ToStringGrouped( ms.ullTotalPageFile ).c_str() );
+			PutValue( _LT( "Free paging file" ), ToStringGrouped( ms.ullAvailPageFile ).c_str() );
 		}
 
 #else

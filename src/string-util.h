@@ -6,8 +6,25 @@
 
 #pragma once
 
+#if !defined( __STDC_FORMAT_MACROS )
+#	define __STDC_FORMAT_MACROS
+#endif
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
+#  include <inttypes.h>
+#endif
+
+#include <stdint.h>
 #include <vector>
+#include <cstdarg>
+
+#include "System/Platform.h"
+#include "System/Types.h"
+
+#include "wal.h"
 #include "wal_sys_api.h"
+
+const int BUFFER = 65535;
 
 template<class T> inline const T* find_right_char( const T* s, T c )
 {
@@ -137,6 +154,75 @@ inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
 	return p;
 }
 
+inline std::string ToString( uint64_t FromUInt64 )
+{
+	char Buffer[ BUFFER ];
+
+#ifdef OS_WINDOWS
+#	if _MSC_VER >= 1400
+	_ui64toa_s( FromUInt64, Buffer, sizeof(Buffer)-1, 10 );
+#	else
+	_ui64toa( FromUInt64, Buffer, 10 );
+#	endif
+#else
+	Lsnprintf( Buffer, sizeof(Buffer)-1, "%" PRIu64, FromUInt64 );
+#endif
+
+	return std::string( Buffer );
+}
+
+inline std::string ToString( int64_t FromInt64 )
+{
+	char Buffer[ BUFFER ];
+
+#ifdef OS_WINDOWS
+#	if _MSC_VER >= 1400
+	_i64toa_s( FromInt64, Buffer, sizeof(Buffer)-1, 10 );
+#	else
+	_i64toa( FromInt64, Buffer, 10 );
+#	endif
+#else
+	Lsnprintf( Buffer, sizeof(Buffer)-1, "%" PRIi64, FromInt64 );
+#endif
+
+	return std::string( Buffer );
+}
+
+inline std::string ToString( int FromInt )
+{
+	char Buffer[ BUFFER ];
+
+	Lsnprintf( Buffer, sizeof(Buffer) - 1, "%i", FromInt );
+
+	return std::string( Buffer );
+}
+
+// convert unsigned integer 12345678 to "12 345 678"
+inline std::string ToStringGrouped( uint64_t FromUInt64, const char* GroupSeparator = " " )
+{
+	std::string Result = ToString( FromUInt64 );
+
+	for ( int Pos = static_cast<int>( Result.length() ) - 3; Pos > 0; Pos -= 3 )
+	{
+		Result.insert( Pos, GroupSeparator );
+	}
+
+	return Result;
+}
+
+inline std::string GetFormattedString( const char* Pattern, ... )
+{
+	char Buffer[ BUFFER ];
+
+	va_list p;
+	va_start( p, Pattern );
+
+	Lvsnprintf( Buffer, sizeof(Buffer) - 1, Pattern, p );
+
+	va_end( p );
+
+	return std::string( Buffer );
+}
 
 template <class T> inline  int carray_len( const T* s )
 {

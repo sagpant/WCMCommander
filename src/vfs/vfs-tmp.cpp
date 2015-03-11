@@ -184,8 +184,20 @@ int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 	return 0;
 }
 
+int FSTmp::StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info )
+{
+	FSTmpNode* n = rootDir.findByFsPath(&path);
+	if (!n)
+	{
+		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
+	}
+	return FS::SetError(err, 0);
+}
+
 int FSTmp::Stat(FSPath& path, FSStat* st, int* err, FSCInfo* info)
 {
+	//return baseFS ? baseFS->Stat( path, st, err, info ) : FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
+
 	//path.dbg_printf("FSTmp::Stat ");
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (!n)

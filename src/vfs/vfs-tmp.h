@@ -49,45 +49,67 @@ class FSTmp : public FS
 	FSTmpNode rootDir;
 
 public:
+	explicit FSTmp(clPtr<FS> _baseFS);
+	virtual ~FSTmp(){}
+
 	static FSPath rootPathName;
-	virtual unsigned Flags() { return baseFS->Flags(); };
-	virtual bool IsEEXIST(int err){ return err == FSTMP_ERROR_FILE_EXISTS || baseFS->IsEEXIST(err); };
-	virtual bool IsENOENT(int err){ return err == FSTMP_ERROR_FILE_NOT_FOUND || baseFS->IsENOENT(err); };
-	virtual bool IsEXDEV(int err) { return baseFS->IsEXDEV(err); };
-	virtual FSString StrError(int err) { return baseFS->StrError(err); }
-	virtual bool Equal(FS* fs){ return fs && fs->Type() == Type(); }
-	bool BaseIsEqual(FS* fs) { return fs && baseFS->Equal( fs->Type() == TMP ? ((FSTmp*)fs)->baseFS.Ptr() : fs ); }
-	virtual int OpenRead(FSPath& path, int flags, int* err, FSCInfo* info);
-	virtual int OpenCreate(FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info);
-	virtual int Rename(FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info);
-	virtual int Close(int fd, int* err, FSCInfo* info)
+
+	//
+	// FS interface
+	//
+
+	virtual unsigned Flags() override
+		{ return baseFS->Flags(); }
+	virtual bool IsEEXIST(int err) override
+		{ return err == FSTMP_ERROR_FILE_EXISTS || baseFS->IsEEXIST(err); }
+	virtual bool IsENOENT(int err) override
+		{ return err == FSTMP_ERROR_FILE_NOT_FOUND || baseFS->IsENOENT(err); }
+	virtual bool IsEXDEV(int err) override
+		{ return baseFS->IsEXDEV(err); }
+	virtual FSString StrError(int err) override
+		{ return baseFS->StrError(err); }
+	virtual bool Equal(FS* fs) override
+		{ return fs && fs->Type() == Type(); }
+	virtual int OpenRead(FSPath& path, int flags, int* err, FSCInfo* info) override;
+	virtual int OpenCreate(FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info) override;
+	virtual int Rename(FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info) override;
+	virtual int Close(int fd, int* err, FSCInfo* info) override
 		{	return baseFS->Close(fd, err, info); }
-	virtual int Read(int fd, void* buf, int size, int* err, FSCInfo* info)
+	virtual int Read(int fd, void* buf, int size, int* err, FSCInfo* info) override
 		{	return baseFS->Read(fd, buf, size, err, info); }
-	virtual int Write(int fd, void* buf, int size, int* err, FSCInfo* info)
+	virtual int Write(int fd, void* buf, int size, int* err, FSCInfo* info) override
 		{	return baseFS->Write(fd, buf, size, err, info);	}
-	virtual int Seek(int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet, int* err, FSCInfo* info)
+	virtual int Seek(int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet, int* err, FSCInfo* info) override
 		{	return baseFS->Seek( fd, mode, pos, pRet, err, info);	}
-	virtual int MkDir(FSPath& path, int mode, int* err, FSCInfo* info);
-	virtual int Delete(FSPath& path, int* err, FSCInfo* info);
-	virtual int RmDir(FSPath& path, int* err, FSCInfo* info);
+	virtual int MkDir(FSPath& path, int mode, int* err, FSCInfo* info) override;
+	virtual int Delete(FSPath& path, int* err, FSCInfo* info) override;
+	virtual int RmDir(FSPath& path, int* err, FSCInfo* info) override;
 
 	virtual int SetFileTime(FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info) override;
-	virtual int ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info);
-	virtual int Stat(FSPath& path, FSStat* st, int* err, FSCInfo* info);
-	virtual int FStat(int fd, FSStat* st, int* err, FSCInfo* info)
+	virtual int ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info) override;
+	virtual int Stat(FSPath& path, FSStat* st, int* err, FSCInfo* info) override;
+	virtual int StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info ) override;
+	virtual int FStat(int fd, FSStat* st, int* err, FSCInfo* info) override
 		{	return baseFS->FStat(fd, st, err, info);	}
-	virtual int Symlink(FSPath& path, FSString& str, int* err, FSCInfo* info)
+	virtual int Symlink(FSPath& path, FSString& str, int* err, FSCInfo* info) override
 		{	return -1;	}
-	virtual int StatVfs(FSPath& path, FSStatVfs* st, int* err, FSCInfo* info);
+	virtual int StatVfs(FSPath& path, FSStatVfs* st, int* err, FSCInfo* info) override;
 
-	virtual int64_t GetFileSystemFreeSpace(FSPath& path, int* err) { return baseFS->GetFileSystemFreeSpace(path, err); }
+	virtual int64_t GetFileSystemFreeSpace(FSPath& path, int* err) override
+		{ return baseFS->GetFileSystemFreeSpace(path, err); }
 
-	virtual FSString Uri(FSPath& path);
+	virtual FSString Uri(FSPath& path) override;
+
+	//
+	// FSTmp
+	//
+
+	bool BaseIsEqual(FS* fs) 
+	{
+		return fs && baseFS->Equal(fs->Type() == TMP ? ((FSTmp*)fs)->baseFS.Ptr() : fs);
+	}
 
 	bool AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath);
 	bool AddNode(FSPath& srcPath, FSPath& destDir);
 	bool baseFsIs(clPtr<FS> fs) { return baseFS == fs; }
-	FSTmp(clPtr<FS> _baseFS);
-	virtual ~FSTmp(){}
 };

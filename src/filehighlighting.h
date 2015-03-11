@@ -6,10 +6,11 @@
 
 #pragma once
 
-#include "types.h"
-#include "ncdialogs.h"
-
 #include <vector>
+
+#include "System/Types.h"
+
+#include "ncdialogs.h"
 
 class PanelWin;
 

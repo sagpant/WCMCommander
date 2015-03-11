@@ -71,8 +71,7 @@ void IniHash::SetStrValue( const char* section, const char* var, const char* val
 
 void IniHash::SetIntValue( const char* section, const char* var, int value )
 {
-	char buf[64]; int_to_char<int>( value, buf );
-	SetStrValue( section, var, buf );
+	SetStrValue( section, var, ToString(value).c_str() );
 }
 
 void IniHash::SetBoolValue( const char* section, const char* var, bool value )
