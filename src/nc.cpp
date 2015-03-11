@@ -347,6 +347,8 @@ std::string GetStartupDir( const char* ModulePath )
 	const char* Res = realpath( ModulePath, Buf );
 
 	return Res ? dirname( Buf ) : std::string();
+#else
+	return std::string();
 #endif
 }
 
