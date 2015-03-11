@@ -17,12 +17,56 @@ static cstrhash<HistCollect> g_fieldHistHash;
 
 void LoadFieldsHistory()
 {
+	IniHash iniHash;
+	IniHashLoad( iniHash, fieldHistSection );
+
+	g_fieldHistHash.clear();
+	std::vector<const char*> secList = iniHash.Keys();
+	char name[64];
 	
+	for ( int i = 0, sectCount = secList.size(); i < sectCount; i++ )
+	{
+		const char* section = secList[i];
+		HistCollect& list = g_fieldHistHash.get( section );
+
+		for ( int j = 0; j < MAX_FIELD_HISTORY_COUNT; j++ )
+		{
+			Lsnprintf( name, sizeof( name ), "v%i", j );
+			const char* value = iniHash.GetStrValue( section, name, nullptr );
+			if ( value )
+			{
+				std::vector<unicode_t> str = utf8_to_unicode( value );
+				list.push_back( str );
+			}
+		}
+	}
 }
 
 void SaveFieldsHistory()
 {
-	
+	IniHash iniHash;
+	std::vector<const char*> secList = g_fieldHistHash.keys();
+	char name[64];
+
+	for ( int i = 0, sectCount = secList.size(); i < sectCount; i++ )
+	{
+		const char* section = secList[i];
+		HistCollect* pList = g_fieldHistHash.exist( section );
+		if ( !pList )
+		{
+			continue;
+		}
+
+		for ( int j = 0, valCount = pList->size(); j < valCount; j++ )
+		{
+			Lsnprintf( name, sizeof( name ), "v%i", j );
+			std::string val = unicode_to_utf8_string( pList->at(j).data() );
+			
+			iniHash.SetStrValue( section, name, val.c_str());
+		}
+	}
+
+	IniHashSave( iniHash, fieldHistSection );
 }
 
 inline bool HistoryCanSave()

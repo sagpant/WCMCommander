@@ -32,6 +32,73 @@
 
 #include <map>
 
+
+std::string* IniHash::Find( const char* section, const char* var )
+{
+	cstrhash< std::string >* h = hash.exist( section );
+
+	if ( !h )
+	{
+		return 0;
+	}
+
+	return h->exist( var );
+}
+
+std::string* IniHash::Create( const char* section, const char* var )
+{
+	return &(hash[section][var]);
+}
+
+void IniHash::Delete( const char* section, const char* var )
+{
+	hash[section].del( var, false );
+}
+
+void IniHash::SetStrValue( const char* section, const char* var, const char* value )
+{
+	if ( !value )
+	{
+		Delete( section, var ); return;
+	}
+	
+	std::string* p = Create( section, var );
+	if ( p )
+	{
+		*p = value;
+	}
+}
+
+void IniHash::SetIntValue( const char* section, const char* var, int value )
+{
+	char buf[64]; int_to_char<int>( value, buf );
+	SetStrValue( section, var, buf );
+}
+
+void IniHash::SetBoolValue( const char* section, const char* var, bool value )
+{
+	SetIntValue( section, var, value ? 1 : 0 );
+}
+
+const char* IniHash::GetStrValue( const char* section, const char* var, const char* def )
+{
+	std::string* p = Find( section, var );
+	return (p && p->data()) ? p->data() : def;
+}
+
+int IniHash::GetIntValue( const char* section, const char* var, int def )
+{
+	std::string* p = Find( section, var );
+	return (p && p->data()) ? atoi( p->data() ) : def;
+}
+
+bool IniHash::GetBoolValue( const char* section, const char* var, bool def )
+{
+	const int n = GetIntValue( section, var, def ? 1 : 0 );
+	return n ? true : false;
+}
+
+
 #ifndef _WIN32
 
 #define DEFAULT_CONFIG_PATH UNIX_CONFIG_DIR_PATH "/config.default"
@@ -187,54 +254,18 @@ protected:
 void SysTextFileOut::Write( char* buf, int size ) {  f.Write( buf, size ); }
 
 
-
 static FSPath configDirPath( CS_UTF8, "???" );
 
-class IniHash
+
+void IniHashLoad( IniHash& iniHash, const char* sectName )
 {
-private:
-	cstrhash< cstrhash< std::string > > hash;
-	std::string* Find( const char* section, const char* var );
-	std::string* Create( const char* section, const char* var );
-	void Delete( const char* section, const char* var );
+	FSPath path = configDirPath;
+	path.Push( CS_UTF8, carray_cat<char>( sectName, ".cfg" ).data() );
 
-public:
-	IniHash();
-	void SetStrValue( const char* section, const char* var, const char* value );
-	void SetIntValue( const char* section, const char* var, int value );
-	void SetBoolValue( const char* section, const char* var, bool value );
-	const char* GetStrValue( const char* section, const char* var, const char* def );
-	int GetIntValue( const char* section, const char* var, int def );
-	bool GetBoolValue( const char* section, const char* var, bool def );
-	void Clear();
-	void Load( const sys_char_t* fileName );
-	void Save( const sys_char_t* fileName );
-	~IniHash();
-};
-
-IniHash::IniHash() {}
-
-std::string* IniHash::Find( const char* section, const char* var )
-{
-	cstrhash< std::string >* h = hash.exist( section );
-
-	if ( !h ) { return 0; }
-
-	return h->exist( var );
+	LoadIniHash( iniHash, (sys_char_t*) path.GetString( sys_charset_id ) );
 }
 
-std::string* IniHash::Create( const char* section, const char* var ) { return &( hash[section][var] ); }
-void IniHash::Delete( const char* section, const char* var ) { hash[section].del( var, false ); }
-void IniHash::SetStrValue( const char* section, const char* var, const char* value ) { if ( !value ) { Delete( section, var ); return;}; std::string* p = Create( section, var ); if ( p ) { *p = value; } }
-void IniHash::SetIntValue( const char* section, const char* var, int value ) { char buf[64]; int_to_char<int>( value, buf ); SetStrValue( section, var, buf ); }
-void IniHash::SetBoolValue( const char* section, const char* var, bool value ) { SetIntValue( section, var, value ? 1 : 0 ); }
-const char* IniHash::GetStrValue( const char* section, const char* var, const char* def ) { std::string* p =  Find( section, var ); return ( p && p->data() ) ? p->data() : def; }
-int IniHash::GetIntValue( const char* section, const char* var, int def ) { std::string* p =  Find( section, var ); return ( p && p->data() ) ? atoi( p->data() ) : def; }
-bool IniHash::GetBoolValue( const char* section, const char* var, bool def ) { int n = GetIntValue( section, var, def ? 1 : 0 ); return n ? true : false; }
-
-void IniHash::Clear() { hash.clear(); }
-
-void IniHash::Load( const sys_char_t* fileName )
+void LoadIniHash( IniHash& iniHash, const sys_char_t* fileName )
 {
 	SysTextFileIn in;
 
@@ -310,7 +341,7 @@ void IniHash::Load( const sys_char_t* fileName )
 
 			*t = 0;
 
-			SetStrValue( section.data(), s, v );
+			iniHash.SetStrValue( section.data(), s, v );
 		}
 	}
 
@@ -327,23 +358,31 @@ inline bool strless( const char* a, const char* b )
 	return *s1 <= *s2;
 }
 
-void IniHash::Save( const sys_char_t* fileName )
+void IniHashSave( IniHash& iniHash, const char* sectName )
+{
+	FSPath path = configDirPath;
+	path.Push( CS_UTF8, carray_cat<char>( sectName, ".cfg" ).data() );
+	
+	SaveIniHash( iniHash, (sys_char_t*) path.GetString( sys_charset_id ) );
+}
+
+void SaveIniHash( IniHash& iniHash, const sys_char_t* fileName )
 {
 	SysTextFileOut out;
 	out.Open( fileName );
 
-	if ( hash.count() > 0 )
+	if ( iniHash.Size() > 0 )
 	{
-		std::vector<const char*> secList = hash.keys();
+		std::vector<const char*> secList = iniHash.Keys();
 
 		std::sort( secList.begin(), secList.end(), strless );
 
-		for ( int i = 0; i < hash.count(); i++ )
+		for ( int i = 0, count = secList.size(); i < count; i++ )
 		{
 			out.Put( "\n[" );
 			out.Put( secList[i] );
 			out.Put( "]\n" );
-			cstrhash< std::string >* h = hash.exist( secList[i] );
+			cstrhash< std::string >* h = iniHash.Exist( secList[i] );
 
 			if ( !h ) { continue; }
 
@@ -368,7 +407,6 @@ void IniHash::Save( const sys_char_t* fileName )
 	out.Close();
 }
 
-IniHash::~IniHash() {}
 
 bool LoadStringList( const char* section, std::vector< std::string >& list )
 {
@@ -470,20 +508,112 @@ static HKEY GetAppProfileKey()
 	return happ;
 }
 
-static HKEY GetSection( const char* sectname )
+HKEY GetSection( HKEY hKey, const char* sectname )
 {
 	ASSERT( sectname && *sectname );
-	HKEY happ = GetAppProfileKey();
-
-	if ( !happ ) { return NULL; }
+	if ( !hKey )
+	{
+		return NULL;
+	}
 
 	DWORD dw;
 	HKEY hsect;
-	RegCreateKeyEx( happ, sectname, 0, REG_NONE,
-	                REG_OPTION_NON_VOLATILE, KEY_WRITE | KEY_READ, NULL,
-	                &hsect, &dw );
+	RegCreateKeyEx( hKey, sectname, 0, REG_NONE,
+		REG_OPTION_NON_VOLATILE, KEY_WRITE | KEY_READ | KEY_QUERY_VALUE, NULL,
+		&hsect, &dw );
+
+	return hsect;
+}
+
+HKEY GetSection( const char* sectname )
+{
+	ASSERT( sectname && *sectname );
+	HKEY happ = GetAppProfileKey();
+	if ( !happ )
+	{
+		return NULL;
+	}
+
+	HKEY hsect = GetSection( happ, sectname );
 	RegCloseKey( happ );
 	return hsect;
+}
+
+std::vector<std::string> RegReadKeys( HKEY hKey )
+{
+	if ( !hKey )
+	{
+		return std::vector<std::string>();
+	}
+
+	std::vector<std::string> keys;
+
+	DWORD dwIndex = 0, dwSize;
+	char buf[256];
+	while ( RegEnumKeyEx( hKey, dwIndex++, buf, &(dwSize = 256), NULL, NULL, NULL, NULL ) == ERROR_SUCCESS )
+	{
+		std::string str( buf );
+		keys.push_back( str );
+	}
+
+	return keys;
+}
+
+void RegReadIniHash( HKEY hKey, IniHash& iniHash )
+{
+	char bufName[256];
+	char bufValue[4096];
+
+	std::vector<std::string> keys = RegReadKeys( hKey );
+	for ( int i = 0, count = keys.size(); i < count; i++ )
+	{
+		std::string section = keys.at( i );
+		HKEY hSect = GetSection( hKey, section.c_str() );
+
+		DWORD dwIndex = 0, dwNameSize, dwValueSize;
+		while ( RegEnumValue( hSect, dwIndex++, bufName, &(dwNameSize = 256), NULL, NULL, (LPBYTE) bufValue, &(dwValueSize = 4096) ) == ERROR_SUCCESS )
+		{
+			iniHash.SetStrValue( section.c_str(), bufName, bufValue );
+		}
+
+		RegCloseKey( hSect );
+	}
+}
+
+void RegWriteIniHash( HKEY hKey, IniHash& iniHash )
+{
+	std::vector<const char*> secList = iniHash.Keys();
+	//std::sort( secList.begin(), secList.end(), strless );
+
+	for ( int i = 0, sectCount = secList.size(); i < sectCount; i++ )
+	{
+		const char* section = secList[i];
+		cstrhash<std::string>* h = iniHash.Exist( section );
+		if ( !h )
+		{
+			continue;
+		}
+
+		std::vector<const char*> varList = h->keys();
+		//std::sort( varList.begin(), varList.end(), strless );
+		HKEY hSect = GetSection( hKey, section );
+		if ( !hSect )
+		{
+			continue;
+		}
+
+		for ( int j = 0, varCount = varList.size(); j < varCount; j++ )
+		{
+			const char* var = varList[j];
+			std::string* p = h->exist( var );
+			if ( p && p->c_str() )
+			{
+				RegSetValueEx( hSect, var, 0, REG_SZ, (LPBYTE) p->c_str(), p->size() + 1 );
+			}
+		}
+
+		RegCloseKey( hSect );
+	}
 }
 
 DWORD RegReadInt( const char* sect, const  char* what, DWORD def )
@@ -523,6 +653,7 @@ std::string RegReadString( char const* sect, const char* what, const char* def )
 	{
 		ASSERT( dwType == REG_SZ );
 
+		//TODO: possible memory leak, needs to be checked!!!
 		char* Buf = (char*)alloca( dwCount + 1 );
 		Buf[dwCount] = 0;
 
@@ -666,6 +797,25 @@ void SaveStringList( const char* section, std::vector< std::string >& list )
 	RegWriteString( section, name, "" );
 }
 
+void IniHashLoad( IniHash& iniHash, const char* sectName )
+{
+	HKEY hKey = GetSection( sectName );
+	if ( hKey )
+	{
+		RegReadIniHash( hKey, iniHash );
+		RegCloseKey( hKey );
+	}
+}
+
+void IniHashSave( IniHash& iniHash, const char* sectName )
+{
+	HKEY hKey = GetSection( sectName );
+	if ( hKey )
+	{
+		RegWriteIniHash( hKey, iniHash );
+		RegCloseKey( hKey );
+	}
+}
 
 #endif
 
@@ -1360,8 +1510,8 @@ void clWcmConfig::Load( NCWin* nc )
 	FSPath path = configDirPath;
 	path.Push( CS_UTF8, "config" );
 
-	hash.Load( DEFAULT_CONFIG_PATH );
-	hash.Load( ( sys_char_t* )path.GetString( sys_charset_id ) );
+	LoadIniHash( hash, DEFAULT_CONFIG_PATH );
+	LoadIniHash( hash, ( sys_char_t* )path.GetString( sys_charset_id ) );
 
 	for ( size_t i = 0; i < m_MapList.size(); i++ )
 	{
@@ -1488,7 +1638,8 @@ void clWcmConfig::Save( NCWin* nc )
 	IniHash hash;
 	FSPath path = configDirPath;
 	path.Push( CS_UTF8, "config" );
-	hash.Load( ( sys_char_t* )path.GetString( sys_charset_id ) );
+	
+	LoadIniHash( hash, ( sys_char_t* )path.GetString( sys_charset_id ) );
 
 	for ( size_t i = 0; i < m_MapList.size(); i++ )
 	{
@@ -1513,7 +1664,7 @@ void clWcmConfig::Save( NCWin* nc )
 	SaveFileHighlightingRules( nc, hash );
 	SaveUserMenu( nc, hash );
 
-	hash.Save( ( sys_char_t* )path.GetString( sys_charset_id ) );
+	SaveIniHash( hash,( sys_char_t* ) path.GetString( sys_charset_id ) );
 #endif
 
 	SaveEditorPositions();

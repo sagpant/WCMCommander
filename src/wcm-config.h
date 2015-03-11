@@ -12,6 +12,51 @@
 
 class NCWin;
 
+
+class IniHash
+{
+private:
+	cstrhash< cstrhash< std::string > > hash;
+	std::string* Find( const char* section, const char* var );
+	std::string* Create( const char* section, const char* var );
+	void Delete( const char* section, const char* var );
+
+public:
+	IniHash() { }
+	~IniHash() { }
+
+	void SetStrValue( const char* section, const char* var, const char* value );
+	void SetIntValue( const char* section, const char* var, int value );
+	void SetBoolValue( const char* section, const char* var, bool value );
+	const char* GetStrValue( const char* section, const char* var, const char* def );
+	int GetIntValue( const char* section, const char* var, int def );
+	bool GetBoolValue( const char* section, const char* var, bool def );
+	
+	void Clear()
+	{
+		hash.clear();
+	}
+
+	int Size() const
+	{
+		return hash.count();
+	}
+
+	std::vector<const char*> Keys()
+	{
+		 return hash.keys();
+	}
+
+	cstrhash<std::string>* Exist( const char* key)
+	{
+		 return hash.exist( key );
+	}
+};
+
+void IniHashLoad( IniHash& iniHash, const char* sectName );
+void IniHashSave( IniHash& iniHash, const char* sectName );
+
+
 enum ePanelSpacesMode
 {
 	ePanelSpacesMode_None = 0,
