@@ -8,6 +8,11 @@
 #  include <winsock2.h>
 #  include "resource.h"
 #  include "w32util.h"
+#else
+#	include <limits.h>	// PATH_MAX
+#	include <stdio.h>
+#	include <stdlib.h>
+#	include <libgen.h>	// dirname()
 #endif
 
 #include "nc.h"
@@ -17,6 +22,7 @@
 
 #include <signal.h>
 #include <locale.h>
+
 #include "ext-app.h"
 #include "wcm-config.h"
 #include "color-style.h"
@@ -333,6 +339,19 @@ void SetHighDPIAware()
 }
 #endif
 
+std::string GetStartupDir( const char* ModulePath )
+{
+#if !defined(_WIN32)
+	char Buf[ PATH_MAX ];
+	
+	const char* Res = realpath( ModulePath, Buf );
+
+	return Res ? dirname( Buf ) : std::string();
+#else
+	return std::string();
+#endif
+}
+
 #ifdef _WIN32
 int APIENTRY _tWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int       nCmdShow )
 #else
@@ -345,28 +364,26 @@ int main( int argc, char** argv )
 		SetHighDPIAware();
 		//disable system critical messageboxes (for example: no floppy disk :) )
 		SetErrorMode( SEM_FAILCRITICALERRORS );
-#endif
 
-#ifdef _WIN32
 		Win32HInstance = hInstance;
 		Win32HIconId = IDI_WCM;
-#endif
 
-
-#ifdef _WIN32
 		WSADATA wsaData;
 
 		if ( WSAStartup( MAKEWORD( 2, 2 ), &wsaData ) ) { throw_syserr( 0, "WSAStartup failed" ); }
 
+		std::string StartupDir;
 #else
 		setlocale( LC_ALL, "" );
 		signal( SIGPIPE, SIG_IGN );
+
+		std::string StartupDir = GetStartupDir( argv[0] );
 #endif
 
 		try
 		{
 			InitConfigPath();
-			g_WcmConfig.Load( NULL );
+			g_WcmConfig.Load( nullptr, StartupDir );
 
 			const char* langId = g_WcmConfig.systemLang.data() ? g_WcmConfig.systemLang.data() : "+";
 #ifdef _WIN32
@@ -420,7 +437,7 @@ int main( int argc, char** argv )
 		g_MainWin = &ncWin;
 
 		// reload config with a valid NCWin
-		g_WcmConfig.Load( &ncWin );
+		g_WcmConfig.Load( &ncWin, StartupDir );
 
 		ncWin.Enable();
 		ncWin.Show();
