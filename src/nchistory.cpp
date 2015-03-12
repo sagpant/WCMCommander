@@ -69,12 +69,6 @@ void SaveFieldsHistory()
 	IniHashSave( iniHash, fieldHistSection );
 }
 
-inline bool HistoryCanSave()
-{
-	//return wcmConfig.systemSaveHistory;
-	return true;
-}
-
 HistCollect* GetFieldHistCollect( const char* fieldName )
 {
 	if ( !fieldName || !fieldName[0] )
@@ -102,7 +96,7 @@ int FindHistElement( HistCollect* pList, const unicode_t* text )
 
 void AddFieldTextToHistory( const char* fieldName, const unicode_t* txt )
 {
-	if ( !HistoryCanSave() || !fieldName || !fieldName[0] || !txt || !txt[0] )
+	if ( !fieldName || !fieldName[0] || !txt || !txt[0] )
 	{
 		return;
 	}

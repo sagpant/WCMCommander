@@ -1649,7 +1649,7 @@ void NCWin::ApplyCommand()
 {
 	if ( _mode != PANEL ) { return; }
 
-	std::vector<unicode_t> command = InputStringDialog( this, utf8_to_unicode( _LT( "Apply command to the selected files" ) ).data() );
+	std::vector<unicode_t> command = InputStringDialog( EDIT_FIELD_APPLY_COMMAND, this, utf8_to_unicode( _LT( "Apply command to the selected files" ) ).data() );
 
 	ApplyCommandToList( command, _panel->GetSelectedList(), _panel );
 }
@@ -1662,7 +1662,7 @@ void NCWin::CreateDirectory()
 
 	try
 	{
-		dir = InputStringDialog( this, utf8_to_unicode( _LT( "Create new directory" ) ).data() );
+		dir = InputStringDialog( EDIT_FIELD_MAKE_FOLDER, this, utf8_to_unicode( _LT( "Create new directory" ) ).data() );
 
 		if ( !dir.data() ) { return; }
 
@@ -1848,7 +1848,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 		if ( enterFileName )
 		{
 			static std::vector<unicode_t> savedUri;
-			std::vector<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "File to edit" ) ).data(), savedUri.data() );
+			std::vector<unicode_t> uri = InputStringDialog( EDIT_FIELD_FILE_EDIT, this, utf8_to_unicode( _LT( "File to edit" ) ).data(), savedUri.data() );
 
 			if ( !uri.data() ) { return; }
 
@@ -2160,7 +2160,7 @@ void NCWin::Copy( bool shift )
 		pCaption = _LT("Copy file under cursor to:");
 	}
 
-	std::vector<unicode_t> str = InputStringDialog(this, utf8_to_unicode(pCaption).data(),
+	std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_FILE_TARGET, this, utf8_to_unicode( pCaption ).data(),
 	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -2277,7 +2277,7 @@ void NCWin::Move( bool shift )
 		pCaption = _LT("Move file under cursor to:");
 	}
 
-	std::vector<unicode_t> str = InputStringDialog(this, utf8_to_unicode(pCaption).data(),
+	std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_FILE_TARGET, this, utf8_to_unicode( pCaption ).data(),
 	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -2326,7 +2326,8 @@ void NCWin::Mark( bool enable )
 {
 	if ( _mode != PANEL ) { return; }
 
-	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( enable ? "Select" : "Deselect" ) ).data(), utf8_to_unicode( "*" ).data() );
+	std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_FILE_MASK, this, utf8_to_unicode( _LT( enable ? "Select" : "Deselect" ) ).data(),
+																	utf8_to_unicode( "*" ).data() );
 
 	if ( !str.data() || !str[0] ) { return; }
 
@@ -2529,7 +2530,7 @@ bool NCWin::EditSave( bool saveAs )
 		if ( saveAs )
 		{
 			static std::vector<unicode_t> savedUri;
-			std::vector<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "Save file as ..." ) ).data(), savedUri.data() );
+			std::vector<unicode_t> uri = InputStringDialog( EDIT_FIELD_FILE_EDIT, this, utf8_to_unicode( _LT( "Save file as ..." ) ).data(), savedUri.data() );
 
 			if ( !uri.data() ) { return false; }
 

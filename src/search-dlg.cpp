@@ -28,7 +28,7 @@ SearchParamDialog::SearchParamDialog( NCDialogParent* parent, const SearchAndRep
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   textLabel( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &textEdit ),
-		textEdit( "search-text", 0, this, 0, 50, 7, false, true, false ),
+		textEdit( EDIT_FIELD_SEARCH_TEXT, 0, this, 0, 50, 7, false, true, false ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 
 {
@@ -113,8 +113,8 @@ SearchFileParamDialog::SearchFileParamDialog( NCDialogParent* parent, SearchAndR
 	   iL( 16, 3 ),
 	   maskText( 0, this, utf8_to_unicode( _LT( "File &mask:" ) ).data(), &maskEdit ),
 	   textText( 0, this, utf8_to_unicode( _LT( "&Text:" ) ).data(), &textEdit ),
-		maskEdit( "fsearch-mask", 0, this, 0, 50, 7, false, true, false ),
-		textEdit( "search-text", 0, this, 0, 50, 7, false, true, false ),
+		maskEdit( EDIT_FIELD_FILE_MASK, 0, this, 0, 50, 7, false, true, false ),
+		textEdit( EDIT_FIELD_SEARCH_TEXT, 0, this, 0, 50, 7, false, true, false ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 {
 	if ( params->m_SearchMask.data() ) { maskEdit.SetText( params->m_SearchMask.data(), true ); }
@@ -193,8 +193,8 @@ ReplaceEditParamDialog::ReplaceEditParamDialog( NCDialogParent* parent, SearchAn
 	   iL( 16, 3 ),
 	   fromText( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &fromEdit ),
 	   toText( 0, this, utf8_to_unicode( _LT( "&Replace with:" ) ).data(), &toEdit ),
-		fromEdit( "search-text", 0, this, 0, 50, 7, false, true, false ),
-		toEdit( "replace-text", 0, this, 0, 50, 7, false, true, false ),
+		fromEdit( EDIT_FIELD_SEARCH_TEXT, 0, this, 0, 50, 7, false, true, false ),
+		toEdit( EDIT_FIELD_SEARCH_REPLACE_TEXT, 0, this, 0, 50, 7, false, true, false ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 {
 	if ( params->m_SearchText.data() ) { fromEdit.SetText( params->m_SearchText.data(), true ); }

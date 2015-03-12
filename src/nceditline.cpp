@@ -8,13 +8,8 @@
 #include "string-util.h"
 #include "unicode_lc.h"
 #include "nchistory.h"
+#include "globals.h"
 
-
-inline bool AcEnabled()
-{
-	//return wcmConfig.systemAutoComplete;
-	return true;
-}
 
 static int uiClassNCEditLine = GetUiID( "NCEditLine" );
 
@@ -72,7 +67,7 @@ bool AcEqual( const unicode_t* txt, const unicode_t* element, int chars )
 
 bool NCEditLine::Command( int id, int subId, Win* win, void* d )
 {
-	if ( id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_INSERTED && IsEditLine( win ) && AcEnabled() )
+	if ( id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_INSERTED && IsEditLine( win ) && g_WcmConfig.systemAutoComplete )
 	{
 		std::vector<unicode_t> text = GetText();
 		const int cursorPos = GetCursorPos();

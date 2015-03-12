@@ -46,9 +46,9 @@ SmbLogonDialog::SmbLogonDialog( NCDialogParent* parent, FSSmbParam& params, bool
 	   domainText( 0, this, utf8_to_unicode( _LT( "&Domain:" ) ).data() ),
 	   userText( 0, this, utf8_to_unicode( _LT( "&Login:" ) ).data() ),
 	   passwordText( 0, this, utf8_to_unicode( _LT( "Pass&word:" ) ).data() ),
-		serverEdit( "smb-server", 0, this, 0, 16, 7, false, true, false ),
-		domainEdit( "smb-domain", 0, this, 0, 16, 7, false, true, false ),
-		userEdit( "smb-user", 0, this, 0, 16, 7, false, true, false ),
+		serverEdit( EDIT_FIELD_SMB_SERVER, 0, this, 0, 16, 7, false, true, false ),
+		domainEdit( EDIT_FIELD_SMB_DOMAIN, 0, this, 0, 16, 7, false, true, false ),
+		userEdit( EDIT_FIELD_SMB_USER, 0, this, 0, 16, 7, false, true, false ),
 	   passwordEdit   ( 0, this, 0, 0, 16 )
 {
 
