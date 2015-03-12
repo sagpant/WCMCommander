@@ -618,7 +618,7 @@ int GoToLineDialog( NCDialogParent* parent )
 	return n;
 }
 
-class InputStrDialogBase abstract : public NCVertDialog
+class InputStrDialogBase : public NCVertDialog
 {
 public:
 	InputStrDialogBase( NCDialogParent* parent, const unicode_t* message )
@@ -627,7 +627,7 @@ public:
 	}
 	virtual ~InputStrDialogBase() {}
 
-	virtual std::vector<unicode_t> GetText() abstract;
+	virtual std::vector<unicode_t> GetText() = 0;
 
 	virtual std::vector<unicode_t> ShowDialog();
 };

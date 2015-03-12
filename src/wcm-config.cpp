@@ -256,14 +256,6 @@ void SysTextFileOut::Write( char* buf, int size ) {  f.Write( buf, size ); }
 static FSPath configDirPath( CS_UTF8, "???" );
 
 
-void IniHashLoad( IniHash& iniHash, const char* sectName )
-{
-	FSPath path = configDirPath;
-	path.Push( CS_UTF8, carray_cat<char>( sectName, ".cfg" ).data() );
-
-	LoadIniHash( iniHash, (sys_char_t*) path.GetString( sys_charset_id ) );
-}
-
 void LoadIniHash( IniHash& iniHash, const sys_char_t* fileName )
 {
 	SysTextFileIn in;
@@ -347,6 +339,14 @@ void LoadIniHash( IniHash& iniHash, const sys_char_t* fileName )
 	in.Close();
 }
 
+void IniHashLoad( IniHash& iniHash, const char* sectName )
+{
+	FSPath path = configDirPath;
+	path.Push( CS_UTF8, carray_cat<char>( sectName, ".cfg" ).data() );
+	
+	LoadIniHash( iniHash, (sys_char_t*) path.GetString( sys_charset_id ) );
+}
+
 inline bool strless( const char* a, const char* b )
 {
 	const char* s1 = a;
@@ -355,14 +355,6 @@ inline bool strless( const char* a, const char* b )
 	while ( *s1 && *s1 == *s2 ) { s1++; s2++; };
 
 	return *s1 <= *s2;
-}
-
-void IniHashSave( IniHash& iniHash, const char* sectName )
-{
-	FSPath path = configDirPath;
-	path.Push( CS_UTF8, carray_cat<char>( sectName, ".cfg" ).data() );
-	
-	SaveIniHash( iniHash, (sys_char_t*) path.GetString( sys_charset_id ) );
 }
 
 void SaveIniHash( IniHash& iniHash, const sys_char_t* fileName )
@@ -404,6 +396,14 @@ void SaveIniHash( IniHash& iniHash, const sys_char_t* fileName )
 
 	out.Flush();
 	out.Close();
+}
+
+void IniHashSave( IniHash& iniHash, const char* sectName )
+{
+	FSPath path = configDirPath;
+	path.Push( CS_UTF8, carray_cat<char>( sectName, ".cfg" ).data() );
+	
+	SaveIniHash( iniHash, (sys_char_t*) path.GetString( sys_charset_id ) );
 }
 
 
