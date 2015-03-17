@@ -14,7 +14,7 @@ class SearchParamDialog: public NCVertDialog
 	Layout iL;
 public:
 	StaticLabel textLabel;
-	NCEditLine textEdit;
+	clNCEditLine textEdit;
 	SButton  caseButton;
 
 	SearchParamDialog( NCDialogParent* parent, const SearchAndReplaceParams* params );
@@ -98,8 +98,8 @@ class SearchFileParamDialog: public NCVertDialog
 public:
 	StaticLabel maskText;
 	StaticLabel textText;
-	NCEditLine maskEdit;
-	NCEditLine textEdit;
+	clNCEditLine maskEdit;
+	clNCEditLine textEdit;
 	SButton  caseButton;
 
 	SearchFileParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
@@ -178,8 +178,8 @@ class ReplaceEditParamDialog: public NCVertDialog
 public:
 	StaticLabel fromText;
 	StaticLabel toText;
-	NCEditLine fromEdit;
-	NCEditLine toEdit;
+	clNCEditLine fromEdit;
+	clNCEditLine toEdit;
 	SButton  caseButton;
 
 	ReplaceEditParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params );

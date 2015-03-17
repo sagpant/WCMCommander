@@ -30,8 +30,8 @@ public:
 
 	int charset;
 
-	NCEditLine serverEdit;
-	NCEditLine userEdit;
+	clNCEditLine serverEdit;
+	clNCEditLine userEdit;
 //	EditLine passwordEdit;
 	EditLine portEdit;
 	Button charsetButton;

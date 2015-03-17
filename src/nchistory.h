@@ -8,8 +8,8 @@
 
 #include <wal.h>
 
-
 using namespace wal;
+
 
 #define EDIT_FIELD_SEARCH_TEXT			"search-text"
 #define EDIT_FIELD_SEARCH_REPLACE_TEXT	"search-replace-text"
@@ -28,15 +28,16 @@ using namespace wal;
 #define EDIT_FIELD_SMB_DOMAIN				"smb-domain"
 #define EDIT_FIELD_SMB_USER				"smb-user"
 
-typedef std::vector<std::vector<unicode_t>> HistCollect;
+
+typedef std::vector<std::vector<unicode_t>> HistCollect_t;
 
 void LoadFieldsHistory();
 
 void SaveFieldsHistory();
 
-HistCollect* GetFieldHistCollect( const char* fieldName );
+HistCollect_t* GetFieldHistCollect( const char* FieldName );
 
-void AddFieldTextToHistory( const char* fieldName, const unicode_t* txt );
+void AddFieldTextToHistory( const char* FieldName, const unicode_t* Txt );
 
 
 class NCHistory
@@ -58,6 +59,6 @@ public:
 	void ResetToLast() { m_Current = -1; }
 
 private:
-	HistCollect m_List;
+	HistCollect_t m_List;
 	int m_Current;
 };

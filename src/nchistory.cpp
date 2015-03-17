@@ -12,7 +12,7 @@
 
 static const char fieldHistSection[] = "FieldsHistory";
 
-static cstrhash<HistCollect> g_fieldHistHash;
+static cstrhash<HistCollect_t> g_FieldsHistHash;
 
 
 void LoadFieldsHistory()
@@ -20,23 +20,23 @@ void LoadFieldsHistory()
 	IniHash iniHash;
 	IniHashLoad( iniHash, fieldHistSection );
 
-	g_fieldHistHash.clear();
-	std::vector<const char*> secList = iniHash.Keys();
-	char name[64];
+	g_FieldsHistHash.clear();
+	std::vector<const char*> SecList = iniHash.Keys();
+	char Name[64];
 	
-	for ( int i = 0, sectCount = secList.size(); i < sectCount; i++ )
+	for ( int i = 0, count = SecList.size(); i < count; i++ )
 	{
-		const char* section = secList[i];
-		HistCollect& list = g_fieldHistHash.get( section );
+		const char* Section = SecList[i];
+		HistCollect_t& List = g_FieldsHistHash.get( Section );
 
 		for ( int j = 0; j < MAX_FIELD_HISTORY_COUNT; j++ )
 		{
-			Lsnprintf( name, sizeof( name ), "v%i", j );
-			const char* value = iniHash.GetStrValue( section, name, nullptr );
-			if ( value )
+			Lsnprintf( Name, sizeof( Name ), "v%i", j );
+			const char* Value = iniHash.GetStrValue( Section, Name, nullptr );
+			if ( Value )
 			{
-				std::vector<unicode_t> str = utf8_to_unicode( value );
-				list.push_back( str );
+				std::vector<unicode_t> Str = utf8_to_unicode( Value );
+				List.push_back( Str );
 			}
 		}
 	}
@@ -45,47 +45,47 @@ void LoadFieldsHistory()
 void SaveFieldsHistory()
 {
 	IniHash iniHash;
-	std::vector<const char*> secList = g_fieldHistHash.keys();
-	char name[64];
+	std::vector<const char*> SecList = g_FieldsHistHash.keys();
+	char Name[64];
 
-	for ( int i = 0, sectCount = secList.size(); i < sectCount; i++ )
+	for ( int i = 0, SecCount = SecList.size(); i < SecCount; i++ )
 	{
-		const char* section = secList[i];
-		HistCollect* pList = g_fieldHistHash.exist( section );
-		if ( !pList )
+		const char* Section = SecList[i];
+		HistCollect_t* List = g_FieldsHistHash.exist( Section );
+		if ( !List )
 		{
 			continue;
 		}
 
-		for ( int j = 0, valCount = pList->size(); j < valCount; j++ )
+		for ( int j = 0, ValCount = List->size(); j < ValCount; j++ )
 		{
-			Lsnprintf( name, sizeof( name ), "v%i", j );
-			std::string val = unicode_to_utf8_string( pList->at(j).data() );
+			Lsnprintf( Name, sizeof( Name ), "v%i", j );
+			std::string Val = unicode_to_utf8_string( List->at(j).data() );
 			
-			iniHash.SetStrValue( section, name, val.c_str());
+			iniHash.SetStrValue( Section, Name, Val.c_str());
 		}
 	}
 
 	IniHashSave( iniHash, fieldHistSection );
 }
 
-HistCollect* GetFieldHistCollect( const char* fieldName )
+HistCollect_t* GetFieldHistCollect( const char* FieldName )
 {
-	if ( !fieldName || !fieldName[0] )
+	if ( !FieldName || !FieldName[0] )
 	{
 		return nullptr;
 	}
 	
-	HistCollect* pList = g_fieldHistHash.exist( fieldName );
-	return pList ? pList : nullptr;
+	HistCollect_t* List = g_FieldsHistHash.exist( FieldName );
+	return List ? List : nullptr;
 }
 
 // Returns index of element with the specified text, or -1 if no such found
-int FindHistElement( HistCollect* pList, const unicode_t* text )
+int FindHistElement( HistCollect_t* List, const unicode_t* Text )
 {
-	for (int i = 0, count = pList->size(); i < count; i++)
+	for (int i = 0, count = List->size(); i < count; i++)
 	{
-		if (unicode_is_equal( text, pList->at(i).data() ))
+		if (unicode_is_equal( Text, List->at(i).data() ))
 		{
 			return i;
 		}
@@ -94,32 +94,32 @@ int FindHistElement( HistCollect* pList, const unicode_t* text )
 	return -1;
 }
 
-void AddFieldTextToHistory( const char* fieldName, const unicode_t* txt )
+void AddFieldTextToHistory( const char* FieldName, const unicode_t* Txt )
 {
-	if ( !fieldName || !fieldName[0] || !txt || !txt[0] )
+	if ( !FieldName || !FieldName[0] || !Txt || !Txt[0] )
 	{
 		return;
 	}
 	
-	std::vector<unicode_t> str = new_unicode_str( txt );
+	std::vector<unicode_t> Str = new_unicode_str( Txt );
 	
-	HistCollect& list = g_fieldHistHash.get( fieldName );
+	HistCollect_t& List = g_FieldsHistHash.get( FieldName );
 	
 	// check if item already exists in the list
-	const int index = FindHistElement( &list, str.data() );
-	if ( index != -1 )
+	const int Index = FindHistElement( &List, Str.data() );
+	if ( Index != -1 )
 	{
 		// remove existing item
-		list.erase( list.begin() + index );
+		List.erase( List.begin() + Index );
 	}
 	
 	// add item to the begining of the list
-	list.insert( list.begin(), str );
+	List.insert( List.begin(), Str );
 	
 	// limit number of elements in the list
-	while ( list.size() > MAX_FIELD_HISTORY_COUNT )
+	while ( List.size() > MAX_FIELD_HISTORY_COUNT )
 	{
-		list.erase( list.end() );
+		List.erase( List.end() );
 	}
 }
 

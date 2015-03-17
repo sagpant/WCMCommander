@@ -26,9 +26,9 @@ public:
 	StaticLine userText;
 	StaticLine passwordText;
 
-	NCEditLine serverEdit;
-	NCEditLine domainEdit;
-	NCEditLine userEdit;
+	clNCEditLine serverEdit;
+	clNCEditLine domainEdit;
+	clNCEditLine userEdit;
 	EditLine passwordEdit;
 
 	SmbLogonDialog( NCDialogParent* parent, FSSmbParam& params, bool enterServer );

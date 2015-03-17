@@ -12,24 +12,24 @@ using namespace wal;
 
 
 /**
-* Edit line controll with history and autocomplete support.
-*/
-class NCEditLine : public ComboBox
+ * Edit line controll with history and autocomplete support.
+ */
+class clNCEditLine : public ComboBox
 {
 private:
-	const char* m_fieldName;
+	const char* m_FieldName;
 	
 public:
-	NCEditLine( const char* fieldName, int nId, Win* parent, const unicode_t* txt,
-		int cols, int rows, bool up, bool frame3d, bool nofocusframe, crect* rect = 0 );
+	clNCEditLine( const char* FieldName, int Id, Win* Parent, const unicode_t* Txt,
+		int Cols, int Rows, bool Up, bool Frame3d, bool NoFocusFrame, crect* Rect = 0 );
 
-	virtual ~NCEditLine() {}
+	virtual ~clNCEditLine() {}
 
-	bool Command( int id, int subId, Win* win, void* d ) override;
+	virtual bool Command( int Id, int SubId, Win* Win, void* Data ) override;
 
-	int UiGetClassId() override;
+	virtual int UiGetClassId() override;
 
-	bool OnOpenBox() override;
+	virtual bool OnOpenBox() override;
 
 	void AddCurrentTextToHistory();
 };

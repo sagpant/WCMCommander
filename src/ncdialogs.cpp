@@ -456,7 +456,7 @@ NCDialog::~NCDialog()
 bool NCVertDialog::EventChildKey( Win* child, cevent_key* pEvent )
 {
     // try to preprocess key combinations like Cntrl + VK_DOWN
-    if ( dynamic_cast<NCEditLine*>(child) && child->EventKey(pEvent) )
+    if ( dynamic_cast<clNCEditLine*>(child) && child->EventKey(pEvent) )
     {
         return true;
     }
@@ -618,26 +618,25 @@ int GoToLineDialog( NCDialogParent* parent )
 	return n;
 }
 
-class InputStrDialogBase : public NCVertDialog
+class clInputStrDialogBase : public NCVertDialog
 {
 public:
-	InputStrDialogBase( NCDialogParent* parent, const unicode_t* message )
-		: NCVertDialog( ::createDialogAsChild, 0, parent, message, bListOkCancel )
+	clInputStrDialogBase( NCDialogParent* Parent, const unicode_t* Message )
+		: NCVertDialog( ::createDialogAsChild, 0, Parent, Message, bListOkCancel )
 	{
 	}
-	virtual ~InputStrDialogBase() {}
+	virtual ~clInputStrDialogBase() {}
 
-	virtual std::vector<unicode_t> GetText() = 0;
+	virtual std::vector<unicode_t> GetText() const = 0;
 
 	virtual std::vector<unicode_t> ShowDialog();
 };
 
-std::vector<unicode_t> InputStrDialogBase::ShowDialog()
+std::vector<unicode_t> clInputStrDialogBase::ShowDialog()
 {
 	SetEnterCmd( CMD_OK );
 
-	const int r = DoModal();
-	if ( r != CMD_OK )
+	if ( DoModal() != CMD_OK )
 	{
 		return std::vector<unicode_t>();
 	}
@@ -646,96 +645,96 @@ std::vector<unicode_t> InputStrDialogBase::ShowDialog()
 }
 
 
-class InputStrDialog : public InputStrDialogBase
+class clInputStrDialog : public clInputStrDialogBase
 {
 private:
-	EditLine m_strEdit;
+	EditLine m_StrEdit;
 
 public:
-	InputStrDialog( NCDialogParent* parent, const unicode_t* message, const unicode_t* str )
-		: InputStrDialogBase( parent, message )
-		, m_strEdit( 0, (Win*)this, 0, 0, 100 )
+	clInputStrDialog( NCDialogParent* Parent, const unicode_t* Message, const unicode_t* Str )
+		: clInputStrDialogBase( Parent, Message )
+		, m_StrEdit( 0, (Win*) this, 0, 0, 100 )
 	{
-		m_strEdit.Enable();
-		m_strEdit.Show();
-		AddWin( &m_strEdit );
-		order.append( &m_strEdit );
+		m_StrEdit.Enable();
+		m_StrEdit.Show();
+		AddWin( &m_StrEdit );
+		order.append( &m_StrEdit );
 
-		if ( str )
+		if ( Str )
 		{
-			m_strEdit.SetText( str, true );
+			m_StrEdit.SetText( Str, true );
 		}
 
-		m_strEdit.SetFocus();
+		m_StrEdit.SetFocus();
 		SetPosition();
 	}
-	virtual ~InputStrDialog() {}
+	virtual ~clInputStrDialog() {}
 
-	std::vector<unicode_t> GetText() override
+	virtual std::vector<unicode_t> GetText() const override
 	{
-		return m_strEdit.GetText();
+		return m_StrEdit.GetText();
 	}
 };
 
 
-class InputFieldDialog : public InputStrDialogBase
+class clInputFieldDialog : public clInputStrDialogBase
 {
 private:
-	NCEditLine m_fieldEdit;
+	clNCEditLine m_FieldEdit;
 
 public:
-	InputFieldDialog( const char* fieldName, NCDialogParent* parent, const unicode_t* message, const unicode_t* str )
-		: InputStrDialogBase( parent, message )
-		, m_fieldEdit( fieldName, 0, (Win*)this, 0, 100, 7, false, true, false )
+	clInputFieldDialog( const char* FieldName, NCDialogParent* Parent, const unicode_t* Message, const unicode_t* Str )
+		: clInputStrDialogBase( Parent, Message )
+		, m_FieldEdit( FieldName, 0, (Win*)this, 0, 100, 7, false, true, false )
 	{
-		m_fieldEdit.Enable();
-		m_fieldEdit.Show();
-		AddWin( &m_fieldEdit );
-		order.append( &m_fieldEdit );
+		m_FieldEdit.Enable();
+		m_FieldEdit.Show();
+		AddWin( &m_FieldEdit );
+		order.append( &m_FieldEdit );
 
-		if ( str )
+		if ( Str )
 		{
-			m_fieldEdit.SetText( str, true );
+			m_FieldEdit.SetText( Str, true );
 		}
 
-		m_fieldEdit.SetFocus();
+		m_FieldEdit.SetFocus();
 		SetPosition();
 	}
-	virtual ~InputFieldDialog() {}
+	virtual ~clInputFieldDialog() {}
 
-	std::vector<unicode_t> GetText() override
+	virtual std::vector<unicode_t> GetText() const override
 	{
-		return m_fieldEdit.GetText();
+		return m_FieldEdit.GetText();
 	}
 
-	std::vector<unicode_t> ShowDialog() override
+	virtual std::vector<unicode_t> ShowDialog() override
 	{
-		std::vector<unicode_t> res = InputStrDialogBase::ShowDialog();
-		if ( res.size() > 0 )
+		std::vector<unicode_t> Res = clInputStrDialogBase::ShowDialog();
+		if ( Res.size() > 0 )
 		{
-			m_fieldEdit.AddCurrentTextToHistory();
+			m_FieldEdit.AddCurrentTextToHistory();
 		}
 
-		return res;
+		return Res;
 	}
 };
 
 
-std::vector<unicode_t> InputStringDialog( NCDialogParent* parent, const unicode_t* message, const unicode_t* str )
+std::vector<unicode_t> InputStringDialog( NCDialogParent* Parent, const unicode_t* Message, const unicode_t* Str )
 {
-	return InputStringDialog( nullptr, parent, message, str );
+	return InputStringDialog( nullptr, Parent, Message, Str );
 }
 
-std::vector<unicode_t> InputStringDialog( const char* fieldName, NCDialogParent* parent, const unicode_t* message, const unicode_t* str )
+std::vector<unicode_t> InputStringDialog( const char* FieldName, NCDialogParent* Parent, const unicode_t* Message, const unicode_t* Str )
 {
-	if ( !fieldName )
+	if ( !FieldName )
 	{
-		InputStrDialog d( parent, message, str );
-		return d.ShowDialog();
+		clInputStrDialog Dlg( Parent, Message, Str );
+		return Dlg.ShowDialog();
 	}
 
-	InputFieldDialog d( fieldName, parent, message, str );
-	return d.ShowDialog();
+	clInputFieldDialog Dlg( FieldName, Parent, Message, Str );
+	return Dlg.ShowDialog();
 }
 
 int uiKillCmdDialog = GetUiID( "KillCmdDialog" );

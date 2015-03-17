@@ -13,93 +13,92 @@
 
 static int uiClassNCEditLine = GetUiID( "NCEditLine" );
 
-int NCEditLine::UiGetClassId()
+int clNCEditLine::UiGetClassId()
 {
 	return uiClassNCEditLine;
 }
 
-NCEditLine::NCEditLine( const char* fieldName, int nId, Win* parent, const unicode_t* txt,
-	int cols, int rows, bool up, bool frame3d, bool nofocusframe, crect* rect )
-	: ComboBox( nId, parent, cols, rows,
-				  (up ? ComboBox::MODE_UP : 0) | (frame3d ? ComboBox::FRAME3D : 0) | (nofocusframe ? ComboBox::NOFOCUSFRAME : 0),
-				  rect )
-	, m_fieldName( fieldName )
+clNCEditLine::clNCEditLine( const char* FieldName, int Id, Win* Parent, const unicode_t* Txt,
+									int Cols, int Rows, bool Up, bool Frame3d, bool NoFocusFrame, crect* Rect )
+	: ComboBox( Id, Parent, Cols, Rows,
+				  (Up ? ComboBox::MODE_UP : 0) | (Frame3d ? ComboBox::FRAME3D : 0) | (NoFocusFrame ? ComboBox::NOFOCUSFRAME : 0),
+				  Rect )
+	, m_FieldName( FieldName )
 {
-	HistCollect* pList = GetFieldHistCollect( m_fieldName );
-	if ( pList )
+	HistCollect_t* List = GetFieldHistCollect( m_FieldName );
+	if ( List )
 	{
-		for ( int i = 0, count = pList->size(); i < count; i++ )
+		for ( int i = 0, count = List->size(); i < count; i++ )
 		{
-			const unicode_t* u = pList->at( i ).data();
-			if ( u )
+			const unicode_t* Str = List->at( i ).data();
+			if ( Str )
 			{
-				Append( u );
+				Append( Str );
 			}
 		}
 	}
 	else
 	{
-		static unicode_t s0 = 0;
-		Append( &s0 );
+		static unicode_t Str0 = 0;
+		Append( &Str0 );
 	}
 }
 
-bool AcEqual( const unicode_t* txt, const unicode_t* element, int chars )
+bool AcEqual( const unicode_t* Txt, const unicode_t* Element, int Chars )
 {
-	if ( !txt || !element || chars <= 0 )
+	if ( !Txt || !Element || Chars <= 0 )
 	{
 		return false;
 	}
 
-	while ( *txt && *element && UnicodeLC( *txt ) == UnicodeLC( *element ) )
+	while ( *Txt && *Element && UnicodeLC( *Txt ) == UnicodeLC( *Element ) )
 	{
-		if ( --chars == 0 )
+		if ( --Chars == 0 )
 		{
 			return true;
 		}
 
-		txt++;
-		element++;
+		Txt++;
+		Element++;
 	}
 
 	return false;
 }
 
-bool NCEditLine::Command( int id, int subId, Win* win, void* d )
+bool clNCEditLine::Command( int Id, int SubId, Win* Win, void* Data )
 {
-	if ( id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_INSERTED && IsEditLine( win ) && g_WcmConfig.systemAutoComplete )
+	if ( Id == CMD_EDITLINE_INFO && SubId == SCMD_EDITLINE_INSERTED && IsEditLine( Win ) && g_WcmConfig.systemAutoComplete )
 	{
-		std::vector<unicode_t> text = GetText();
-		const int cursorPos = GetCursorPos();
+		std::vector<unicode_t> Text = GetText();
+		const int CursorPos = GetCursorPos();
 		
 		// try to autocomplete when cursor is at the end of unmarked text
-		if ( ((int)text.size() - 1) == cursorPos )
+		if ( ((int)Text.size() - 1) == CursorPos )
 		{
 			const int count = Count();
 			for ( int i = 0; i < count; i++ )
 			{
-				const unicode_t* item = ItemText( i );
-				if ( AcEqual( text.data(), item, cursorPos ) )
+				const unicode_t* Item = ItemText( i );
+				if ( AcEqual( Text.data(), Item, CursorPos ) )
 				{
 					// append suffix of the history item's text to the current text
-					SetText( carray_cat( text.data(), item + cursorPos ).data() );
+					SetText( carray_cat( Text.data(), Item + CursorPos ).data() );
 					
 					// select the auto-completed part of text
-					SetCursorPos( carray_len( item ) );
-					SetCursorPos( cursorPos, true );
+					SetCursorPos( carray_len( Item ) );
+					SetCursorPos( CursorPos, true );
 					return true;
 				}
 			}
 		}
 	}
 
-	return ComboBox::Command( id, subId, win, d );
+	return ComboBox::Command( Id, SubId, Win, Data );
 }
 
-bool NCEditLine::OnOpenBox()
+bool clNCEditLine::OnOpenBox()
 {
-	const int count = Count();
-	if ( count > 0 )
+	if ( Count() > 0 )
 	{
 		MoveCurrent( 0 );
 	}
@@ -107,7 +106,7 @@ bool NCEditLine::OnOpenBox()
 	return true;
 }
 
-void NCEditLine::AddCurrentTextToHistory()
+void clNCEditLine::AddCurrentTextToHistory()
 {
-	AddFieldTextToHistory( m_fieldName, GetText().data() );
+	AddFieldTextToHistory( m_FieldName, GetText().data() );
 }
