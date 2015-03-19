@@ -25,84 +25,109 @@ clNCEditLine::clNCEditLine( const char* FieldName, int Id, Win* Parent, const un
 				  Rect )
 	, m_FieldName( FieldName )
 {
-	HistCollect_t* List = GetFieldHistCollect( m_FieldName );
-	if ( List )
-	{
-		for ( int i = 0, count = List->size(); i < count; i++ )
-		{
-			const unicode_t* Str = List->at( i ).data();
-			if ( Str )
-			{
-				Append( Str );
-			}
-		}
-	}
-	else
-	{
-		static unicode_t Str0 = 0;
-		Append( &Str0 );
-	}
-}
-
-bool AcEqual( const unicode_t* Txt, const unicode_t* Element, int Chars )
-{
-	if ( !Txt || !Element || Chars <= 0 )
-	{
-		return false;
-	}
-
-	while ( *Txt && *Element && UnicodeLC( *Txt ) == UnicodeLC( *Element ) )
-	{
-		if ( --Chars == 0 )
-		{
-			return true;
-		}
-
-		Txt++;
-		Element++;
-	}
-
-	return false;
 }
 
 bool clNCEditLine::Command( int Id, int SubId, Win* Win, void* Data )
 {
-	if ( Id == CMD_EDITLINE_INFO && SubId == SCMD_EDITLINE_INSERTED && IsEditLine( Win ) && g_WcmConfig.systemAutoComplete )
+	if ( Id == CMD_EDITLINE_INFO && SubId == SCMD_EDITLINE_CHANGED && IsEditLine( Win ) && g_WcmConfig.systemAutoComplete )
 	{
+		bool HasHistory = false;
 		std::vector<unicode_t> Text = GetText();
-		const int CursorPos = GetCursorPos();
-		
-		// try to autocomplete when cursor is at the end of unmarked text
-		if ( ((int)Text.size() - 1) == CursorPos )
+		HistCollect_t* List = GetFieldHistCollect( m_FieldName );
+		if ( List )
 		{
-			const int count = Count();
-			for ( int i = 0; i < count; i++ )
+			Clear();
+			static unicode_t Str0 = 0;
+			Append( &Str0 ); // empty line goes first
+			
+			for ( int i = 0, count = List->size(); i < count; i++ )
 			{
-				const unicode_t* Item = ItemText( i );
-				if ( AcEqual( Text.data(), Item, CursorPos ) )
+				const unicode_t* Str = List->at( i ).data();
+				
+				if ( unicode_starts_with_and_not_equal( Str, Text.data(), true ) )
 				{
-					// append suffix of the history item's text to the current text
-					SetText( carray_cat( Text.data(), Item + CursorPos ).data() );
-					
-					// select the auto-completed part of text
-					SetCursorPos( carray_len( Item ) );
-					SetCursorPos( CursorPos, true );
-					return true;
+					Append( Str );
+					HasHistory = true;
 				}
 			}
 		}
+
+		if ( HasHistory )
+		{
+			if ( !IsBoxOpened() )
+			{
+				OpenBox();
+			}
+			else
+			{
+				RefreshBox();
+				InitBox();
+			}
+		}
+		else
+		{
+			CloseBox();
+			Clear();
+		}
+		
+		return true;
 	}
 
 	return ComboBox::Command( Id, SubId, Win, Data );
 }
 
-bool clNCEditLine::OnOpenBox()
+void clNCEditLine::InitBox()
 {
 	if ( Count() > 0 )
 	{
-		MoveCurrent( 0 );
+		MoveCurrent( 0, false );
+		
+		// reset saved prefix
+		m_Prefix = std::vector<unicode_t>();
 	}
+}
+
+void clNCEditLine::OnItemChanged(int ItemIndex)
+{
+	std::vector<unicode_t> Text = GetText();
 	
+	ComboBox::OnItemChanged( ItemIndex );
+	
+	if ( ItemIndex >= 0 && m_Prefix.size() == 0 )
+	{
+		// save user entered text
+		m_Prefix = Text;
+	}
+	else if ( ItemIndex == 0 && m_Prefix.size() > 0 )
+	{
+		// restore user entered text
+		SetText( m_Prefix.data() );
+		
+		// reset saved prefix
+		m_Prefix = std::vector<unicode_t>();
+	}
+}
+
+bool clNCEditLine::OnOpenBox()
+{
+	if ( Count() == 0 )
+	{
+		HistCollect_t* List = GetFieldHistCollect( m_FieldName );
+		if ( List )
+		{
+			static unicode_t Str0 = 0;
+			Append( &Str0 ); // empty line goes first
+			
+			for ( int i = 0, count = List->size(); i < count; i++ )
+			{
+				Append( List->at( i ).data() );
+			}
+			
+			RefreshBox();
+		}
+	}
+
+	InitBox();
 	return true;
 }
 

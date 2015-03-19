@@ -42,7 +42,7 @@ namespace wal
 	bool unicode_is_equal( const unicode_t* Str, const unicode_t* SubStr );
 	int unicode_strcmp(const unicode_t* s1, const unicode_t* s2);
 	int unicode_stricmp(const unicode_t* s1, const unicode_t* s2);
-	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr );
+	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr, bool IgnoreCase = false );
 	bool utf8_starts_with_and_not_equal( const char* Str, const char* SubStr );
 	std::vector<unicode_t> unicode_get_last_word( const unicode_t* Str, const unicode_t** LastWordStart, bool UsePathSeparator );
 

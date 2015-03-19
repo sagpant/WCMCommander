@@ -180,21 +180,30 @@ namespace wal
 		return ( *StartPos ) ? new_unicode_str( StartPos ) : std::vector<unicode_t>();
 	}
 
-	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr )
+	bool unicode_starts_with_and_not_equal( const unicode_t* Str, const unicode_t* SubStr, bool IgnoreCase )
 	{
-		if ( !Str || !SubStr ) { return false; }
+		if ( !Str || !SubStr )
+		{
+			return false;
+		}
 
-		const unicode_t* S = Str;
-		const unicode_t* SS = SubStr;
-
-		while ( *SS != 0 ) if ( *S++ != *SS++ )
+		while ( *SubStr != 0 )
+		{
+			unicode_t S = *Str++;
+			unicode_t SS = *SubStr++;
+			if ( IgnoreCase )
+			{
+				S = UnicodeLC( S );
+				SS = UnicodeLC( SS );
+			}
+			
+			if ( S != SS )
 			{
 				return false;
 			}
+		}
 
-		if ( *SS == 0 && *S == 0 ) { return false; }
-
-		return true;
+		return !( *Str == 0 && *SubStr == 0 );
 	}
 
 	bool utf8_starts_with_and_not_equal( const char* Str, const char* SubStr )

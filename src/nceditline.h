@@ -17,6 +17,7 @@ using namespace wal;
 class clNCEditLine : public ComboBox
 {
 private:
+	std::vector<unicode_t> m_Prefix;
 	const char* m_FieldName;
 	
 public:
@@ -30,6 +31,11 @@ public:
 	virtual int UiGetClassId() override;
 
 	virtual bool OnOpenBox() override;
+	
+	virtual void OnItemChanged( int ItemIndex ) override;
 
 	void AddCurrentTextToHistory();
+	
+private:
+	void InitBox();
 };

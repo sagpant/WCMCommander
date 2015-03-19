@@ -706,12 +706,13 @@ namespace wal
 		const unicode_t* ItemText( int n );
 
 		void* ItemData( int n );
-		void MoveCurrent( int n );
+		void MoveCurrent( int n, bool notify = true );
 		bool IsBoxOpened() { return _box.ptr() != 0; }
 		void CloseBox();
 		
         virtual bool OnOpenBox();
 		virtual void OnCloseBox();
+		virtual void OnItemChanged( int ItemIndex );
 	};
 
 //ToolTip is global, setting new one is replaceing previous

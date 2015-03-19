@@ -18,17 +18,12 @@ namespace wal
 		return uiClassComboBox;
 	}
 
-	void ComboBox::MoveCurrent( int n )
+	void ComboBox::MoveCurrent( int n, bool notify )
 	{
 		int saved = _current;
 
 		if ( n < 0 )
 		{
-			if ( _flags & READONLY )
-			{
-				_edit.Clear();
-			}
-
 			_current = -1;
 
 			if ( _box.ptr() )
@@ -39,7 +34,6 @@ namespace wal
 		else if ( n < _list.count() )
 		{
 			_current = n;
-			_edit.SetText( _list[n].text.data() );
 
 			if ( _box.ptr() )
 			{
@@ -47,10 +41,27 @@ namespace wal
 			}
 		}
 
-		if ( saved != _current )
+		if ( saved != _current && notify )
 		{
-			Command( CMD_ITEM_CHANGED, _current, this, 0 );
+			OnItemChanged( _current );
 		}
+	}
+	
+	void ComboBox::OnItemChanged( int ItemIndex )
+	{
+		if ( ItemIndex < 0 )
+		{
+			if ( _flags & READONLY )
+			{
+				_edit.Clear();
+			}
+		}
+		else if ( ItemIndex < _list.count())
+		{
+			_edit.SetText( _list[ItemIndex].text.data() );
+		}
+		
+		Command( CMD_ITEM_CHANGED, ItemIndex, this, 0 );
 	}
 
 	void ComboBox::OnChangeStyles()
@@ -147,7 +158,7 @@ namespace wal
 		}
 
 		_edit.SetText( txt, mark );
-		MoveCurrent( -1 );
+		//MoveCurrent( -1, false );
 	}
 
 	void ComboBox::SetText( const std::string& utf8txt, bool mark )
@@ -188,8 +199,7 @@ namespace wal
 			if ( n >= 0 && n < _list.count() && n != _current )
 			{
 				_current = n;
-				_edit.SetText( ItemText( n ) );
-				Command( CMD_ITEM_CHANGED, _current, this, 0 );
+				OnItemChanged(_current);
 			}
 
 			if ( id == CMD_ITEM_CLICK )
@@ -209,7 +219,7 @@ namespace wal
 				_box->SetNoCurrent();
 			}
 
-			Command( CMD_ITEM_CHANGED, _current, this, 0 );
+			OnItemChanged(_current);
 			return true;
 		};
 
@@ -250,7 +260,6 @@ namespace wal
 				if ( IsBoxOpened() )
 				{
 					CloseBox();
-					return _current >= 0;
 				}
 
 				break;
