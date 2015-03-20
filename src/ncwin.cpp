@@ -637,8 +637,9 @@ NCWin::NCWin()
 	_mdCommands.AddCmd( ID_SEARCH_2, _LT( "&Find file" ),  "Alt-F7" );
 	_mdCommands.AddCmd( ID_HISTORY,   _LT( "&History" ),   "Alt-F8 (Ctrl-K)" );
 	_mdCommands.AddCmd( ID_VIDEO,   _LT( "&Maximize window" ),   "Alt-F9" );
-    _mdCommands.AddCmd( ID_FOLDER_HISTORY, _LT( "F&olders history" ), "Alt-F12" );
-    _mdCommands.AddSplit();
+	_mdCommands.AddCmd( ID_VIEW_HISTORY, _LT( "File vie&w history" ), "Alt-F11" );
+	_mdCommands.AddCmd( ID_FOLDER_HISTORY, _LT( "F&olders history" ), "Alt-F12" );
+	_mdCommands.AddSplit();
 	_mdCommands.AddCmd( ID_CTRL_O, _LT( "&Panel on/off" ), "Ctrl-O" );
 	_mdCommands.AddCmd( ID_PANEL_EQUAL, _LT( "E&qual panels" ),  "Ctrl-=" );
 	_mdCommands.AddSplit();
@@ -2471,6 +2472,18 @@ void NCWin::FolderHistory()
     }
 }
 
+void NCWin::ViewHistory()
+{
+	if ( _mode != PANEL )
+	{
+		return;
+	}
+
+	clPtr<FS> ptr;
+	FSPath    path;
+
+}
+
 void NCWin::FileAssociations()
 {
 	if ( _mode != PANEL ) { return; }
@@ -3844,11 +3857,15 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				FolderShortcuts();
 				break;
 
-            case FC(VK_F12, KM_ALT):
-                FolderHistory();
-                break;
+			case FC( VK_F11, KM_ALT ):
+				ViewHistory();
+				break;
 
-            case FC(VK_F, KM_CTRL):
+			case FC( VK_F12, KM_ALT ):
+				FolderHistory();
+				break;
+
+			case FC( VK_F, KM_CTRL ):
 				CtrlF();
 				break;
 
@@ -4508,11 +4525,15 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 				FolderShortcuts();
 				return true;
 
-            case ID_FOLDER_HISTORY:
-                FolderHistory();
-                return true;
+			case ID_FOLDER_HISTORY:
+				FolderHistory();
+				return true;
 
-            case ID_FILEASSOCIATIONS:
+			case ID_VIEW_HISTORY:
+				ViewHistory();
+				return true;
+
+			case ID_FILEASSOCIATIONS:
 				FileAssociations();
 				return true;
 

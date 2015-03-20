@@ -308,7 +308,8 @@ private:
 	void Tab( bool forceShellTab );
 	void PanelEqual();
 	void FolderShortcuts();
-    void FolderHistory();
+	void FolderHistory();
+	void ViewHistory();
 	void FileAssociations();
 	void FileHighlighting();
 	void OnOffShl();
