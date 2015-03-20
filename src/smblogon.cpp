@@ -7,8 +7,9 @@
 #include "smblogon.h"
 
 #include "ncdialogs.h"
-#include "string-util.h" //для carray_cat
+#include "string-util.h"
 #include "ltext.h"
+#include "nceditline.h"
 
 #ifdef LIBSMBCLIENT_EXIST
 
@@ -25,9 +26,9 @@ public:
 	StaticLine userText;
 	StaticLine passwordText;
 
-	EditLine serverEdit;
-	EditLine domainEdit;
-	EditLine userEdit;
+	clNCEditLine serverEdit;
+	clNCEditLine domainEdit;
+	clNCEditLine userEdit;
 	EditLine passwordEdit;
 
 	SmbLogonDialog( NCDialogParent* parent, FSSmbParam& params, bool enterServer );
@@ -45,9 +46,9 @@ SmbLogonDialog::SmbLogonDialog( NCDialogParent* parent, FSSmbParam& params, bool
 	   domainText( 0, this, utf8_to_unicode( _LT( "&Domain:" ) ).data() ),
 	   userText( 0, this, utf8_to_unicode( _LT( "&Login:" ) ).data() ),
 	   passwordText( 0, this, utf8_to_unicode( _LT( "Pass&word:" ) ).data() ),
-	   serverEdit  ( 0, this, 0, 0, 16 ),
-	   domainEdit  ( 0, this, 0, 0, 16 ),
-	   userEdit ( 0, this, 0, 0, 16 ),
+		serverEdit( EDIT_FIELD_SMB_SERVER, 0, this, 0, 16, 7, false, true, false ),
+		domainEdit( EDIT_FIELD_SMB_DOMAIN, 0, this, 0, 16, 7, false, true, false ),
+		userEdit( EDIT_FIELD_SMB_USER, 0, this, 0, 16, 7, false, true, false ),
 	   passwordEdit   ( 0, this, 0, 0, 16 )
 {
 
@@ -132,12 +133,17 @@ bool GetSmbLogon( NCDialogParent* parent, FSSmbParam& params, bool enterServer )
 	{
 		if ( enterServer )
 		{
-			Copy( params.server, unicode_to_utf8( dlg.serverEdit.GetText().data() ).data() , sizeof( params.server ) );
+			Copy( params.server, dlg.serverEdit.GetTextStr().data() , sizeof( params.server ) );
+			dlg.serverEdit.AddCurrentTextToHistory();
 		}
 
-		Copy( params.domain,  unicode_to_utf8( dlg.domainEdit.GetText().data() ).data() , sizeof( params.domain ) );
-		Copy( params.user, unicode_to_utf8( dlg.userEdit.GetText().data() ).data() , sizeof( params.user ) );
-		Copy( params.pass, unicode_to_utf8( dlg.passwordEdit.GetText().data() ).data() , sizeof( params.pass ) );
+		Copy( params.domain, dlg.domainEdit.GetTextStr().data() , sizeof( params.domain ) );
+		dlg.domainEdit.AddCurrentTextToHistory();
+		
+		Copy( params.user, dlg.userEdit.GetTextStr().data() , sizeof( params.user ) );
+		dlg.userEdit.AddCurrentTextToHistory();
+		
+		Copy( params.pass, dlg.passwordEdit.GetTextStr().data() , sizeof( params.pass ) );
 		params.isSet = true;
 		return true;
 	}

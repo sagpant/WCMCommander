@@ -9,7 +9,6 @@
 namespace wal
 {
 
-
 #define CB_BUTTONWIDTH 16
 
 	int uiClassComboBox = GetUiID( "ComboBox" );
@@ -19,18 +18,12 @@ namespace wal
 		return uiClassComboBox;
 	}
 
-
-	void ComboBox::MoveCurrent( int n )
+	void ComboBox::MoveCurrent( int n, bool notify )
 	{
 		int saved = _current;
 
 		if ( n < 0 )
 		{
-			if ( _flags & READONLY )
-			{
-				_edit.Clear();
-			}
-
 			_current = -1;
 
 			if ( _box.ptr() )
@@ -41,7 +34,6 @@ namespace wal
 		else if ( n < _list.count() )
 		{
 			_current = n;
-			_edit.SetText( _list[n].text.data() );
 
 			if ( _box.ptr() )
 			{
@@ -49,10 +41,27 @@ namespace wal
 			}
 		}
 
-		if ( saved != _current )
+		if ( saved != _current && notify )
 		{
-			Command( CMD_ITEM_CHANGED, _current, this, 0 );
+			OnItemChanged( _current );
 		}
+	}
+	
+	void ComboBox::OnItemChanged( int ItemIndex )
+	{
+		if ( ItemIndex < 0 )
+		{
+			if ( _flags & READONLY )
+			{
+				_edit.Clear();
+			}
+		}
+		else if ( ItemIndex < _list.count())
+		{
+			_edit.SetText( _list[ItemIndex].text.data() );
+		}
+		
+		Command( CMD_ITEM_CHANGED, ItemIndex, this, 0 );
 	}
 
 	void ComboBox::OnChangeStyles()
@@ -74,6 +83,7 @@ namespace wal
 		_lo.AddWin( &_edit, 1, 1 );
 		_edit.SetClickFocusFlag( false );
 		_edit.SetTabFocusFlag( false );
+		_edit.SetShowSpaces( false );
 		_edit.Enable();
 		_edit.Show( SHOW_INACTIVE );
 		_lo.AddRect( &_buttonRect, 1, 2 );
@@ -88,7 +98,10 @@ namespace wal
 
 	void ComboBox::Clear()
 	{
-		if ( _box.ptr() ) { _box->Clear(); }
+		if ( _box.ptr() )
+		{
+			_box->Clear();
+		}
 
 		//CloseBox();
 		_list.clear();
@@ -97,7 +110,10 @@ namespace wal
 		{
 			_current = -1;
 
-			if ( IsVisible() ) { Invalidate(); }
+			if ( IsVisible() )
+			{
+				Invalidate();
+			}
 		}
 	}
 
@@ -127,28 +143,48 @@ namespace wal
 		return _edit.GetText();
 	}
 
+	std::string ComboBox::GetTextStr() const
+	{
+		std::vector<unicode_t> V = GetText();
+
+		return unicode_to_utf8_string( V.data() );
+	}
+
 	void ComboBox::SetText( const unicode_t* txt, bool mark )
 	{
-		if ( this->_flags & READONLY ) { return; }
+		if ( this->_flags & READONLY )
+		{
+			return;
+		}
 
 		_edit.SetText( txt, mark );
-		MoveCurrent( -1 );
+		//MoveCurrent( -1, false );
+	}
+
+	void ComboBox::SetText( const std::string& utf8txt, bool mark )
+	{
+		SetText( utf8str_to_unicode( utf8txt ).data(), mark );
 	}
 
 	void ComboBox::InsertText( unicode_t t )
 	{
-		if ( this->_flags & READONLY ) { return; }
+		if ( this->_flags & READONLY )
+		{
+			return;
+		}
 
 		_edit.Insert( t );
 	}
 
 	void ComboBox::InsertText( const unicode_t* txt )
 	{
-		if ( this->_flags & READONLY ) { return; }
+		if ( this->_flags & READONLY )
+		{
+			return;
+		}
 
 		_edit.Insert( txt );
 	}
-
 
 	void* ComboBox::ItemData( int n )
 	{
@@ -159,16 +195,14 @@ namespace wal
 	{
 		if ( win == _box.ptr() && _box.ptr() )
 		{
-			int n = _box->GetCurrent();
-
+			const int n = _box->GetCurrent();
 			if ( n >= 0 && n < _list.count() && n != _current )
 			{
 				_current = n;
-				_edit.SetText( ItemText( n ) );
-				Command( CMD_ITEM_CHANGED, _current, this, 0 );
+				OnItemChanged(_current);
 			}
 
-			if ( id == CMD_ITEM_CLICK ) //иначе зациклится
+			if ( id == CMD_ITEM_CLICK )
 			{
 				CloseBox();
 			}
@@ -180,9 +214,12 @@ namespace wal
 		{
 			_current = -1;
 
-			if ( _box ) { _box->SetNoCurrent(); }
+			if ( _box )
+			{
+				_box->SetNoCurrent();
+			}
 
-			Command( CMD_ITEM_CHANGED, _current, this, 0 );
+			OnItemChanged(_current);
 			return true;
 		};
 
@@ -193,7 +230,10 @@ namespace wal
 	{
 		_edit.EventFocus( recv );
 
-		if ( !recv && _box.ptr() ) { CloseBox(); }
+		if ( !recv && _box.ptr() )
+		{
+			CloseBox();
+		}
 
 		Invalidate();
 		return true;
@@ -203,95 +243,66 @@ namespace wal
 	{
 		if ( pEvent->Type() == EV_KEYDOWN )
 		{
-			unsigned mod = pEvent->Mod();
-			unsigned fullKey = ( pEvent->Key() & 0xFFFF ) + ( mod << 16 );
+			const bool ctrl = (pEvent->Mod() & KM_CTRL) != 0;
 
-#define FC(key, mods) (((key)&0xFFFF) + ((mods)<<16))
-
-			switch ( fullKey )
+			switch ( pEvent->Key() )
 			{
-				case VK_ESCAPE:
-					if ( _box.ptr() )
-					{
-						CloseBox();
-						return true;
-					}
-
-					break;
-
-				case VK_RETURN:
-					if ( _box.ptr() )
-					{
-						CloseBox();
-						return _current >= 0;
-					}
-
-					break;
-
-				case FC( VK_UP, KM_SHIFT ):
-				case FC( VK_UP, KM_CTRL ):
-				case FC( VK_DOWN, KM_SHIFT ):
-				case FC( VK_DOWN, KM_CTRL ):
-					if ( _box.ptr() )
-					{
-						CloseBox();
-						return true;
-					}
-					else
-					{
-						OpenBox();
-						return true;
-					}
-
+			case VK_ESCAPE:
+				if ( IsBoxOpened() )
+				{
+					CloseBox();
 					return true;
+				}
 
+				break;
 
-				case VK_UP:
-					if ( _box.ptr() )
-					{
-						return _box->EventKey( pEvent );
-					}
-					else
-					{
-						if ( _current > 0 )
-						{
-							MoveCurrent( _current - 1 );
-							return true;
-						}
-					}
+			case VK_RETURN:
+				if ( IsBoxOpened() )
+				{
+					CloseBox();
+				}
 
-					break;
+				break;
 
-				case VK_DOWN:
-					if ( _box.ptr() )
-					{
-						return _box->EventKey( pEvent );
-					}
-					else
-					{
-						if ( _current + 1 < _list.count() )
-						{
-							MoveCurrent( _current + 1 );
-							return true;
-						}
-					}
+			case VK_UP:
+				if ( ctrl && !IsBoxOpened() )
+				{
+					OpenBox();
+					return true;
+				}
 
-					break;
+				if ( IsBoxOpened() )
+				{
+					return _box->EventKey( pEvent );
+				}
 
-				case VK_NEXT:
-				case VK_PRIOR:
-					if ( _box.ptr() )
-					{
-						return _box->EventKey( pEvent );
-					}
+				break;
 
-					break;
+			case VK_DOWN:
+				if ( ctrl && !IsBoxOpened() )
+				{
+					OpenBox();
+					return true;
+				}
+
+				if ( IsBoxOpened() )
+				{
+					return _box->EventKey( pEvent );
+				}
+
+				break;
+					
+			default:
+				if ( IsBoxOpened() && _box->EventKey( pEvent ) )
+				{
+					return true;
+				}
+				
+				return _edit.EventKey( pEvent );
 			}
-
-			return _edit.EventKey( pEvent );
 		}
 
-		return false;
+		return Win::EventKey( pEvent );
 	}
 
 	bool ComboBox::OnOpenBox()
@@ -305,7 +316,10 @@ namespace wal
 
 	void ComboBox::RefreshBox()
 	{
-		if ( !_box.ptr() ) { return; }
+		if ( !_box.ptr() )
+		{
+			return;
+		}
 
 		_box->Clear();
 
@@ -319,30 +333,43 @@ namespace wal
 
 	void ComboBox::OpenBox()
 	{
-		if ( _box.ptr() ) { return; }
+		if ( _box.ptr() )
+		{
+			return;
+		}
 
-		if ( !OnOpenBox() ) { return; }
+		if ( !OnOpenBox() )
+		{
+			return;
+		}
 
-		_box = new TextList( Win::WT_POPUP, 0, 0, this, VListWin::SINGLE_SELECT,  VListWin::SINGLE_BORDER, 0 );
+		_box = new TextList( Win::WT_POPUP, 0, 0, this, VListWin::SINGLE_SELECT, VListWin::SINGLE_BORDER, 0 );
 
 		for ( int i = 0; i < _list.count(); i++ )
 		{
 			_box->Append( _list[i].text.data() );
 		}
 
-		if ( _current >= 0 ) { _box->MoveCurrent( _current ); }
+		if ( _current >= 0 )
+		{
+			_box->MoveCurrent( _current );
+		}
 
 		_box->SetHeightRange( LSRange( _rows, _rows, _rows ) );
 
 		int width = ClientRect().Width();
+		if ( width < 20 )
+		{
+			width = 20;
+		}
 
-		if ( width < 20 ) { width = 20; }
+		_box->Show( Win::SHOW_INACTIVE );
+		_box->Enable();
 
 		LSize ls;
 		_box->GetLSize( &ls );
 
 		crect rect = this->ScreenRect();
-
 		if ( _flags & MODE_UP )
 		{
 			rect.bottom = rect.top;
@@ -356,14 +383,15 @@ namespace wal
 		}
 
 		_box->Move( rect );
-		_box->Show( Win::SHOW_INACTIVE );
-		_box->Enable();
 		SetCapture( &captureSD );
 	}
 
 	void ComboBox::CloseBox()
 	{
-		if ( IsCaptured() ) { ReleaseCapture( &captureSD ); }
+		if ( IsCaptured() )
+		{
+			ReleaseCapture( &captureSD );
+		}
 
 		if ( _box.ptr() )
 		{
@@ -468,13 +496,10 @@ namespace wal
 			*/
 		}
 
-		DrawBorder( gc, cr, InFocus() && ( _flags & NOFOCUSFRAME ) == 0 ? UiGetColor( uiFocusFrameColor, 0, 0, 0 ) : ColorTone( UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF ), -200 ) );
+		DrawBorder( gc, cr, InFocus() && ( _flags & NOFOCUSFRAME ) == 0 ? 
+            UiGetColor( uiFocusFrameColor, 0, 0, 0 ) : ColorTone( UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF ), -200 ) );
 
 		SBCDrawButton( gc, _buttonRect, ( _flags & MODE_UP ) ? 4 : 5, bgColor, false );
 	}
-
-
-	ComboBox::~ComboBox() {}
-
 
 } //namespace wal

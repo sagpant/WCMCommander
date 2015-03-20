@@ -5,6 +5,124 @@
  */
 
 #include "nchistory.h"
+#include "wcm-config.h"
+
+
+#define MAX_FIELD_HISTORY_COUNT	50
+
+static const char fieldHistSection[] = "FieldsHistory";
+
+static cstrhash<HistCollect_t> g_FieldsHistHash;
+
+
+void LoadFieldsHistory()
+{
+	IniHash iniHash;
+	IniHashLoad( iniHash, fieldHistSection );
+
+	g_FieldsHistHash.clear();
+	std::vector<const char*> SecList = iniHash.Keys();
+	char Name[64];
+	
+	for ( int i = 0, count = SecList.size(); i < count; i++ )
+	{
+		const char* Section = SecList[i];
+		HistCollect_t& List = g_FieldsHistHash.get( Section );
+
+		for ( int j = 0; j < MAX_FIELD_HISTORY_COUNT; j++ )
+		{
+			Lsnprintf( Name, sizeof( Name ), "v%i", j );
+			const char* Value = iniHash.GetStrValue( Section, Name, nullptr );
+			if ( Value )
+			{
+				std::vector<unicode_t> Str = utf8_to_unicode( Value );
+				List.push_back( Str );
+			}
+		}
+	}
+}
+
+void SaveFieldsHistory()
+{
+	IniHash iniHash;
+	std::vector<const char*> SecList = g_FieldsHistHash.keys();
+	char Name[64];
+
+	for ( int i = 0, SecCount = SecList.size(); i < SecCount; i++ )
+	{
+		const char* Section = SecList[i];
+		HistCollect_t* List = g_FieldsHistHash.exist( Section );
+		if ( !List )
+		{
+			continue;
+		}
+
+		for ( int j = 0, ValCount = List->size(); j < ValCount; j++ )
+		{
+			Lsnprintf( Name, sizeof( Name ), "v%i", j );
+			std::string Val = unicode_to_utf8_string( List->at(j).data() );
+			
+			iniHash.SetStrValue( Section, Name, Val.c_str());
+		}
+	}
+
+	IniHashSave( iniHash, fieldHistSection );
+}
+
+HistCollect_t* GetFieldHistCollect( const char* FieldName )
+{
+	if ( !FieldName || !FieldName[0] )
+	{
+		return nullptr;
+	}
+	
+	HistCollect_t* List = g_FieldsHistHash.exist( FieldName );
+	return List ? List : nullptr;
+}
+
+// Returns index of element with the specified text, or -1 if no such found
+int FindHistElement( HistCollect_t* List, const unicode_t* Text )
+{
+	for (int i = 0, count = List->size(); i < count; i++)
+	{
+		if (unicode_is_equal( Text, List->at(i).data() ))
+		{
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+void AddFieldTextToHistory( const char* FieldName, const unicode_t* Txt )
+{
+	if ( !FieldName || !FieldName[0] || !Txt || !Txt[0] )
+	{
+		return;
+	}
+	
+	std::vector<unicode_t> Str = new_unicode_str( Txt );
+	
+	HistCollect_t& List = g_FieldsHistHash.get( FieldName );
+	
+	// check if item already exists in the list
+	const int Index = FindHistElement( &List, Str.data() );
+	if ( Index != -1 )
+	{
+		// remove existing item
+		List.erase( List.begin() + Index );
+	}
+	
+	// add item to the begining of the list
+	List.insert( List.begin(), Str );
+	
+	// limit number of elements in the list
+	while ( List.size() > MAX_FIELD_HISTORY_COUNT )
+	{
+		List.erase( List.end() );
+	}
+}
+
 
 void NCHistory::Clear()
 {
@@ -83,6 +201,7 @@ const unicode_t* NCHistory::Prev()
 		m_Current = (int) m_List.size()-1;
 		return m_List[m_Current].data();
 	}
+	
 	return m_List[++m_Current].data();
 }
 
@@ -93,6 +212,7 @@ const unicode_t* NCHistory::Next()
 		m_Current = -1;
 		return nullptr;
 	}
+	
 	return ( m_Current == 0 || m_Current > (int) m_List.size() )
 			? nullptr
 			: m_List[--m_Current].data();

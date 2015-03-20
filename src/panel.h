@@ -323,5 +323,4 @@ public:
 	virtual bool Command( int id, int subId, Win* win, void* data );
 	virtual bool Broadcast( int id, int subId, Win* win, void* data );
 	virtual void OnChangeStyles();
-	virtual ~PanelWin();
 };

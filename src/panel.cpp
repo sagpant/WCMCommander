@@ -670,10 +670,9 @@ bool PanelWin::Broadcast( int id, int subId, Win* win, void* data )
 	return false;
 }
 
-
-#define VLINE_WIDTH (3)
-#define MIN_BRIEF_CHARS 12
-#define MIN_MEDIUM_CHARS 18
+static const int VLINE_WIDTH = 3;
+static const int MIN_BRIEF_CHARS = 12;
+static const int MIN_MEDIUM_CHARS = 18;
 
 void PanelWin::Check()
 {
@@ -1711,29 +1710,17 @@ void PanelWin::LoadPathStringSafe( const char* path )
 	//dbg_printf( "PanelWin::LoadPathStringSafe path=%s\n", path );
 	FSPath fspath;
 
-	clPtr<FS> fs = ParzeURI( utf8_to_unicode( path ).data(), fspath, {} );
+	auto UTF8Path = utf8_to_unicode( path );
+
+	clPtr<FS> fs = ParzeURI( UTF8Path.data(), fspath, {} );
 
 	this->LoadPath( fs, fspath, 0, 0, PanelWin::SET );
 }
 
 void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType )
 {
-//printf("LoadPath '%s'\n", paramPath.GetUtf8());
-
 	FSStat stat;
 	FSCInfo info;
-//	int err;
-
-//	if ( fs->Stat(paramPath, &stat, &err, &info) == -1 ) return;Retain
-	if (fs == 0)
-	{
-	//	paramPath.dbg_printf("PanelWin::LoadPath fs is null, paramPath=");
-	}
-	else
-	{
-		//dbg_printf("PanelWin::LoadPath() fsUri=%s current=%s ", (fs->Uri(paramPath)).GetUtf8(), current ? current->GetUtf8() : "null");
-		//paramPath.dbg_printf(", paramPath=");
-	}
 
 	try
 	{
@@ -1904,7 +1891,6 @@ void PanelWin::OperThreadStopped()
 	Invalidate();
 }
 
-
 void PanelWin::Reread( bool resetCurrent, const FSString& Name )
 {
 	clPtr<cstrhash<bool, unicode_t> > sHash = _list.GetSelectedHash();
@@ -1923,7 +1909,6 @@ void PanelWin::Reread( bool resetCurrent, const FSString& Name )
 
 	LoadPath( GetFSPtr(), GetPath(), StrPtr, sHash, RESET );
 }
-
 
 bool PanelWin::EventMouse( cevent_mouse* pEvent )
 {
@@ -2130,7 +2115,7 @@ bool PanelWin::DirUp()
 void PanelWin::DirEnter(bool OpenInExplorer)
 {
 	if ( _place.IsEmpty() ) { return; }
-
+	
 	if ( !HideDotsInDir() && !Current() )
 	{
 		if ( OpenInExplorer )
@@ -2147,7 +2132,7 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 
 		return;
 	};
-
+	  
 	FSNode* node = GetCurrent();
 
 	if ( !node || !node->IsDir() ) { return; }
@@ -2156,23 +2141,23 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 	int cs = node->Name().PrimaryCS();
 	p.Push( cs, node->Name().Get( cs ) );
 
-
 	clPtr<FS> fs = GetFSPtr();
-
+	
 	if ( fs.IsNull() ) { return; }
 
 #ifdef _WIN32
-
 	if ( fs->Type() == FS::WIN32NET )
 	{
+		
 		NETRESOURCEW* nr = node->_w32NetRes.Get();
 
 		if ( !nr || !nr->lpRemoteName ) { return; }
-
+		
 		if ( node->extType == FSNode::FILESHARE )
 		{
 			FSPath path;
-			clPtr<FS> newFs = ParzeURI( Utf16ToUnicode( nr->lpRemoteName ).data(), path, {} );
+			auto UnicodeRemoteName = Utf16ToUnicode( nr->lpRemoteName );
+			clPtr<FS> newFs = ParzeURI( UnicodeRemoteName.data(), path, {} );
 			LoadPath( newFs, path, nullptr, nullptr, PUSH );
 		}
 		else
@@ -2184,7 +2169,6 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 
 		return;
 	}
-
 #endif
 
 	// for smb servers
@@ -2221,7 +2205,4 @@ void PanelWin::DirRoot()
 	p.PushStr( FSString() ); //у абсолютного пути всегда пустая строка в начале
 	LoadPath( GetFSPtr(), p, 0, 0, RESET );
 }
-
-
-PanelWin::~PanelWin() {}
 

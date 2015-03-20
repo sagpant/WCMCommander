@@ -7,13 +7,14 @@
 #include "ncdialogs.h"
 #include "search-dlg.h"
 #include "ltext.h"
+#include "nceditline.h"
 
 class SearchParamDialog: public NCVertDialog
 {
 	Layout iL;
 public:
 	StaticLabel textLabel;
-	EditLine textEdit;
+	clNCEditLine textEdit;
 	SButton  caseButton;
 
 	SearchParamDialog( NCDialogParent* parent, const SearchAndReplaceParams* params );
@@ -27,7 +28,7 @@ SearchParamDialog::SearchParamDialog( NCDialogParent* parent, const SearchAndRep
 	:  NCVertDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( _LT( "Search" ) ).data(), bListOkCancel ),
 	   iL( 16, 3 ),
 	   textLabel( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &textEdit ),
-	   textEdit( 0, this, 0, 0, 50 ),
+		textEdit( EDIT_FIELD_SEARCH_TEXT, 0, this, 0, 50, 7, false, true, false ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 
 {
@@ -81,6 +82,7 @@ bool DoSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params )
 	{
 		params->m_CaseSensitive = dlg.caseButton.IsSet();
 		params->m_SearchText = dlg.textEdit.GetText();
+		dlg.textEdit.AddCurrentTextToHistory();
 		return true;
 	}
 
@@ -96,8 +98,8 @@ class SearchFileParamDialog: public NCVertDialog
 public:
 	StaticLabel maskText;
 	StaticLabel textText;
-	EditLine maskEdit;
-	EditLine textEdit;
+	clNCEditLine maskEdit;
+	clNCEditLine textEdit;
 	SButton  caseButton;
 
 	SearchFileParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
@@ -111,8 +113,8 @@ SearchFileParamDialog::SearchFileParamDialog( NCDialogParent* parent, SearchAndR
 	   iL( 16, 3 ),
 	   maskText( 0, this, utf8_to_unicode( _LT( "File &mask:" ) ).data(), &maskEdit ),
 	   textText( 0, this, utf8_to_unicode( _LT( "&Text:" ) ).data(), &textEdit ),
-	   maskEdit( 0, this, 0, 0, 50 ),
-	   textEdit ( 0, this, 0, 0, 50 ),
+		maskEdit( EDIT_FIELD_FILE_MASK, 0, this, 0, 50, 7, false, true, false ),
+		textEdit( EDIT_FIELD_SEARCH_TEXT, 0, this, 0, 50, 7, false, true, false ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 {
 	if ( params->m_SearchMask.data() ) { maskEdit.SetText( params->m_SearchMask.data(), true ); }
@@ -155,8 +157,12 @@ bool DoFileSearchDialog( NCDialogParent* parent, SearchAndReplaceParams* params 
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		params->m_CaseSensitive = dlg.caseButton.IsSet();
+		
 		params->m_SearchMask = dlg.maskEdit.GetText();
+		dlg.maskEdit.AddCurrentTextToHistory();
+		
 		params->m_SearchText = dlg.textEdit.GetText();
+		dlg.textEdit.AddCurrentTextToHistory();
 		return true;
 	}
 
@@ -172,8 +178,8 @@ class ReplaceEditParamDialog: public NCVertDialog
 public:
 	StaticLabel fromText;
 	StaticLabel toText;
-	EditLine fromEdit;
-	EditLine toEdit;
+	clNCEditLine fromEdit;
+	clNCEditLine toEdit;
 	SButton  caseButton;
 
 	ReplaceEditParamDialog( NCDialogParent* parent, SearchAndReplaceParams* params );
@@ -187,8 +193,8 @@ ReplaceEditParamDialog::ReplaceEditParamDialog( NCDialogParent* parent, SearchAn
 	   iL( 16, 3 ),
 	   fromText( 0, this, utf8_to_unicode( _LT( "&Search for:" ) ).data(), &fromEdit ),
 	   toText( 0, this, utf8_to_unicode( _LT( "&Replace with:" ) ).data(), &toEdit ),
-	   fromEdit ( 0, this, 0, 0, 50 ),
-	   toEdit   ( 0, this, 0, 0, 50 ),
+		fromEdit( EDIT_FIELD_SEARCH_TEXT, 0, this, 0, 50, 7, false, true, false ),
+		toEdit( EDIT_FIELD_SEARCH_REPLACE_TEXT, 0, this, 0, 50, 7, false, true, false ),
 	   caseButton( 0, this, utf8_to_unicode( _LT( "C&ase sensitive" ) ).data(), 0, params->m_CaseSensitive )
 {
 	if ( params->m_SearchText.data() ) { fromEdit.SetText( params->m_SearchText.data(), true ); }
@@ -219,13 +225,14 @@ bool DoReplaceEditDialog( NCDialogParent* parent, SearchAndReplaceParams* params
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		params->m_CaseSensitive = dlg.caseButton.IsSet();
+		
 		params->m_SearchText = dlg.fromEdit.GetText();
-		params->m_ReplaceTo =  dlg.toEdit.GetText();
+		dlg.fromEdit.AddCurrentTextToHistory();
+		
+		params->m_ReplaceTo = dlg.toEdit.GetText();
+		dlg.toEdit.AddCurrentTextToHistory();
 		return true;
 	}
 
 	return false;
 }
-
-
-

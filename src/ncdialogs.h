@@ -12,6 +12,7 @@
 
 using namespace wal;
 
+
 class NCShadowWin: public Win
 {
 public:
@@ -119,7 +120,11 @@ int NCMessageBox( NCDialogParent* parent, const char* utf8head, const char* utf8
 int GoToLineDialog( NCDialogParent* parent );
 int KillCmdDialog( NCDialogParent* parent, const unicode_t* cmd );
 
+// simple input string dialog
 std::vector<unicode_t> InputStringDialog( NCDialogParent* parent, const unicode_t* message, const unicode_t* str = 0 );
+
+// input string dialog with history and auto complete support
+std::vector<unicode_t> InputStringDialog( const char* fieldName, NCDialogParent* parent, const unicode_t* message, const unicode_t* str = 0 );
 
 
 class CmdHistoryDialog: public NCDialog

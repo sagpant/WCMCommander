@@ -1647,27 +1647,44 @@ void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList>
 
 void NCWin::ApplyCommand()
 {
-	if ( _mode != PANEL ) { return; }
+	if ( _mode != PANEL )
+	{
+		return;
+	}
 
-	std::vector<unicode_t> command = InputStringDialog( this, utf8_to_unicode( _LT( "Apply command to the selected files" ) ).data() );
+	static std::vector<unicode_t> command;
+   std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_APPLY_COMMAND, this,
+																  utf8_to_unicode( _LT( "Apply command to the selected files" ) ).data(),
+																  command.data() );
+	if ( !str.data() )
+	{
+		return;
+	}
 
+	command = str;
 	ApplyCommandToList( command, _panel->GetSelectedList(), _panel );
 }
 
 void NCWin::CreateDirectory()
 {
-	if ( _mode != PANEL ) { return; }
+	if ( _mode != PANEL )
+	{
+		return;
+	}
 
-	std::vector<unicode_t> dir;
-
+	static std::vector<unicode_t> dir;
 	try
 	{
-		dir = InputStringDialog( this, utf8_to_unicode( _LT( "Create new directory" ) ).data() );
+		std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_MAKE_FOLDER, this,
+																	  utf8_to_unicode( _LT( "Create new directory" ) ).data(), dir.data() );
+		if ( !str.data() )
+		{
+			return;
+		}
 
-		if ( !dir.data() ) { return; }
-
+		dir = str;
 		const std::vector<clPtr<FS>> checkFS = { _panel->GetFSPtr(), GetOtherPanel()->GetFSPtr() };
-
+		
 		FSPath path = _panel->GetPath();
 		clPtr<FS> fs = ParzeURI( dir.data(), path, checkFS );
 
@@ -1675,8 +1692,8 @@ void NCWin::CreateDirectory()
 		{
 			char buf[4096];
 			FSString name = dir.data();
-			Lsnprintf( buf, sizeof( buf ), _LT( "can`t create directory:%s\n" ), name.GetUtf8() );
-			NCMessageBox( this, "CD", buf, true );
+			Lsnprintf( buf, sizeof( buf ), _LT( "Can't create directory: '%s'\n" ), name.GetUtf8() );
+			NCMessageBox( this, "Create directory", buf, true );
 			return;
 		}
 
@@ -1848,7 +1865,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 		if ( enterFileName )
 		{
 			static std::vector<unicode_t> savedUri;
-			std::vector<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "File to edit" ) ).data(), savedUri.data() );
+			std::vector<unicode_t> uri = InputStringDialog( EDIT_FIELD_FILE_EDIT, this, utf8_to_unicode( _LT( "File to edit" ) ).data(), savedUri.data() );
 
 			if ( !uri.data() ) { return; }
 
@@ -2160,7 +2177,7 @@ void NCWin::Copy( bool shift )
 		pCaption = _LT("Copy file under cursor to:");
 	}
 
-	std::vector<unicode_t> str = InputStringDialog(this, utf8_to_unicode(pCaption).data(),
+	std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_FILE_TARGET, this, utf8_to_unicode( pCaption ).data(),
 	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -2277,7 +2294,7 @@ void NCWin::Move( bool shift )
 		pCaption = _LT("Move file under cursor to:");
 	}
 
-	std::vector<unicode_t> str = InputStringDialog(this, utf8_to_unicode(pCaption).data(),
+	std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_FILE_TARGET, this, utf8_to_unicode( pCaption ).data(),
 	                                                 shift ? _panel->GetCurrentFileName() : uri.GetUnicode() );
 
 	if ( !str.data() || !str[0] ) { return; }
@@ -2324,12 +2341,23 @@ void NCWin::Move( bool shift )
 
 void NCWin::Mark( bool enable )
 {
-	if ( _mode != PANEL ) { return; }
+	if ( _mode != PANEL )
+	{
+		return;
+	}
 
-	std::vector<unicode_t> str =  InputStringDialog( this, utf8_to_unicode( _LT( enable ? "Select" : "Deselect" ) ).data(), utf8_to_unicode( "*" ).data() );
+	static std::vector<unicode_t> mask = utf8_to_unicode( "*" );
+	
+	std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_FILE_MASK, this,
+																  utf8_to_unicode( _LT( enable ? "Select" : "Deselect" ) ).data(),
+																  mask.data() );
 
-	if ( !str.data() || !str[0] ) { return; }
+	if ( !str.data() || !str[0] )
+	{
+		return;
+	}
 
+	mask = str;
 	_panel->Mark( str.data(), enable );
 }
 
@@ -2529,7 +2557,7 @@ bool NCWin::EditSave( bool saveAs )
 		if ( saveAs )
 		{
 			static std::vector<unicode_t> savedUri;
-			std::vector<unicode_t> uri = InputStringDialog( this, utf8_to_unicode( _LT( "Save file as ..." ) ).data(), savedUri.data() );
+			std::vector<unicode_t> uri = InputStringDialog( EDIT_FIELD_FILE_EDIT, this, utf8_to_unicode( _LT( "Save file as ..." ) ).data(), savedUri.data() );
 
 			if ( !uri.data() ) { return false; }
 

@@ -6,7 +6,6 @@
 
 namespace wal
 {
-
 	extern int uiClassButton;
 	extern int uiClassEditLine;
 	extern int uiClassMenuBar;
@@ -188,7 +187,9 @@ namespace wal
 	enum EditLineCmd
 	{
 		// subcommands of CMD_EDITLINE_INFO
-		SCMD_EDITLINE_CHANGED = 100
+		SCMD_EDITLINE_CHANGED = 100,
+		SCMD_EDITLINE_DELETED,
+		SCMD_EDITLINE_INSERTED
 	};
 
 	class clValidator: public iIntrusiveCounter
@@ -235,13 +236,20 @@ namespace wal
 		CaptureSD captureSD;
 
 		void DrawCursor( GC& gc );
-		bool CheckCursorPos(); //true -если нужна перерисовка
+		bool CheckCursorPos(); //true - if redrawing is needed
 		void ClipboardCopy();
 		void ClipboardPaste();
 		void ClipboardCut();
 		int GetCharPos( cpoint p );
 	protected:
 		virtual void Changed() { if ( Parent() ) { Parent()->Command( CMD_EDITLINE_INFO, SCMD_EDITLINE_CHANGED, this, 0 ); } }
+		virtual void SendCommand(const int cmd)
+		{
+			if ( Parent() )
+			{
+				Parent()->Command( CMD_EDITLINE_INFO, cmd, this, 0 );
+			}
+		}
 	public:
 		EditLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true, unsigned flags = 0 );
 		void SetAcceptAltKeys() { doAcceptAltKeys = true; }
@@ -258,6 +266,7 @@ namespace wal
 		void Insert( const unicode_t* txt );
 		bool IsEmpty() const;
 		int GetCursorPos() { return text.Cursor(); }
+		int GetMarkerPos() { return text.Marker(); }
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
 		void SetReplaceMode( bool ReplaceMode ) { m_ReplaceMode = ReplaceMode; }
 		std::vector<unicode_t> GetText() const;
@@ -639,19 +648,22 @@ namespace wal
 			FRAME3D  = 4,
 			NOFOCUSFRAME = 8
 		};
-	private:
+	
+    private:
 		unsigned _flags;
 		CaptureSD captureSD;
 		Layout _lo;
-		struct Node
+		
+        struct Node
 		{
 			std::vector<unicode_t> text;
 			void* data;
 		};
-		EditLine _edit;
+		
+        EditLine _edit;
 		crect _buttonRect;
 		ccollect<Node, 0x100> _list;
-		clPtr<TextList> _box;
+        clPtr<TextList> _box;
 //		int _cols;
 		int _rows;
 		int _current;
@@ -664,22 +676,28 @@ namespace wal
 
 	public:
 		ComboBox( int nId, Win* parent, int cols, int rows, unsigned flags = 0,  crect* rect = 0 );
-		virtual void Paint( GC& gc, const crect& paintRect );
+        virtual ~ComboBox() {}
+		
+        virtual void Paint( GC& gc, const crect& paintRect );
 		virtual bool EventMouse( cevent_mouse* pEvent );
-		virtual bool EventKey( cevent_key* pEvent );
+        virtual bool EventKey( cevent_key* pEvent );
 		virtual bool EventFocus( bool recv );
 		virtual bool Command( int id, int subId, Win* win, void* d );
 		virtual void OnChangeStyles();
 		virtual int UiGetClassId();
-		void Clear();
+		
+        void Clear();
 		void Append( const unicode_t* text, void* data = 0 );
 		void Append( const char* text, void* data = 0 );
 
 		std::vector<unicode_t> GetText() const;
+		std::string GetTextStr() const;
 		void SetText( const unicode_t* txt, bool mark = false );
+		void SetText( const std::string& utf8txt, bool mark = false );
 		void InsertText( unicode_t t );
 		void InsertText( const unicode_t* txt );
 		int GetCursorPos() { return _edit.GetCursorPos(); }
+		int GetMarkerPos() { return _edit.GetMarkerPos(); }
 		void SetCursorPos( int c, bool mark = false ) { _edit.SetCursorPos( c, mark ); }
 
 
@@ -688,19 +706,19 @@ namespace wal
 		const unicode_t* ItemText( int n );
 
 		void* ItemData( int n );
-		void MoveCurrent( int n );
+		void MoveCurrent( int n, bool notify = true );
 		bool IsBoxOpened() { return _box.ptr() != 0; }
 		void CloseBox();
-		virtual bool OnOpenBox();
+		
+        virtual bool OnOpenBox();
 		virtual void OnCloseBox();
-
-		virtual ~ComboBox();
+		virtual void OnItemChanged( int ItemIndex );
 	};
 
-//ToolTip один на все приложение, поэтому установка нового, удаляет предыдущий
+//ToolTip is global, setting new one is replaceing previous
 	void ToolTipShow( Win* w, int x, int y, const unicode_t* s );
 	void ToolTipShow( int x, int y, const char* s );
 	void ToolTipHide();
 
 
-}; // namespace wal
+}// namespace wal
