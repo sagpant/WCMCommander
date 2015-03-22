@@ -136,7 +136,7 @@ static void escShellStr(std::string& src)
 
 void ExecuteDefaultApplication( const unicode_t* Path )
 {
-	const std::string utf8 = unicode_to_utf8( Path );
+	std::string utf8 = unicode_to_utf8( Path );
 
 #if defined( __APPLE__)
 	const std::string command = "open \"" + utf8 + "\"";
