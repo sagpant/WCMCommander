@@ -57,6 +57,7 @@ HN = \
 	src/path-list.h \
 	src/folder-shortcuts.h \
 	src/folder-history.h \
+	src/view-history.h \
 	src/nceditline.h \
 	src/fontdlg.h \
 	src/ncfonts.h \
@@ -116,6 +117,7 @@ OBJS = \
 	$(OBJDIR)/path-list.o \
 	$(OBJDIR)/folder-shortcuts.o \
 	$(OBJDIR)/folder-history.o \
+	$(OBJDIR)/view-history.o \
 	$(OBJDIR)/nceditline.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
@@ -232,6 +234,9 @@ $(OBJDIR)/folder-shortcuts.o: $(HW) $(HS) $(HN) src/folder-shortcuts.cpp
 
 $(OBJDIR)/folder-history.o: $(HW) $(HS) $(HN) src/folder-history.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/folder-history.cpp -o $(OBJDIR)/folder-history.o
+
+$(OBJDIR)/view-history.o: $(HW) $(HS) $(HN) src/view-history.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/view-history.cpp -o $(OBJDIR)/view-history.o
 
 $(OBJDIR)/nceditline.o: $(HW) $(HS) $(HN) src/nceditline.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/nceditline.cpp -o $(OBJDIR)/nceditline.o

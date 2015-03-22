@@ -78,6 +78,7 @@
     <ClCompile Include="src/swl\swl_combobox.cpp" />
     <ClCompile Include="src\urlparser\LUrlParser.cpp" />
     <ClCompile Include="src\folder-history.cpp" />
+    <ClCompile Include="src\view-history.cpp" />
     <ClCompile Include="src\folder-shortcuts.cpp" />
     <ClCompile Include="src\path-list.cpp" />
     <ClCompile Include="src\nceditline.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="src/usermenu.h" />
     <ClInclude Include="src\urlparser\LUrlParser.h" />
     <ClInclude Include="src\folder-history.h" />
+    <ClInclude Include="src\view-history.h" />
     <ClInclude Include="src\folder-shortcuts.h" />
     <ClInclude Include="src\path-list.h" />
     <ClInclude Include="src\nceditline.h" />

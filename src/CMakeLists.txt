@@ -139,6 +139,7 @@ SET(wcm_COMMON_SOURCES
 	path-list.cpp
 	folder-shortcuts.cpp
 	folder-history.cpp
+	view-history.cpp
 	nceditline.cpp
 	smblogon.cpp
 	strconfig.cpp
@@ -220,6 +221,7 @@ SET(wcm_HEADERS
 	path-list.h
 	folder-shortcuts.h
 	folder-history.h
+	view-history.h
 	nceditline.h
 	smblogon.h
 	strconfig.h
