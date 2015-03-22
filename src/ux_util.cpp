@@ -116,6 +116,7 @@ bool UxMntList( wal::ccollect< MntListNode >* pList )
 	return true;
 }
 
+#if !defined(__APPLE__)
 // for args in the command system("cmd args")
 // "My Document.txt" -> "My\ Document.txt"
 static void escShellStr(std::string& src)
@@ -131,16 +132,17 @@ static void escShellStr(std::string& src)
 	}
 	src = dest;
 }
+#endif
 
 void ExecuteDefaultApplication( const unicode_t* Path )
 {
-	std::string utf8 = unicode_to_utf8( Path );
+	const std::string utf8 = unicode_to_utf8( Path );
 
 #if defined( __APPLE__)
-	std::string command = "open \"" + utf8 + "\"";
+	const std::string command = "open \"" + utf8 + "\"";
 #else
 	escShellStr(utf8);
-	std::string command = "xdg-open " + utf8;
+	const std::string command = "xdg-open " + utf8;
 #endif
 
 	if ( !fork() )
