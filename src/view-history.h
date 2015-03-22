@@ -8,11 +8,16 @@
 
 #include "ncdialogs.h"
 #include "vfs.h"
+#include "ncedit.h"
 
 
 void LoadViewHistory();
 void SaveViewHistory();
 
-void AddFileToHistory( clPtr<FS>* fs, FSPath* path );
+int GetCreateFileViewPosHistory( clPtr<FS>* Fs, FSPath* Path );
+void UpdateFileViewPosHistory( std::vector<unicode_t> Name, int Pos );
 
-bool ViewHistoryDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath );
+bool GetCreateFileEditPosHistory( clPtr<FS>* Fs, FSPath* Path, sEditorScrollCtx& Ctx );
+void UpdateFileEditPosHistory( std::vector<unicode_t> Name, const sEditorScrollCtx& Ctx );
+
+bool ViewHistoryDlg( NCDialogParent* Parent, clPtr<FS>* Fs, FSPath* Path );

@@ -37,6 +37,7 @@
 #include "help.h"
 #include "folder-shortcuts.h"
 #include "folder-history.h"
+#include "view-history.h"
 #include "fileassociations.h"
 #include "fileattributes.h"
 #include "fontdlg.h"
@@ -59,8 +60,6 @@
 #include <map>
 #include <vector>
 
-std::map<std::vector<unicode_t>, sEditorScrollCtx> g_EditPosHash;
-std::map<std::vector<unicode_t>, int> g_ViewPosHash;
 
 const int CMD_SWITCH = 32167;
 
@@ -1806,12 +1805,10 @@ void NCWin::View( bool Secondary )
 
 		_viewer.SetFile( fs, path, p->Size() );
 
-		if ( g_WcmConfig.editSavePos )
+		const int Pos = GetCreateFileViewPosHistory( &fs, &path );
+		if ( Pos >= 0 )
 		{
-			std::vector<unicode_t> Name = new_unicode_str( fs->Uri( path ).GetUnicode() );
-			auto i = g_ViewPosHash.find( Name );
-
-			if ( i != g_ViewPosHash.end() ) { _viewer.SetCol( i->second ); }
+			_viewer.SetCol( Pos );
 		}
 	}
 	catch ( cexception* ex )
@@ -1825,12 +1822,12 @@ void NCWin::ViewExit()
 {
 	SetBackgroundActivity( eBackgroundActivity_None );
 
-	if ( _mode != VIEW ) { return; }
-
-	if ( g_WcmConfig.editSavePos )
+	if ( _mode != VIEW )
 	{
-		g_ViewPosHash[ new_unicode_str( _viewer.Uri().GetUnicode() ) ] = _viewer.GetCol();
+		return;
 	}
+
+	UpdateFileViewPosHistory( new_unicode_str( _viewer.Uri().GetUnicode() ), _viewer.GetCol() );
 
 	//...
 	_viewer.ClearFile();
@@ -1898,20 +1895,10 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 		_editor.Load( fs, path, *file.ptr() );
 
-
-		if ( g_WcmConfig.editSavePos )
+		sEditorScrollCtx Ctx;
+		if ( GetCreateFileEditPosHistory( &fs, &path, Ctx ) )
 		{
-			std::vector<unicode_t> Name = new_unicode_str( fs->Uri( path ).GetUnicode() );
-			auto i = g_EditPosHash.find( Name );
-
-			if ( i != g_EditPosHash.end() )
-			{
-				_editor.SetScrollCtx( i->second );
-			}
-			else
-			{
-				_editor.SetCursorPos( EditPoint( 0, 0 ) );
-			}
+			_editor.SetScrollCtx( Ctx );
 		}
 		else
 		{
@@ -2482,6 +2469,9 @@ void NCWin::ViewHistory()
 	clPtr<FS> ptr;
 	FSPath    path;
 
+	if (ViewHistoryDlg(this, &ptr, &path))
+	{
+	}
 }
 
 void NCWin::FileAssociations()
@@ -2674,11 +2664,12 @@ void NCWin::EditExit()
 
 	clPtr<FS> fs = _editor.GetFS();
 
-	if ( !fs.IsNull() && g_WcmConfig.editSavePos )
+	if ( !fs.IsNull() )
 	{
 		FSPath path;
 		_editor.GetPath( path );
-		g_EditPosHash[ new_unicode_str( fs->Uri( path ).GetUnicode() ) ] = _editor.GetScrollCtx();
+		
+		UpdateFileEditPosHistory( new_unicode_str( fs->Uri( path ).GetUnicode() ), _editor.GetScrollCtx() );
 	}
 
 	if ( _editor.Changed() )
