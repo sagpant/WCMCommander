@@ -196,6 +196,8 @@ const unicode_t* NCHistory::operator[] ( size_t n )
 
 const unicode_t* NCHistory::Prev()
 {
+    if ( !m_List.size() ) return nullptr;
+
 	if ( m_Current >= (int) m_List.size()-1 )
 	{
 		m_Current = (int) m_List.size()-1;
