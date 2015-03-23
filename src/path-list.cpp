@@ -122,6 +122,11 @@ void PathListWin::Sort()
     }
 }
 
+std::vector<unicode_t> PathListWin::GetItemText( const PathList::Data* Data ) const
+{
+	return Data->name;
+}
+
 static const int uiFcColor = GetUiID("first-char-color");
 
 void PathListWin::DrawItem(wal::GC& gc, int n, crect rect)
@@ -129,7 +134,7 @@ void PathListWin::DrawItem(wal::GC& gc, int n, crect rect)
     const PathList::Data* curr = m_dataList.GetData(n);
     if (curr)
     {
-        const unicode_t* name = curr->name.data();
+		 std::vector<unicode_t> text = GetItemText( curr );
 
         UiCondList ucl;
         if ((n % 2) == 0)
@@ -151,9 +156,9 @@ void PathListWin::DrawItem(wal::GC& gc, int n, crect rect)
 
         gc.Set(GetFont());
         gc.SetTextColor(color);
-        gc.TextOutF(rect.left + 10, rect.top + 1, name);
-        gc.SetTextColor(fcColor);
-        gc.TextOutF(rect.left + 10, rect.top + 1, name, 1);
+		  gc.TextOutF( rect.left + 10, rect.top + 1, text.data() );
+        //gc.SetTextColor(fcColor);
+        //gc.TextOutF(rect.left + 10, rect.top + 1, name, 1);
     }
     else
     {

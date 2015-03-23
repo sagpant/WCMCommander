@@ -1752,6 +1752,26 @@ bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mo
 	return false;
 }
 
+void NCWin::ViewFile( clPtr<FS> Fs, FSPath& Path )
+{
+	FSStat St;
+	int Err;
+	FSCInfo Info;
+
+	Fs->Stat( Path, &St, &Err, &Info );
+
+	SetBackgroundActivity( eBackgroundActivity_Viewer );
+	SetMode( VIEW );
+
+	_viewer.SetFile( Fs, Path, St.size );
+
+	const int Pos = GetCreateFileViewPosHistory( &Fs, &Path );
+	if ( Pos >= 0 )
+	{
+		_viewer.SetCol( Pos );
+	}
+}
+
 void NCWin::View( bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
@@ -1760,11 +1780,15 @@ void NCWin::View( bool Secondary )
 
 	try
 	{
-		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) ) { return; }
+		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) )
+		{
+			return;
+		}
 
 		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
 		{
-			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to view a new file while a background editor is active.\nDo you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
+			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to view a new file while a background editor is active.\n"
+											"Do you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
 
 			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) { return; }
 
@@ -1799,17 +1823,7 @@ void NCWin::View( bool Secondary )
 			return;
 		};
 
-		SetBackgroundActivity( eBackgroundActivity_Viewer );
-
-		SetMode( VIEW );
-
-		_viewer.SetFile( fs, path, p->Size() );
-
-		const int Pos = GetCreateFileViewPosHistory( &fs, &path );
-		if ( Pos >= 0 )
-		{
-			_viewer.SetCol( Pos );
-		}
+		ViewFile( fs, path );
 	}
 	catch ( cexception* ex )
 	{
@@ -1832,6 +1846,31 @@ void NCWin::ViewExit()
 	//...
 	_viewer.ClearFile();
 	SetMode( PANEL );
+}
+
+bool NCWin::EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT )
+{
+	clPtr<MemFile> File = LoadFile( Fs, Path, this, IgnoreENOENT );
+	if ( !File.ptr() )
+	{
+		return false;
+	}
+
+	_editor.Load( Fs, Path, *File.ptr() );
+
+	sEditorScrollCtx Ctx;
+	if ( GetCreateFileEditPosHistory( &Fs, &Path, Ctx ) )
+	{
+		_editor.SetScrollCtx( Ctx );
+	}
+	else
+	{
+		_editor.SetCursorPos( EditPoint( 0, 0 ) );
+	}
+
+	SetBackgroundActivity( eBackgroundActivity_Editor );
+	SetMode( EDIT );
+	return true;
 }
 
 void NCWin::Edit( bool enterFileName, bool Secondary )
@@ -1889,25 +1928,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 			path.Push( p->name.PrimaryCS(), p->name.Get( p->name.PrimaryCS() ) );
 		}
 
-		clPtr<MemFile> file = LoadFile( fs, path, this, enterFileName == true );
-
-		if ( !file.ptr() ) { return; }
-
-		_editor.Load( fs, path, *file.ptr() );
-
-		sEditorScrollCtx Ctx;
-		if ( GetCreateFileEditPosHistory( &fs, &path, Ctx ) )
-		{
-			_editor.SetScrollCtx( Ctx );
-		}
-		else
-		{
-			_editor.SetCursorPos( EditPoint( 0, 0 ) );
-		}
-
-		SetBackgroundActivity( eBackgroundActivity_Editor );
-
-		SetMode( EDIT );
+		EditFile( fs, path, enterFileName );
 	}
 	catch ( cexception* ex )
 	{
@@ -2459,18 +2480,27 @@ void NCWin::FolderHistory()
     }
 }
 
-void NCWin::ViewHistory()
+void NCWin::FileViewHistory()
 {
 	if ( _mode != PANEL )
 	{
 		return;
 	}
 
-	clPtr<FS> ptr;
-	FSPath    path;
+	clPtr<FS> Fs;
+	FSPath Path;
+	bool IsEdit;
 
-	if (ViewHistoryDlg(this, &ptr, &path))
+	if ( ViewHistoryDlg( this, &Fs, &Path, &IsEdit ) )
 	{
+		if ( IsEdit )
+		{
+			EditFile( Fs, Path, false );
+		}
+		else
+		{
+			ViewFile( Fs, Path );
+		}
 	}
 }
 
@@ -2497,53 +2527,48 @@ void NCWin::FileHighlighting()
 
 bool NCWin::StartEditor( const std::vector<unicode_t> FileName, int Line, int Pos )
 {
-	if ( !FileName.data() ) { return false; }
+	if ( !FileName.data() )
+	{
+		return false;
+	}
 
-	FSPath fspath;
+	FSPath Path;
+	clPtr<FS> Fs = ParzeURI( FileName.data(), Path, {} );
+	if ( !Fs.Ptr() )
+	{
+		return false;
+	}
 
-	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, {} );
-
-	if ( !fs.Ptr() ) { return false; }
-
-	clPtr<MemFile> file = LoadFile( fs, fspath, this, true );
-
-	if ( !file.ptr() ) { return false; }
-
-	_editor.Load( fs, fspath, *file.ptr() );
+	if ( !EditFile( Fs, Path, true ) )
+	{
+		return false;
+	}
 
 	sEditorScrollCtx ScrollCtx;
-
 	ScrollCtx.m_FirstLine = 0;
 	ScrollCtx.m_Point = EditPoint( Line, Pos );
-
+	
 	_editor.SetScrollCtx( ScrollCtx );
-
-	SetMode( EDIT );
-
 	return true;
 }
 
 bool NCWin::StartViewer( const std::vector<unicode_t> FileName, int Line )
 {
-	if ( !FileName.data() ) { return false; }
+	if ( !FileName.data() )
+	{
+		return false;
+	}
 
-	FSPath fspath;
+	FSPath Path;
+	clPtr<FS> Fs = ParzeURI( FileName.data(), Path, {} );
+	if ( !Fs.Ptr() )
+	{
+		return false;
+	}
 
-	clPtr<FS> fs = ParzeURI( FileName.data(), fspath, {} );
+	ViewFile( Fs, Path );
 
-	if ( !fs.Ptr() ) { return false; }
-
-	FSStat st;
-	int err;
-	FSCInfo info;
-
-	fs->Stat( fspath, &st, &err, &info );
-
-	SetMode( VIEW );
-
-	_viewer.SetFile( fs, fspath, st.size );
 	_viewer.SetCol( Line );
-
 	return true;
 }
 
@@ -3849,7 +3874,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				break;
 
 			case FC( VK_F11, KM_ALT ):
-				ViewHistory();
+				FileViewHistory();
 				break;
 
 			case FC( VK_F12, KM_ALT ):
@@ -4521,7 +4546,7 @@ bool NCWin::Command( int id, int subId, Win* win, void* data )
 				return true;
 
 			case ID_VIEW_HISTORY:
-				ViewHistory();
+				FileViewHistory();
 				return true;
 
 			case ID_FILEASSOCIATIONS:

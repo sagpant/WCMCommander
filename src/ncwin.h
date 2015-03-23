@@ -276,11 +276,14 @@ private:
 
 	void ApplyCommand();
 	void CreateDirectory();
+	
+	void ViewFile( clPtr<FS> Fs, FSPath& Path );
 	void View( bool Secondary );
 	void ViewExit();
 	void ViewCharsetTable();
 	void ViewSearch( bool next );
 
+	bool EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT );
 	void Edit( bool enterFileName, bool Secondary );
 	bool EditSave( bool saveAs );
 	void EditExit();
@@ -309,7 +312,7 @@ private:
 	void PanelEqual();
 	void FolderShortcuts();
 	void FolderHistory();
-	void ViewHistory();
+	void FileViewHistory();
 	void FileAssociations();
 	void FileHighlighting();
 	void OnOffShl();

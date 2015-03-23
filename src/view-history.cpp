@@ -179,11 +179,26 @@ void UpdateFileEditPosHistory( std::vector<unicode_t> Name, const sEditorScrollC
 }
 
 
+class clViewHistoryWin : public PathListWin
+{
+public:
+	clViewHistoryWin( Win* Parent, PathList& DataList )
+		: PathListWin( Parent, DataList ) {}
+
+protected:
+	virtual std::vector<unicode_t> GetItemText( const PathList::Data* Data ) const override
+	{
+		const bool IsEdit = Data->conf->GetIntVal( IS_EDIT ) != 0;
+		return carray_cat( utf8_to_unicode( IsEdit ? "Edit: " : "View: " ).data(), Data->name.data() );
+	}
+};
+
+
 class clViewHistoryDlg : public PathListDlg
 {
 private:
-	PathListWin     m_historyWin;
-	Layout          m_lo;
+	clViewHistoryWin m_historyWin;
+	Layout m_lo;
 
 public:
 	clViewHistoryDlg( NCDialogParent* parent, PathList& dataList )
@@ -210,17 +225,18 @@ public:
 };
 
 
-bool ViewHistoryDlg( NCDialogParent* parent, clPtr<FS>* fp, FSPath* pPath )
+bool ViewHistoryDlg( NCDialogParent* Parent, clPtr<FS>* Fs, FSPath* Path, bool* IsEdit )
 {
-	clViewHistoryDlg dlg( parent, g_ViewList );
-	dlg.SetEnterCmd( 0 );
+	clViewHistoryDlg Dlg( Parent, g_ViewList );
+	Dlg.SetEnterCmd( 0 );
 
-	const int res = dlg.DoModal();
-	const PathList::Data* data = dlg.GetSelected();
+	const int Res = Dlg.DoModal();
+	const PathList::Data* Data = Dlg.GetSelected();
 
-	if ( res == CMD_OK && data && fp && pPath )
+	if ( Res == CMD_OK && Data && Fs && Path )
 	{
-		//return PathListDataToFS( data, fp, pPath );
+		*IsEdit = Data->conf->GetIntVal( IS_EDIT ) != 0;
+		return PathListDataToFS( Data, Fs, Path );
 	}
 
 	return false;

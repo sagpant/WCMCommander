@@ -168,6 +168,7 @@ public:
     void Sort();
 
 protected:
+	virtual std::vector<unicode_t> GetItemText( const PathList::Data* Data ) const;
     virtual void OnItemListChanged()
     {
         CalcScroll();
