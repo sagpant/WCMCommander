@@ -5,6 +5,7 @@ CONFIG -= qt
 
 SOURCES += src/nc.cpp \
     src/swl/swl_button.cpp \
+    src/swl/swl_combobox.cpp \
     src/swl/swl_editline.cpp \
     src/swl/swl_layout.cpp \
     src/swl/swl_menubox.cpp \
