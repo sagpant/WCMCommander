@@ -15,7 +15,7 @@ void LoadViewHistory();
 void SaveViewHistory();
 
 int GetCreateFileViewPosHistory( clPtr<FS>* Fs, FSPath* Path );
-void UpdateFileViewPosHistory( std::vector<unicode_t> Name, int Pos );
+void UpdateFileViewPosHistory( std::vector<unicode_t> Name, const int Pos );
 
 bool GetCreateFileEditPosHistory( clPtr<FS>* Fs, FSPath* Path, sEditorScrollCtx& Ctx );
 void UpdateFileEditPosHistory( std::vector<unicode_t> Name, const sEditorScrollCtx& Ctx );

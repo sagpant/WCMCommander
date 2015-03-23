@@ -16,7 +16,7 @@ public:
 	bool Load( const char* s );
 	std::vector<char> GetConfig();
 	void Set( const char* name, const char* value );
-	void Set( const char* name, unsigned value );
+	void Set( const char* name, int value );
 
 	const char* GetStrVal( const char* name );
 	int GetIntVal( const char* name ); //<0 - not found
