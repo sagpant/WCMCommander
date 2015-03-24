@@ -230,12 +230,12 @@ namespace wal
 	{
 		_edit.EventFocus( recv );
 
-		if ( !recv && _box.ptr() )
+		if ( !recv && IsBoxOpened() )
 		{
 			CloseBox();
 		}
 
-		Invalidate();
+		//Invalidate();
 		return true;
 	}
 
@@ -293,12 +293,17 @@ namespace wal
 				break;
 					
 			default:
+				if ( _edit.EventKey( pEvent ) )
+				{
+					return true;
+				}
+
 				if ( IsBoxOpened() && _box->EventKey( pEvent ) )
 				{
 					return true;
 				}
 				
-				return _edit.EventKey( pEvent );
+				break;
 			}
 		}
 
@@ -474,8 +479,7 @@ namespace wal
 	{
 		crect cr = ClientRect();
 		unsigned bgColor = UiGetColor( uiBackground, 0, 0, 0xD8E9EC );
-//	unsigned btnColor = UiGetColor(uiButtonColor, 0, 0, 0xD8E9EC);
-
+		
 		gc.SetFillColor( bgColor );
 
 		unsigned frameColor = UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF );
@@ -495,12 +499,6 @@ namespace wal
 				DrawBorder( gc, cr, frameColor );
 				cr.Dec();
 			}
-
-			/*
-			      Draw3DButtonW2(gc, cr, bgColor, false);
-			      cr.Dec();
-			      cr.Dec();
-			*/
 		}
 
 		DrawBorder( gc, cr, InFocus() && ( _flags & NOFOCUSFRAME ) == 0 ? 
