@@ -283,7 +283,8 @@ private:
 	void ViewCharsetTable();
 	void ViewSearch( bool next );
 
-	bool EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT );
+	bool EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT, bool CheckBackgroundActivity );
+	bool CheckEditorBackgroundActivity( const bool ForEditFile );
 	void Edit( bool enterFileName, bool Secondary );
 	bool EditSave( bool saveAs );
 	void EditExit();

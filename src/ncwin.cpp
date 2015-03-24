@@ -1754,6 +1754,11 @@ bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mo
 
 void NCWin::ViewFile( clPtr<FS> Fs, FSPath& Path )
 {
+	if ( !CheckEditorBackgroundActivity( false ) )
+	{
+		return;
+	}
+
 	FSStat St;
 	int Err;
 	FSCInfo Info;
@@ -1783,20 +1788,6 @@ void NCWin::View( bool Secondary )
 		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) )
 		{
 			return;
-		}
-
-		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
-		{
-			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to view a new file while a background editor is active.\n"
-											"Do you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
-
-			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) { return; }
-
-			if ( Msg == CMD_SWITCH )
-			{
-				SwitchToBackgroundActivity();
-				return;
-			}
 		}
 
 		FSPath path = _panel->GetPath();
@@ -1848,8 +1839,13 @@ void NCWin::ViewExit()
 	SetMode( PANEL );
 }
 
-bool NCWin::EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT )
+bool NCWin::EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT, bool CheckBackgroundActivity )
 {
+	if ( CheckBackgroundActivity && !CheckEditorBackgroundActivity( true ) )
+	{
+		return false;
+	}
+
 	clPtr<MemFile> File = LoadFile( Fs, Path, this, IgnoreENOENT );
 	if ( !File.ptr() )
 	{
@@ -1873,6 +1869,30 @@ bool NCWin::EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT )
 	return true;
 }
 
+bool NCWin::CheckEditorBackgroundActivity( const bool ForEditFile )
+{
+	if ( m_BackgroundActivity == eBackgroundActivity_Editor )
+	{
+		std::vector<char> Text = carray_cat( "You are trying to ", ForEditFile ? "edit" : "view",
+			" a new file while a background editor is active.\nDo you want to drop all unsaved changes?" );
+		
+		const int Msg = NCMessageBox( this, "Warning", _LT( Text.data() ), true, bYesNoSwitchToEditor );
+
+		if ( Msg == CMD_CANCEL || Msg == CMD_NO )
+		{
+			return false;
+		}
+
+		if ( Msg == CMD_SWITCH )
+		{
+			SwitchToBackgroundActivity();
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void NCWin::Edit( bool enterFileName, bool Secondary )
 {
 	if ( _mode != PANEL ) { return; }
@@ -1881,19 +1901,14 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 	try
 	{
-		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) ) { return; }
-
-		if ( m_BackgroundActivity == eBackgroundActivity_Editor )
+		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) )
 		{
-			int Msg = NCMessageBox( this, "Warning", _LT( "You are trying to edit a new file while a background editor is active.\nDo you want to drop all unsaved changes?" ), true, bYesNoSwitchToEditor );
+			return;
+		}
 
-			if ( Msg == CMD_CANCEL || Msg == CMD_NO ) { return; }
-
-			if ( Msg == CMD_SWITCH )
-			{
-				SwitchToBackgroundActivity();
-				return;
-			}
+		if ( !CheckEditorBackgroundActivity( true ) )
+		{
+			return;
 		}
 
 		FSPath path = _panel->GetPath();;
@@ -1928,7 +1943,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 			path.Push( p->name.PrimaryCS(), p->name.Get( p->name.PrimaryCS() ) );
 		}
 
-		EditFile( fs, path, enterFileName );
+		EditFile( fs, path, enterFileName, false );
 	}
 	catch ( cexception* ex )
 	{
@@ -2495,7 +2510,7 @@ void NCWin::FileViewHistory()
 	{
 		if ( IsEdit )
 		{
-			EditFile( Fs, Path, false );
+			EditFile( Fs, Path, false, true );
 		}
 		else
 		{
@@ -2539,7 +2554,7 @@ bool NCWin::StartEditor( const std::vector<unicode_t> FileName, int Line, int Po
 		return false;
 	}
 
-	if ( !EditFile( Fs, Path, true ) )
+	if ( !EditFile( Fs, Path, true, true ) )
 	{
 		return false;
 	}
