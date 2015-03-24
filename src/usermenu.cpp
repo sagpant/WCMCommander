@@ -210,6 +210,7 @@ void clUserMenuListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 	gc.SetFillColor( bg );
 	gc.FillRect( rect );
+	gc.Set( GetFont() );
 
 	const clNCUserMenuItem* p = &m_ItemList->at( n );
 
