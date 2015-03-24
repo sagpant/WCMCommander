@@ -454,9 +454,16 @@ namespace wal
 					CloseBox();
 				}
 			}
+
+			return true;
 		}
 
-		return true;
+		if ( InFocus() && _edit.EventMouse( pEvent ) )
+		{
+			return true;
+		}
+
+		return Win::EventMouse( pEvent );
 	}
 
 

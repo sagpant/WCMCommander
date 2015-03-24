@@ -591,8 +591,9 @@ namespace wal
 					cursorVisible = true;
 					CheckCursorPos();
 					Invalidate();
+					return true;
 				}
-
+				
 				break;
 
 			case EV_MOUSE_DOUBLE:
@@ -610,6 +611,7 @@ namespace wal
 				Invalidate();
 
 				SetCapture( &captureSD );
+				return true;
 			}
 			break;
 
@@ -620,11 +622,10 @@ namespace wal
 				}
 
 				ReleaseCapture( &captureSD );
-				break;
+				return true;
 		};
 
-		return true;
-
+		return Win::EventMouse( pEvent );
 	}
 
 	bool EditLine::EventKey( cevent_key* pEvent )
