@@ -130,8 +130,10 @@ int TerminalStream::Write( char* buf, int size )
 int TerminalStream::SetSize( int rows, int cols )
 {
 	struct winsize ws;
-	ws.ws_row = ( rows > 0 ) ? rows : 1;
-	ws.ws_col = ( cols > 0 ) ? cols : 1;
+	ws.ws_row = (unsigned short) ( rows > 0 ? rows : 1);
+	ws.ws_col = (unsigned short) ( cols > 0 ? cols : 1);
+	ws.ws_xpixel = 0;
+	ws.ws_ypixel = 0;
 	ioctl( _masterFd, TIOCSWINSZ, &ws );
 	return 0;
 }

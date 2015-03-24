@@ -463,15 +463,15 @@ NCWin::NCWin()
 	, _lpanel( 1, 2 )
 	, _ledit( 1, 2 )
 	, _buttonWin( this )
-	, _leftPanel( this, &g_WcmConfig.panelModeLeft )
-	, _rightPanel( this, &g_WcmConfig.panelModeRight )
+	, _leftPanel( this, g_WcmConfig.panelModeLeft )
+	, _rightPanel( this, g_WcmConfig.panelModeRight )
+	, _panel( &_leftPanel )
 	, m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
 	, m_Edit( uiCommandLine, this, 0, 0, 10, false )
 	, _terminal( 0, this )
 	, m_BackgroundActivity( eBackgroundActivity_None )
 	, _activityNotification( this )
 	, _editPref( this )
-	, _panel( &_leftPanel )
 	, _menu( 0, this )
 	, _toolBar( this, 0, 16 )
 	, _viewer( this )
@@ -698,7 +698,7 @@ NCWin::NCWin()
 
 bool NCWin::EventClose()
 {
-	if ( g_WcmConfig.systemAutoSaveSetup ) { g_WcmConfig.Save( this ); }
+	if ( g_WcmConfig.systemAutoSaveSetup ) { SaveSetup( ); }
 
 	switch ( _mode )
 	{
@@ -1718,7 +1718,7 @@ void NCWin::QuitQuestion()
 {
 	if ( NCMessageBox( this, _LT( "Quit" ), _LT( "Do you want to quit?" ), false, bListOkCancel ) == CMD_OK )
 	{
-		if ( g_WcmConfig.systemAutoSaveSetup ) { g_WcmConfig.Save( this ); }
+		if ( g_WcmConfig.systemAutoSaveSetup ) { SaveSetup( ); }
 
 		AppExit();
 	}
@@ -2400,6 +2400,9 @@ void NCWin::SaveSetup()
 {
 	try
 	{
+		g_WcmConfig.panelModeLeft = _leftPanel.ViewMode();
+		g_WcmConfig.panelModeRight = _rightPanel.ViewMode();
+
 		g_WcmConfig.Save( this );
 	}
 	catch ( cexception* ex )
