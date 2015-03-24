@@ -732,6 +732,7 @@ clPtr<cfont> SelectFTFont( NCDialogParent* parent, bool fixed, const char* curre
 		FileInfoNode node;
 
 		node.info = cfont::GetFTFileInfo( list[i].path.data() );
+		if (node.info == nullptr) { continue; }
 		node.mtime = list[i].mtime;
 
 		g_LastFileInfo[list[i].path.data()] = node;
