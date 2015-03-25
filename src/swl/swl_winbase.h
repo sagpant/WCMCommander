@@ -57,6 +57,7 @@ namespace wal
 		void SetText( const unicode_t* inStr );
 		const unicode_t* GetRawText() const { return strRaw; }
 		void DrawItem( GC& gc, int x, int y, int color_text, int color_hotkey ) const;
+		void DrawItem( GC& gc, int x, int y, int color_text, int color_hotkey, bool antialias ) const;
 		cpoint GetTextExtents( GC& gc, cfont* font = 0 ) const
 		{
 			if ( strFull == 0 ) { return cpoint( 0, 0 ); }

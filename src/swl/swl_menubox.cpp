@@ -312,7 +312,7 @@ namespace wal
 		int x = itemRect.left + ( itemRect.Width() - tsize.x ) / 2;
 		int y = itemRect.top + ( itemRect.Height() - tsize.y ) / 2;
 
-		mt.DrawItem( gc, x, y, color_text, color_hotkey );
+		mt.DrawItem( gc, x, y, color_text, color_hotkey, false );
 	}
 
 

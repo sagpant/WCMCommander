@@ -117,24 +117,50 @@ namespace wal
 
 	void MenuTextInfo::DrawItem( GC& gc, int x, int y, int color_text, int color_hotkey ) const
 	{
+		DrawItem( gc, x, y, color_text, color_hotkey, true );
+	}
+
+	void MenuTextInfo::DrawItem( GC& gc, int x, int y, int color_text, int color_hotkey, bool antialias ) const
+	{
 		if ( strBeforeHk != 0 )
 		{
 			gc.SetTextColor( color_text );
-			gc.TextOut( x, y, strBeforeHk );
+			if (antialias)
+			{
+				gc.TextOutF( x, y, strBeforeHk );
+			}
+			else
+			{
+				gc.TextOut( x, y, strBeforeHk );
+			}
 			x += gc.GetTextExtents( strBeforeHk ).x;
 		}
 
 		if ( strHk != 0 )
 		{
 			gc.SetTextColor( color_hotkey );
-			gc.TextOut( x, y, strHk );
+			if (antialias)
+			{
+				gc.TextOutF( x, y, strHk );
+			}
+			else
+			{
+				gc.TextOut( x, y, strHk );
+			}
 			x += gc.GetTextExtents( strHk ).x;
 		}
 
 		if ( strAfterHk != 0 )
 		{
 			gc.SetTextColor( color_text );
-			gc.TextOut( x, y, strAfterHk );
+			if (antialias)
+			{
+				gc.TextOutF( x, y, strAfterHk );
+			}
+			else
+			{
+				gc.TextOut( x, y, strAfterHk );
+			}
 		}
 	}
 
