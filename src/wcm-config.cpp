@@ -32,6 +32,7 @@
 #endif
 
 #include <map>
+#include <iostream>
 
 
 std::string* IniHash::Find( const char* section, const char* var )
@@ -1904,7 +1905,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   pList( p ),
 	   styleShow3DUIButton( 0, this, utf8_to_unicode( _LT( "&3D buttons" ) ).data(), 0, g_WcmConfig.styleShow3DUI ),
 	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
-	   styleList( 0, this, 1, 5 ),
+	   styleList( 0, this, 1, 5, ComboBox::READONLY ),
 
 	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
 	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, g_WcmConfig.styleShowToolBar ),
@@ -1985,11 +1986,17 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	SetEnterCmd( CMD_OK );
 
 	auto styles = GetColorStyles();
+	std::cout << "styles: " << styles.size() << "\n";
 	for ( auto style : styles )
 	{
 		styleList.Append( style.c_str() );
 	}
 
+	auto it = std::find( styles.begin(), styles.end(), g_WcmConfig.styleColorMode );
+	int index = it == styles.end() ? 0 : (int) std::distance(styles.begin(), it);
+
+	std::cout << "Setting color index " << g_WcmConfig.styleColorMode << " to " << index << "\n";
+	styleList.MoveCurrent( index, false );
 	styleList.SetFocus();
 
 	order.append( &styleShow3DUIButton );
@@ -2132,6 +2139,7 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 	if ( dlg.DoModal() == CMD_OK )
 	{
 		g_WcmConfig.styleColorMode = dlg.styleList.GetTextStr();
+		SetColorStyle( g_WcmConfig.styleColorMode );
 
 		g_WcmConfig.styleShow3DUI = dlg.styleShow3DUIButton.IsSet();
 		g_WcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );

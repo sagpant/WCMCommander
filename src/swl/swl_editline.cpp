@@ -789,7 +789,7 @@ namespace wal
 						{
 							return true;
 						}
-						
+
 						ClipboardPaste();
 					}
 					else if ( ctrl && text.Marked() )
@@ -829,7 +829,7 @@ namespace wal
 					{
 						return false;
 					}
-					
+
 					break;
 			}
 
