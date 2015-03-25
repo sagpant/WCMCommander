@@ -481,6 +481,27 @@ namespace wal
 		return true;
 	}
 
+	bool EditLine::InFocus()
+	{
+		if ( UseParentFocus() )
+		{
+			return Parent()->InFocus();
+		}
+
+		return Win::InFocus();
+	}
+
+	void EditLine::SetFocus()
+	{
+		if ( UseParentFocus() )
+		{
+			Parent()->SetFocus();
+			return;
+		}
+
+		Win::SetFocus();
+	}
+
 	void EditLine::Paint( GC& gc, const crect& paintRect )
 	{
 		crect cr = ClientRect();
