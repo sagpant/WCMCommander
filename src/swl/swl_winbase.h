@@ -219,6 +219,7 @@ namespace wal
 		bool _use_alt_symbols;
 		unsigned _flags;
 		bool RO() const { return ( _flags & READONLY ) != 0; }
+		bool UseParentFocus() const { return (_flags & USEPARENTFOCUS) != 0; }
 		EditBuf text;
 		int _chars;
 		bool cursorVisible;
@@ -260,6 +261,8 @@ namespace wal
 		virtual void EventTimer( int tid );
 		virtual bool EventFocus( bool recv );
 		virtual void EventSize( cevent_size* pEvent );
+		virtual bool InFocus() override;
+		virtual void SetFocus() override;
 		void Clear();
 		void SetText( const unicode_t* txt, bool mark = false );
 		void SetText( const std::string& utf8txt, bool mark = false );

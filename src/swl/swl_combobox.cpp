@@ -77,18 +77,17 @@ namespace wal
 		   _flags( flags ),
 		   _lo( 3, 4 ),
 		   _edit( 0, this, 0, 0, cols, false, EditLine::USEPARENTFOCUS | ( ( flags& READONLY ) ? EditLine::READONLY : 0 ) ),
-//		   _cols( cols > 0 ? cols : 10 ),
 		   _rows( rows > 0 ? rows : 0 )
 	{
 		_lo.AddWin( &_edit, 1, 1 );
-		_edit.SetClickFocusFlag( false );
 		_edit.SetTabFocusFlag( false );
 		_edit.SetShowSpaces( false );
 		_edit.Enable();
 		_edit.Show( SHOW_INACTIVE );
 		_lo.AddRect( &_buttonRect, 1, 2 );
 		_lo.ColSet( 2, CB_BUTTONWIDTH );
-		int fw = ( _flags & FRAME3D ) != 0 ? 3 : ( ( _flags & NOFOCUSFRAME ) ? 0 : 1 );
+		
+		const int fw = ( _flags & FRAME3D ) != 0 ? 3 : ( ( _flags & NOFOCUSFRAME ) ? 0 : 1 );
 		_lo.ColSet( 0, fw );
 		_lo.ColSet( 3, fw );
 		_lo.LineSet( 0, fw );
@@ -103,7 +102,6 @@ namespace wal
 			_box->Clear();
 		}
 
-		//CloseBox();
 		_list.clear();
 
 		if ( _current >= 0 )
@@ -119,10 +117,10 @@ namespace wal
 
 	void ComboBox::Append( const unicode_t* text, void* data )
 	{
-		//CloseBox();
 		Node node;
 		node.text = new_unicode_str( text );
 		node.data = data;
+		
 		_list.append( node );
 	}
 
@@ -139,7 +137,6 @@ namespace wal
 
 	std::vector<unicode_t> ComboBox::GetText() const
 	{
-		//static unicode_t empty = 0;
 		return _edit.GetText();
 	}
 
@@ -158,7 +155,6 @@ namespace wal
 		}
 
 		_edit.SetText( txt, mark );
-		//MoveCurrent( -1, false );
 	}
 
 	void ComboBox::SetText( const std::string& utf8txt, bool mark )
@@ -230,12 +226,11 @@ namespace wal
 	{
 		_edit.EventFocus( recv );
 
-		if ( !recv && _box.ptr() )
+		if ( !recv && IsBoxOpened() )
 		{
 			CloseBox();
 		}
 
-		Invalidate();
 		return true;
 	}
 
@@ -293,12 +288,17 @@ namespace wal
 				break;
 					
 			default:
+				if ( _edit.EventKey( pEvent ) )
+				{
+					return true;
+				}
+
 				if ( IsBoxOpened() && _box->EventKey( pEvent ) )
 				{
 					return true;
 				}
 				
-				return _edit.EventKey( pEvent );
+				break;
 			}
 		}
 
@@ -402,7 +402,7 @@ namespace wal
 
 	bool ComboBox::EventMouse( cevent_mouse* pEvent )
 	{
-		if ( pEvent->Type() == EV_MOUSE_PRESS && InFocus() && _buttonRect.In( pEvent->Point() ) )
+		if ( pEvent->Type() == EV_MOUSE_PRESS && _buttonRect.In( pEvent->Point() ) )
 		{
 			if ( _box.ptr() )
 			{
@@ -454,9 +454,16 @@ namespace wal
 					CloseBox();
 				}
 			}
+
+			return true;
 		}
 
-		return true;
+		if ( _edit.EventMouse( pEvent ) )
+		{
+			return true;
+		}
+
+		return Win::EventMouse( pEvent );
 	}
 
 
@@ -467,8 +474,7 @@ namespace wal
 	{
 		crect cr = ClientRect();
 		unsigned bgColor = UiGetColor( uiBackground, 0, 0, 0xD8E9EC );
-//	unsigned btnColor = UiGetColor(uiButtonColor, 0, 0, 0xD8E9EC);
-
+		
 		gc.SetFillColor( bgColor );
 
 		unsigned frameColor = UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF );
@@ -488,12 +494,6 @@ namespace wal
 				DrawBorder( gc, cr, frameColor );
 				cr.Dec();
 			}
-
-			/*
-			      Draw3DButtonW2(gc, cr, bgColor, false);
-			      cr.Dec();
-			      cr.Dec();
-			*/
 		}
 
 		DrawBorder( gc, cr, InFocus() && ( _flags & NOFOCUSFRAME ) == 0 ? 

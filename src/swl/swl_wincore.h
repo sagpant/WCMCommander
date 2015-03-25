@@ -1099,7 +1099,7 @@ namespace wal
 		void Move( crect rect, bool repaint = true );
 
 		bool IsEnabled();
-		bool InFocus() { return handle == focusWinId; }
+		virtual bool InFocus() { return handle == focusWinId; }
 		bool IsVisible();
 		void Enable( bool en = true );
 		void Activate();
@@ -1108,7 +1108,7 @@ namespace wal
 		void OnTop();
 		bool IsCaptured() { return captured; }
 		void Invalidate();
-		void SetFocus();
+		virtual void SetFocus();
 
 		void SetName( const unicode_t* name );
 		void SetName( const char* utf8Name );

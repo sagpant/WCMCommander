@@ -481,6 +481,27 @@ namespace wal
 		return true;
 	}
 
+	bool EditLine::InFocus()
+	{
+		if ( UseParentFocus() )
+		{
+			return Parent()->InFocus();
+		}
+
+		return Win::InFocus();
+	}
+
+	void EditLine::SetFocus()
+	{
+		if ( UseParentFocus() )
+		{
+			Parent()->SetFocus();
+			return;
+		}
+
+		Win::SetFocus();
+	}
+
 	void EditLine::Paint( GC& gc, const crect& paintRect )
 	{
 		crect cr = ClientRect();
@@ -591,8 +612,9 @@ namespace wal
 					cursorVisible = true;
 					CheckCursorPos();
 					Invalidate();
+					return true;
 				}
-
+				
 				break;
 
 			case EV_MOUSE_DOUBLE:
@@ -610,6 +632,7 @@ namespace wal
 				Invalidate();
 
 				SetCapture( &captureSD );
+				return true;
 			}
 			break;
 
@@ -620,11 +643,10 @@ namespace wal
 				}
 
 				ReleaseCapture( &captureSD );
-				break;
+				return true;
 		};
 
-		return true;
-
+		return Win::EventMouse( pEvent );
 	}
 
 	bool EditLine::EventKey( cevent_key* pEvent )
