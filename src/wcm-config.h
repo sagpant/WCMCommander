@@ -178,7 +178,7 @@ public:
 
 	#pragma region Style settings
 	bool styleShow3DUI;
-	int styleColorMode;
+	std::string styleColorMode;
 	bool styleShowToolBar;
 	bool styleShowButtonBar;
 	bool styleShowButtonBarIcons;
