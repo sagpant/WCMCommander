@@ -213,8 +213,10 @@
 		<Unit filename="src/filesearch.cpp" />
 		<Unit filename="src/filesearch.h" />
 		<Unit filename="src/folder-history.cpp" />
-		<Unit filename="src/nceditline.cpp" />
 		<Unit filename="src/folder-history.h" />
+		<Unit filename="src/view-history.cpp" />
+		<Unit filename="src/view-history.h" />
+		<Unit filename="src/nceditline.cpp" />
 		<Unit filename="src/nceditline.h" />
 		<Unit filename="src/folder-shortcuts.cpp" />
 		<Unit filename="src/folder-shortcuts.h" />

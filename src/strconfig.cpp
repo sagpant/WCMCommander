@@ -172,7 +172,7 @@ void StrConfig::Set( const char* name, const char* value )
 	varHash[s.data()] = std::string( value );
 }
 
-void StrConfig::Set( const char* name, unsigned value )
+void StrConfig::Set( const char* name, int value )
 {
 	char buf[64];
 	Lsnprintf( buf, sizeof( buf ) - 1, "%i", value );

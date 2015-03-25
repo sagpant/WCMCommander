@@ -276,11 +276,15 @@ private:
 
 	void ApplyCommand();
 	void CreateDirectory();
+	
+	void ViewFile( clPtr<FS> Fs, FSPath& Path );
 	void View( bool Secondary );
 	void ViewExit();
 	void ViewCharsetTable();
 	void ViewSearch( bool next );
 
+	bool EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT, bool CheckBackgroundActivity );
+	bool CheckEditorBackgroundActivity( const bool ForEditFile );
 	void Edit( bool enterFileName, bool Secondary );
 	bool EditSave( bool saveAs );
 	void EditExit();
@@ -308,7 +312,8 @@ private:
 	void Tab( bool forceShellTab );
 	void PanelEqual();
 	void FolderShortcuts();
-    void FolderHistory();
+	void FolderHistory();
+	void FileViewHistory();
 	void FileAssociations();
 	void FileHighlighting();
 	void OnOffShl();

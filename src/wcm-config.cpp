@@ -17,6 +17,7 @@
 #include "ltext.h"
 #include "globals.h"
 #include "folder-history.h"
+#include "view-history.h"
 #include "nchistory.h"
 
 #ifdef _WIN32
@@ -1413,69 +1414,6 @@ void LoadCommandsHistory( NCWin* nc
 	}
 }
 
-extern std::map<std::vector<unicode_t>, sEditorScrollCtx> g_EditPosHash;
-extern std::map<std::vector<unicode_t>, int> g_ViewPosHash;
-
-void LoadEditorPositions()
-{
-	std::vector< std::string > Positions;
-
-	LoadStringList( "EditorPositions", Positions );
-
-	g_EditPosHash.clear();
-
-	for ( size_t i = 0; i != Positions.size(); i++ )
-	{
-		std::string Line = Positions[i];
-
-		int FL, L, P;
-		char Buf[0xFFFF];
-		memset( Buf, 0, sizeof( Buf ) );
-
-		if ( !Line.size() ) { continue; }
-
-		int NumRead = Lsscanf( Line.data( ), "FL = %i L = %i P = %i FN = %65534c", &FL, &L, &P, Buf );
-
-		if ( NumRead != 4 ) { break; }
-
-//		printf( "FL = %i L = %i P = %i FN = %s\n", FL, L, P, Buf );
-
-		std::vector<unicode_t> FileName = utf8_to_unicode( Buf );
-		sEditorScrollCtx Ctx;
-		Ctx.m_FirstLine = FL;
-		Ctx.m_Point.line = L;
-		Ctx.m_Point.pos = P;
-
-		g_EditPosHash[ FileName ] = Ctx;
-	}
-}
-
-void LoadViewerPositions()
-{
-	std::vector< std::string > Positions;
-
-	LoadStringList( "ViewerPositions", Positions );
-
-	g_ViewPosHash.clear();
-
-	for ( size_t i = 0; i != Positions.size(); i++ )
-	{
-		std::string Line = Positions[i];
-
-		int L;
-		char Buf[0xFFFF];
-		memset( Buf, 0, sizeof( Buf ) );
-
-		int NumRead = Lsscanf( Line.data(), "L = %i FN = %65534c", &L, Buf );
-
-		if ( NumRead != 2 ) { break; }
-
-		std::vector<unicode_t> FileName = utf8_to_unicode( Buf );
-
-		g_ViewPosHash[ FileName ] = L;
-	}
-}
-
 bool FileExists( const char* name )
 {
 	struct stat sb;
@@ -1558,50 +1496,9 @@ void clWcmConfig::Load( NCWin* nc, const std::string& StartupDir )
 
 	if ( editTabSize <= 0 || editTabSize > 64 ) { editTabSize = 3; }
 
-	LoadEditorPositions();
-	LoadViewerPositions();
 	LoadFoldersHistory();
+	LoadViewHistory();
 	LoadFieldsHistory();
-}
-
-void SaveEditorPositions()
-{
-	std::vector< std::string > Positions;
-
-	for ( auto i = g_EditPosHash.begin(); i != g_EditPosHash.end(); i++ )
-	{
-		std::vector<unicode_t> FileName = i->first;
-		sEditorScrollCtx       Ctx      = i->second;
-
-		std::string FileName_utf8 = unicode_to_utf8_string( FileName.data() );
-
-		char Buf[0xFFFF];
-		Lsnprintf( Buf, sizeof( Buf ) - 1, "FL = %i L = %i P = %i FN = %s", Ctx.m_FirstLine, Ctx.m_Point.line, Ctx.m_Point.pos, FileName_utf8.data() );
-
-		Positions.push_back( std::string( Buf ) );
-	}
-
-	SaveStringList( "EditorPositions", Positions );
-}
-
-void SaveViewerPositions()
-{
-	std::vector< std::string > Positions;
-
-	for ( auto i = g_ViewPosHash.begin(); i != g_ViewPosHash.end(); i++ )
-	{
-		std::vector<unicode_t> FileName = i->first;
-		int                    Line     = i->second;
-
-		std::string FileName_utf8 = unicode_to_utf8_string( FileName.data() );
-
-		char Buf[0xFFFF];
-		Lsnprintf( Buf, sizeof( Buf ) - 1, "L = %i FN = %s", Line, FileName_utf8.data() );
-
-		Positions.push_back( std::string( Buf ) );
-	}
-
-	SaveStringList( "ViewerPositions", Positions );
 }
 
 void clWcmConfig::Save( NCWin* nc )
@@ -1675,9 +1572,8 @@ void clWcmConfig::Save( NCWin* nc )
 	SaveIniHash( hash,( sys_char_t* ) path.GetString( sys_charset_id ) );
 #endif
 
-	SaveEditorPositions();
-	SaveViewerPositions();
 	SaveFoldersHistory();
+	SaveViewHistory();
 	SaveFieldsHistory();
 }
 
@@ -1914,12 +1810,6 @@ bool DoEditConfigDialog( NCDialogParent* parent )
 		if ( tabSize > 0 && tabSize <= 64 )
 		{
 			g_WcmConfig.editTabSize = tabSize;
-		}
-
-		if ( !g_WcmConfig.editSavePos )
-		{
-			g_EditPosHash.clear();
-			g_ViewPosHash.clear();
 		}
 
 		return true;
