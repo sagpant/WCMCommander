@@ -466,6 +466,11 @@ namespace wal
 
 	bool EditLine::EventFocus( bool recv )
 	{
+		if ( _flags & READONLY )
+		{
+			// TODO: Indicate somehow that we're focused
+			return true;
+		}
 		cursorVisible = recv;
 		Invalidate();
 

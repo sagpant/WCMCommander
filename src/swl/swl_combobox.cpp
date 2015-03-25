@@ -416,6 +416,20 @@ namespace wal
 			return true;
 		}
 
+		if ( ( pEvent->Type() == EV_MOUSE_PRESS ) && ( _flags & READONLY ) )
+		{
+			if ( _box.ptr() )
+			{
+				CloseBox();
+			}
+			else
+			{
+				OpenBox();
+			}
+
+			return true;
+		}
+
 		if ( IsCaptured() )
 		{
 			crect rect = ScreenRect();
