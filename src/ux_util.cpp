@@ -126,8 +126,9 @@ static void escShellStr(std::string& src)
 	{
         // we could safely escape every char here,
         // though this would obfuscate diagnostic messages
-		if( *s<'+' || *s >=';' && *s<='?' ||  *s >'Z' && *s < 'a'  || *s >'z')
+		if( *s<'+' || ( *s >=';' && *s<='?' ) || ( *s >'Z' && *s < 'a' ) || ( *s >'z' ) )
 		{
+
 			dest += "\\";
 		}
 		dest += *s;

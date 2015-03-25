@@ -275,7 +275,7 @@ void OperSaveFileThread::Run()
 		{
 			char buf[16 * 1024];
 
-			int count = file->NonReadedSize();
+			size_t count = file->NonReadedSize();
 
 			if ( count <= 0 ) { break; }
 

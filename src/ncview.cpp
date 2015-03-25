@@ -1522,7 +1522,7 @@ void* ViewerThread( void* param )
 				while ( count > 0 )
 				{
 					unsigned char buf[0x100];
-					int n = count > sizeof( buf ) ? sizeof( buf ) : count;
+					long n = count > sizeof( buf ) ? sizeof( buf ) : (size_t) count;
 					n = file->ReadBlock( offset, ( char* )buf, n, &tData->info );
 
 					if ( n <= 0 ) { break; }
@@ -1530,7 +1530,7 @@ void* ViewerThread( void* param )
 					for ( int i = 0; i < n; i++, p++, attr++ )
 					{
 						*p = buf[i];
-						*attr = marker.In( offset + i ) ? 1 : 0;
+						*attr = marker.In( offset + i ) ? '\1' : '\0';
 					}
 
 					offset += n;
