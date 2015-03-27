@@ -1,0 +1,106 @@
+* {color: base01; background: base3; hotkey-color: orange; focus-frame-color: base1; button-color: base1; }
+*@item:odd		{color: base01; background: base2; }
+*@item:current-item	{color: base1; background: base02; }
+*@item			{color: base01; background: base3; }
+
+ScrollBar { button-color: base2;  }
+EditLine:!enabled { background: base01; }
+EditLine:focus { color: base1; background: base03; mark-color: base2; mark-background : base00; frame-color: base01 }
+EditLine { color: base0; background: base02; frame-color: base01; mark-color: base2; mark-background: base01; }
+
+Progress { color: green; frame-color: base03; background: base2 }
+
+command-line:!enabled { background: base03; }
+command-line:focus { color: base3; background: base03; mark-color: base3; mark-background : base01; frame-color: base02 }
+command-line { color: base3; background: base03; frame-color: base02; mark-color: base01; mark-background : base3; }
+
+Autocomplete:!enabled { background: base2; }
+Autocomplete:current-item {color: base0; background: base02; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }
+Autocomplete:current-item:odd {color: base0; background: base01; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }
+Autocomplete:odd {color: base00; background: base2; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }
+Autocomplete {color: base00; background: base3; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }
+
+Panel { color: base0; background: base03; }             // default foreground color for all items
+Panel@item:selected-panel:current-item { color: base01 }         // default foreground color for all items in under cursor
+Panel@item:selected:current-item { color: orange }            // default foreground color for all selected items in under cursor
+
+Panel@item:exe { color: green }                           // foreground color for executables
+Panel@item:exe:selected-panel:current-item { color: green }     // foreground color for executables under cursor
+Panel@item:exe:selected:current-item { color: orange }        // foreground color for selected executables under cursor
+
+Panel@item:dir { color: base2 }                           // foreground color for dir names
+Panel@item:dir:selected-panel:current-item { color: base02 }     // foreground color for dir names under cursor
+Panel@item:dir:selected:current-item { color: orange }        // foreground color for selected dir names under cursor
+
+Panel@item:hidden { color: base01 }                        // foreground color for hidden items
+Panel@item:hidden:selected-panel:current-item { color: base01 }  // foreground color for hidden items under cursor
+Panel@item:hidden:selected:current-item { color: orange }     // foreground color for selected hidden items under cursor
+
+Panel@item:link { color: blue }                          // foreground color for links
+Panel@item:link :selected-panel:current-item { color: blue }      // foreground color for links under cursor
+Panel@item:link:selected:current-item { color: orange }          // foreground color for selected links under cursor
+
+Panel@item:bad { color: red }
+Panel@item:selected { color: orange }
+Panel@item:selected-panel:current-item { background: base3 } // background color of cursor
+//Panel@item:selected-panel:current-item:oper-state { background: red }
+
+Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar { background: base2; button-color: base01 }
+   // border-color1...4 - color of external borders, 1 is outmost, 4 is inmost. Make 2 and 4 light cyan RGB(0,255,255) and 1 and 3 equal to the color of background (dark blue)
+Panel { border-color1: base1; border-color2: base2; border-color3: base1; border-color4: base2;
+   // vline-color1..3 - color of lines - colums separators. Make first two of them light cyan, 2 pixel thick and third line paint to the color of background (dark blue)
+ vline-color1: base00; vline-color2:base01; vline-color3:base00;
+   // line-color - color of horizontal top and bottom pane above and below items list.
+ line-color:base00;
+
+ summary-color: base0; }
+
+Panel@footer { color: base0; background: base03; }         // footer - full info (name, size, date etc.) at the bottom of panel about the item under cursor
+
+Panel { summary-color: base0; }                           // summary - total size of files in current forlder at the bottom of panel
+Panel:have-selected { summary-color: orange; }             // total size of selected items at the bottom of panel, light yellow
+Panel:oper-state { summary-color: red; }
+
+ButtonWin { color: base3; background: base01; }
+ButtonWin Button { color: base01; background: base2; }
+EditLine#command-line { color: base1; background: base03; mark-color: base03; mark-background: base0; }
+ToolTip { color: base2; background: base01; }
+ToolBar { color: base01; background: base3; }
+MenuBar { color: base01; background: base2; current-item-frame-color: base03; }
+MenuBar:current-item { color: base1; background: base02; }
+PopupMenu@item {color: base00; background: base3; pointer-color: green; line:base01; }
+PopupMenu@item:current-item { color: base1; background: base02; }
+PopupMenu { background: base2; frame-color: base00; }
+
+drive-dlg { background: base3; }
+drive-dlg * { background: base3; color: base01; }
+drive-dlg * @item { color: base01; background: base3; comment-color: base00; first-char-color: orange }
+drive-dlg * @item:current-item { color: base1; background: base02; comment-color: base0; first-char-color: orange }
+
+messagebox-red { color: base3; background: red; }
+messagebox-red Static { color: base3; background: red; }
+
+HelpWin@style-head { color: base3; }
+HelpWin@style-def  { color: base3; }
+HelpWin@style-red  { color: red; }
+HelpWin@style-bold { color: base03; }
+HelpWin { background: base3; }
+
+Viewer { background: base03; color:base1; ctrl-color:base1;
+	makr-color:	base03; mark-background: base3; line-color:base2;
+	hid: base02; load-background: base02; load-color: red; }
+Editor { background: base03; color: base0; mark-background: base1; mark-color: base03; cursor-color: base3;
+	DEF:base0; KEYWORD:blue; COMMENT:base00; STRING:yellow; PRE:orange; NUM:blue; OPER:violet; ATTN:red; }
+StringWin { color: base1; background: base03; }
+EditorHeadWin, ViewerHeadWin { color: base1; background: base02; prefix-color:base3; cs-color:base3;}
+
+TabDialog { color: base01; background: base3; }
+TabDialog * { color: base01; background: base3; button-color: base2; }
+TabDialog EditLine { background: blue; color: yellow; frame-color: red; }
+TabDialog *@item:dir { color: base02; background: base3; }
+TabDialog *@item:current-item { background: base3; }
+TabDialog *@item { color: base01; background: base3; }
+
+Shortcuts VListWin { background: base2; first-char-color: orange; }
+Shortcuts VListWin@item { color: base00; background: base2; }
+Shortcuts VListWin@item:current-item { color: base1; background: base02; }
