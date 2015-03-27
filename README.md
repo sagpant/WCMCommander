@@ -16,6 +16,9 @@ wcm@linderdaum.com
 
 Discussion group: https://groups.google.com/d/forum/wal-commander
 
+Based on Wal Commander (c) Valery Goryachev http://www.wal-commander.org
+
+
 =============================
 
 The purpose of this project is to create a multi-platform open source file manager (Windows, Linux, FreeBSD, OS X) mimicking the 
