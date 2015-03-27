@@ -84,6 +84,7 @@ namespace wal
 		_edit.SetShowSpaces( false );
 		_edit.Enable();
 		_edit.Show( SHOW_INACTIVE );
+		
 		_lo.AddRect( &_buttonRect, 1, 2 );
 		_lo.ColSet( 2, CB_BUTTONWIDTH );
 		
@@ -149,12 +150,10 @@ namespace wal
 
 	void ComboBox::SetText( const unicode_t* txt, bool mark )
 	{
-		if ( IsReadOnly() )
+		if ( !IsReadOnly() )
 		{
-			return;
+			_edit.SetText( txt, mark );
 		}
-
-		_edit.SetText( txt, mark );
 	}
 
 	void ComboBox::SetText( const std::string& utf8txt, bool mark )
@@ -164,22 +163,18 @@ namespace wal
 
 	void ComboBox::InsertText( unicode_t t )
 	{
-		if ( IsReadOnly() )
+		if ( !IsReadOnly() )
 		{
-			return;
+			_edit.Insert( t );
 		}
-
-		_edit.Insert( t );
 	}
 
 	void ComboBox::InsertText( const unicode_t* txt )
 	{
-		if ( IsReadOnly() )
+		if ( !IsReadOnly() )
 		{
-			return;
+			_edit.Insert( txt );
 		}
-
-		_edit.Insert( txt );
 	}
 
 	void* ComboBox::ItemData( int n )
@@ -416,10 +411,8 @@ namespace wal
 		ScrPoint.x += ScrRect.left;
 		ScrPoint.y += ScrRect.top;
 
-		crect EditRect = _edit.ScreenRect();
-
 		if ( pEvent->Type() == EV_MOUSE_PRESS 
-			&& (_buttonRect.In( pEvent->Point() ) || (IsReadOnly() && EditRect.In( ScrPoint ))) )
+			&& (_buttonRect.In( pEvent->Point() ) || (IsReadOnly() && ScrRect.In( ScrPoint ))) )
 		{
 			if ( _box.ptr() )
 			{
@@ -435,13 +428,15 @@ namespace wal
 
 		if ( IsCaptured() )
 		{
+			crect EditRect = _edit.ScreenRect();
+
 			if ( EditRect.In( ScrPoint ) )
 			{
 				cevent_mouse ev( pEvent->Type(),
 									  cpoint( ScrPoint.x - EditRect.left, ScrPoint.y - EditRect.top ),
-				                 pEvent->Button(),
-				                 pEvent->ButtonFlag(),
-				                 pEvent->Mod() );
+									  pEvent->Button(),
+									  pEvent->ButtonFlag(),
+									  pEvent->Mod() );
 				return _edit.EventMouse( &ev );
 			}
 			

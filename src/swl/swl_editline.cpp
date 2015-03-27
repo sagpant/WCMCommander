@@ -461,18 +461,21 @@ namespace wal
 
 	bool EditLine::EventFocus( bool recv )
 	{
-		cursorVisible = recv;
+		if ( !IsReadOnly() )
+		{
+			cursorVisible = recv;
+
+			if ( recv )
+			{
+				SetTimer( 1, 500 );
+			}
+			else
+			{
+				DelTimer( 1 );
+			}
+		}
+
 		Invalidate();
-
-		if ( recv )
-		{
-			SetTimer( 1, 500 );
-		}
-		else
-		{
-			DelTimer( 1 );
-		}
-
 		return true;
 	}
 
@@ -587,7 +590,7 @@ namespace wal
 		}
 
 
-		if ( InFocus() )
+		if ( InFocus() && !IsReadOnly() )
 		{
 			DrawCursor( gc );
 		}
