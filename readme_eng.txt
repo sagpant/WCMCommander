@@ -1,5 +1,5 @@
                 WCM Commander 0.19.1
-    https://github.com/corporateshark/WalCommander
+    https://github.com/corporateshark/WCMCommander
 =======================================================
 
 Dual panel multi-platform open source file manager
@@ -30,7 +30,7 @@ Install:
 
 		sudo make install
 
-Mac OS X installation way (refer to https://github.com/corporateshark/WalCommander/issues/5 for more details):
+Mac OS X installation way (refer to https://github.com/corporateshark/WCMCommander/issues/5 for more details):
 
 	Install Quartz from http://xquartz.macosforge.org/landing/
 	Install brew http://brew.sh/

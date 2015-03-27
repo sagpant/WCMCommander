@@ -7,8 +7,8 @@
 const char* helpData_main =
    "<v10>/n"
    "/c{<shead><sbold>http:////wcm.linderdaum.com/n}"
-   "/c{<shead><sbold>https:////github.com//corporateshark//WalCommander/n}"
-   "/c{<shead><sbold>walcommander/@linderdaum.com/n}"
+   "/c{<shead><sbold>https:////github.com//corporateshark//WCMCommander/n}"
+   "/c{<shead><sbold>wcm/@linderdaum.com/n}"
    "<v5>/n"
    "/c{<shead>Main window help/n}"
    "/c{<shead>Keyboard reference /n}"

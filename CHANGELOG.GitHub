@@ -116,7 +116,7 @@
 	Added: command line autocomplete (use Del key to erase a command)
 	Added: hotkeys in the main menu
 	Added: option to hide '..' in the root folder (hidden by default)
-	Added: experimental OS X support on top of XQuartz (https://github.com/corporateshark/WalCommander/issues/5)
+	Added: experimental OS X support on top of XQuartz (https://github.com/corporateshark/WCMCommander/issues/5)
 	Added: file associations (Main menu -> Commands -> File associations)
 	Added: separate settings to show folder icons and executable icons
 	Added: option to show current path in the command line (enabled by default)

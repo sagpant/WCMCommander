@@ -1,6 +1,6 @@
 WCM Commander
 =============
-[![Build Status](https://travis-ci.org/corporateshark/WalCommander.svg?branch=master)](https://travis-ci.org/corporateshark/WalCommander)
+[![Build Status](https://travis-ci.org/corporateshark/WCMCommander.svg?branch=master)](https://travis-ci.org/corporateshark/WCMCommander)
 [![Build status](https://ci.appveyor.com/api/projects/status/ettn9b5m0130414n/branch/master)](https://ci.appveyor.com/project/corporateshark/walcommander/branch/master)
 [![Scan Status](https://scan.coverity.com/projects/2933/badge.svg?flat=1)](https://scan.coverity.com/projects/2933)
 
@@ -12,7 +12,7 @@ https://github.com/corporateshark/WCMCommander
 
 http://wcm.linderdaum.com
 
-walcommander@linderdaum.com
+wcm@linderdaum.com
 
 Discussion group: https://groups.google.com/d/forum/wal-commander
 
@@ -28,9 +28,9 @@ Currently WCM Commander runs on Windows, Linux, FreeBSD and on OS X using XQuart
 Getting the latest version:
 ---------------------------
 
-The most feature complete up-to-date version is in the [master](https://github.com/corporateshark/WalCommander/commits/master) branch.
+The most feature complete up-to-date version is in the [master](https://github.com/corporateshark/WCMCommander/commits/master) branch.
 However, this is mostly untested and can be broken from time to time (not for long).
-If you want a stable release for a day to day usage, check out our latest [releases](https://github.com/corporateshark/WalCommander/releases) or
+If you want a stable release for a day to day usage, check out our latest [releases](https://github.com/corporateshark/WCMCommander/releases) or
 precompiled [binary packages](http://wcm.linderdaum.com/downloads).
 
 =============================
@@ -55,4 +55,4 @@ Features:
 License:
 --------
 
-The source code is available under the terms of the MIT License: https://github.com/corporateshark/WalCommander/blob/master/LICENSE
+The source code is available under the terms of the MIT License: https://github.com/corporateshark/WCMCommander/blob/master/LICENSE
