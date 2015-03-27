@@ -307,11 +307,6 @@ namespace wal
 		}
 	};
 
-	bool EditLine::IsEmpty() const
-	{
-		return text.Count() == 0;
-	}
-
 	static unicode_t passwordSymbol = '*';
 
 	void EditLine::DrawCursor( GC& gc )
@@ -668,26 +663,29 @@ namespace wal
 				switch ( pEvent->Key() )
 				{
 					case VK_A:
-					{
 						text.Begin( false );
 						text.End( true );
 						CheckCursorPos();
 						Invalidate();
-					};
-
-					return true;
+						return true;
 
 					case VK_C:
 						ClipboardCopy();
 						return true;
 
 					case VK_V:
-						if ( !RO() ) { ClipboardPaste(); }
+						if ( !IsReadOnly() )
+						{
+							ClipboardPaste();
+						}
 
 						return true;
 
 					case VK_X:
-						if ( !RO() ) { ClipboardCut(); }
+						if ( !IsReadOnly() )
+						{
+							ClipboardCut();
+						}
 
 						return true;
 				}
@@ -697,9 +695,10 @@ namespace wal
 			{
 				case VK_BACK:
 				{
-					if ( RO() ) { return true; }
-
-					if ( text.Cursor() == 0 ) { return true; }
+					if ( IsReadOnly() || text.Cursor() == 0 )
+					{
+						return true;
+					}
 
 					text.Backspace( ctrl );
 					SendCommand( SCMD_EDITLINE_DELETED );
@@ -709,9 +708,10 @@ namespace wal
 
 				case VK_DELETE:
 				{
-					if ( RO() ) { return true; }
-
-					if ( text.Cursor() > text.Count() ) { return true; }
+					if ( IsReadOnly() || text.Cursor() > text.Count() )
+					{
+						return true;
+					}
 
 					text.Del( ctrl );
 					SendCommand( SCMD_EDITLINE_DELETED );
@@ -721,7 +721,10 @@ namespace wal
 
 				case VK_LEFT:
 				{
-					if ( text.Marked() == shift && text.Cursor() == 0 ) { return true; }
+					if ( text.Marked() == shift && text.Cursor() == 0 )
+					{
+						return true;
+					}
 
 					if ( ctrl )
 					{
@@ -737,7 +740,10 @@ namespace wal
 
 				case VK_RIGHT:
 				{
-					if ( text.Marked() == shift && text.Cursor() == text.Count() ) { return true; }
+					if ( text.Marked() == shift && text.Cursor() == text.Count() )
+					{
+						return true;
+					}
 
 					if ( ctrl )
 					{
@@ -753,7 +759,10 @@ namespace wal
 
 				case VK_HOME:
 				{
-					if ( text.Marked() == shift && text.Cursor() == 0 ) { return true; }
+					if ( text.Marked() == shift && text.Cursor() == 0 )
+					{
+						return true;
+					}
 
 					text.Begin( shift );
 				}
@@ -761,15 +770,29 @@ namespace wal
 
 				case VK_END:
 				{
-					if ( text.Marked() == shift && text.Cursor() == text.Count() ) { return true; }
+					if ( text.Marked() == shift && text.Cursor() == text.Count() )
+					{
+						return true;
+					}
 
 					text.End( shift );
 				}
 				break;
 
 				case VK_INSERT:
-					if ( shift ) { if ( RO() ) { return true; } ClipboardPaste(); }
-					else if ( ctrl && text.Marked() ) { ClipboardCopy(); }
+					if ( shift )
+					{
+						if ( IsReadOnly() )
+						{
+							return true;
+						}
+						
+						ClipboardPaste();
+					}
+					else if ( ctrl && text.Marked() )
+					{
+						ClipboardCopy();
+					}
 
 					break;
 
@@ -778,13 +801,18 @@ namespace wal
 
 					if ( c && c >= 0x20 && ( !alt || _use_alt_symbols ) )
 					{
-						std::vector<unicode_t> oldtext = GetText();
+						if ( IsReadOnly() )
+						{
+							return true;
+						}
 
-						if ( RO() ) { return true; }
-
-						if ( m_ReplaceMode ) { text.Del( false ); }
+						if ( m_ReplaceMode )
+						{
+							text.Del( false );
+						}
 
 						text.Insert( c );
+						std::vector<unicode_t> oldtext = GetText();
 
 						if ( m_Validator && !m_Validator->IsValid( GetText() ) )
 						{
@@ -794,7 +822,12 @@ namespace wal
 						SendCommand( SCMD_EDITLINE_INSERTED );
 						Changed();
 					}
-					else { return false; }
+					else
+					{
+						return false;
+					}
+					
+					break;
 			}
 
 			cursorVisible = true;
@@ -803,7 +836,7 @@ namespace wal
 			return true;
 		}
 
-		return false;
+		return Win::EventKey( pEvent );
 	}
 
 	void EditLine::ClipboardCopy()
@@ -854,7 +887,6 @@ namespace wal
 			Invalidate();
 		}
 	}
-
 
 	void EditLine::Clear()
 	{

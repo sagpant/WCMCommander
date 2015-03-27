@@ -26,6 +26,8 @@ public:
 
 	virtual ~clNCEditLine() {}
 
+	virtual bool EventKey( cevent_key* pEvent ) override;
+
 	virtual bool Command( int Id, int SubId, Win* Win, void* Data ) override;
 
 	virtual int UiGetClassId() override;

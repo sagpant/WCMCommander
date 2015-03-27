@@ -51,7 +51,7 @@ namespace wal
 	{
 		if ( ItemIndex < 0 )
 		{
-			if ( _flags & READONLY )
+			if ( IsReadOnly() )
 			{
 				_edit.Clear();
 			}
@@ -76,7 +76,7 @@ namespace wal
 		:  Win( Win::WT_CHILD, WH_CLICKFOCUS | WH_TABFOCUS, parent, rect, nId ),
 		   _flags( flags ),
 		   _lo( 3, 4 ),
-		   _edit( 0, this, 0, 0, cols, false, EditLine::USEPARENTFOCUS | ( ( flags& READONLY ) ? EditLine::READONLY : 0 ) ),
+		   _edit( 0, this, 0, 0, cols, false, EditLine::USEPARENTFOCUS | ( ( flags & READONLY ) ? EditLine::READONLY : 0 ) ),
 		   _rows( rows > 0 ? rows : 0 )
 	{
 		_lo.AddWin( &_edit, 1, 1 );
@@ -149,7 +149,7 @@ namespace wal
 
 	void ComboBox::SetText( const unicode_t* txt, bool mark )
 	{
-		if ( this->_flags & READONLY )
+		if ( IsReadOnly() )
 		{
 			return;
 		}
@@ -164,7 +164,7 @@ namespace wal
 
 	void ComboBox::InsertText( unicode_t t )
 	{
-		if ( this->_flags & READONLY )
+		if ( IsReadOnly() )
 		{
 			return;
 		}
@@ -174,7 +174,7 @@ namespace wal
 
 	void ComboBox::InsertText( const unicode_t* txt )
 	{
-		if ( this->_flags & READONLY )
+		if ( IsReadOnly() )
 		{
 			return;
 		}
@@ -191,15 +191,20 @@ namespace wal
 	{
 		if ( win == _box.ptr() && _box.ptr() )
 		{
-			const int n = _box->GetCurrent();
-			if ( n >= 0 && n < _list.count() && n != _current )
+			if ( !IsReadOnly() )
 			{
-				_current = n;
-				OnItemChanged(_current);
+				const int n = _box->GetCurrent();
+				if ( n >= 0 && n < _list.count() && n != _current )
+				{
+					_current = n;
+					OnItemChanged( _current );
+				}
 			}
-
+			
 			if ( id == CMD_ITEM_CLICK )
 			{
+				_current = _box->GetCurrent();
+				OnItemChanged( _current );
 				CloseBox();
 			}
 
@@ -209,7 +214,6 @@ namespace wal
 		if ( win == &_edit && _current != -1 )
 		{
 			_current = -1;
-
 			if ( _box )
 			{
 				_box->SetNoCurrent();
@@ -231,6 +235,7 @@ namespace wal
 			CloseBox();
 		}
 
+		Invalidate();
 		return true;
 	}
 
@@ -254,7 +259,11 @@ namespace wal
 			case VK_RETURN:
 				if ( IsBoxOpened() )
 				{
+					const int n = _box->GetCurrent();
+					_current = n;
+					OnItemChanged( _current );
 					CloseBox();
+					return true;
 				}
 
 				break;
@@ -402,7 +411,15 @@ namespace wal
 
 	bool ComboBox::EventMouse( cevent_mouse* pEvent )
 	{
-		if ( pEvent->Type() == EV_MOUSE_PRESS && _buttonRect.In( pEvent->Point() ) )
+		crect ScrRect = ScreenRect();
+		cpoint ScrPoint = pEvent->Point();
+		ScrPoint.x += ScrRect.left;
+		ScrPoint.y += ScrRect.top;
+
+		crect EditRect = _edit.ScreenRect();
+
+		if ( pEvent->Type() == EV_MOUSE_PRESS 
+			&& (_buttonRect.In( pEvent->Point() ) || (IsReadOnly() && EditRect.In( ScrPoint ))) )
 		{
 			if ( _box.ptr() )
 			{
@@ -418,48 +435,36 @@ namespace wal
 
 		if ( IsCaptured() )
 		{
-			crect rect = ScreenRect();
-			cpoint point = pEvent->Point();
-
-			point.x += rect.left;
-			point.y += rect.top;
-
-
-			rect = _edit.ScreenRect();
-
-			if ( rect.In( point ) )
+			if ( EditRect.In( ScrPoint ) )
 			{
 				cevent_mouse ev( pEvent->Type(),
-				                 cpoint( point.x - rect.left, point.y - rect.top ),
+									  cpoint( ScrPoint.x - EditRect.left, ScrPoint.y - EditRect.top ),
 				                 pEvent->Button(),
 				                 pEvent->ButtonFlag(),
 				                 pEvent->Mod() );
 				return _edit.EventMouse( &ev );
 			}
-			else if ( _box.ptr() )
+			
+			if ( _box.ptr() )
 			{
-				rect = _box->ScreenRect();
+				crect BoxRect = _box->ScreenRect();
 
-				if ( rect.In( point ) )
+				if ( BoxRect.In( ScrPoint ) )
 				{
 					cevent_mouse ev( pEvent->Type(),
-					                 cpoint( point.x - rect.left,
-					                         point.y - rect.top ), pEvent->Button(),
+										  cpoint( ScrPoint.x - BoxRect.left, ScrPoint.y - BoxRect.top ),
+										  pEvent->Button(),
 					                 pEvent->ButtonFlag(),
 					                 pEvent->Mod() );
 					return _box->EventMouse( &ev );
 				}
-				else if ( pEvent->Type() == EV_MOUSE_PRESS )
+				
+				if ( pEvent->Type() == EV_MOUSE_PRESS )
 				{
 					CloseBox();
 				}
 			}
 
-			return true;
-		}
-
-		if ( _edit.EventMouse( pEvent ) )
-		{
 			return true;
 		}
 

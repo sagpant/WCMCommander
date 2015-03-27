@@ -456,7 +456,7 @@ NCDialog::~NCDialog()
 bool NCVertDialog::EventChildKey( Win* child, cevent_key* pEvent )
 {
     // try to preprocess key combinations like Cntrl + VK_DOWN
-    if ( dynamic_cast<clNCEditLine*>(child) && child->EventKey(pEvent) )
+    if ( dynamic_cast<ComboBox*>(child) && child->EventKey(pEvent) )
     {
         return true;
     }

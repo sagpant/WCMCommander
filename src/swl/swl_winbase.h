@@ -218,7 +218,6 @@ namespace wal
 	private:
 		bool _use_alt_symbols;
 		unsigned _flags;
-		bool RO() const { return ( _flags & READONLY ) != 0; }
 		bool UseParentFocus() const { return (_flags & USEPARENTFOCUS) != 0; }
 		EditBuf text;
 		int _chars;
@@ -268,7 +267,8 @@ namespace wal
 		void SetText( const std::string& utf8txt, bool mark = false );
 		void Insert( unicode_t t );
 		void Insert( const unicode_t* txt );
-		bool IsEmpty() const;
+		bool IsEmpty() const { return text.Count() == 0; }
+		bool IsReadOnly() const { return (_flags & READONLY) != 0; }
 		int GetCursorPos() { return text.Cursor(); }
 		int GetMarkerPos() { return text.Marker(); }
 		void SetCursorPos( int c, bool mark = false ) { text.SetCursor( c, mark ); }
@@ -704,7 +704,7 @@ namespace wal
 		int GetMarkerPos() { return _edit.GetMarkerPos(); }
 		void SetCursorPos( int c, bool mark = false ) { _edit.SetCursorPos( c, mark ); }
 
-
+		bool IsReadOnly() const { return (_flags & ComboBox::READONLY) != 0; }
 		int Count() const { return _list.count(); }
 		int Current() const { return _current; }
 		const unicode_t* ItemText( int n );
