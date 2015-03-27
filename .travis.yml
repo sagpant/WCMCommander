@@ -3,6 +3,7 @@ language: cpp
 branches:
   except:
     - wcm-upstream
+    - osx-experimental
 
 compiler:
   - gcc
