@@ -88,7 +88,7 @@ namespace wal
 		_lo.AddRect( &_buttonRect, 1, 2 );
 		_lo.ColSet( 2, CB_BUTTONWIDTH );
 		
-		const int fw = ( _flags & FRAME3D ) != 0 ? 3 : ( ( _flags & NOFOCUSFRAME ) ? 0 : 1 );
+		const int fw = 3;
 		_lo.ColSet( 0, fw );
 		_lo.ColSet( 3, fw );
 		_lo.LineSet( 0, fw );
@@ -479,25 +479,22 @@ namespace wal
 
 		unsigned frameColor = UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF );
 
-		if ( ( _flags & FRAME3D ) != 0 )
+		if ( g_WcmConfig.styleShow3DUI )
 		{
-			if ( g_WcmConfig.styleShow3DUI )
-			{
-				Draw3DButtonW2( gc, cr, frameColor, false );
-				cr.Dec();
-				cr.Dec();
-			}
-			else
-			{
-				DrawBorder( gc, cr, frameColor );
-				cr.Dec();
-				DrawBorder( gc, cr, frameColor );
-				cr.Dec();
-			}
+			Draw3DButtonW2( gc, cr, frameColor, false );
+			cr.Dec();
+			cr.Dec();
+		}
+		else
+		{
+			DrawBorder( gc, cr, frameColor );
+			cr.Dec();
+			DrawBorder( gc, cr, frameColor );
+			cr.Dec();
 		}
 
-		DrawBorder( gc, cr, InFocus() && ( _flags & NOFOCUSFRAME ) == 0 ? 
-            UiGetColor( uiFocusFrameColor, 0, 0, 0 ) : ColorTone( UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF ), -200 ) );
+		DrawBorder( gc, cr, InFocus() ? UiGetColor( uiFocusFrameColor, 0, 0, 0 ) 
+			: ColorTone( UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF ), -200 ) );
 
 		SBCDrawButton( gc, _buttonRect, ( _flags & MODE_UP ) ? 4 : 5, bgColor, false );
 	}

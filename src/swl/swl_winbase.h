@@ -648,9 +648,7 @@ namespace wal
 		enum FLAGS
 		{
 			MODE_UP  = 1,
-			READONLY = 2,
-			FRAME3D  = 4,
-			NOFOCUSFRAME = 8
+			READONLY = 2
 		};
 	
     private:

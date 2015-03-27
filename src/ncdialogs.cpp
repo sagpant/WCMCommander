@@ -685,7 +685,7 @@ private:
 public:
 	clInputFieldDialog( const char* FieldName, NCDialogParent* Parent, const unicode_t* Message, const unicode_t* Str )
 		: clInputStrDialogBase( Parent, Message )
-		, m_FieldEdit( FieldName, 0, (Win*)this, 0, 100, 7, false, true, false )
+		, m_FieldEdit( FieldName, 0, (Win*)this, 0, 100, 7 )
 	{
 		m_FieldEdit.Enable();
 		m_FieldEdit.Show();

@@ -274,15 +274,6 @@ namespace wal
 			return true;
 		}
 
-		if ( pEvent->Type() == EV_MOUSE_MOVE && selectType == SINGLE_SELECT && !IsCaptured() )
-		{
-			if ( pEvent->Point().y >= listRect.top && pEvent->Point().y <= listRect.bottom )
-			{
-				MoveCurrent( n );
-				return true;
-			}
-		}
-
 		if ( pEvent->Type() == EV_MOUSE_MOVE && IsCaptured() )
 		{
 			if ( pEvent->Point().y >= listRect.top && pEvent->Point().y <= listRect.bottom )

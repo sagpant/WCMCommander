@@ -18,11 +18,8 @@ int clNCEditLine::UiGetClassId()
 	return uiClassNCEditLine;
 }
 
-clNCEditLine::clNCEditLine( const char* FieldName, int Id, Win* Parent, const unicode_t* Txt,
-									int Cols, int Rows, bool Up, bool Frame3d, bool NoFocusFrame, crect* Rect )
-	: ComboBox( Id, Parent, Cols, Rows,
-				  (Up ? ComboBox::MODE_UP : 0) | (Frame3d ? ComboBox::FRAME3D : 0) | (NoFocusFrame ? ComboBox::NOFOCUSFRAME : 0),
-				  Rect )
+clNCEditLine::clNCEditLine( const char* FieldName, int Id, Win* Parent, const unicode_t* Txt, int Cols, int Rows, crect* Rect )
+	: ComboBox( Id, Parent, Cols, Rows, 0, Rect )
 	, m_FieldName( FieldName )
 {
 }
