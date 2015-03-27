@@ -1,6 +1,6 @@
 /*
- * Part of Wal Commander GitHub Edition
- * https://github.com/corporateshark/WalCommander
+ * Part of WCM Commander
+ * https://github.com/corporateshark/WCMCommander
  * walcommander@linderdaum.com
  */
 
@@ -202,7 +202,7 @@ bool PanelSearchWin::EventChildKey( Win* child, cevent_key* pEvent )
 		case VK_BACK:
 		case VK_DELETE:
 
-		// this comes from 0xfe08 XK_ISO_Next_Group, workaround for https://github.com/corporateshark/WalCommander/issues/22
+		// this comes from 0xfe08 XK_ISO_Next_Group, workaround for https://github.com/corporateshark/WCMCommander/issues/22
 		case 0xfe08:
 			return false;
 
@@ -1175,7 +1175,7 @@ void PanelWin::DrawItem( wal::GC& gc,  int n )
 
 	cpoint Size = gc.GetTextExtents( Name.data() );
 
-	// show special mark for long file names: https://github.com/corporateshark/WalCommander/issues/272
+	// show special mark for long file names: https://github.com/corporateshark/WCMCommander/issues/272
 	if ( x + Size.x > rect.right )
 	{
 		gc.SetTextColor( _longNameMarkColor );

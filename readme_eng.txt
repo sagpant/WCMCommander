@@ -1,4 +1,4 @@
-         Wal commander 0.18.1 GitHub Edition
+                WCM Commander 0.19.1
     https://github.com/corporateshark/WalCommander
 =======================================================
 

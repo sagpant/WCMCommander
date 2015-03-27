@@ -571,7 +571,7 @@ namespace wal
 
 				std::vector<unicode_t> VisibleText = new_unicode_str( passwordMode ? pwText : ( text.Ptr() + i ) );
 
-				// https://github.com/corporateshark/WalCommander/issues/187
+				// https://github.com/corporateshark/WCMCommander/issues/187
 				if ( showSpaces )
 				{
 					ReplaceSpaces( &VisibleText );

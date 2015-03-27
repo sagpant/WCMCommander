@@ -653,7 +653,7 @@ namespace wal
 				ks = XK_Z;
 				break;
 
-			// remap numpad keys: https://github.com/corporateshark/WalCommander/issues/198
+			// remap numpad keys: https://github.com/corporateshark/WCMCommander/issues/198
 
 			case XK_KP_Left:
 				ks = XK_Left;
@@ -2514,8 +2514,8 @@ Nah:
 
 		if ( Hint )
 		{
-			Hint->res_name = (char*)"Wal Commander GitHub Edition";
-			Hint->res_class = (char*)"WalCommander";
+			Hint->res_name = (char*)"WCM Commander";
+			Hint->res_class = (char*)"WCMCommander";
 			XSetClassHint( display, handle, Hint );
 			XFree( Hint );
 		}

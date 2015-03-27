@@ -1,0 +1,42 @@
+People contributed to WCM Commander (in alphabetical order by versions)
+
+0.19.1
+	Oleg Panashchenko
+	Sergey Kosarevsky
+	Victor Sergienko
+	Viktor Podzigun
+	Yuriy Skalko
+
+0.19.0.1 (Feb 23 2015)
+	Sergey Kosarevsky
+
+0.19.0 (Feb 22 2015)
+	Brian Callahan
+	Dmitry Marakasov
+	Oleg Panashchenko
+	Sergey Kosarevsky
+	Victor Sergienko
+
+0.18.1 (Dec 21 2014)
+	John Kollss
+	Sergey Kosarevsky
+
+0.18.0 (Nov 7 2014)
+	Andrey Obolkonsky
+	Artem Alexeyev
+	Dmitry Marakasov
+	Oleg Panashchenko
+	Sergey Kosarevsky
+	Serguei666
+
+0.17.0 (Sep 17 2014)
+	Dmitry Marakasov
+	Konstantin Kuklin
+	Oleg Panashchenko
+	Serge Vakulenko
+	Sergey Kosarevsky
+	Vitaly Lipatov
+
+0.16.1 (Aug 22 2014)
+	Sergey Kosarevsky
+	Valery Goryachev

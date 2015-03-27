@@ -1,6 +1,6 @@
 /*
- * Part of Wal Commander GitHub Edition
- * https://github.com/corporateshark/WalCommander
+ * Part of WCM Commander
+ * https://github.com/corporateshark/WCMCommander
  * walcommander@linderdaum.com
  */
 
@@ -4170,7 +4170,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				if ( pressed ) { SwitchToBackgroundActivity(); }
 
-				// Send ESC to terminal. Fix for https://github.com/corporateshark/WalCommander/issues/94
+				// Send ESC to terminal. Fix for https://github.com/corporateshark/WCMCommander/issues/94
 				if ( FullKey == VK_ESCAPE ) { break; }
 
 				return true;

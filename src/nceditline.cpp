@@ -1,6 +1,6 @@
 /*
-* Part of Wal Commander GitHub Edition
-* https://github.com/corporateshark/WalCommander
+* Part of WCM Commander
+* https://github.com/corporateshark/WCMCommander
 * walcommander@linderdaum.com
 */
 

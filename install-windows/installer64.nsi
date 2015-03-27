@@ -1,12 +1,12 @@
 SetCompressor /SOLID /FINAL lzma
 
-Name "Wal Commander GitHub Edition 0.19.0 (64-bit)"
+Name "WCM Commander 0.19.1 (64-bit)"
 
 ; The file to write
-OutFile "WalCommanderGitHub-0.18.0-x64.exe"
+OutFile "WCMCommanderGitHub-0.18.0-x64.exe"
 
 ; The default installation directory
-InstallDir "D:\Program Files\WalCommander"
+InstallDir "D:\Program Files\WCMCommander"
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
@@ -38,7 +38,7 @@ LicenseData ..\LICENSE
 !insertmacro MUI_PAGE_INSTFILES
 
 Var StartMenuFolder
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Wal Commander"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "WCM Commander"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
 
@@ -73,7 +73,7 @@ Section "" ;No components page, name is not important
   File /r Temp\*.*
 
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WalCommander" "DisplayName" "Wal Commander GitHub Edition"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WalCommander" "DisplayName" "WCM Commander"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WalCommander" "UninstallString" '"$INSTDIR\uninstall.exe"'
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WalCommander" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WalCommander" "NoRepair" 1
@@ -92,14 +92,14 @@ Section "Start Menu Shortcuts"
 	;Create shortcuts
 	CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
 	SetOutPath $INSTDIR\Tools\ProjectWizard
-	CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Wal Commander.lnk" "$INSTDIR\wcm.exe" "" "$INSTDIR\small.ico" 0
+	CreateShortCut "$SMPROGRAMS\$StartMenuFolder\WCM Commander.lnk" "$INSTDIR\wcm.exe" "" "$INSTDIR\small.ico" 0
 	SetOutPath $INSTDIR
 	CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 	CreateShortCut "$SMPROGRAMS\$StartMenuFolder\readme_eng.txt"    "$INSTDIR\readme_eng.txt"
   
    !insertmacro MUI_STARTMENU_WRITE_END
 
-	CreateShortCut "$DESKTOP\Wal Commander.lnk" "$INSTDIR\" "" "$INSTDIR\small.ico"
+	CreateShortCut "$DESKTOP\WCM Commander.lnk" "$INSTDIR\" "" "$INSTDIR\small.ico"
 
 ;  CreateShortCut "$DESKTOP\Asteroids.lnk" "$INSTDIR\Launcher2.exe"
 SectionEnd
@@ -109,7 +109,7 @@ SectionEnd
 ; Uninstaller
 
 Function un.onInit
-	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove Wal Commander GitHub Edition and all of its components?" IDYES +2
+	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove WCM Commander and all of its components?" IDYES +2
 	Abort
 FunctionEnd
 
@@ -123,7 +123,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR"
 
   ; Remove shortcuts, if any
-  Delete "$DESKTOP\Wal Commander.lnk"
+  Delete "$DESKTOP\WCM Commander.lnk"
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
   Delete "$SMPROGRAMS\$StartMenuFolder\*.*"

@@ -1,6 +1,6 @@
 /*
- * Part of Wal Commander GitHub Edition
- * https://github.com/corporateshark/WalCommander
+ * Part of WCM Commander
+ * https://github.com/corporateshark/WCMCommander
  * walcommander@linderdaum.com
  */
 
@@ -37,11 +37,11 @@
 
 clPtr<wal::GC> defaultGC;
 
-const char* appName = "Wal Commander GitHub Edition";
+const char* appName = "WCM Commander";
 #if defined( _WIN32 )
-const char* appNameRoot = "Wal Commander GitHub Edition (Administrator)";
+const char* appNameRoot = "WCM Commander (Administrator)";
 #else
-const char* appNameRoot = "Wal Commander GitHub Edition (Root)";
+const char* appNameRoot = "WCM Commander (Root)";
 #endif
 
 cfont* ( *OldSysGetFont )( Win* w, int id ) = 0;

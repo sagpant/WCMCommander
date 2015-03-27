@@ -1,6 +1,6 @@
 /*
- * Part of Wal Commander GitHub Edition
- * https://github.com/corporateshark/WalCommander
+ * Part of WCM Commander
+ * https://github.com/corporateshark/WCMCommander
  * walcommander@linderdaum.com
  */
 
@@ -472,8 +472,8 @@ void SaveStringList( const char* section, std::vector< std::string >& list )
 
 #else
 //старый клочек, надо перепроверить
-static const char* regapp = "Wal commander";
-static const char* regcomp = "Wal";
+static const char* regapp = "WCM commander";
+static const char* regcomp = "WCM";
 
 #define COMPANY regcomp
 #define APPNAME regapp

@@ -1,6 +1,6 @@
 /*
- * Part of Wal Commander GitHub Edition
- * https://github.com/corporateshark/WalCommander
+ * Part of WCM Commander
+ * https://github.com/corporateshark/WCMCommander
  * walcommander@linderdaum.com
  */
 
@@ -15,8 +15,8 @@
 #include <vector>
 
 // Windows
-#define WIN_REGISTRY_FIRM  "Wal" //firm name in windows registry
-#define WIN_REGISTRY_APP   "Wal commander" //app name in windows registry
+#define WIN_REGISTRY_FIRM  "WCM" //firm name in windows registry
+#define WIN_REGISTRY_APP   "WCM Commander" //app name in windows registry
 
 // Unix
 #ifndef UNIX_CONFIG_DIR_PATH

@@ -299,7 +299,7 @@ namespace wal
 		if ( n == select && InFocus() ) { gc.FillRect( itemRect ); }
 
 		/*
-		// https://github.com/corporateshark/WalCommander/issues/223
+		// https://github.com/corporateshark/WCMCommander/issues/223
 		if ( n == select )
 		{
 		   DrawBorder( gc, itemRect, UiGetColor( uiCurrentItemFrame, uiItem, &ucl, 0xFFFFFF ) );

@@ -57,7 +57,7 @@ make install
 Ensure there are no errors on the screen. Check that file C:\MinGW\lib\libssh2.a
 appears after 'make install' command.
 
-Now you should be GTG to build Wal Commander with SSH support 
+Now you should be GTG to build WCM Commander with SSH support 
 by runnung 'make' in wcm directory
 
 --
