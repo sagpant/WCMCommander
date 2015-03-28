@@ -288,6 +288,7 @@
 		<Unit filename="src/stdafx.h" />
 		<Unit filename="src/strconfig.cpp" />
 		<Unit filename="src/strconfig.h" />
+		<Unit filename="src/string-util.cpp" />
 		<Unit filename="src/string-util.h" />
 		<Unit filename="src/strmasks.cpp" />
 		<Unit filename="src/swl/swl.h" />

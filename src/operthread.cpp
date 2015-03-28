@@ -77,9 +77,3 @@ int OperThread::RedMessage( const char* s1, const char* s2, const char* s3, cons
 {
 	return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s5, s5, s6 ).data(), sysErr );
 }
-
-int OperThread::RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, const char* s5,  const char* s6, const char* s7, ButtonDataNode* buttons, const char* sysErr )
-{
-	return RedMessage( buttons, carray_cat<char>( s1, s2, s3, s5, s5, s6, s7 ).data(), sysErr );
-}
-

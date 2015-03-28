@@ -143,6 +143,7 @@ SET(wcm_COMMON_SOURCES
 	nceditline.cpp
 	smblogon.cpp
 	strconfig.cpp
+	string-util.cpp
 	strmasks.cpp
 	swl/swl_button.cpp
 	swl/swl_editline.cpp
@@ -225,6 +226,7 @@ SET(wcm_HEADERS
 	nceditline.h
 	smblogon.h
 	strconfig.h
+	string-util.h
 	swl/swl.h
 	swl/swl_internal.h
 	swl/swl_layout.h

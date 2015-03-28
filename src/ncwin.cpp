@@ -237,47 +237,6 @@ static bool StrHaveSpace( const unicode_t* s )
 	return false;
 }
 
-std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
-{
-	if ( begin >= end ) { return end; }
-
-	return std::search( begin, end, SubStr.begin(), SubStr.end() );
-}
-
-std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const unicode_t* FileName )
-{
-	std::vector<unicode_t> Result( cmd );
-	std::vector<unicode_t> Name = new_unicode_str( FileName );
-
-//	bool HasSpaces = StrHaveSpace( Name.data() );
-
-	if ( Name.size() && Name.back() == 0 ) { Name.pop_back(); }
-
-//	if ( HasSpaces )
-	{
-		Name.insert( Name.begin(), '"' );
-		Name.push_back( '"' );
-	}
-
-	std::vector<unicode_t> Mask;
-	Mask.push_back( '!' );
-	Mask.push_back( '.' );
-	Mask.push_back( '!' );
-
-	auto pos = FindSubstr( Result.begin(), Result.end(), Mask );
-
-	while ( pos != Result.end() )
-	{
-		pos = Result.erase( pos, pos + Mask.size() );
-		size_t idx = pos - Result.begin();
-		Result.insert( pos, Name.begin(), Name.end() );
-		pos = Result.begin() + idx;
-		pos = FindSubstr( pos + Name.size(), Result.end(), Mask );
-	}
-
-	return Result;
-}
-
 extern SearchAndReplaceParams searchParams;
 
 static crect acWinRect( 0, 0, 850, 500 );

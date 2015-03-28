@@ -54,6 +54,7 @@ HN = \
 	src/help.h \
 	src/ux_util.h \
 	src/strconfig.h \
+	src/string-util.h \
 	src/path-list.h \
 	src/folder-shortcuts.h \
 	src/folder-history.h \
@@ -121,6 +122,7 @@ OBJS = \
 	$(OBJDIR)/nceditline.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
+	$(OBJDIR)/string-util.o \
 	$(OBJDIR)/strmasks.o \
 	$(OBJDIR)/swl_button.o \
 	$(OBJDIR)/swl_combobox.o \
@@ -252,6 +254,9 @@ $(OBJDIR)/filehighlighting.o: $(HW) $(HS) $(HN) src/filehighlighting.cpp
 
 $(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) src/strconfig.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/strconfig.cpp -o $(OBJDIR)/strconfig.o
+
+$(OBJDIR)/string-util.o: $(HW) $(HS) $(HN) src/string-util.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) src/string-util.cpp -o $(OBJDIR)/string-util.o
 
 $(OBJDIR)/strmasks.o: $(HW) $(HS) $(HN) src/strmasks.cpp
 	$(CC) $(COPTS) -c $(CFLAGS) src/strmasks.cpp -o $(OBJDIR)/strmasks.o

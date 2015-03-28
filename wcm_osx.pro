@@ -67,6 +67,7 @@ SOURCES += src/nc.cpp \
     src/nceditline.cpp \
     src/smblogon.cpp \
     src/strconfig.cpp \
+    src/string-util.cpp \
     src/strmasks.cpp \
     src/t-emulator.cpp \
     src/tcp_sock.cpp \

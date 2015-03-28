@@ -24,7 +24,11 @@
 #include "wal.h"
 #include "wal_sys_api.h"
 
-const int BUFFER = 65535;
+/// return the position of the SubStr in a range
+std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr );
+
+/// replace special symbols !.! in the command with the specified file name, return the resulting command
+std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& Command, const unicode_t* FileName );
 
 template<class T> inline const T* find_right_char( const T* s, T c )
 {
@@ -37,105 +41,21 @@ template<class T> inline const T* find_right_char( const T* s, T c )
 }
 
 /// get file extension
-inline std::string GetFileExt( const unicode_t* uri )
-{
-	if ( !uri ) { return std::string(); }
+std::string GetFileExt( const unicode_t* uri );
 
-	const unicode_t* ext = find_right_char<unicode_t>( uri, '.' );
+/// convert UTF-32 to UTF-16
+std::vector<wchar_t> UnicodeToUtf16( const unicode_t* s );
 
-	if ( !ext || !*ext ) { return std::string(); }
+/// convert UTF-16 to UTF-32
+std::vector<unicode_t> Utf16ToUnicode( const wchar_t* s );
 
-	return unicode_to_utf8_string( ext );
-}
+/// convert UTF-8 to UCS-2
+std::wstring widen( const std::string& utf8 );
 
-inline std::vector<wchar_t> UnicodeToUtf16( const unicode_t* s )
-{
-	if ( !s ) { return std::vector<wchar_t>(); }
+/// convert UCS-2 to UTF-8
+std::string narrow( const std::wstring& ucs2 );
 
-	std::vector<wchar_t> p( unicode_strlen( s ) + 1 );
-	wchar_t* d;
-
-	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
-
-	*d = 0;
-	return p;
-}
-
-inline std::vector<unicode_t> Utf16ToUnicode( const wchar_t* s )
-{
-	std::vector<unicode_t> p( wcslen( s ) + 1 );
-	unicode_t* d;
-
-	for ( d = p.data(); *s; s++, d++ ) { *d = *s; }
-
-	*d = 0;
-	return p;
-}
-
-// convert UTF-8 to UCS-2
-inline std::wstring widen( const std::string& utf8 )
-{
-#if defined(_WIN32)
-	int Len = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.length(), nullptr, 0);
-
-	if ( Len > 0 )
-	{
-		wchar_t* Out = (wchar_t*)alloca( Len * sizeof(wchar_t) );
-		
-		MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), utf8.length(), Out, Len );
-
-		return std::wstring( Out, Len );
-	}
-
-	return std::wstring();
-#else
-	return std::wstring( utf8str_to_unicode( utf8 ).data() );
-#endif
-}
-
-// convert UCS-2 to UTF-8
-inline std::string narrow( const std::wstring& ucs2 )
-{
-#if defined(_WIN32)
-	std::string ret;
-
-	int Len = WideCharToMultiByte( CP_UTF8, 0, ucs2.c_str(), ucs2.length(), nullptr, 0, nullptr, nullptr );
-
-	if ( Len > 0 )
-	{
-		char* Out = (char*)alloca( Len );
-
-		WideCharToMultiByte( CP_UTF8, 0, ucs2.c_str(), ucs2.length(), Out, Len, nullptr, nullptr );
-
-		return std::string( Out, Len );
-	}
-
-	return std::string();
-#else
-	return unicode_to_utf8_string( ucs2.c_str() );
-#endif
-}
-
-inline std::vector<unicode_t> TruncateToLength( const std::vector<unicode_t>& Str, size_t MaxLength_Chars, bool InsertEllipsis )
-{
-	size_t Length_Chars  = Str.size();
-
-	if ( Length_Chars > MaxLength_Chars )
-	{
-		std::vector<unicode_t> Result = std::vector<unicode_t>( Str.begin() + ( Length_Chars - MaxLength_Chars ), Str.end() );
-
-		// add ... at the beginning
-		if ( InsertEllipsis )
-		{
-			const unicode_t Prefix[] = { '.', '.', '.' };
-			Result.insert( Result.begin(), Prefix, Prefix + 3 );
-		}
-
-		return Result;
-	}
-
-	return Str;
-}
+std::vector<unicode_t> TruncateToLength( const std::vector<unicode_t>& Str, size_t MaxLength_Chars, bool InsertEllipsis );
 
 inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
 {
@@ -154,75 +74,14 @@ inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
 	return p;
 }
 
-inline std::string ToString( uint64_t FromUInt64 )
-{
-	char Buffer[ BUFFER ];
-
-#ifdef OS_WINDOWS
-#	if _MSC_VER >= 1400
-	_ui64toa_s( FromUInt64, Buffer, sizeof(Buffer)-1, 10 );
-#	else
-	_ui64toa( FromUInt64, Buffer, 10 );
-#	endif
-#else
-	Lsnprintf( Buffer, sizeof(Buffer)-1, "%" PRIu64, FromUInt64 );
-#endif
-
-	return std::string( Buffer );
-}
-
-inline std::string ToString( int64_t FromInt64 )
-{
-	char Buffer[ BUFFER ];
-
-#ifdef OS_WINDOWS
-#	if _MSC_VER >= 1400
-	_i64toa_s( FromInt64, Buffer, sizeof(Buffer)-1, 10 );
-#	else
-	_i64toa( FromInt64, Buffer, 10 );
-#	endif
-#else
-	Lsnprintf( Buffer, sizeof(Buffer)-1, "%" PRIi64, FromInt64 );
-#endif
-
-	return std::string( Buffer );
-}
-
-inline std::string ToString( int FromInt )
-{
-	char Buffer[ BUFFER ];
-
-	Lsnprintf( Buffer, sizeof(Buffer) - 1, "%i", FromInt );
-
-	return std::string( Buffer );
-}
+std::string ToString( uint64_t FromUInt64 );
+std::string ToString( int64_t FromInt64 );
+std::string ToString( int FromInt );
 
 // convert unsigned integer 12345678 to "12 345 678"
-inline std::string ToStringGrouped( uint64_t FromUInt64, const char* GroupSeparator = " " )
-{
-	std::string Result = ToString( FromUInt64 );
+std::string ToStringGrouped( uint64_t FromUInt64, const char* GroupSeparator = " " );
 
-	for ( int Pos = static_cast<int>( Result.length() ) - 3; Pos > 0; Pos -= 3 )
-	{
-		Result.insert( Pos, GroupSeparator );
-	}
-
-	return Result;
-}
-
-inline std::string GetFormattedString( const char* Pattern, ... )
-{
-	char Buffer[ BUFFER ];
-
-	va_list p;
-	va_start( p, Pattern );
-
-	Lvsnprintf( Buffer, sizeof(Buffer) - 1, Pattern, p );
-
-	va_end( p );
-
-	return std::string( Buffer );
-}
+std::string GetFormattedString( const char* Pattern, ... );
 
 template <class T> inline  int carray_len( const T* s )
 {
@@ -309,52 +168,6 @@ template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, 
 	CP( 4 );
 	CP( 5 );
 	CP( 6 );
-	*s = 0;
-	return str;
-}
-
-template <class T> inline  std::vector<T> carray_cat( const T* a1, const T* a2, const T* a3, const T* a4, const T* a5, const T* a6, const T* a7 )
-{
-	X( 1 );
-	X( 2 );
-	X( 3 );
-	X( 4 );
-	X( 5 );
-	X( 6 );
-	X( 7 )
-	std::vector<T> str( n1 + n2 + n3 + n4 + n5 + n6 + n7 + 1 );
-	T* s = str.data();
-	CP( 1 );
-	CP( 2 );
-	CP( 3 );
-	CP( 4 );
-	CP( 5 );
-	CP( 6 );
-	CP( 7 );
-	*s = 0;
-	return str;
-}
-
-template <class T> inline  std::vector<T> carray_cat(const T* a1, const T* a2, const T* a3, const T* a4, const T* a5, const T* a6, const T* a7, const T* a8)
-{
-	X(1);
-	X(2);
-	X(3);
-	X(4);
-	X(5);
-	X(6);
-	X(7)
-	X(8)
-		std::vector<T> str(n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + 1);
-	T* s = str.data();
-	CP(1);
-	CP(2);
-	CP(3);
-	CP(4);
-	CP(5);
-	CP(6);
-	CP(7);
-	CP(8);
 	*s = 0;
 	return str;
 }

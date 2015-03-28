@@ -40,6 +40,5 @@ protected:
 	int RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, ButtonDataNode* buttons = bOk, const char* sysErr = 0 );
 	int RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, ButtonDataNode* buttons = bOk, const char* sysErr = 0 );
 	int RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, const char* s6, ButtonDataNode* buttons = bOk, const char* sysErr = 0 );
-	int RedMessage( const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, const char* s6, const char* s7, ButtonDataNode* buttons = bOk, const char* sysErr = 0 );
 };
 
