@@ -3270,9 +3270,11 @@ bool NCWin::ProcessBuiltInCommands( const unicode_t* cmd )
 	return false;
 }
 
-bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal )
+bool NCWin::StartCommand( const std::vector<unicode_t>& CommandString, bool ForceNoTerminal, bool ReplaceSpecialChars )
 {
-	const unicode_t* p = cmd.data();
+	std::vector<unicode_t> Command = ReplaceSpecialChars ? MakeCommand( CommandString, _panel->GetCurrentFileName() ) : CommandString;
+
+	const unicode_t* p = Command.data();
 
 	SkipSpaces( p );
 
@@ -3303,7 +3305,7 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTermina
 
 				if ( fs && fs->Type() == FS::SYSTEM )
 				{
-					StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
+					StartExecute( Command.data(), _panel->GetFS(), _panel->GetPath() );
 				}
 				else
 				{
@@ -3951,7 +3953,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				if ( m_Edit.IsVisible() )
 				{
-					if ( StartCommand( FetchAndClearCommandLine(), true ) ) { break; }
+					if ( StartCommand( FetchAndClearCommandLine(), true, false ) ) { break; }
 				}
 
 				if ( _panelVisible ) { PanelEnter(true); }
@@ -3966,7 +3968,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				if ( m_Edit.IsVisible() )
 				{
-					if ( StartCommand( FetchAndClearCommandLine(), false ) ) { break; }
+					if ( StartCommand( FetchAndClearCommandLine(), false, false ) ) { break; }
 				}
 
 				if ( _panelVisible ) { PanelEnter(); }

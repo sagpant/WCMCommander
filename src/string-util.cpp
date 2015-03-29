@@ -4,6 +4,8 @@
  * walcommander@linderdaum.com
  */
 
+#include <stdint.h>
+#include <cstdarg>
 #include <algorithm>
 
 #include "string-util.h"

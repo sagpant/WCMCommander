@@ -307,7 +307,7 @@ bool clUserMenuWin::Command( int id, int subId, Win* win, void* data )
 
 		if ( W && ItemToRun )
 		{
-			W->StartCommand( ItemToRun->GetCommand(), false );
+			W->StartCommand( ItemToRun->GetCommand(), false, true );
 		}
 
 		return true;

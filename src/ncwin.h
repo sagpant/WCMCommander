@@ -392,7 +392,7 @@ public:
 	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
 	bool StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode );
 
-	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal );
+	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal, bool ReplaceSpecialChars );
 
 	void IncreaseFontSize( MODE Mode );
 	void DecreaseFontSize( MODE Mode );

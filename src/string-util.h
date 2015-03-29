@@ -14,9 +14,7 @@
 #  include <inttypes.h>
 #endif
 
-#include <stdint.h>
 #include <vector>
-#include <cstdarg>
 
 #include "System/Platform.h"
 #include "System/Types.h"
