@@ -257,14 +257,8 @@ public:
 
 	int GetXMargin() const;
 
-//	void KeyUp(){ SetCurrent(_current-1); };
-//	void KeyDown(){ SetCurrent(_current+1); };
-//	void KeyEnd() { SetCurrent(_list.Count()-1);}
-//	void KeyHome() { SetCurrent(0); }
 	void KeyPrior() { SetCurrent( _current - _rows * _cols + 1 ); }
 	void KeyNext() { SetCurrent( _current + _rows * _cols - 1 ); }
-//	void KeyLeft() { SetCurrent(_current-_rows);  }
-//	void KeyRight() { SetCurrent(_current+_rows); }
 
 	void KeyUp( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _current - 1, shift, selectType, false ); };
 	void KeyDown( bool shift, LPanelSelectionType* selectType ) { SetCurrent( _current + 1, shift, selectType, false ); };
