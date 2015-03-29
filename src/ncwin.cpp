@@ -1832,10 +1832,10 @@ bool NCWin::CheckEditorBackgroundActivity( const bool ForEditFile )
 {
 	if ( m_BackgroundActivity == eBackgroundActivity_Editor )
 	{
-		std::vector<char> Text = carray_cat( "You are trying to ", ForEditFile ? "edit" : "view",
-			" a new file while a background editor is active.\nDo you want to drop all unsaved changes?" );
+		std::string Text = std::string( "You are trying to " ) + ( ForEditFile ? "edit" : "view" ) +
+			" a new file while a background editor is active.\nDo you want to drop all unsaved changes?";
 		
-		const int Msg = NCMessageBox( this, "Warning", _LT( Text.data() ), true, bYesNoSwitchToEditor );
+		const int Msg = NCMessageBox( this, "Warning", _LT( Text.c_str() ), true, bYesNoSwitchToEditor );
 
 		if ( Msg == CMD_CANCEL || Msg == CMD_NO )
 		{
