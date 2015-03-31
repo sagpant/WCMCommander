@@ -383,7 +383,7 @@ static int InternalStat( FSPath& path, FSStat* fsStat, FSCInfo* info )
 	fsStat->m_CreationTime   = st.st_ctime;
 	fsStat->m_LastAccessTime = st.st_atime;
 	fsStat->m_LastWriteTime  = st.st_mtime;
-	fsStat->m_ChangeTIme = st.st_mtime;
+	fsStat->m_ChangeTime = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 	fsStat->dev = st.st_dev;
