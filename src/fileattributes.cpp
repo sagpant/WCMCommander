@@ -120,8 +120,10 @@ public:
 
 		m_Layout.AddWinAndEnable( &m_CaptionText, Row++, 0 );
 		m_Layout.AddWinAndEnable( &m_FileNameText, Row++, 0 );
-#if defined(_WIN32)
+
 		int TRow = Row;
+
+#if defined(_WIN32)
 		m_Layout.AddWinAndEnable( &m_ReadOnly, Row++, 0 );
 		m_Layout.AddWinAndEnable( &m_Archive, Row++, 0 );
 		m_Layout.AddWinAndEnable( &m_Hidden, Row++, 0 );
