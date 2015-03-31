@@ -1897,7 +1897,13 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 			FSNode* p =  _panel->GetCurrent();
 
-			if ( !p || p->IsDir() ) { return; }
+			if ( !p ) return;
+			
+			if ( p->IsDir() )
+			{
+				CtrlA();
+				return;
+			}
 
 			path.Push( p->name.PrimaryCS(), p->name.Get( p->name.PrimaryCS() ) );
 		}
