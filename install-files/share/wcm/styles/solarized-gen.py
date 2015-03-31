@@ -67,5 +67,9 @@ for line in solarized:
 for line in open('Solarized.style.src'):
     for color in colors.keys():
         color_index = color if not is_inverted else invert_name(color)
-        line = line.replace(color, colors[color_index])
+        pattern = ':\s*' + color + '\s*(;?)'
+        def replacement(match):
+            return ': ' + colors[color_index] + match.group(1)
+
+        line = re.sub(pattern, replacement, line)
     print(line.rstrip())
