@@ -46,7 +46,7 @@ Common:
 	Last write time
 	Creation time
 	Last access time
-	Change time
+	Change time (unsupported yet)
 */
 
 class clFileAttributesWin: public NCVertDialog
@@ -95,10 +95,10 @@ public:
 	 , m_LastAccessDate( 0, this, nullptr, utf8_to_unicode( _LT( "DD.MM.YYYY" ) ).data(), 9 )
 	 , m_ChangeDate( 0, this, nullptr, utf8_to_unicode( _LT( "DD.MM.YYYY" ) ).data(), 9 )
 	 //
-	 , m_LastWriteTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
-	 , m_CreationTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
-	 , m_LastAccessTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
-	 , m_ChangeTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
+	 , m_LastWriteTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 13 )
+	 , m_CreationTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 13 )
+	 , m_LastAccessTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 13 )
+	 , m_ChangeTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 13 )
 	{
 		if ( m_Panel )
 		{
@@ -216,6 +216,19 @@ public:
 		m_Node->SetAttrOthersWrite( m_OthersWrite.IsSet() );
 		m_Node->SetAttrOthersExecute( m_OthersExecute.IsSet() );
 #endif
+		std::string LastWriteDate = m_LastWriteDate.GetTextStr();
+		std::string LastWriteTime = m_LastWriteTime.GetTextStr();
+		std::string CreationDate = m_CreationDate.GetTextStr();
+		std::string CreationTime = m_CreationTime.GetTextStr();
+		std::string LastAccessDate = m_LastAccessDate.GetTextStr();
+		std::string LastAccessTime = m_LastAccessTime.GetTextStr();
+		std::string ChangeDate = m_ChangeDate.GetTextStr();
+		std::string ChangeTime = m_ChangeTime.GetTextStr();
+
+		m_Node->SetLastWriteTime( GetFSTimeFromStr( LastWriteDate, LastWriteTime ) );
+		m_Node->SetCreationTime( GetFSTimeFromStr( CreationDate, CreationTime ) );
+		m_Node->SetLastAccessTime( GetFSTimeFromStr( LastAccessDate, LastAccessTime ) );
+		m_Node->SetChangeTime( GetFSTimeFromStr( ChangeDate, ChangeTime ) );
 
 		return m_Node;
 	}
@@ -337,6 +350,11 @@ bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel )
 				if ( Err != 0 )
 				{
 					throw_msg( "Error setting file attributes: %s", fs->StrError( Err ).GetUtf8() );
+				}
+				fs->SetFileTime( fspath, Node->GetCreationTime(), Node->GetLastAccessTime(), Node->GetLastWriteTime(), &Err, &Info );
+				if ( Err != 0 )
+				{
+					throw_msg("Error setting file date & time: %s", fs->StrError(Err).GetUtf8());
 				}
 			}
 		}

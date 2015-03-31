@@ -2007,19 +2007,18 @@ std::string GetFSTimeStrTime( FSTime TimeValue )
 		return std::string("?");
 	}
 
-	Lsnprintf( str, sizeof(str), "%02i:%02i:%02i", int(st.wHour), int(st.wMinute), int(st.wSecond) );
+	Lsnprintf( str, sizeof(str), "%02i:%02i:%02i,%03i", int(st.wHour), int(st.wMinute), int(st.wSecond), int(st.wMilliseconds) );
 #else
 	time_t mt = TimeValue;
 	struct tm* p = localtime(&mt);
 
 	if (p)
 	{
-		sprintf(str, "%02i:%02i:%02i", p->tm_hour, p->tm_min, p->tm_sec);
+		sprintf( str, "%02i:%02i:%02i,%03i", p->tm_hour, p->tm_min, p->tm_sec, int(0) );
 	}
 	else
 	{
-		sprintf(str, "%02i:%02i:%02i", int(0), int(0), int(0));
-
+		sprintf( str, "%02i:%02i:%02i,%03i", int(0), int(0), int(0), int(0) );
 	}
 #endif
 	return std::string( str );
@@ -2055,6 +2054,59 @@ std::string GetFSTimeStrDate( FSTime TimeValue )
 	}
 #endif
 	return std::string(str);
+}
+
+FSTime GetFSTimeFromStr( const std::string& Date, const std::string& Time )
+{
+	if ( Date.empty() || Time.empty() ) return FSTime();
+
+	int Day = 0;
+	int Month = 0;
+	int Year = 0;
+	int Hour = 0;
+	int Minute = 0;
+	int Second = 0;
+	int Milliseconds = 0;
+
+	if ( Lsscanf( Date.c_str(), "%i.%i.%i", &Day, &Month, &Year ) != 3 ) return FSTime();
+	int NumValues = Lsscanf( Time.c_str(), "%i:%i:%i,%i", &Hour, &Minute, &Second, &Milliseconds );
+	if ( NumValues != 3 && NumValues != 4 ) return FSTime();
+
+	FSTime Result;
+
+#if defined(_WIN32)
+	SYSTEMTIME SystemTime;
+	memset( &SystemTime, 0, sizeof(SystemTime) );
+	SystemTime.wDay = Day;
+	SystemTime.wMonth = Month;
+	SystemTime.wYear = Year;
+	SystemTime.wHour = Hour;
+	SystemTime.wMinute = Minute;
+	SystemTime.wSecond = Second;
+	SystemTime.wMilliseconds = Milliseconds;
+
+	FILETIME LocalTime;
+	FILETIME FileTime;
+
+	if ( !SystemTimeToFileTime( &SystemTime, &LocalTime ) ) return FSTime();
+	if ( !LocalFileTimeToFileTime( &LocalTime, &FileTime ) ) return FSTime();
+
+	Result = FileTime;
+#else
+	tm p;
+	p.tm_mday = Day;
+	p->tm_mon = Month - 1;
+	p->tm_year = Year - 1900;
+	p->tm_hour = Hour;
+	p->tm_min = Minute;
+	p->tm_sec = Second;
+
+	time_t mt = mktime( &p );
+
+	Result = mt;
+#endif
+
+	return Result;
 }
 
 unicode_t* FSTimeToStr( unicode_t ret[64], FSTime TimeValue )

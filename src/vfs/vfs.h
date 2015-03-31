@@ -329,6 +329,11 @@ struct FSNode: public iIntrusiveCounter
 	FSTime GetLastAccessTime() const { return st.m_LastAccessTime; };
 	FSTime GetChangeTime() const { return st.m_ChangeTime; }
 
+	void SetLastWriteTime( FSTime t ) { st.m_LastWriteTime = t; };
+	void SetCreationTime( FSTime t ) { st.m_CreationTime = t; };
+	void SetLastAccessTime( FSTime t ) { st.m_LastAccessTime = t; };
+	void SetChangeTime( FSTime t ) { st.m_ChangeTime = t; }
+
 	bool IsSelected() const { return isSelected; }
 	void SetSelected() { isSelected = true; }
 	void ClearSelected() { isSelected = false; }
@@ -808,3 +813,6 @@ extern bool ParzeLink( FSPath& path, FSString& link );
 std::string GetFSTimeStrTime( FSTime TimeValue );
 /// DD:MM:YYYY
 std::string GetFSTimeStrDate( FSTime TimeValue );
+/// DD:MM:YYYY, HH:MM:SS
+FSTime GetFSTimeFromStr( const std::string& Date, const std::string& Time );
+
