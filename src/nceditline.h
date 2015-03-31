@@ -21,10 +21,11 @@ private:
 	const char* m_FieldName;
 	
 public:
-	clNCEditLine( const char* FieldName, int Id, Win* Parent, const unicode_t* Txt,
-		int Cols, int Rows, bool Up, bool Frame3d, bool NoFocusFrame, crect* Rect = 0 );
+	clNCEditLine( const char* FieldName, int Id, Win* Parent, const unicode_t* Txt, int Cols, int Rows, crect* Rect = 0 );
 
 	virtual ~clNCEditLine() {}
+
+	virtual bool EventKey( cevent_key* pEvent ) override;
 
 	virtual bool Command( int Id, int SubId, Win* Win, void* Data ) override;
 

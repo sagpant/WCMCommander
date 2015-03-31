@@ -258,7 +258,6 @@ namespace wal
 			}
 		}
 
-
 		if ( pEvent->Type() == EV_MOUSE_PRESS && pEvent->Button() == MB_L && listRect.In( pEvent->Point() ) )
 		{
 			captureDelta = 0;
@@ -284,7 +283,7 @@ namespace wal
 			}
 			else
 			{
-				captureDelta = ( pEvent->Point().y > listRect.bottom ) ? +1 : ( pEvent->Point().y < listRect.top ) ? -1 : 0;
+				captureDelta = ( pEvent->Point().y > listRect.bottom ) ? 1 : ( pEvent->Point().y < listRect.top ) ? -1 : 0;
 			}
 
 			return true;
@@ -294,10 +293,17 @@ namespace wal
 		{
 			this->ReleaseCapture( &captureSD );
 			this->DelTimer( 0 );
+			
+			if ( selectType == SINGLE_SELECT )
+			{
+				MoveCurrent( n );
+				Command( CMD_ITEM_CLICK, GetCurrent(), this, 0 );
+			}
+
 			return true;
 		}
 
-		return false;
+		return Win::EventMouse( pEvent );
 	}
 
 	void VListWin::EventTimer( int tid )

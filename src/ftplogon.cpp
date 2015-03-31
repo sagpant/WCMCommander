@@ -53,8 +53,8 @@ FtpLogonDialog::FtpLogonDialog( NCDialogParent* parent, FSFtpParam& params )
 	   charsetText( 0, this, utf8_to_unicode( _LT( "&Charset:" ) ).data(), &charsetButton ),
 	   charsetIdText( 0, this, utf8_to_unicode( "***************" ).data() ), // placeholder
 	   charset( params.charset ),
-		serverEdit( EDIT_FIELD_FTP_SERVER, 0, this, 0, 16, 7, false, true, false ),
-		userEdit( EDIT_FIELD_FTP_USER, 0, this, 0, 16, 7, false, true, false ),
+		serverEdit( EDIT_FIELD_FTP_SERVER, 0, this, 0, 16, 7 ),
+		userEdit( EDIT_FIELD_FTP_USER, 0, this, 0, 16, 7 ),
 	   passwordEdit   ( 0, this, 0, 0, 16 ),
 	   portEdit ( 0, this, 0, 0, 16 ),
 	   charsetButton( 0, this, utf8_to_unicode( ">" ).data() , 1000 ),

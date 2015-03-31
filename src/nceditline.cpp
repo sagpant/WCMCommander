@@ -18,13 +18,22 @@ int clNCEditLine::UiGetClassId()
 	return uiClassNCEditLine;
 }
 
-clNCEditLine::clNCEditLine( const char* FieldName, int Id, Win* Parent, const unicode_t* Txt,
-									int Cols, int Rows, bool Up, bool Frame3d, bool NoFocusFrame, crect* Rect )
-	: ComboBox( Id, Parent, Cols, Rows,
-				  (Up ? ComboBox::MODE_UP : 0) | (Frame3d ? ComboBox::FRAME3D : 0) | (NoFocusFrame ? ComboBox::NOFOCUSFRAME : 0),
-				  Rect )
+clNCEditLine::clNCEditLine( const char* FieldName, int Id, Win* Parent, const unicode_t* Txt, int Cols, int Rows, crect* Rect )
+	: ComboBox( Id, Parent, Cols, Rows, 0, Rect )
 	, m_FieldName( FieldName )
 {
+}
+
+bool clNCEditLine::EventKey( cevent_key* pEvent )
+{
+	if ( pEvent->Type() == EV_KEYDOWN && pEvent->Key() == VK_RETURN && IsBoxOpened() )
+	{
+		// close the box and propagate Enter key to parent dialog
+		CloseBox();
+		return false;
+	}
+
+	return ComboBox::EventKey( pEvent );
 }
 
 bool clNCEditLine::Command( int Id, int SubId, Win* Win, void* Data )

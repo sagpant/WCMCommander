@@ -51,7 +51,7 @@ namespace wal
 	{
 		if ( ItemIndex < 0 )
 		{
-			if ( _flags & READONLY )
+			if ( IsReadOnly() )
 			{
 				_edit.Clear();
 			}
@@ -76,7 +76,7 @@ namespace wal
 		:  Win( Win::WT_CHILD, WH_CLICKFOCUS | WH_TABFOCUS, parent, rect, nId ),
 		   _flags( flags ),
 		   _lo( 3, 4 ),
-		   _edit( 0, this, 0, 0, cols, false, EditLine::USEPARENTFOCUS | ( ( flags& READONLY ) ? EditLine::READONLY : 0 ) ),
+		   _edit( 0, this, 0, 0, cols, false, EditLine::USEPARENTFOCUS | ( ( flags & READONLY ) ? EditLine::READONLY : 0 ) ),
 		   _rows( rows > 0 ? rows : 0 )
 	{
 		_lo.AddWin( &_edit, 1, 1 );
@@ -84,10 +84,11 @@ namespace wal
 		_edit.SetShowSpaces( false );
 		_edit.Enable();
 		_edit.Show( SHOW_INACTIVE );
+		
 		_lo.AddRect( &_buttonRect, 1, 2 );
 		_lo.ColSet( 2, CB_BUTTONWIDTH );
 		
-		const int fw = ( _flags & FRAME3D ) != 0 ? 3 : ( ( _flags & NOFOCUSFRAME ) ? 0 : 1 );
+		const int fw = 3;
 		_lo.ColSet( 0, fw );
 		_lo.ColSet( 3, fw );
 		_lo.LineSet( 0, fw );
@@ -149,12 +150,10 @@ namespace wal
 
 	void ComboBox::SetText( const unicode_t* txt, bool mark )
 	{
-		if ( this->_flags & READONLY )
+		if ( !IsReadOnly() )
 		{
-			return;
+			_edit.SetText( txt, mark );
 		}
-
-		_edit.SetText( txt, mark );
 	}
 
 	void ComboBox::SetText( const std::string& utf8txt, bool mark )
@@ -164,22 +163,18 @@ namespace wal
 
 	void ComboBox::InsertText( unicode_t t )
 	{
-		if ( this->_flags & READONLY )
+		if ( !IsReadOnly() )
 		{
-			return;
+			_edit.Insert( t );
 		}
-
-		_edit.Insert( t );
 	}
 
 	void ComboBox::InsertText( const unicode_t* txt )
 	{
-		if ( this->_flags & READONLY )
+		if ( !IsReadOnly() )
 		{
-			return;
+			_edit.Insert( txt );
 		}
-
-		_edit.Insert( txt );
 	}
 
 	void* ComboBox::ItemData( int n )
@@ -191,15 +186,20 @@ namespace wal
 	{
 		if ( win == _box.ptr() && _box.ptr() )
 		{
-			const int n = _box->GetCurrent();
-			if ( n >= 0 && n < _list.count() && n != _current )
+			if ( !IsReadOnly() )
 			{
-				_current = n;
-				OnItemChanged(_current);
+				const int n = _box->GetCurrent();
+				if ( n >= 0 && n < _list.count() && n != _current )
+				{
+					_current = n;
+					OnItemChanged( _current );
+				}
 			}
-
+			
 			if ( id == CMD_ITEM_CLICK )
 			{
+				_current = _box->GetCurrent();
+				OnItemChanged( _current );
 				CloseBox();
 			}
 
@@ -209,7 +209,6 @@ namespace wal
 		if ( win == &_edit && _current != -1 )
 		{
 			_current = -1;
-
 			if ( _box )
 			{
 				_box->SetNoCurrent();
@@ -231,6 +230,7 @@ namespace wal
 			CloseBox();
 		}
 
+		Invalidate();
 		return true;
 	}
 
@@ -254,7 +254,11 @@ namespace wal
 			case VK_RETURN:
 				if ( IsBoxOpened() )
 				{
+					const int n = _box->GetCurrent();
+					_current = n;
+					OnItemChanged( _current );
 					CloseBox();
+					return true;
 				}
 
 				break;
@@ -402,7 +406,13 @@ namespace wal
 
 	bool ComboBox::EventMouse( cevent_mouse* pEvent )
 	{
-		if ( pEvent->Type() == EV_MOUSE_PRESS && _buttonRect.In( pEvent->Point() ) )
+		crect ScrRect = ScreenRect();
+		cpoint ScrPoint = pEvent->Point();
+		ScrPoint.x += ScrRect.left;
+		ScrPoint.y += ScrRect.top;
+
+		if ( pEvent->Type() == EV_MOUSE_PRESS 
+			&& (_buttonRect.In( pEvent->Point() ) || (IsReadOnly() && ScrRect.In( ScrPoint ))) )
 		{
 			if ( _box.ptr() )
 			{
@@ -418,48 +428,38 @@ namespace wal
 
 		if ( IsCaptured() )
 		{
-			crect rect = ScreenRect();
-			cpoint point = pEvent->Point();
+			crect EditRect = _edit.ScreenRect();
 
-			point.x += rect.left;
-			point.y += rect.top;
-
-
-			rect = _edit.ScreenRect();
-
-			if ( rect.In( point ) )
+			if ( EditRect.In( ScrPoint ) )
 			{
 				cevent_mouse ev( pEvent->Type(),
-				                 cpoint( point.x - rect.left, point.y - rect.top ),
-				                 pEvent->Button(),
-				                 pEvent->ButtonFlag(),
-				                 pEvent->Mod() );
+									  cpoint( ScrPoint.x - EditRect.left, ScrPoint.y - EditRect.top ),
+									  pEvent->Button(),
+									  pEvent->ButtonFlag(),
+									  pEvent->Mod() );
 				return _edit.EventMouse( &ev );
 			}
-			else if ( _box.ptr() )
+			
+			if ( _box.ptr() )
 			{
-				rect = _box->ScreenRect();
+				crect BoxRect = _box->ScreenRect();
 
-				if ( rect.In( point ) )
+				if ( BoxRect.In( ScrPoint ) )
 				{
 					cevent_mouse ev( pEvent->Type(),
-					                 cpoint( point.x - rect.left,
-					                         point.y - rect.top ), pEvent->Button(),
+										  cpoint( ScrPoint.x - BoxRect.left, ScrPoint.y - BoxRect.top ),
+										  pEvent->Button(),
 					                 pEvent->ButtonFlag(),
 					                 pEvent->Mod() );
 					return _box->EventMouse( &ev );
 				}
-				else if ( pEvent->Type() == EV_MOUSE_PRESS )
+				
+				if ( pEvent->Type() == EV_MOUSE_PRESS )
 				{
 					CloseBox();
 				}
 			}
 
-			return true;
-		}
-
-		if ( _edit.EventMouse( pEvent ) )
-		{
 			return true;
 		}
 
@@ -479,25 +479,22 @@ namespace wal
 
 		unsigned frameColor = UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF );
 
-		if ( ( _flags & FRAME3D ) != 0 )
+		if ( g_WcmConfig.styleShow3DUI )
 		{
-			if ( g_WcmConfig.styleShow3DUI )
-			{
-				Draw3DButtonW2( gc, cr, frameColor, false );
-				cr.Dec();
-				cr.Dec();
-			}
-			else
-			{
-				DrawBorder( gc, cr, frameColor );
-				cr.Dec();
-				DrawBorder( gc, cr, frameColor );
-				cr.Dec();
-			}
+			Draw3DButtonW2( gc, cr, frameColor, false );
+			cr.Dec();
+			cr.Dec();
+		}
+		else
+		{
+			DrawBorder( gc, cr, frameColor );
+			cr.Dec();
+			DrawBorder( gc, cr, frameColor );
+			cr.Dec();
 		}
 
-		DrawBorder( gc, cr, InFocus() && ( _flags & NOFOCUSFRAME ) == 0 ? 
-            UiGetColor( uiFocusFrameColor, 0, 0, 0 ) : ColorTone( UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF ), -200 ) );
+		DrawBorder( gc, cr, InFocus() ? UiGetColor( uiFocusFrameColor, 0, 0, 0 ) 
+			: ColorTone( UiGetColor( uiFrameColor, 0, 0, 0xFFFFFF ), -200 ) );
 
 		SBCDrawButton( gc, _buttonRect, ( _flags & MODE_UP ) ? 4 : 5, bgColor, false );
 	}
