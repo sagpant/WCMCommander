@@ -73,6 +73,17 @@ public:
 	 , m_Offline( 0, this, utf8_to_unicode( _LT( "Offline" ) ).data(), 0, false )
 	 , m_ReparsePoint( 0, this, utf8_to_unicode( _LT( "ReparsePoint" ) ).data(), 0, false )
 	 , m_Virtual( 0, this, utf8_to_unicode( _LT( "Virtual" ) ).data(), 0, false )
+#else
+	 , m_UserRead( uiVariable, this, utf8_to_unicode( _LT( "User &read" ) ).data(), 0, false )
+	 , m_UserWrite( uiVariable, this, utf8_to_unicode( _LT( "User &write" ) ).data(), 0, false )
+    , m_UserExecute( uiVariable, this, utf8_to_unicode( _LT( "User e&xecute" ) ).data(), 0, false )
+	 , m_GroupRead( uiVariable, this, utf8_to_unicode( _LT( "&Group read" ) ).data(), 0, false )
+	 , m_GroupWrite( uiVariable, this, utf8_to_unicode( _LT( "Group write" ) ).data(), 0, false )
+	 , m_GroupExecute( uiVariable, this, utf8_to_unicode( _LT( "Group execute" ) ).data(), 0, false )
+	 , m_OthersRead( uiVariable, this, utf8_to_unicode( _LT( "&Others read" ) ).data(), 0, false )
+	 , m_OthersWrite( uiVariable, this, utf8_to_unicode( _LT( "Others write" ) ).data(), 0, false )
+	 , m_OthersExecute( uiVariable, this, utf8_to_unicode( _LT( "Others execute" ) ).data(), 0, false )
+#endif
 	// time
 	 , m_LastWriteTimeLabel( 0, this, utf8_to_unicode( _LT( "Last write time" ) ).data(), nullptr, StaticLine::LEFT )
 	 , m_CreationTimeLabel( 0, this, utf8_to_unicode( _LT( "Creation time" ) ).data(), nullptr, StaticLine::LEFT )
@@ -88,17 +99,6 @@ public:
 	 , m_CreationTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
 	 , m_LastAccessTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
 	 , m_ChangeTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
-#else
-	 , m_UserRead( uiVariable, this, utf8_to_unicode( _LT( "User &read" ) ).data(), 0, false )
-	 , m_UserWrite( uiVariable, this, utf8_to_unicode( _LT( "User &write" ) ).data(), 0, false )
-    , m_UserExecute( uiVariable, this, utf8_to_unicode( _LT( "User e&xecute" ) ).data(), 0, false )
-	 , m_GroupRead( uiVariable, this, utf8_to_unicode( _LT( "&Group read" ) ).data(), 0, false )
-	 , m_GroupWrite( uiVariable, this, utf8_to_unicode( _LT( "Group write" ) ).data(), 0, false )
-	 , m_GroupExecute( uiVariable, this, utf8_to_unicode( _LT( "Group execute" ) ).data(), 0, false )
-	 , m_OthersRead( uiVariable, this, utf8_to_unicode( _LT( "&Others read" ) ).data(), 0, false )
-	 , m_OthersWrite( uiVariable, this, utf8_to_unicode( _LT( "Others write" ) ).data(), 0, false )
-	 , m_OthersExecute( uiVariable, this, utf8_to_unicode( _LT( "Others execute" ) ).data(), 0, false )
-#endif
 	{
 		if ( m_Panel )
 		{
@@ -116,38 +116,25 @@ public:
 			m_CaptionText.SetText( utf8_to_unicode( _LT("Change file attributes for:") ).data() );
 		}
 
-		m_Layout.AddWinAndEnable( &m_CaptionText, 0, 0 );
-		m_Layout.AddWinAndEnable( &m_FileNameText, 1, 0 );
+		int Row = 0;
+
+		m_Layout.AddWinAndEnable( &m_CaptionText, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_FileNameText, Row++, 0 );
 #if defined(_WIN32)
-		m_Layout.AddWinAndEnable( &m_ReadOnly, 2, 0 );
-		m_Layout.AddWinAndEnable( &m_Archive, 3, 0 );
-		m_Layout.AddWinAndEnable( &m_Hidden, 4, 0 );
-		m_Layout.AddWinAndEnable( &m_System, 5, 0 );
-		m_Layout.AddWinAndEnable( &m_Compressed, 6, 0 );
-		m_Layout.AddWinAndEnable( &m_Encrypted, 7, 0 );
-		m_Layout.AddWinAndEnable( &m_NotIndexed, 2, 1 );
-		m_Layout.AddWinAndEnable( &m_Sparse, 3, 1 );
-		m_Layout.AddWinAndEnable( &m_Temporary, 4, 1 );
-		m_Layout.AddWinAndEnable( &m_Offline, 5, 1 );
-		m_Layout.AddWinAndEnable( &m_ReparsePoint, 6, 1 );
-		m_Layout.AddWinAndEnable( &m_Virtual, 7, 1 );
-
-		m_Layout.LineSet( 8, 5 );
-
-		m_Layout.AddWinAndEnable( &m_LastWriteTimeLabel, 9, 0 );
-		m_Layout.AddWinAndEnable( &m_CreationTimeLabel, 10, 0 );
-		m_Layout.AddWinAndEnable( &m_LastAccessTimeLabel, 11, 0 );
-//		m_Layout.AddWinAndEnable( &m_ChangeTimeLabel, 12, 0 );
-		//
-		m_Layout.AddWinAndEnable( &m_LastWriteDate, 9, 1 );
-		m_Layout.AddWinAndEnable( &m_CreationDate, 10, 1 );
-		m_Layout.AddWinAndEnable( &m_LastAccessDate, 11, 1 );
-//		m_Layout.AddWinAndEnable( &m_ChangeDate, 12, 1 );
-		//
-		m_Layout.AddWinAndEnable( &m_LastWriteTime, 9, 2 );
-		m_Layout.AddWinAndEnable( &m_CreationTime, 10, 2 );
-		m_Layout.AddWinAndEnable( &m_LastAccessTime, 11, 2 );
-//		m_Layout.AddWinAndEnable( &m_ChangeTime, 12, 2 );
+		int TRow = Row;
+		m_Layout.AddWinAndEnable( &m_ReadOnly, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_Archive, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_Hidden, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_System, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_Compressed, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_Encrypted, Row++, 0 );
+		Row = TRow;
+		m_Layout.AddWinAndEnable( &m_NotIndexed, Row++, 1 );
+		m_Layout.AddWinAndEnable( &m_Sparse, Row++, 1 );
+		m_Layout.AddWinAndEnable( &m_Temporary, Row++, 1 );
+		m_Layout.AddWinAndEnable( &m_Offline, Row++, 1 );
+		m_Layout.AddWinAndEnable( &m_ReparsePoint, Row++, 1 );
+		m_Layout.AddWinAndEnable( &m_Virtual, Row++, 1 );
 
 		// disable editing of these properties
 		m_Compressed.Enable( false );
@@ -158,7 +145,35 @@ public:
 		m_Offline.Enable( false );
 		m_ReparsePoint.Enable( false );
 		m_Virtual.Enable( false );
-		//
+#else
+		m_Layout.AddWinAndEnable( &m_UserRead, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_UserWrite, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_UserExecute, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_GroupRead, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_GroupWrite, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_GroupExecute, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_OthersRead, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_OthersWrite, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_OthersExecute, Row++, 0 );
+#endif
+		m_Layout.LineSet( Row++, 5 );
+
+		TRow = Row;
+		m_Layout.AddWinAndEnable( &m_LastWriteTimeLabel, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_CreationTimeLabel, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_LastAccessTimeLabel, Row++, 0 );
+//		m_Layout.AddWinAndEnable( &m_ChangeTimeLabel, Row++, 0 );
+		Row = TRow;
+		m_Layout.AddWinAndEnable( &m_LastWriteDate, Row++, 1 );
+		m_Layout.AddWinAndEnable( &m_CreationDate, Row++, 1 );
+		m_Layout.AddWinAndEnable( &m_LastAccessDate, Row++, 1 );
+//		m_Layout.AddWinAndEnable( &m_ChangeDate, Row++, 1 );
+		Row = TRow;
+		m_Layout.AddWinAndEnable( &m_LastWriteTime, Row++, 2 );
+		m_Layout.AddWinAndEnable( &m_CreationTime, Row++, 2 );
+		m_Layout.AddWinAndEnable( &m_LastAccessTime, Row++, 2 );
+//		m_Layout.AddWinAndEnable( &m_ChangeTime, Row++, 2 );
+
 		m_LastWriteDate.Enable( false );
 		m_CreationDate.Enable( false );
 		m_LastAccessDate.Enable( false );
@@ -167,18 +182,7 @@ public:
 		m_CreationTime.Enable( false );
 		m_LastAccessTime.Enable( false );
 		m_ChangeTime.Enable( false );
-		
-#else
-		m_Layout.AddWinAndEnable( &m_UserRead, 2, 0 );
-		m_Layout.AddWinAndEnable( &m_UserWrite, 3, 0 );
-		m_Layout.AddWinAndEnable( &m_UserExecute, 4, 0 );
-		m_Layout.AddWinAndEnable( &m_GroupRead, 5, 0 );
-		m_Layout.AddWinAndEnable( &m_GroupWrite, 6, 0 );
-		m_Layout.AddWinAndEnable( &m_GroupExecute, 7, 0 );
-		m_Layout.AddWinAndEnable( &m_OthersRead, 8, 0 );
-		m_Layout.AddWinAndEnable( &m_OthersWrite, 9, 0 );
-		m_Layout.AddWinAndEnable( &m_OthersExecute, 10, 0 );
-#endif
+
 		UpdateAttributes( m_Node );
 		
 		AddLayout( &m_Layout );
@@ -231,7 +235,17 @@ private:
 		m_Offline.Change( Node->IsAttrOffline() );
 		m_ReparsePoint.Change( Node->IsAttrReparsePoint() );
 		m_Virtual.Change( Node->IsAttrVirtual() );
-		
+#else
+		m_UserRead.Change( Node->IsAttrUserRead() );
+		m_UserWrite.Change( Node->IsAttrUserWrite() );
+		m_UserExecute.Change( Node->IsAttrUserExecute() );
+		m_GroupRead.Change( Node->IsAttrGroupRead() );
+		m_GroupWrite.Change( Node->IsAttrGroupWrite() );
+		m_GroupExecute.Change( Node->IsAttrGroupExecute() );
+		m_OthersRead.Change( Node->IsAttrOthersRead() );
+		m_OthersWrite.Change( Node->IsAttrOthersWrite() );
+		m_OthersExecute.Change( Node->IsAttrOthersExecute() );
+#endif
 		FSTime LastWriteTime = Node->GetLastWriteTime();
 		FSTime CreationTime = Node->GetCreationTime();
 		FSTime LastAccessTime = Node->GetLastAccessTime();
@@ -246,18 +260,6 @@ private:
 		m_CreationTime.SetText( GetFSTimeStrTime( CreationTime ) );
 		m_LastAccessTime.SetText( GetFSTimeStrTime( LastAccessTime ) );
 		m_ChangeTime.SetText( GetFSTimeStrTime( ChangeTime ) );
-
-#else
-		m_UserRead.Change( Node->IsAttrUserRead() );
-		m_UserWrite.Change( Node->IsAttrUserWrite() );
-		m_UserExecute.Change( Node->IsAttrUserExecute() );
-		m_GroupRead.Change( Node->IsAttrGroupRead() );
-		m_GroupWrite.Change( Node->IsAttrGroupWrite() );
-		m_GroupExecute.Change( Node->IsAttrGroupExecute() );
-		m_OthersRead.Change( Node->IsAttrOthersRead() );
-		m_OthersWrite.Change( Node->IsAttrOthersWrite() );
-		m_OthersExecute.Change( Node->IsAttrOthersExecute() );
-#endif
 	}
 
 private:
@@ -282,6 +284,17 @@ private:
 	SButton m_Offline;
 	SButton m_ReparsePoint;
 	SButton m_Virtual;
+#else
+	SButton m_UserRead;
+	SButton m_UserWrite;
+	SButton m_UserExecute;
+	SButton m_GroupRead;
+	SButton m_GroupWrite;
+	SButton m_GroupExecute;
+	SButton m_OthersRead;
+	SButton m_OthersWrite;
+	SButton m_OthersExecute;
+#endif
 	// time
 	StaticLine m_LastWriteTimeLabel;
 	StaticLine m_CreationTimeLabel;
@@ -297,17 +310,6 @@ private:
 	EditLine m_CreationTime;
 	EditLine m_LastAccessTime;
 	EditLine m_ChangeTime;
-#else
-	SButton m_UserRead;
-	SButton m_UserWrite;
-	SButton m_UserExecute;
-	SButton m_GroupRead;
-	SButton m_GroupWrite;
-	SButton m_GroupExecute;
-	SButton m_OthersRead;
-	SButton m_OthersWrite;
-	SButton m_OthersExecute;
-#endif
 };
 
 bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel )
