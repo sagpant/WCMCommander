@@ -57,7 +57,7 @@ public:
 	 , m_Panel( Panel )
 	 , m_Node( Panel ? Panel->GetCurrent() : nullptr )
 	 , m_URI( Panel ? Panel->UriOfCurrent() : FSString() )
-	 , m_Layout( 17, 2 )
+	 , m_Layout( 17, 3 )
 	 , m_CaptionText( 0, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
 	 , m_FileNameText( uiValue, this, utf8_to_unicode( _LT( "" ) ).data(), nullptr, StaticLine::CENTER )
 #if defined(_WIN32)
@@ -73,10 +73,25 @@ public:
 	 , m_Offline( 0, this, utf8_to_unicode( _LT( "Offline" ) ).data(), 0, false )
 	 , m_ReparsePoint( 0, this, utf8_to_unicode( _LT( "ReparsePoint" ) ).data(), 0, false )
 	 , m_Virtual( 0, this, utf8_to_unicode( _LT( "Virtual" ) ).data(), 0, false )
+	// time
+	 , m_LastWriteTimeLabel( 0, this, utf8_to_unicode( _LT( "Last write time" ) ).data(), nullptr, StaticLine::LEFT )
+	 , m_CreationTimeLabel( 0, this, utf8_to_unicode( _LT( "Creation time" ) ).data(), nullptr, StaticLine::LEFT )
+	 , m_LastAccessTimeLabel( 0, this, utf8_to_unicode( _LT( "Last access time" ) ).data(), nullptr, StaticLine::LEFT )
+	 , m_ChangeTimeLabel( 0, this, utf8_to_unicode( _LT( "Change time" ) ).data(), nullptr, StaticLine::LEFT )
+	 //
+	 , m_LastWriteDate( 0, this, nullptr, utf8_to_unicode( _LT( "DD.MM.YYYY" ) ).data(), 9 )
+	 , m_CreationDate( 0, this, nullptr, utf8_to_unicode( _LT( "DD.MM.YYYY" ) ).data(), 9 )
+	 , m_LastAccessDate( 0, this, nullptr, utf8_to_unicode( _LT( "DD.MM.YYYY" ) ).data(), 9 )
+	 , m_ChangeDate( 0, this, nullptr, utf8_to_unicode( _LT( "DD.MM.YYYY" ) ).data(), 9 )
+	 //
+	 , m_LastWriteTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
+	 , m_CreationTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
+	 , m_LastAccessTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
+	 , m_ChangeTime( 0, this, nullptr, utf8_to_unicode( _LT( "HH:MM:SS" ) ).data(), 9 )
 #else
 	 , m_UserRead( uiVariable, this, utf8_to_unicode( _LT( "User &read" ) ).data(), 0, false )
 	 , m_UserWrite( uiVariable, this, utf8_to_unicode( _LT( "User &write" ) ).data(), 0, false )
-     , m_UserExecute( uiVariable, this, utf8_to_unicode( _LT( "User e&xecute" ) ).data(), 0, false )
+    , m_UserExecute( uiVariable, this, utf8_to_unicode( _LT( "User e&xecute" ) ).data(), 0, false )
 	 , m_GroupRead( uiVariable, this, utf8_to_unicode( _LT( "&Group read" ) ).data(), 0, false )
 	 , m_GroupWrite( uiVariable, this, utf8_to_unicode( _LT( "Group write" ) ).data(), 0, false )
 	 , m_GroupExecute( uiVariable, this, utf8_to_unicode( _LT( "Group execute" ) ).data(), 0, false )
@@ -116,6 +131,24 @@ public:
 		m_Layout.AddWinAndEnable( &m_Offline, 5, 1 );
 		m_Layout.AddWinAndEnable( &m_ReparsePoint, 6, 1 );
 		m_Layout.AddWinAndEnable( &m_Virtual, 7, 1 );
+
+		m_Layout.LineSet( 8, 5 );
+
+		m_Layout.AddWinAndEnable( &m_LastWriteTimeLabel, 9, 0 );
+		m_Layout.AddWinAndEnable( &m_CreationTimeLabel, 10, 0 );
+		m_Layout.AddWinAndEnable( &m_LastAccessTimeLabel, 11, 0 );
+//		m_Layout.AddWinAndEnable( &m_ChangeTimeLabel, 12, 0 );
+		//
+		m_Layout.AddWinAndEnable( &m_LastWriteDate, 9, 1 );
+		m_Layout.AddWinAndEnable( &m_CreationDate, 10, 1 );
+		m_Layout.AddWinAndEnable( &m_LastAccessDate, 11, 1 );
+//		m_Layout.AddWinAndEnable( &m_ChangeDate, 12, 1 );
+		//
+		m_Layout.AddWinAndEnable( &m_LastWriteTime, 9, 2 );
+		m_Layout.AddWinAndEnable( &m_CreationTime, 10, 2 );
+		m_Layout.AddWinAndEnable( &m_LastAccessTime, 11, 2 );
+//		m_Layout.AddWinAndEnable( &m_ChangeTime, 12, 2 );
+
 		// disable editing of these properties
 		m_Compressed.Enable( false );
 		m_Encrypted.Enable( false );
@@ -125,6 +158,16 @@ public:
 		m_Offline.Enable( false );
 		m_ReparsePoint.Enable( false );
 		m_Virtual.Enable( false );
+		//
+		m_LastWriteDate.Enable( false );
+		m_CreationDate.Enable( false );
+		m_LastAccessDate.Enable( false );
+		m_ChangeDate.Enable( false );
+		m_LastWriteTime.Enable( false );
+		m_CreationTime.Enable( false );
+		m_LastAccessTime.Enable( false );
+		m_ChangeTime.Enable( false );
+		
 #else
 		m_Layout.AddWinAndEnable( &m_UserRead, 2, 0 );
 		m_Layout.AddWinAndEnable( &m_UserWrite, 3, 0 );
@@ -188,6 +231,22 @@ private:
 		m_Offline.Change( Node->IsAttrOffline() );
 		m_ReparsePoint.Change( Node->IsAttrReparsePoint() );
 		m_Virtual.Change( Node->IsAttrVirtual() );
+		
+		FSTime LastWriteTime = Node->GetLastWriteTime();
+		FSTime CreationTime = Node->GetCreationTime();
+		FSTime LastAccessTime = Node->GetLastAccessTime();
+		FSTime ChangeTime = Node->GetChangeTime();
+
+		m_LastWriteDate.SetText( GetFSTimeStrDate( LastWriteTime ) );
+		m_CreationDate.SetText( GetFSTimeStrDate( CreationTime ) );
+		m_LastAccessDate.SetText( GetFSTimeStrDate( LastAccessTime ) );
+		m_ChangeDate.SetText( GetFSTimeStrDate( ChangeTime ) );
+		
+		m_LastWriteTime.SetText( GetFSTimeStrTime( LastWriteTime ) );
+		m_CreationTime.SetText( GetFSTimeStrTime( CreationTime ) );
+		m_LastAccessTime.SetText( GetFSTimeStrTime( LastAccessTime ) );
+		m_ChangeTime.SetText( GetFSTimeStrTime( ChangeTime ) );
+
 #else
 		m_UserRead.Change( Node->IsAttrUserRead() );
 		m_UserWrite.Change( Node->IsAttrUserWrite() );
@@ -223,6 +282,21 @@ private:
 	SButton m_Offline;
 	SButton m_ReparsePoint;
 	SButton m_Virtual;
+	// time
+	StaticLine m_LastWriteTimeLabel;
+	StaticLine m_CreationTimeLabel;
+	StaticLine m_LastAccessTimeLabel;
+	StaticLine m_ChangeTimeLabel;
+
+	EditLine m_LastWriteDate;
+	EditLine m_CreationDate;
+	EditLine m_LastAccessDate;
+	EditLine m_ChangeDate;
+
+	EditLine m_LastWriteTime;
+	EditLine m_CreationTime;
+	EditLine m_LastAccessTime;
+	EditLine m_ChangeTime;
 #else
 	SButton m_UserRead;
 	SButton m_UserWrite;

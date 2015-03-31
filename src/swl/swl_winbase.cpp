@@ -367,4 +367,45 @@ namespace wal
 		return true;
 	}
 
+	/// validate date in format dd.mm.yyyy
+	bool clDateValidator::IsValid( const std::vector<unicode_t>& Str ) const
+	{
+		std::string s = unicode_to_utf8_string( Str.data() );
+
+		if ( s.empty() ) return false;
+
+		int Day = 0;
+		int Month = 0;
+		int Year = 0;
+
+		if ( Lsscanf( s.c_str(), "%i.%y.%i", &Day, &Month, &Year ) != 3 ) return false;
+
+		if ( Day <= 0 || Day > 31 ) return false;
+		if ( Month <=0 || Month > 12 ) return false;
+		if ( Year < 1980 || Year > 2100 ) return false;
+
+		return true;
+	}
+
+	/// validate time in format HH:MM:SS
+	bool clTimeValidator::IsValid( const std::vector<unicode_t>& Str ) const
+	{
+		std::string s = unicode_to_utf8_string( Str.data() );
+
+		if ( s.empty() ) return false;
+
+		int Hours = 0;
+		int Minutes = 0;
+		int Seconds = 0;
+
+		if ( Lsscanf( s.c_str(), "%i:%y:%i", &Hours, &Minutes, &Seconds ) != 3 ) return false;
+
+		if ( Hours <= 0 || Hours > 24 ) return false;
+		if ( Minutes <= 0 || Minutes > 59 ) return false;
+		if ( Seconds <= 0 || Seconds > 59 ) return false;
+
+		return true;
+	}
+
+
 }; //anmespace wal

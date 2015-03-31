@@ -203,7 +203,21 @@ namespace wal
 	class clUnsignedInt64Validator: public clValidator
 	{
 	public:
-		virtual bool IsValid( const std::vector<unicode_t>& Str ) const;
+		virtual bool IsValid( const std::vector<unicode_t>& Str ) const override;
+	};
+
+	/// validate date in format dd.mm.yyyy
+	class clDateValidator: public clValidator
+	{
+	public:
+		virtual bool IsValid( const std::vector<unicode_t>& Str ) const override;
+	};
+
+	/// validate time in format HH:MM:SS
+	class clTimeValidator: public clValidator
+	{
+	public:
+		virtual bool IsValid( const std::vector<unicode_t>& Str ) const override;
 	};
 
 	class EditLine: public Win

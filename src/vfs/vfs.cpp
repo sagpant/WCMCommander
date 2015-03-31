@@ -550,7 +550,8 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 				pNode->st.m_CreationTime = ent.ftCreationTime;
 				pNode->st.m_LastAccessTime = ent.ftLastAccessTime;
 				pNode->st.m_LastWriteTime = ent.ftLastWriteTime;
-				
+				// TODO: use ZwQueryDirectoryFile() to get the change time
+				pNode->st.m_ChangeTime = ent.ftLastWriteTime;
 
 				if ( ent.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 				{
@@ -600,6 +601,7 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 		fsStat->m_CreationTime = 0;
 		fsStat->m_LastAccessTime = 0;
 		fsStat->m_LastWriteTime = 0;
+		fsStat->m_ChangeTime = 0;
 		fsStat->mode |= 0664;
 		return 0;
 	}
@@ -620,6 +622,8 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 		fsStat->m_CreationTime = ent.ftCreationTime;
 		fsStat->m_LastAccessTime = ent.ftLastAccessTime;
 		fsStat->m_LastWriteTime = ent.ftLastWriteTime;
+		// TODO: use ZwQueryDirectoryFile() to get the change time
+		fsStat->m_ChangeTime = ent.ftLastWriteTime;
 
 		if ( ent.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 		{
@@ -689,6 +693,8 @@ int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
 	fsStat->m_CreationTime = e.ftCreationTime;
 	fsStat->m_LastAccessTime = e.ftLastAccessTime;
 	fsStat->m_LastWriteTime = e.ftLastWriteTime;
+	// TODO: use ZwQueryDirectoryFile() to get the change time
+	fsStat->m_ChangeTime = e.ftLastWriteTime;
 
 	if ( e.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 	{
@@ -1396,6 +1402,7 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 		fsStat->m_CreationTime = st_link.st_ctime;
 		fsStat->m_LastAccessTime = st_link.st_atime;
 		fsStat->m_LastWriteTime = st_link.st_mtime;
+		fsStat->m_ChangeTime = st_link.st_mtime;
 		fsStat->gid = st_link.st_gid;
 		fsStat->uid = st_link.st_uid;
 
@@ -1419,6 +1426,7 @@ int FSSys::Stat( FSPath& path, FSStat* fsStat, int* err, FSCInfo* info )
 	fsStat->m_CreationTime = st.st_ctime;
 	fsStat->m_LastAccessTime = st.st_atime;
 	fsStat->m_LastWriteTime = st.st_mtime;
+	fsStat->m_ChangeTime = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 
@@ -1456,6 +1464,7 @@ int FSSys::FStat( int fd, FSStat* fsStat, int* err, FSCInfo* info )
 	fsStat->m_CreationTime = st.st_ctime;
 	fsStat->m_LastAccessTime = st.st_atime;
 	fsStat->m_LastWriteTime = st.st_mtime;
+	fsStat->m_ChangeTIme = st.st_mtime;
 	fsStat->gid = st.st_gid;
 	fsStat->uid = st.st_uid;
 
@@ -1985,6 +1994,69 @@ unicode_t* FSStat::GetModeStr( unicode_t buf[64] )
 	return buf;
 }
 
+std::string GetFSTimeStrTime( FSTime TimeValue )
+{
+	char str[64];
+#ifdef _WIN32
+	FILETIME mt = TimeValue;
+	FILETIME lt;
+	SYSTEMTIME st;
+
+	if (!FileTimeToLocalFileTime(&mt, &lt) || !FileTimeToSystemTime(&lt, &st))
+	{
+		return std::string("?");
+	}
+
+	Lsnprintf( str, sizeof(str), "%02i:%02i:%02i", int(st.wHour), int(st.wMinute), int(st.wSecond) );
+#else
+	time_t mt = TimeValue;
+	struct tm* p = localtime(&mt);
+
+	if (p)
+	{
+		sprintf(str, "%02i:%02i:%02i", p->tm_hour, p->tm_min, p->tm_sec);
+	}
+	else
+	{
+		sprintf(str, "%02i:%02i:%02i", int(0), int(0), int(0));
+
+	}
+#endif
+	return std::string( str );
+}
+
+std::string GetFSTimeStrDate( FSTime TimeValue )
+{
+	char str[64];
+#ifdef _WIN32
+	FILETIME mt = TimeValue;
+	FILETIME lt;
+	SYSTEMTIME st;
+
+	if ( !FileTimeToLocalFileTime(&mt, &lt) || !FileTimeToSystemTime(&lt, &st) )
+	{
+		return std::string("?");
+	}
+
+	Lsnprintf(str, sizeof(str), "%02i.%02i.%04i", int( st.wDay ), int( st.wMonth ), int( st.wYear ) );
+
+#else
+	time_t mt = TimeValue;
+	struct tm* p = localtime(&mt);
+
+	if ( p )
+	{
+		sprintf( str, "%02i.%02i.%04i", p->tm_mday, p->tm_mon + 1, p->tm_year + 1900 );
+	}
+	else
+	{
+		sprintf(str, "%02i.%02i.%04i", int(0), int(0), int(0) + 1900 );
+
+	}
+#endif
+	return std::string(str);
+}
+
 unicode_t* FSTimeToStr( unicode_t ret[64], FSTime TimeValue )
 {
 	char str[64];
@@ -1996,7 +2068,7 @@ unicode_t* FSTimeToStr( unicode_t ret[64], FSTime TimeValue )
 
 	if ( !FileTimeToLocalFileTime( &mt, &lt ) || !FileTimeToSystemTime( &lt, &st ) ) { ret[0] = '?'; ret[1] = 0; return ret; }
 
-	Lsnprintf( str, sizeof( str ), "%02i/%02i/%04i  %02i:%02i:%02i",
+	Lsnprintf( str, sizeof( str ), "%02i.%02i.%04i  %02i:%02i:%02i",
 	           int( st.wDay ), int( st.wMonth ), int( st.wYear ),
 	           int( st.wHour ), int( st.wMinute ), int( st.wSecond ) );
 #else
@@ -2005,13 +2077,13 @@ unicode_t* FSTimeToStr( unicode_t ret[64], FSTime TimeValue )
 
 	if ( p )
 	{
-		sprintf( str, "%02i/%02i/%04i  %02i:%02i:%02i",
+		sprintf( str, "%02i.%02i.%04i  %02i:%02i:%02i",
 		         p->tm_mday, p->tm_mon + 1, p->tm_year + 1900, // % 100,
 		         p->tm_hour, p->tm_min, p->tm_sec );
 	}
 	else
 	{
-		sprintf( str, "%02i/%02i/%04i  %02i:%02i:%02i",
+		sprintf( str, "%02i.%02i.%04i  %02i:%02i:%02i",
 		         int( 0 ), int( 0 ), int( 0 ) + 1900, // % 100,
 		         int( 0 ), int( 0 ), int( 0 ) );
 

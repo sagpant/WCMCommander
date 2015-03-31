@@ -1199,6 +1199,7 @@ int FSSftp::ReadDir  ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 				pNode->st.m_CreationTime = 0;
 				pNode->st.m_LastAccessTime = attr.ATime();
 				pNode->st.m_LastWriteTime = attr.MTime();
+				pNode->st.m_ChangeTime = attr.MTime();
 
 				list->Append( pNode );
 			}
@@ -1266,6 +1267,7 @@ int FSSftp::Stat  ( FSPath& path, FSStat* st, int* err, FSCInfo* info )
 		st->m_CreationTime = 0;
 		st->m_LastAccessTime = attr.ATime();
 		st->m_LastWriteTime = attr.MTime();
+		st->m_ChangeTime = attr.MTime();
 	}
 	catch ( int e )
 	{
@@ -1306,6 +1308,7 @@ int FSSftp::FStat ( int fd, FSStat* st, int* err, FSCInfo* info )
 		st->gid   = attr.Gid();
 		st->m_LastAccessTime = attr.ATime();
 		st->m_LastWriteTime = attr.MTime();
+		st->m_ChangeTime = attr.MTime();
 	}
 	catch ( int e )
 	{

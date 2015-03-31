@@ -1363,6 +1363,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 
 				st.m_LastWriteTime = GetFtpMSFTime( w0, w1 );
 				st.m_LastAccessTime = st.m_LastWriteTime;
+				st.m_ChangeTime = st.m_LastWriteTime;
 
 				fileName = s;
 
@@ -1382,6 +1383,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 				st.uid = uids.GetId( FSString( _param.charset, w2 ).GetUnicode() );
 				st.gid = gids.GetId( FSString( _param.charset, w3 ).GetUnicode() );
 				st.m_LastWriteTime = GetFtpFTime( w5, w6, w7 );
+				st.m_ChangeTime = st.m_LastWriteTime;
 				st.size = ParzeFileSize( w4 );
 
 				s = SkipSpace( s );

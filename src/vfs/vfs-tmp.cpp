@@ -25,10 +25,12 @@ FSTmpNode::FSTmpNode(const unicode_t* _name, FSTmpNode* _parentDir)
 	fsStat.m_CreationTime = FSTime(FSTime::TIME_CURRENT);
 	fsStat.m_LastAccessTime = FSTime(FSTime::TIME_CURRENT);
 	fsStat.m_LastWriteTime = FSTime(FSTime::TIME_CURRENT);
+	fsStat.m_ChangeTime = FSTime(FSTime::TIME_CURRENT);
 #else
 	fsStat.m_CreationTime = time(0);
 	fsStat.m_LastAccessTime = time(0);
 	fsStat.m_LastWriteTime = time(0);
+	fsStat.m_ChangeTime = time(0);
 #endif
 }
 
@@ -336,6 +338,7 @@ int FSTmp::SetFileTime(FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, i
 		fsTemp->fsStat.m_CreationTime = cTime;
 		fsTemp->fsStat.m_LastAccessTime = aTime;
 		fsTemp->fsStat.m_LastWriteTime = mTime;
+		fsTemp->fsStat.m_ChangeTime = mTime;
 
 		if (fsTemp->nodeType == FSTmpNode::NODE_FILE)
 			return baseFS->SetFileTime(fsTemp->baseFSPath, cTime, aTime, mTime, err, info);
