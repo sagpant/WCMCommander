@@ -175,7 +175,7 @@ public:
 		m_Layout.AddWinAndEnable( &m_CreationTime, Row++, 2 );
 		m_Layout.AddWinAndEnable( &m_LastAccessTime, Row++, 2 );
 //		m_Layout.AddWinAndEnable( &m_ChangeTime, Row++, 2 );
-
+/*
 		m_LastWriteDate.Enable( false );
 		m_CreationDate.Enable( false );
 		m_LastAccessDate.Enable( false );
@@ -184,6 +184,23 @@ public:
 		m_CreationTime.Enable( false );
 		m_LastAccessTime.Enable( false );
 		m_ChangeTime.Enable( false );
+  */
+		m_LastWriteDate.SetValidator( new clDateValidator() );
+		m_LastWriteDate.SetReplaceMode( true );
+		m_CreationDate.SetValidator( new clDateValidator() );
+		m_CreationDate.SetReplaceMode( true );
+		m_LastAccessDate.SetValidator( new clDateValidator() );
+		m_LastAccessDate.SetReplaceMode( true );
+		m_ChangeDate.SetValidator( new clDateValidator() );
+		m_ChangeDate.SetReplaceMode( true );
+		m_LastWriteTime.SetValidator( new clTimeValidator() );
+		m_LastWriteTime.SetReplaceMode( true );
+		m_CreationTime.SetValidator( new clTimeValidator() );
+		m_CreationTime.SetReplaceMode( true );
+		m_LastAccessTime.SetValidator( new clTimeValidator() );
+		m_LastAccessTime.SetReplaceMode( true );
+		m_ChangeTime.SetValidator( new clTimeValidator() );
+		m_ChangeTime.SetReplaceMode( true );
 
 		UpdateAttributes( m_Node );
 		

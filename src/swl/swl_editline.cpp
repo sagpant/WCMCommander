@@ -801,6 +801,7 @@ namespace wal
 
 				default:
 					wchar_t c = pEvent->Char();
+					std::vector<unicode_t> oldtext = GetText();
 
 					if ( c && c >= 0x20 && ( !alt || _use_alt_symbols ) )
 					{
@@ -815,7 +816,6 @@ namespace wal
 						}
 
 						text.Insert( c );
-						std::vector<unicode_t> oldtext = GetText();
 
 						if ( m_Validator && !m_Validator->IsValid( GetText() ) )
 						{

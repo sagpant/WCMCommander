@@ -213,7 +213,7 @@ namespace wal
 		virtual bool IsValid( const std::vector<unicode_t>& Str ) const override;
 	};
 
-	/// validate time in format HH:MM:SS
+	/// validate time in format HH:MM:SS,MSEC
 	class clTimeValidator: public clValidator
 	{
 	public:
