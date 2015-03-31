@@ -2095,11 +2095,11 @@ FSTime GetFSTimeFromStr( const std::string& Date, const std::string& Time )
 #else
 	tm p;
 	p.tm_mday = Day;
-	p->tm_mon = Month - 1;
-	p->tm_year = Year - 1900;
-	p->tm_hour = Hour;
-	p->tm_min = Minute;
-	p->tm_sec = Second;
+	p.tm_mon = Month - 1;
+	p.tm_year = Year - 1900;
+	p.tm_hour = Hour;
+	p.tm_min = Minute;
+	p.tm_sec = Second;
 
 	time_t mt = mktime( &p );
 
