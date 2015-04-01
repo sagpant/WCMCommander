@@ -2014,11 +2014,11 @@ std::string GetFSTimeStrTime( FSTime TimeValue )
 
 	if (p)
 	{
-		sprintf( str, "%02i:%02i:%02i,%03i", p->tm_hour, p->tm_min, p->tm_sec, int(0) );
+		sprintf( str, "%02i:%02i:%02i", p->tm_hour, p->tm_min, p->tm_sec );
 	}
 	else
 	{
-		sprintf( str, "%02i:%02i:%02i,%03i", int(0), int(0), int(0), int(0) );
+		sprintf( str, "%02i:%02i:%02i", int(0), int(0), int(0) );
 	}
 #endif
 	return std::string( str );
