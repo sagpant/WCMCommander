@@ -158,53 +158,83 @@ public:
 		m_Layout.AddWinAndEnable( &m_OthersWrite, Row++, 0 );
 		m_Layout.AddWinAndEnable( &m_OthersExecute, Row++, 0 );
 #endif
+
 		m_Layout.LineSet( Row++, 5 );
 
 		TRow = Row;
 		m_Layout.AddWinAndEnable( &m_LastWriteTimeLabel, Row++, 0 );
 		m_Layout.AddWinAndEnable( &m_CreationTimeLabel, Row++, 0 );
 		m_Layout.AddWinAndEnable( &m_LastAccessTimeLabel, Row++, 0 );
-//		m_Layout.AddWinAndEnable( &m_ChangeTimeLabel, Row++, 0 );
+#if defined(HAS_CHANGETIME)
+		m_Layout.AddWinAndEnable( &m_ChangeTimeLabel, Row++, 0 );
+#endif
 		Row = TRow;
 		m_Layout.AddWinAndEnable( &m_LastWriteDate, Row++, 1 );
 		m_Layout.AddWinAndEnable( &m_CreationDate, Row++, 1 );
 		m_Layout.AddWinAndEnable( &m_LastAccessDate, Row++, 1 );
-//		m_Layout.AddWinAndEnable( &m_ChangeDate, Row++, 1 );
+#if defined(HAS_CHANGETIME)
+		m_Layout.AddWinAndEnable( &m_ChangeDate, Row++, 1 );
+#endif
 		Row = TRow;
 		m_Layout.AddWinAndEnable( &m_LastWriteTime, Row++, 2 );
 		m_Layout.AddWinAndEnable( &m_CreationTime, Row++, 2 );
 		m_Layout.AddWinAndEnable( &m_LastAccessTime, Row++, 2 );
-//		m_Layout.AddWinAndEnable( &m_ChangeTime, Row++, 2 );
-/*
-		m_LastWriteDate.Enable( false );
-		m_CreationDate.Enable( false );
-		m_LastAccessDate.Enable( false );
-		m_ChangeDate.Enable( false );
-		m_LastWriteTime.Enable( false );
-		m_CreationTime.Enable( false );
-		m_LastAccessTime.Enable( false );
-		m_ChangeTime.Enable( false );
-  */
+#if defined(HAS_CHANGETIME)
+		m_Layout.AddWinAndEnable( &m_ChangeTime, Row++, 2 );
+#endif
+
 		m_LastWriteDate.SetValidator( new clDateValidator() );
 		m_LastWriteDate.SetReplaceMode( true );
 		m_CreationDate.SetValidator( new clDateValidator() );
 		m_CreationDate.SetReplaceMode( true );
 		m_LastAccessDate.SetValidator( new clDateValidator() );
 		m_LastAccessDate.SetReplaceMode( true );
+#if defined(HAS_CHANGETIME)
 		m_ChangeDate.SetValidator( new clDateValidator() );
 		m_ChangeDate.SetReplaceMode( true );
+#endif
 		m_LastWriteTime.SetValidator( new clTimeValidator() );
 		m_LastWriteTime.SetReplaceMode( true );
 		m_CreationTime.SetValidator( new clTimeValidator() );
 		m_CreationTime.SetReplaceMode( true );
 		m_LastAccessTime.SetValidator( new clTimeValidator() );
 		m_LastAccessTime.SetReplaceMode( true );
+#if defined(HAS_CHANGETIME)
 		m_ChangeTime.SetValidator( new clTimeValidator() );
 		m_ChangeTime.SetReplaceMode( true );
+#endif
 
 		UpdateAttributes( m_Node );
 		
 		AddLayout( &m_Layout );
+
+		order.clear();
+#if defined(_WIN32)
+		order.append(&m_ReadOnly);
+		order.append(&m_Archive);
+		order.append(&m_Hidden);
+		order.append(&m_System);
+#else
+		order.append(&m_UserRead);
+		order.append(&m_UserWrite);
+		order.append(&m_UserExecute);
+		order.append(&m_GroupRead);
+		order.append(&m_GroupWrite);
+		order.append(&m_GroupExecute);
+		order.append(&m_OthersRead);
+		order.append(&m_OthersWrite);
+		order.append(&m_OthersExecute);
+#endif // _WIN32
+		order.append(&m_LastWriteDate);
+		order.append(&m_LastWriteTime);
+		order.append(&m_CreationDate);
+		order.append(&m_CreationTime);
+		order.append(&m_LastAccessDate);
+		order.append(&m_LastAccessTime);
+#if defined(HAS_CHANGETIME)
+		order.append(&m_ChangeDate);
+		order.append(&m_ChangeTime);
+#endif // HAS_CHANGETIME
 
 		SetPosition();
 	}
