@@ -156,8 +156,7 @@ static char uiDefaultWcmRules[] =
 
 
 #ifdef _WIN32
-std::string STYLES_PATH =
-   sys_to_utf8( carray_cat<wchar_t>( GetAppPath().data(), utf8_to_sys( "\\styles\\" ).data() ).data() );
+std::string STYLES_PATH = unicode_to_utf8_string( GetAppPath().data() ) + "\\styles\\";
 #else
 std::string STYLES_PATH = UNIX_CONFIG_DIR_PATH "/styles/";
 #endif
