@@ -157,10 +157,9 @@ static char uiDefaultWcmRules[] =
 
 #ifdef _WIN32
 std::string STYLES_PATH =
-   utf8_to_sys( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "\\styles\\" ).data() ).data() );
+   sys_to_utf8( carray_cat<wchar_t>( GetAppPath().data(), utf8_to_sys( "\\styles\\" ).data() ).data() );
 #else
-std::string STYLES_PATH =
-   utf8_to_sys( UNIX_CONFIG_DIR_PATH "/styles/" ).data();
+std::string STYLES_PATH = UNIX_CONFIG_DIR_PATH "/styles/";
 #endif
 
 const std::string STYLE_EXTENSION = ".style";
@@ -212,7 +211,7 @@ void SetColorStyle( const std::string& style )
    try
    {
       std::string filename = STYLES_PATH + style + STYLE_EXTENSION;
-      UiReadFile( filename.c_str() );
+      UiReadFile( utf8_to_sys( filename.c_str() ).data() );
    }
    catch ( cexception* ex )
    {
