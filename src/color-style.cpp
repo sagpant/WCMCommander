@@ -4,7 +4,7 @@
  * walcommander@linderdaum.com
  */
 
-#include <dirent.h>
+#include <vfs/vfs.h>
 #include "color-style.h"
 #include "string-util.h"
 #include "globals.h"
@@ -169,24 +169,27 @@ std::vector<std::string> GetColorStyles()
 {
    std::vector<std::string> styleNames;
 
-   DIR *dir;
-   struct dirent *ent;
-   if ( ( dir = opendir( STYLES_PATH.c_str() ) ) != NULL )
+   FSSys fs;
+   FSList list;
+   FSString path( STYLES_PATH.c_str() );
+   FSPath fspath( path );
+   int err;
+
+   if ( fs.ReadDir( &list, fspath, &err, nullptr ) == 0 )
    {
-      while ( ( ent = readdir( dir ) ) != NULL )
+      for ( FSNode* node = list.First(); node; node = node->next )
       {
-         std::string styleName( ent->d_name );
+         std::string styleName( node->name.GetUtf8() );
          if ( GetFileExt( styleName ) == STYLE_EXTENSION )
          {
             styleName = styleName.substr( 0, styleName.size() - STYLE_EXTENSION.size() );
             styleNames.push_back( styleName );
          }
       }
-      closedir( dir );
    }
    else
    {
-      perror( "Error reading styles" );
+      fprintf( stderr, "error:%s\n", fs.StrError( err ).GetUtf8() );
    }
    return styleNames;
 }
