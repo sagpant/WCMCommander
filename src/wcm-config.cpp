@@ -32,7 +32,6 @@
 #endif
 
 #include <map>
-#include <iostream>
 
 
 std::string* IniHash::Find( const char* section, const char* var )
@@ -1986,7 +1985,6 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	SetEnterCmd( CMD_OK );
 
 	auto styles = GetColorStyles();
-	std::cout << "styles: " << styles.size() << "\n";
 	for ( auto style : styles )
 	{
 		styleList.Append( style.c_str() );
@@ -1995,7 +1993,6 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	auto it = std::find( styles.begin(), styles.end(), g_WcmConfig.styleColorMode );
 	int index = it == styles.end() ? 0 : (int) std::distance(styles.begin(), it);
 
-	std::cout << "Setting color index " << g_WcmConfig.styleColorMode << " to " << index << "\n";
 	styleList.MoveCurrent( index, false );
 	styleList.SetFocus();
 

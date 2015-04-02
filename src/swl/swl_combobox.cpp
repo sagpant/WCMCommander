@@ -84,7 +84,7 @@ namespace wal
 		_edit.SetShowSpaces( false );
 		_edit.Enable();
 		_edit.Show( SHOW_INACTIVE );
-		
+
 		_lo.AddRect( &_buttonRect, 1, 2 );
 		_lo.ColSet( 2, CB_BUTTONWIDTH );
 		
@@ -413,20 +413,6 @@ namespace wal
 
 		if ( pEvent->Type() == EV_MOUSE_PRESS 
 			&& (_buttonRect.In( pEvent->Point() ) || (IsReadOnly() && ScrRect.In( ScrPoint ))) )
-		{
-			if ( _box.ptr() )
-			{
-				CloseBox();
-			}
-			else
-			{
-				OpenBox();
-			}
-
-			return true;
-		}
-
-		if ( ( pEvent->Type() == EV_MOUSE_PRESS ) && ( _flags & READONLY ) )
 		{
 			if ( _box.ptr() )
 			{

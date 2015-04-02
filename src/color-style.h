@@ -8,7 +8,7 @@
 
 #include <swl.h>
 
-void SetColorStyle( std::string style );
+void SetColorStyle( const std::string& style );
 
 void SetDefaultColorStyle();
 

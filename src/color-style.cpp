@@ -150,7 +150,7 @@ static char uiDefaultWcmRules[] =
 
    ;
 
-bool hasEnding ( std::string const &fullString, std::string const &ending )
+bool endsWith ( std::string const &fullString, std::string const &ending )
 {
    if ( fullString.length() >= ending.length() )
    {
@@ -159,7 +159,16 @@ bool hasEnding ( std::string const &fullString, std::string const &ending )
    return false;
 }
 
-std::string STYLES_PATH = UNIX_CONFIG_DIR_PATH "/styles/";
+
+#ifdef _WIN32
+std::string STYLES_PATH =
+   utf8_to_sys( carray_cat<sys_char_t>( GetAppPath().data(), utf8_to_sys( "\\styles\\" ).data() ).data() );
+#else
+std::string STYLES_PATH =
+   utf8_to_sys( UNIX_CONFIG_DIR_PATH "/styles/" ).data();
+#endif
+
+//std::string STYLES_PATH = UNIX_CONFIG_DIR_PATH "/styles/";
 const std::string STYLE_EXTENSION = ".style";
 
 std::vector<std::string> GetColorStyles()
@@ -173,7 +182,7 @@ std::vector<std::string> GetColorStyles()
       while ( ( ent = readdir( dir ) ) != NULL )
       {
          std::string styleName( ent->d_name );
-         if ( hasEnding( styleName, STYLE_EXTENSION ) )
+         if ( endsWith( styleName, STYLE_EXTENSION ) )
          {
             styleName = styleName.substr( 0, styleName.size() - STYLE_EXTENSION.size() );
             styleNames.push_back( styleName );
@@ -183,35 +192,28 @@ std::vector<std::string> GetColorStyles()
    }
    else
    {
-      perror ( "" ); // FIXME: What is wcm error reporting style?
+      char buf[0x100];
+      sys_error_str( errno, buf, sizeof( buf ) );
+      throw_msg( "%s", buf );
    }
    return styleNames;
 }
 
 void SetDefaultColorStyle( )
 {
+   UiReadMem( uiDefaultWcmRules );
+}
+
+void SetColorStyle( const std::string& style )
+{
    try
    {
-      UiReadMem( uiDefaultWcmRules );
+      std::string filename = STYLES_PATH + style + STYLE_EXTENSION;
+      UiReadFile( filename.c_str() );
    }
    catch ( cexception* ex )
    {
-      fprintf( stderr, "error:%s\n", ex->message() );
-      ex->destroy();
+      SetDefaultColorStyle();
+      throw ex;
    }
-}
-
-void SetColorStyle( std::string style )
-{
-	try
-	{
-		std::string filename = STYLES_PATH + style + STYLE_EXTENSION;
-		UiReadFile( filename.c_str() );
-	}
-	catch ( cexception* ex )
-	{
-		fprintf( stderr, "error:%s\n", ex->message() );
-		ex->destroy();
-		SetDefaultColorStyle();
-	}
 }
