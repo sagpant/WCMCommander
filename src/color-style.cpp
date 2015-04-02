@@ -168,7 +168,6 @@ std::string STYLES_PATH =
    utf8_to_sys( UNIX_CONFIG_DIR_PATH "/styles/" ).data();
 #endif
 
-//std::string STYLES_PATH = UNIX_CONFIG_DIR_PATH "/styles/";
 const std::string STYLE_EXTENSION = ".style";
 
 std::vector<std::string> GetColorStyles()
@@ -192,16 +191,22 @@ std::vector<std::string> GetColorStyles()
    }
    else
    {
-      char buf[0x100];
-      sys_error_str( errno, buf, sizeof( buf ) );
-      throw_msg( "%s", buf );
+      perror( "Error reading styles" );
    }
    return styleNames;
 }
 
 void SetDefaultColorStyle( )
 {
-   UiReadMem( uiDefaultWcmRules );
+   try
+   {
+      UiReadMem( uiDefaultWcmRules );
+   }
+   catch ( cexception* ex )
+   {
+      fprintf( stderr, "error:%s\n", ex->message() );
+      ex->destroy();
+   }
 }
 
 void SetColorStyle( const std::string& style )
@@ -213,7 +218,9 @@ void SetColorStyle( const std::string& style )
    }
    catch ( cexception* ex )
    {
+      fprintf( stderr, "%s\n", ex->message() );
+      ex->destroy();
+
       SetDefaultColorStyle();
-      throw ex;
    }
 }
