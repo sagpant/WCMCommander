@@ -1993,7 +1993,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	auto it = std::find( styles.begin(), styles.end(), g_WcmConfig.styleColorMode );
 	int index = it == styles.end() ? 0 : (int) std::distance(styles.begin(), it);
 
-	styleList.MoveCurrent( index, false );
+	styleList.MoveCurrent( index );
 	styleList.SetFocus();
 
 	order.append( &styleShow3DUIButton );
