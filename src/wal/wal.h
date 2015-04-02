@@ -162,8 +162,8 @@ namespace wal
 		File() : _fd( FILE_NULL ) { }
 		void Open( const sys_char_t* name, int open_flag = FOPEN_READ );
 		void Close();
-		unsigned int Read( void* buf, int size );
-		unsigned int  Write( void* buf, int size );
+		size_t Read( void* buf, int size );
+		size_t Write( void* buf, int size );
 		seek_t Seek( seek_t distance, SEEK_FILE_MODE method = FSEEK_BEGIN );
 		~File(); //закрывает без эксепшенов (лучше сначала вызывать Close)
 	};
@@ -346,22 +346,22 @@ namespace wal
 		_fd = FILE_NULL;
 	}
 
-	inline unsigned int File::Read( void* buf, int size )
+	inline size_t File::Read( void* buf, int size )
 	{
 		int ret = file_read( _fd, buf, size );
 
 		if ( ret < 0 ) { Throw(); }
 
-		return (unsigned int) ret;
+		return (size_t) ret;
 	}
 
-	inline unsigned int File::Write( void* buf, int size )
+	inline size_t File::Write( void* buf, int size )
 	{
 		int ret = file_write( _fd, buf, size );
 
 		if ( ret < 0 ) { Throw(); }
 
-		return (unsigned int) ret;
+		return (size_t) ret;
 	}
 
 	inline seek_t File::Seek( seek_t distance, SEEK_FILE_MODE method )

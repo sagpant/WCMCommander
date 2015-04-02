@@ -355,7 +355,7 @@ class SearchListWin: public VListWin
 	int fontW;
 	int fontH;
 	clPtr<FS> m_FileSystem;
-	NCWin* m_NCWin UNUSED;
+	NCWin* m_NCWin; // UNUSED - sry, in Linux it gives warnings anyway, like: warning: ‘unused’ attribute ignored <8-/
 
 public:
 	SearchListWin( Win* parent, const clPtr<FS>& FileSystem, NCWin* ncwin )

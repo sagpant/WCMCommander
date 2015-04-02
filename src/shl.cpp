@@ -52,12 +52,12 @@ namespace SHL
 	{
 		if ( s >= end ) { return false; }
 
-		int l = end - s;
+		long l = end - s;
 		char buf[0x100];
 		std::vector<char> buf2;
 		char* p;
 
-		if ( l >= sizeof( buf ) )
+		if ( l >= (int) sizeof( buf ) )
 		{
 			buf2.resize( l + 1 );
 			p = buf2.data();

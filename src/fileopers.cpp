@@ -1343,7 +1343,7 @@ bool OperCFThread::CopyFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* de
 	out = destFs->OpenCreate( destPath, false | commitAll, srcNode->st.mode, 0, &ret_err, Info() );
 
 	if ( out < 0 && destFs->IsEEXIST( ret_err ) )
-		switch ( RedMessage( _LT( "Owerwrite  file?\n" ) , destFs->Uri( destPath ).GetUtf8(), bOkAllNoCancel ) )
+		switch ( RedMessage( _LT( "Owerwrite file?\n" ) , destFs->Uri( destPath ).GetUtf8(), bOkAllNoCancel ) )
 		{
 			case CMD_ALL:
 				commitAll = true; //no break

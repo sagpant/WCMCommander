@@ -46,43 +46,12 @@ namespace wal
 		volatile int fd[2];
 		volatile bool signaled;
 	public:
-		WthInternalEvent(): signaled( false )
-		{
-			if ( pipe( const_cast<int*>( fd ) ) )
-			{
-				fprintf( stderr, "can`t create internal pipe (WthInternalEvent)\n" );
-				exit( 1 );
-			}
-		};
+		WthInternalEvent();
+		~WthInternalEvent();
 
-		void SetSignal()
-		{
-			MutexLock lock( &mutex );
-
-			if ( signaled ) { return; }
-
-			char c = 0;
-			int ret = write( fd[1], &c, sizeof( c ) );
-
-			if ( ret < 0 ) { throw_syserr( 0, "internal error WthInternalEvent" ); }
-
-			signaled = true;
-		}
-
-		int SignalFD() { return fd[0]; }
-
-		void ClearSignal()
-		{
-			MutexLock lock( &mutex );
-
-			if ( !signaled ) { return; }
-
-			char c;
-			int ret = read( fd[0], &c, sizeof( c ) );
-			signaled = false;
-		};
-
-		~WthInternalEvent() { close( fd[0] ); close( fd[1] ); }
+		void SetSignal();
+		int SignalFD();
+		void ClearSignal();
 	};
 
 #endif
@@ -94,6 +63,5 @@ namespace wal
 	bool WinThreadSignal( int data );
 	void wth_DropWindow( Win* w );
 	void wth_DoEvents();
-
 
 }; //namespace wal
