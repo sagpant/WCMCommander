@@ -7,10 +7,14 @@
 #include <dirent.h>
 #include "color-style.h"
 #include "string-util.h"
+#include "globals.h"
 
-//надо нормально разукрасить
+#ifdef _WIN32
+#  include "w32util.h"
+#endif
 
 using namespace wal;
+
 /*
 How the color scheme works:
 
@@ -150,15 +154,6 @@ static char uiDefaultWcmRules[] =
 
    ;
 
-bool endsWith ( std::string const &fullString, std::string const &ending )
-{
-   if ( fullString.length() >= ending.length() )
-   {
-      return ( 0 == fullString.compare( fullString.length() - ending.length(), ending.length(), ending ) );
-   }
-   return false;
-}
-
 
 #ifdef _WIN32
 std::string STYLES_PATH =
@@ -181,7 +176,7 @@ std::vector<std::string> GetColorStyles()
       while ( ( ent = readdir( dir ) ) != NULL )
       {
          std::string styleName( ent->d_name );
-         if ( endsWith( styleName, STYLE_EXTENSION ) )
+         if ( GetFileExt( styleName ) == STYLE_EXTENSION )
          {
             styleName = styleName.substr( 0, styleName.size() - STYLE_EXTENSION.size() );
             styleNames.push_back( styleName );
