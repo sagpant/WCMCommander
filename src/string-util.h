@@ -41,6 +41,8 @@ template<class T> inline const T* find_right_char( const T* s, T c )
 /// get file extension
 std::string GetFileExt( const unicode_t* uri );
 
+std::string GetFileExt( const std::string& uri );
+
 /// convert UTF-32 to UTF-16
 std::vector<wchar_t> UnicodeToUtf16( const unicode_t* s );
 

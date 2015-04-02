@@ -1,0 +1,106 @@
+* {color: 0xa1a193; background: 0x362b00; hotkey-color: 0x164bcb; focus-frame-color: 0x756e58; button-color: 0x756e58; }
+*@item:odd		{color: 0xa1a193; background: 0x423607; }
+*@item:current-item	{color: 0x756e58; background: 0xd5e8ee; }
+*@item			{color: 0xa1a193; background: 0x362b00; }
+
+ScrollBar { button-color: 0x423607;  }
+EditLine:!enabled { background: 0xa1a193; }
+EditLine:focus { color: 0x756e58; background: 0xe3f6fd; mark-color: 0x423607; mark-background : 0x969483; frame-color: 0xa1a193}
+EditLine { color: 0x837b65; background: 0xd5e8ee; frame-color: 0xa1a193; mark-color: 0x423607; mark-background: 0xa1a193; }
+
+Progress { color: 0x009985; frame-color: 0xe3f6fd; background: 0x423607}
+
+command-line:!enabled { background: 0xe3f6fd; }
+command-line:focus { color: 0x362b00; background: 0xe3f6fd; mark-color: 0x362b00; mark-background : 0xa1a193; frame-color: 0xd5e8ee}
+command-line { color: 0x362b00; background: 0xe3f6fd; frame-color: 0xd5e8ee; mark-color: 0xa1a193; mark-background : 0x362b00; }
+
+Autocomplete:!enabled { background: 0x423607; }
+Autocomplete:current-item {color: 0x837b65; background: 0xd5e8ee; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }
+Autocomplete:current-item:odd {color: 0x837b65; background: 0xa1a193; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }
+Autocomplete:odd {color: 0x969483; background: 0x423607; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }
+Autocomplete {color: 0x969483; background: 0x362b00; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }
+
+Panel { color: 0x837b65; background: 0xe3f6fd; }             // default foreground color for all items
+Panel@item:selected-panel:current-item { color: 0xa1a193}         // default foreground color for all items in under cursor
+Panel@item:selected:current-item { color: 0x164bcb}            // default foreground color for all selected items in under cursor
+
+Panel@item:exe { color: 0x009985}                           // foreground color for executables
+Panel@item:exe:selected-panel:current-item { color: 0x009985}     // foreground color for executables under cursor
+Panel@item:exe:selected:current-item { color: 0x164bcb}        // foreground color for selected executables under cursor
+
+Panel@item:dir { color: 0x423607}                           // foreground color for dir names
+Panel@item:dir:selected-panel:current-item { color: 0xd5e8ee}     // foreground color for dir names under cursor
+Panel@item:dir:selected:current-item { color: 0x164bcb}        // foreground color for selected dir names under cursor
+
+Panel@item:hidden { color: 0xa1a193}                        // foreground color for hidden items
+Panel@item:hidden:selected-panel:current-item { color: 0xa1a193}  // foreground color for hidden items under cursor
+Panel@item:hidden:selected:current-item { color: 0x164bcb}     // foreground color for selected hidden items under cursor
+
+Panel@item:link { color: 0xd28b26}                          // foreground color for links
+Panel@item:link :selected-panel:current-item { color: 0xd28b26}      // foreground color for links under cursor
+Panel@item:link:selected:current-item { color: 0x164bcb}          // foreground color for selected links under cursor
+
+Panel@item:bad { color: 0x2f32dc}
+Panel@item:selected { color: 0x164bcb}
+Panel@item:selected-panel:current-item { background: 0x362b00} // background color of cursor
+//Panel@item:selected-panel:current-item:oper-state { background: 0x2f32dc}
+
+Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar { background: 0x423607; button-color: 0xa1a193}
+   // border-color1...4 - color of external borders, 1 is outmost, 4 is inmost. Make 2 and 4 light cyan RGB(0,255,255) and 1 and 3 equal to the color of background (dark blue)
+Panel { border-color1: 0x756e58; border-color2: 0x423607; border-color3: 0x756e58; border-color4: 0x423607;
+   // vline-color1..3 - color of lines - colums separators. Make first two of them light cyan, 2 pixel thick and third line paint to the color of background (dark blue)
+ vline-color1: 0x969483; vline-color2: 0xa1a193; vline-color3: 0x969483;
+   // line-color - color of horizontal top and bottom pane above and below items list.
+ line-color: 0x969483;
+
+ summary-color: 0x837b65; }
+
+Panel@footer { color: 0x837b65; background: 0xe3f6fd; }         // footer - full info (name, size, date etc.) at the bottom of panel about the item under cursor
+
+Panel { summary-color: 0x837b65; }                           // summary - total size of files in current forlder at the bottom of panel
+Panel:have-selected { summary-color: 0x164bcb; }             // total size of selected items at the bottom of panel, light yellow
+Panel:oper-state { summary-color: 0x2f32dc; }
+
+ButtonWin { color: 0x362b00; background: 0xa1a193; }
+ButtonWin Button { color: 0xa1a193; background: 0x423607; }
+EditLine#command-line { color: 0x756e58; background: 0xe3f6fd; mark-color: 0xe3f6fd; mark-background: 0x837b65; }
+ToolTip { color: 0x423607; background: 0xa1a193; }
+ToolBar { color: 0xa1a193; background: 0x362b00; }
+MenuBar { color: 0xa1a193; background: 0x423607; current-item-frame-color: 0xe3f6fd; }
+MenuBar:current-item { color: 0x756e58; background: 0xd5e8ee; }
+PopupMenu@item {color: 0x969483; background: 0x362b00; pointer-color: 0x009985; line: 0xa1a193; }
+PopupMenu@item:current-item { color: 0x756e58; background: 0xd5e8ee; }
+PopupMenu { background: 0x423607; frame-color: 0x969483; }
+
+drive-dlg { background: 0x362b00; }
+drive-dlg * { background: 0x362b00; color: 0xa1a193; }
+drive-dlg * @item { color: 0xa1a193; background: 0x362b00; comment-color: 0x969483; first-char-color: 0x164bcb}
+drive-dlg * @item:current-item { color: 0x756e58; background: 0xd5e8ee; comment-color: 0x837b65; first-char-color: 0x164bcb}
+
+messagebox-red { color: 0x362b00; background: 0x2f32dc; }
+messagebox-red Static { color: 0x362b00; background: 0x2f32dc; }
+
+HelpWin@style-head { color: 0x362b00; }
+HelpWin@style-def  { color: 0x362b00; }
+HelpWin@style-red  { color: 0x2f32dc; }
+HelpWin@style-bold { color: 0xe3f6fd; }
+HelpWin { background: 0x362b00; }
+
+Viewer { background: 0xe3f6fd; color: 0x756e58; ctrl-color: 0x756e58;
+	makr-color: 0xe3f6fd; mark-background: 0x362b00; line-color: 0x423607;
+	hid: 0xd5e8ee; load-background: 0xd5e8ee; load-color: 0x2f32dc; }
+Editor { background: 0xe3f6fd; color: 0x837b65; mark-background: 0x756e58; mark-color: 0xe3f6fd; cursor-color: 0x362b00;
+	DEF: 0x837b65; KEYWORD: 0xd28b26; COMMENT: 0x969483; STRING: 0x0089b5; PRE: 0x164bcb; NUM: 0xd28b26; OPER: 0xc4716c; ATTN: 0x2f32dc; }
+StringWin { color: 0x756e58; background: 0xe3f6fd; }
+EditorHeadWin, ViewerHeadWin { color: 0x756e58; background: 0xd5e8ee; prefix-color: 0x362b00; cs-color: 0x362b00;}
+
+TabDialog { color: 0xa1a193; background: 0x362b00; }
+TabDialog * { color: 0xa1a193; background: 0x362b00; button-color: 0x423607; }
+TabDialog EditLine { background: 0xd28b26; color: 0x0089b5; frame-color: 0x2f32dc; }
+TabDialog *@item:dir { color: 0xd5e8ee; background: 0x362b00; }
+TabDialog *@item:current-item { background: 0x362b00; }
+TabDialog *@item { color: 0xa1a193; background: 0x362b00; }
+
+Shortcuts VListWin { background: 0x423607; first-char-color: 0x164bcb; }
+Shortcuts VListWin@item { color: 0x969483; background: 0x423607; }
+Shortcuts VListWin@item:current-item { color: 0x756e58; background: 0xd5e8ee; }
