@@ -863,7 +863,7 @@ clWcmConfig::clWcmConfig()
 	, terminalBackspaceKey( 0 )
 
 	, styleShow3DUI( false )
-	, styleColorMode( "" )
+	, styleColorTheme( "" )
 	, styleShowToolBar( true )
 	, styleShowButtonBar( true )
 	, styleShowButtonBarIcons( true )
@@ -891,7 +891,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionSystem, "show_buttonbaricons", &styleShowButtonBarIcons, styleShowButtonBarIcons );
 	MapBool( sectionSystem, "show_menubar", &styleShowMenuBar, styleShowMenuBar );
 	MapBool( sectionPanel, "show_3d_ui", &styleShow3DUI, styleShow3DUI );
-	MapStr( sectionPanel, "color_mode", &styleColorMode, "" );
+	MapStr( sectionPanel, "color_theme", &styleColorTheme, "" );
 
 	MapBool( sectionPanel, "show_hidden_files",   &panelShowHiddenFiles, panelShowHiddenFiles );
 	MapBool( sectionPanel, "case_sensitive_sort", &panelCaseSensitive, panelCaseSensitive );
@@ -1990,7 +1990,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 		styleList.Append( style.c_str() );
 	}
 
-	auto it = std::find( styles.begin(), styles.end(), g_WcmConfig.styleColorMode );
+	auto it = std::find( styles.begin(), styles.end(), g_WcmConfig.styleColorTheme);
 	int index = it == styles.end() ? 0 : (int) std::distance(styles.begin(), it);
 
 	styleList.MoveCurrent( index );
@@ -2135,8 +2135,8 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		g_WcmConfig.styleColorMode = dlg.styleList.GetTextStr();
-		SetColorStyle( g_WcmConfig.styleColorMode );
+		g_WcmConfig.styleColorTheme = dlg.styleList.GetTextStr();
+		SetColorStyle( g_WcmConfig.styleColorTheme);
 
 		g_WcmConfig.styleShow3DUI = dlg.styleShow3DUIButton.IsSet();
 		g_WcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );
