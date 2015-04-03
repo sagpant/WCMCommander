@@ -355,13 +355,13 @@ class SearchListWin: public VListWin
 	int fontW;
 	int fontH;
 	clPtr<FS> m_FileSystem;
-	NCWin* m_NCWin; // UNUSED - sry, in Linux it gives warnings anyway, like: warning: ‘unused’ attribute ignored <8-/
+//	NCWin* m_NCWin;
 
 public:
 	SearchListWin( Win* parent, const clPtr<FS>& FileSystem, NCWin* ncwin )
 		: VListWin( Win::WT_CHILD, WH_TABFOCUS | WH_CLICKFOCUS, 0, parent, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, 0 )
 		, m_FileSystem( FileSystem )
-		, m_NCWin( ncwin )
+//		, m_NCWin( ncwin )
 	{
 		wal::GC gc( this );
 		gc.Set( GetFont() );

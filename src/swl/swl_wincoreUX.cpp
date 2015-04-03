@@ -12,7 +12,6 @@
 #include <string.h>
 #include <locale.h>
 #include <set>
-#include <iostream>
 
 #ifdef USEFREETYPE
 #include <ft2build.h>
@@ -1302,9 +1301,10 @@ namespace wal
 			case ClientMessage:
 			{
 				Win* w = GetWinByID( event->xclient.window );
+				bool IsWMProtocols = event->xclient.message_type == atom_WM_PROTOCOLS;
+				bool IsWMDeleteWindow = (Atom) event->xclient.data.l[0] == atom_WM_DELETE_WINDOW;
 
-				if ( w && event->xclient.message_type == atom_WM_PROTOCOLS
-						&& (Atom) event->xclient.data.l[0] == atom_WM_DELETE_WINDOW )
+				if ( w && IsWMProtocols && IsWMDeleteWindow )
 				{
 					cevent ev( EV_CLOSE );
 					w->Event( &ev );
