@@ -1043,75 +1043,7 @@ void NCWin::RightButtonPressed( cpoint point )
 	return;
 }
 
-void NCWin::ReturnToDefaultSysDir()
-{
-#ifdef _WIN32
-	wchar_t buf[4096] = L"";
-
-	if ( GetSystemDirectoryW( buf, 4096 ) > 0 )
-	{
-		SetCurrentDirectoryW( buf );
-	}
-
-#else
-	int ret = chdir( "/" );
-#endif
-}
-
-void NCWin::Home( PanelWin* p )
-{
-#ifdef _WIN32
-	std::vector<unicode_t> homeUri;
-
-	//find home
-	{
-		wchar_t homeDrive[0x100];
-		wchar_t homePath[0x100];
-		int l1 = GetEnvironmentVariableW( L"HOMEDRIVE", homeDrive, 0x100 );
-		int   l2 = GetEnvironmentVariableW( L"HOMEPATH", homePath, 0x100 );
-
-		if ( l1 > 0 && l1 < 0x100 && l2 > 0 && l2 < 0x100 )
-		{
-			homeUri = carray_cat<unicode_t>( Utf16ToUnicode( homeDrive ).data(), Utf16ToUnicode( homePath ).data() );
-		}
-	}
-
-	if ( homeUri.data() )
-	{
-		const std::vector<clPtr<FS>> checkFS =
-			{
-				p->GetFSPtr(),
-				p == &_leftPanel ? _rightPanel.GetFSPtr() : _leftPanel.GetFSPtr()
-			};
-
-		FSPath path;
-		clPtr<FS> fs = ParzeURI( homeUri.data(), path, checkFS );
-
-		if ( fs.IsNull() )
-		{
-			char buf[4096];
-			FSString name = homeUri.data();
-			Lsnprintf( buf, sizeof( buf ), "bad home path: %s\n", name.GetUtf8() );
-			NCMessageBox( this, "Home", buf, true );
-		}
-		else
-		{
-			p->LoadPath( fs, path, 0, 0, PanelWin::SET );
-		}
-	}
-
-#else
-	const sys_char_t* home = ( sys_char_t* ) getenv( "HOME" );
-
-	if ( !home ) { return; }
-
-	FSPath path( sys_charset_id, home );
-	p->LoadPath( new FSSys(), path, 0, 0, PanelWin::SET );
-#endif
-}
-
-
-void NCWin::StartExecute( const unicode_t* cmd, FS* fs,  FSPath& path )
+void NCWin::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path )
 {
 #ifdef _WIN32
 	_history.Put( cmd );
@@ -1121,8 +1053,8 @@ void NCWin::StartExecute( const unicode_t* cmd, FS* fs,  FSPath& path )
 		SetMode( TERMINAL );
 	}
 
-
 #else
+	
 	_history.Put( cmd );
 	const unicode_t* pref = _editPref.Get();
 	static unicode_t empty[] = {0};
@@ -2823,7 +2755,7 @@ bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
 #if defined(_WIN32)
 		StartExecute( cmd, _panel->GetFS(), _panel->GetPath() );
 #else
-		Home( _panel );
+		OpenHomeDir( _panel, GetOtherPanel() );
 #endif
 		return true;
 	}
@@ -3338,7 +3270,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 
 				case FC( VK_GRAVE, KM_CTRL ):
-					Home( _panel );
+					OpenHomeDir( _panel, GetOtherPanel() );
 					break;
 
 				case FC( VK_A, KM_CTRL ):

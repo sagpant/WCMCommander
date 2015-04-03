@@ -10,3 +10,7 @@
 class PanelWin;
 
 void SelectDriveDlg( PanelWin* p, PanelWin* OtherPanel );
+
+void ReturnToDefaultSysDir();
+
+void OpenHomeDir( PanelWin* p, PanelWin* OtherPanel );

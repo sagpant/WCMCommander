@@ -22,7 +22,8 @@
 
 static int uiDriveDlg = GetUiID( "drive-dlg" );
 
-#if defined( _WIN32 )
+#ifdef _WIN32
+
 std::string GetVolumeName( int i )
 {
 	char VolumeName[1024] = { 0 };
@@ -56,23 +57,82 @@ std::string GetDriveTypeString( unsigned int Type )
 
 	return std::string();
 }
-#endif
 
-/// return 'true' if the dialog should be restarted
+std::vector<unicode_t> GetHomeUriWin()
+{
+	wchar_t homeDrive[0x100];
+	wchar_t homePath[0x100];
+	int l1 = GetEnvironmentVariableW( L"HOMEDRIVE", homeDrive, 0x100 );
+	int l2 = GetEnvironmentVariableW( L"HOMEPATH", homePath, 0x100 );
+
+	if ( l1 > 0 && l1 < 0x100 && l2 > 0 && l2 < 0x100 )
+	{
+		return carray_cat<unicode_t>( Utf16ToUnicode( homeDrive ).data(), Utf16ToUnicode( homePath ).data() );
+	}
+
+	return std::vector<unicode_t>();
+}
+
+#endif // _WIN32
+
+
+#ifdef __APPLE__
+
+#define VOLUMES_DIR	"/Volumes"
+
+void GetVolumesOSX( ccollect<MntListNode>* MntList )
+{
+	FSSys fs;
+	FSList list;
+	FSString path( VOLUMES_DIR );
+	FSPath fspath( path );
+	int err;
+	
+	if ( fs.ReadDir( &list, fspath, &err, nullptr ) == 0 )
+	{
+		for ( FSNode* node = list.First(); node; node = node->next )
+		{
+			if ( node->IsDir() && !node->IsHidden() && !node->IsLnk() )
+			{
+				std::vector<char> Uri = carray_cat( VOLUMES_DIR, "/", node->name.GetUtf8() );
+				
+				MntListNode n;
+				n.path = Uri.data();
+				MntList->append( n );
+			}
+		}
+	}
+	else
+	{
+		fprintf( stderr, "error:%s\n", fs.StrError( err ).GetUtf8() );
+	}
+}
+
+#endif // __APPLE__
+
+
+/// returns 'true' if the dialog should be restarted
 bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 {
 #ifndef _WIN32
-	ccollect< MntListNode > mntList;
+	ccollect<MntListNode> mntList;
+
+#ifdef __APPLE__
+	GetVolumesOSX( &mntList );
+#else
 	UxMntList( &mntList );
 #endif
+
+#endif // !_WIN32
+
 	clMenuData mData;
 
 	std::vector<unicode_t> OtherPanelPath = new_unicode_str( OtherPanel->UriOfDir().GetUnicode() );
 
-#if defined(_WIN32)
-	size_t MaxLength = 20;
+#ifdef _WIN32
+	const size_t MaxLength = 20;
 #else
-	size_t MaxLength = 50;
+	const size_t MaxLength = 50;
 #endif
 
 	OtherPanelPath = TruncateToLength( OtherPanelPath, MaxLength, true );
@@ -81,20 +141,7 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 	mData.AddSplitter();
 
 #ifdef _WIN32
-	std::vector<unicode_t> homeUri;
-
-	//find home
-	{
-		wchar_t homeDrive[0x100];
-		wchar_t homePath[0x100];
-		int l1 = GetEnvironmentVariableW( L"HOMEDRIVE", homeDrive, 0x100 );
-		int l2 = GetEnvironmentVariableW( L"HOMEPATH", homePath, 0x100 );
-
-		if ( l1 > 0 && l1 < 0x100 && l2 > 0 && l2 < 0x100 )
-		{
-			homeUri = carray_cat<unicode_t>( Utf16ToUnicode( homeDrive ).data(), Utf16ToUnicode( homePath ).data() );
-		}
-	}
+	std::vector<unicode_t> homeUri = GetHomeUriWin();
 
 	if ( homeUri.data() )
 	{
@@ -152,9 +199,14 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 
 		for ( int i = 0; i < 9 && i < mntList.count(); i++ )
 		{
-			//ccollect<std::vector<char> > strHeap;
+			std::string Uri = mntList[i].path;
 
-			std::vector<unicode_t> un = sys_to_unicode_array( mntList[i].path.data() );
+#ifdef __APPLE__
+			// truncate /Volumes/ dir prefix
+			Uri = Uri.substr( strlen( VOLUMES_DIR ) + 1, Uri.size() );
+#endif
+			
+			std::vector<unicode_t> un = sys_to_unicode_array( Uri.data() );
 			static int maxNLen = 20;
 			int nLen = unicode_strlen( un.data() );
 
@@ -188,11 +240,14 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 	}
 #endif
 
-	int res = RunDldMenu( uiDriveDlg, p, "Drive", &mData );
+	const int res = RunDldMenu( uiDriveDlg, p, "Drive", &mData );
 	g_MainWin->SetCommandLineFocus();
 
-	// restart this dialog to reread the drives list (Ctrl+R)
-	if ( res == ID_RESTART_DIALOG ) { return true; }
+	if ( res == ID_RESTART_DIALOG )
+	{
+		// restart this dialog to reread the drives list (Ctrl+R)
+		return true;
+	}
 
 	if ( res == ID_DEV_OTHER_PANEL )
 	{
@@ -207,20 +262,19 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 	{
 		int drive = res - ID_DEV_MS0;
 		FSPath path( CS_UTF8, "/" );
-		clPtr<FS> fs = _panel->GetFSPtr();
+		clPtr<FS> fs = p->GetFSPtr();
 
 		if ( !fs.IsNull() && fs->Type() == FS::SYSTEM && ( ( FSSys* )fs.Ptr() )->Drive() == drive )
 		{
-			path = _panel->GetPath();
+			path = p->GetPath();
 		}
 		else
 		{
-			PanelWin* p2 = &_leftPanel == _panel ? &_rightPanel : &_leftPanel;
-			fs = p2->GetFSPtr();
+			fs = OtherPanel->GetFSPtr();
 
 			if ( !fs.IsNull() && fs->Type() == FS::SYSTEM && ( ( FSSys* )fs.Ptr() )->Drive() == drive )
 			{
-				path = p2->GetPath();
+				path = OtherPanel->GetPath();
 			}
 			else
 			{
@@ -233,7 +287,10 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			fs = new FSSys( drive );
 		}
 
-		if ( !path.IsAbsolute() ) { path.Set( CS_UTF8, "/" ); }
+		if ( !path.IsAbsolute() )
+		{
+			path.Set( CS_UTF8, "/" );
+		}
 
 		p->LoadPath( fs, path, 0, 0, PanelWin::SET );
 		return false;
@@ -243,9 +300,12 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 
 	if ( res >= ID_MNT_UX0 && res < ID_MNT_UX0 + 100 )
 	{
-		int n = res - ID_MNT_UX0;
+		const int n = res - ID_MNT_UX0;
 
-		if ( n < 0 || n >= mntList.count() ) { return false; }
+		if ( n < 0 || n >= mntList.count() )
+		{
+			return false;
+		}
 
 		clPtr<FS> fs = new FSSys();
 		FSPath path( sys_charset_id, mntList[n].path.data() );
@@ -269,7 +329,7 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 
 		case ID_DEV_HOME:
 		{
-			g_MainWin->Home( p );
+			OpenHomeDir( p, OtherPanel );
 		}
 		break;
 
@@ -280,7 +340,10 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			FSPath path( CS_UTF8, "/" );
 			clPtr<FS> fs = new FSWin32Net( 0 );
 
-			if ( !fs.IsNull() ) { p->LoadPath( fs, path, 0, 0, PanelWin::SET ); }
+			if ( !fs.IsNull() )
+			{
+				p->LoadPath( fs, path, 0, 0, PanelWin::SET );
+			}
 		}
 		break;
 
@@ -293,7 +356,10 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			FSPath path( CS_UTF8, "/" );
 			clPtr<FS> fs = new FSSmb() ;
 
-			if ( !fs.IsNull() ) { p->LoadPath( fs, path, 0, 0, PanelWin::SET ); }
+			if ( !fs.IsNull() )
+			{
+				p->LoadPath( fs, path, 0, 0, PanelWin::SET );
+			}
 		}
 		break;
 
@@ -302,7 +368,10 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			static FSSmbParam lastParams;
 			FSSmbParam params = lastParams;
 
-			if ( !GetSmbLogon( this, params, true ) ) { return false; }
+			if ( !GetSmbLogon( g_MainWin, params, true ) )
+			{
+				return false;
+			}
 
 			params.isSet = true;
 			clPtr<FS> fs = new FSSmb( &params ) ;
@@ -315,7 +384,9 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			}
 		}
 		break;
+
 #endif
+
 #endif
 
 		case ID_DEV_FTP:
@@ -323,7 +394,10 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			static FSFtpParam lastParams;
 			FSFtpParam params = lastParams;
 
-			if ( !GetFtpLogon( g_MainWin, params ) ) { return false; }
+			if ( !GetFtpLogon( g_MainWin, params ) )
+			{
+				return false;
+			}
 
 			clPtr<FS> fs = new FSFtp( &params ) ;
 
@@ -344,7 +418,10 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			static FSSftpParam lastParams;
 			FSSftpParam params = lastParams;
 
-			if ( !GetSftpLogon( this, params ) ) { return false; }
+			if ( !GetSftpLogon( g_MainWin, params ) )
+			{
+				return false;
+			}
 
 			params.isSet = true;
 			clPtr<FS> fs = new FSSftp( &params ) ;
@@ -379,4 +456,60 @@ void SelectDriveDlg( PanelWin* p, PanelWin* OtherPanel )
 		RedoDialog = SelectDriveInternal( p, OtherPanel );
 	}
 	while ( RedoDialog );
+}
+
+void ReturnToDefaultSysDir()
+{
+#ifdef _WIN32
+	wchar_t buf[4096] = L"";
+
+	if ( GetSystemDirectoryW( buf, 4096 ) > 0 )
+	{
+		SetCurrentDirectoryW( buf );
+	}
+
+#else
+	chdir( "/" );
+#endif
+}
+
+void OpenHomeDir( PanelWin* p, PanelWin* OtherPanel )
+{
+#ifdef _WIN32
+	std::vector<unicode_t> homeUri = GetHomeUriWin();
+
+	if ( homeUri.data() )
+	{
+		const std::vector<clPtr<FS>> checkFS =
+		{
+			p->GetFSPtr(),
+			OtherPanel->GetFSPtr()
+		};
+
+		FSPath path;
+		clPtr<FS> fs = ParzeURI( homeUri.data(), path, checkFS );
+
+		if ( fs.IsNull() )
+		{
+			char buf[4096];
+			FSString name = homeUri.data();
+			Lsnprintf( buf, sizeof( buf ), "bad home path: %s\n", name.GetUtf8() );
+			NCMessageBox( g_MainWin, "Home", buf, true );
+		}
+		else
+		{
+			p->LoadPath( fs, path, 0, 0, PanelWin::SET );
+		}
+	}
+
+#else
+	const sys_char_t* home = ( sys_char_t* ) getenv( "HOME" );
+	if ( !home )
+	{
+		return;
+	}
+
+	FSPath path( sys_charset_id, home );
+	p->LoadPath( new FSSys(), path, 0, 0, PanelWin::SET );
+#endif
 }

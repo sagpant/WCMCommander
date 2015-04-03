@@ -270,7 +270,6 @@ private:
 
 	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
-	void ReturnToDefaultSysDir(); // !!!
 
 	void ApplyCommand();
 	void CreateDirectory();
@@ -381,7 +380,6 @@ public:
 	void NotifyAutoCompleteChange();
 	void NotifyCurrentPathInfo();
 	void SetCommandLineFocus() { m_Edit.SetFocus(); }
-	void Home( PanelWin* p );
 	
 	bool StartEditor( const std::vector<unicode_t> FileName, int Line, int Pos );
 	bool StartViewer( const std::vector<unicode_t> FileName, int Line );
