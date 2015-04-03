@@ -59,6 +59,7 @@ HN = \
 	src/folder-shortcuts.h \
 	src/folder-history.h \
 	src/view-history.h \
+	src/drive-dlg.h \
 	src/nceditline.h \
 	src/fontdlg.h \
 	src/ncfonts.h \
@@ -119,6 +120,7 @@ OBJS = \
 	$(OBJDIR)/folder-shortcuts.o \
 	$(OBJDIR)/folder-history.o \
 	$(OBJDIR)/view-history.o \
+	$(OBJDIR)/drive-dlg.o \
 	$(OBJDIR)/nceditline.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
@@ -239,6 +241,9 @@ $(OBJDIR)/folder-history.o: $(HW) $(HS) $(HN) src/folder-history.cpp
 
 $(OBJDIR)/view-history.o: $(HW) $(HS) $(HN) src/view-history.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/view-history.cpp -o $(OBJDIR)/view-history.o
+
+$(OBJDIR)/drive-dlg.o: $(HW) $(HS) $(HN) src/drive-dlg.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/drive-dlg.cpp -o $(OBJDIR)/drive-dlg.o
 
 $(OBJDIR)/nceditline.o: $(HW) $(HS) $(HN) src/nceditline.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/nceditline.cpp -o $(OBJDIR)/nceditline.o

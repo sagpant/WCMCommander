@@ -64,6 +64,7 @@ SOURCES += src/nc.cpp \
     src/folder-shortcuts.cpp \
     src/folder-history.cpp \
     src/view-history.cpp \
+    src/drive-dlg.cpp \
     src/nceditline.cpp \
     src/smblogon.cpp \
     src/strconfig.cpp \
@@ -143,6 +144,7 @@ HEADERS += \
     src/folder-shortcuts.h \
     src/folder-history.h \
     src/view-history.h \
+    src/drive-dlg.h \
     src/nceditline.h \
     src/smblogon.h \
     src/strconfig.h \

@@ -81,6 +81,7 @@
     <ClCompile Include="src\folder-history.cpp" />
     <ClCompile Include="src\view-history.cpp" />
     <ClCompile Include="src\folder-shortcuts.cpp" />
+    <ClCompile Include="src\drive-dlg.cpp" />
     <ClCompile Include="src\path-list.cpp" />
     <ClCompile Include="src\nceditline.cpp" />
   </ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="src\folder-history.h" />
     <ClInclude Include="src\view-history.h" />
     <ClInclude Include="src\folder-shortcuts.h" />
+    <ClInclude Include="src\drive-dlg.h" />
     <ClInclude Include="src\path-list.h" />
     <ClInclude Include="src\nceditline.h" />
   </ItemGroup>
