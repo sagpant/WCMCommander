@@ -406,7 +406,7 @@ void VFile::CheckOpen( FSCInfo* info )
 
 	fd = ret;
 
-	if ( info && info->Stopped() ) { throw_stop(); }
+	if ( info && info->IsStopped() ) { throw_stop(); }
 }
 
 VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
@@ -441,7 +441,7 @@ VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 
 		_offset = pos;
 
-		if ( info && info->Stopped() ) { throw_stop(); }
+		if ( info && info->IsStopped() ) { throw_stop(); }
 	}
 
 	ptr = new VFCNode;
@@ -477,7 +477,7 @@ VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 
 	CacheSet( bn, ptr );
 
-	if ( info && info->Stopped() ) { throw_stop(); }
+	if ( info && info->IsStopped() ) { throw_stop(); }
 
 	return ptr;
 }

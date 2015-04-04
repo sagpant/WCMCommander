@@ -45,12 +45,12 @@ FS::~FS() {}
 ////////////////////////////////////// FSCInfo
 bool FSCInfo::SmbLogon( FSSmbParam* a ) { return false; }
 bool FSCInfo::FtpLogon( FSFtpParam* a ) { return false; }
-bool FSCInfo::Stopped() { return false; }
+bool FSCInfo::IsStopped() const { return false; }
 bool FSCInfo::Prompt( const unicode_t* header, const unicode_t* message, FSPromptData* p, int count ) { return false; }
 FSCInfo::~FSCInfo() {}
 
 ////////////////////////////////////// FSCSimpleInfo
-bool FSCSimpleInfo::Stopped() {   MutexLock lock( &mutex ); return stopped; }
+bool FSCSimpleInfo::IsStopped() const { return m_Stopped; }
 FSCSimpleInfo::~FSCSimpleInfo() {}
 
 //////////////////////////////////////////////////  FSSys ///////////////////////////
@@ -532,7 +532,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 	{
 		while ( true )
 		{
-			if ( info && info->Stopped() )
+			if ( info && info->IsStopped() )
 			{
 				FindClose( handle );
 				return -2;
@@ -1010,7 +1010,7 @@ int FSWin32Net::ReadDir ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 	{
 		while ( true )
 		{
-			if ( info && info->Stopped() )
+			if ( info && info->IsStopped() )
 			{
 				return -2;
 			}
