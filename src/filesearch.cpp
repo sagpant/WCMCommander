@@ -387,7 +387,7 @@ public:
 	{
 		if ( !p.ptr() ) { return; }
 
-		for ( size_t i = 0; i < ( int )p->m_DirList.size(); i++ )
+		for ( size_t i = 0; i < p->m_DirList.size(); i++ )
 		{
 			m_DirHash[p->m_DirList[i]->id] = p->m_DirList[i];
 		}

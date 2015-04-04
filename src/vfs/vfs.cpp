@@ -1293,7 +1293,7 @@ int FSSys::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 
 		while ( true )
 		{
-			if ( info && info->Stopped() )
+			if ( info && info->IsStopped() )
 			{
 				closedir( d );
 				return -2;
