@@ -726,8 +726,11 @@ class FSSys: public FS
 	volatile int _drive;
 	FSSysHandles handles;
 public:
-	FSSys(): FS( FS::SYSTEM ) {}
-#endif
+	FSSys()
+	: _drive(-1)
+	, FS( FS::SYSTEM )
+	{}
+#endif // _WIN32
 public:
 #ifdef _WIN32
 	//0-'A'...'Z', -1 - network
