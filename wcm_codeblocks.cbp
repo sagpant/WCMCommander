@@ -216,6 +216,8 @@
 		<Unit filename="src/folder-history.h" />
 		<Unit filename="src/view-history.cpp" />
 		<Unit filename="src/view-history.h" />
+		<Unit filename="src/drive-dlg.cpp" />
+		<Unit filename="src/drive-dlg.h" />
 		<Unit filename="src/nceditline.cpp" />
 		<Unit filename="src/nceditline.h" />
 		<Unit filename="src/folder-shortcuts.cpp" />

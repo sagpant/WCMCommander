@@ -270,9 +270,6 @@ private:
 
 	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
-	void ReturnToDefaultSysDir(); // !!!
-
-	void Home( PanelWin* p );
 
 	void ApplyCommand();
 	void CreateDirectory();
@@ -382,7 +379,8 @@ public:
 	void NotifyAutoComplete();
 	void NotifyAutoCompleteChange();
 	void NotifyCurrentPathInfo();
-
+	void SetCommandLineFocus() { m_Edit.SetFocus(); }
+	
 	bool StartEditor( const std::vector<unicode_t> FileName, int Line, int Pos );
 	bool StartViewer( const std::vector<unicode_t> FileName, int Line );
 
@@ -403,6 +401,4 @@ private:
 	bool ProcessCommand_CLS( const unicode_t* cmd );
 	bool ProcessBuiltInCommands( const unicode_t* cmd );
 	void DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const;
-	/// return 'true' if the dialog should be restarted
-	bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel );
 };
