@@ -51,6 +51,7 @@ class clPanelPlace
 	{
 		clPtr<FS> fsPtr;
 		FSPath path;
+		std::string current; // name of current item in the panel. Empty string means no current.
 	};
 	std::vector<Node> m_Stack;
 	FSPath m_EmptyPath;
@@ -82,7 +83,9 @@ public:
 		return true;
 	}
 
-	bool Set( clPtr<FS> fsPtr, FSPath& path, bool push )
+	// prevPlaceCurrent - name of the current item in the previous panel location,
+	//                    the one that sits on top before this Set() call.
+	bool Set( clPtr<FS> fsPtr, FSPath& path, bool push, const char* prevPlaceCurrent = 0)
 	{
 		if ( fsPtr.IsNull() ) { return false; }
 
@@ -93,6 +96,13 @@ public:
 		if ( !push )
 		{
 			Clear( fsPtr->Type() != FS::SYSTEM );
+		}
+		else
+		{
+			// before adding new location to the stack
+			// update current location with current cursor position
+			if (m_Stack.size()>0 && prevPlaceCurrent)
+				m_Stack.back().current = prevPlaceCurrent;
 		}
 
 		m_Stack.push_back( node );
@@ -127,6 +137,7 @@ public:
 	FSPath* GetPathPtr() { return !m_Stack.empty() ? &m_Stack.back().path : 0; }
 	FSPath& GetPath() { return !m_Stack.empty() ? m_Stack.back().path : m_EmptyPath; }
 	const FSPath& GetPath( ) const { return !m_Stack.empty( ) ? m_Stack.back( ).path : m_EmptyPath; }
+	const char* GetCurrent() const { return !m_Stack.empty() ? m_Stack.back().current.c_str() : 0; }
 };
 
 class PanelWin: public NCDialogParent
@@ -253,7 +264,7 @@ public:
 	void LoadPath( clPtr<FS> fs, FSPath& path, FSString* current, clPtr<cstrhash<bool, unicode_t> > selected, LOAD_TYPE lType );
 	void LoadPathStringSafe( const char* path );
 
-	void Reread( bool resetCurrent = false, const FSString& Name = FSString() );
+	void Reread(bool resetCurrent = false, const char* newCurrentNameUtf8 = 0);
 
 	int GetXMargin() const;
 
