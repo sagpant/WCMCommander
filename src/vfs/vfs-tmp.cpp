@@ -262,7 +262,7 @@ int FSTmp::OpenCreate(FSPath& path, bool overwrite, int mode, int flags, int* er
 	else
 	{
 		int ret = baseFS->OpenCreate(n->baseFSPath, overwrite, mode, flags, err, info);
-		if (ret)
+		if ( ret < 0 )
 			Delete(path, err, info);
 		return ret;
 	}
