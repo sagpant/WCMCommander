@@ -3275,11 +3275,11 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				case FC( VK_A, KM_CTRL ):
 					CtrlA();
-					break;
+					return true;
 
 				case FC( VK_L, KM_CTRL ):
 					CtrlL();
-					break;
+					return true;
 			}
 		}
 
