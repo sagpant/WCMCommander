@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <cstdarg>
+#include <string>
 #include <algorithm>
 
 #include "string-util.h"
@@ -51,6 +52,17 @@ std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const uni
 	}
 
 	return Result;
+}
+
+std::string GetFileExt( const std::string& uri )
+{
+	// FIXME: Probably non-utf8-proof.
+	size_t dot = uri.rfind( '.' );
+	if ( dot == std::string::npos )
+	{
+		return std::string();
+	}
+	return uri.substr(dot);
 }
 
 std::string GetFileExt( const unicode_t* uri )

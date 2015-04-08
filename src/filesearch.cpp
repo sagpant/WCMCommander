@@ -111,7 +111,7 @@ public:
 
 int OperSearchThread::TextSearch( FS* fs, FSPath& path, MegaSearcher* pSearcher, int* err, FSCInfo* info, charset_struct** rCS ) //-2 - stop, -1 - err, 1 - true, 0 - false
 {
-	if ( info && info->Stopped() ) { return -2; }
+	if ( info && info->IsStopped() ) { return -2; }
 
 	int fd = fs->OpenRead( path, FS::SHARE_READ | FS::SHARE_WRITE, err, info );
 
@@ -387,7 +387,7 @@ public:
 	{
 		if ( !p.ptr() ) { return; }
 
-		for ( size_t i = 0; i < ( int )p->m_DirList.size(); i++ )
+		for ( size_t i = 0; i < p->m_DirList.size(); i++ )
 		{
 			m_DirHash[p->m_DirList[i]->id] = p->m_DirList[i];
 		}

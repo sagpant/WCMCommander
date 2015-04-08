@@ -118,8 +118,8 @@ public:
 
 		int Row = 0;
 
-		m_Layout.AddWinAndEnable( &m_CaptionText, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_FileNameText, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_CaptionText, Row, 0, Row, 2 ); Row++;
+		m_Layout.AddWinAndEnable( &m_FileNameText, Row, 0, Row, 2 ); Row++;
 
 		int TRow = Row;
 
@@ -148,15 +148,17 @@ public:
 		m_ReparsePoint.Enable( false );
 		m_Virtual.Enable( false );
 #else
-		m_Layout.AddWinAndEnable( &m_UserRead, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_UserWrite, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_UserExecute, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_GroupRead, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_GroupWrite, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_GroupExecute, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_OthersRead, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_OthersWrite, Row++, 0 );
-		m_Layout.AddWinAndEnable( &m_OthersExecute, Row++, 0 );
+		m_Layout.AddWinAndEnable( &m_UserRead, Row, 0 );
+		m_Layout.AddWinAndEnable( &m_UserWrite, Row, 1 );
+		m_Layout.AddWinAndEnable( &m_UserExecute, Row, 2 );
+		Row++;
+		m_Layout.AddWinAndEnable( &m_GroupRead, Row, 0 );
+		m_Layout.AddWinAndEnable( &m_GroupWrite, Row, 1 );
+		m_Layout.AddWinAndEnable( &m_GroupExecute, Row, 2 );
+		Row++;
+		m_Layout.AddWinAndEnable( &m_OthersRead, Row, 0 );
+		m_Layout.AddWinAndEnable( &m_OthersWrite, Row, 1 );
+		m_Layout.AddWinAndEnable( &m_OthersExecute, Row, 2 );
 #endif
 
 		m_Layout.LineSet( Row++, 5 );

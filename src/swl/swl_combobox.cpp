@@ -84,7 +84,7 @@ namespace wal
 		_edit.SetShowSpaces( false );
 		_edit.Enable();
 		_edit.Show( SHOW_INACTIVE );
-		
+
 		_lo.AddRect( &_buttonRect, 1, 2 );
 		_lo.ColSet( 2, CB_BUTTONWIDTH );
 		

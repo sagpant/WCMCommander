@@ -1,0 +1,17 @@
+Solarized theme by Ethan Schoonover 
+http://ethanschoonover.com/solarized
+https://github.com/altercation/solarized
+
+Port to WCM Commander:
+https://github.com/corporateshark/WCMCommander/
+
+Installation: select a theme in Options - Styles.
+
+
+wcm-solarized problems
+======================
+
+* In drive selection dialog, comments are apparently of the same color as main text
+* Light version not debugged too much.
+* The accent colors could be different and probably better, which would change the whole look.
+* I'm in no way a designer.

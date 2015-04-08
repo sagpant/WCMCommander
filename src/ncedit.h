@@ -506,6 +506,10 @@ public:
 
 struct sEditorScrollCtx
 {
+	sEditorScrollCtx()
+	: m_FirstLine(0)
+	, m_Point()
+	{}
 	int m_FirstLine;
 	EditPoint m_Point;
 };

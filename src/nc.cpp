@@ -414,7 +414,7 @@ int main( int argc, char** argv )
 
 		AppInit();
 
-		SetColorStyle( g_WcmConfig.styleColorMode );
+		SetColorStyle( g_WcmConfig.styleColorTheme);
 
 		OldSysGetFont = SysGetFont;
 		SysGetFont = MSysGetFont;

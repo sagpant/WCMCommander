@@ -2126,11 +2126,16 @@ bool EditWin::EventKey( cevent_key* pEvent )
 					bool LeftCtrl = ( pEvent->ExtMod() & EXT_KM_LCTRL ) != 0;
 					if ( LeftCtrl )
 					{
+						// go to bookmark
 						sEditorScrollCtx Ctx;
-						if (m_ScrollCtxStorage.Get(Slot, &Ctx)) this->SetScrollCtx(Ctx);
+						if ( m_ScrollCtxStorage.Get( Slot, &Ctx ) )
+						{
+							this->SetScrollCtx( Ctx );
+						}
 					}
 					else
 					{
+						// set bookmark
 						sEditorScrollCtx Ctx = this->GetScrollCtx();
 						m_ScrollCtxStorage.Put(Slot, &Ctx);
 					}

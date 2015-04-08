@@ -863,7 +863,7 @@ clWcmConfig::clWcmConfig()
 	, terminalBackspaceKey( 0 )
 
 	, styleShow3DUI( false )
-	, styleColorMode( 0 )
+	, styleColorTheme( "" )
 	, styleShowToolBar( true )
 	, styleShowButtonBar( true )
 	, styleShowButtonBarIcons( true )
@@ -891,7 +891,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionSystem, "show_buttonbaricons", &styleShowButtonBarIcons, styleShowButtonBarIcons );
 	MapBool( sectionSystem, "show_menubar", &styleShowMenuBar, styleShowMenuBar );
 	MapBool( sectionPanel, "show_3d_ui", &styleShow3DUI, styleShow3DUI );
-	MapInt( sectionPanel, "color_mode", &styleColorMode, styleColorMode );
+	MapStr( sectionPanel, "color_theme", &styleColorTheme, "" );
 
 	MapBool( sectionPanel, "show_hidden_files",   &panelShowHiddenFiles, panelShowHiddenFiles );
 	MapBool( sectionPanel, "case_sensitive_sort", &panelCaseSensitive, panelCaseSensitive );
@@ -1847,9 +1847,8 @@ public:
 
 	SButton  styleShow3DUIButton;
 	StaticLine colorStatic;
-	SButton  styleDefButton;
-	SButton  styleBlackButton;
-	SButton  styleWhiteButton;
+	ComboBox styleList;
+
 
 	StaticLine showStatic;
 	SButton  showToolbarButton;
@@ -1905,9 +1904,7 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	   pList( p ),
 	   styleShow3DUIButton( 0, this, utf8_to_unicode( _LT( "&3D buttons" ) ).data(), 0, g_WcmConfig.styleShow3DUI ),
 	   colorStatic( 0, this, utf8_to_unicode( _LT( "Colors:" ) ).data() ),
-	   styleDefButton( 0, this, utf8_to_unicode( _LT( "&Default colors" ) ).data(), 1, g_WcmConfig.styleColorMode != 1 && g_WcmConfig.styleColorMode != 2 ),
-	   styleBlackButton( 0, this,  utf8_to_unicode( _LT( "&Black" ) ).data(), 1, g_WcmConfig.styleColorMode == 1 ),
-	   styleWhiteButton( 0, this, utf8_to_unicode( _LT( "&White" ) ).data(), 1, g_WcmConfig.styleColorMode == 2 ),
+	   styleList( 0, this, 1, 5, ComboBox::READONLY ),
 
 	   showStatic( 0, this, utf8_to_unicode( _LT( "Items:" ) ).data() ),
 	   showToolbarButton( 0, this, utf8_to_unicode( _LT( "Show &toolbar" ) ).data(), 0, g_WcmConfig.styleShowToolBar ),
@@ -1923,9 +1920,9 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 {
 	iL.AddWinAndEnable( &styleShow3DUIButton, 0, 1 );
 	iL.AddWinAndEnable( &colorStatic, 1, 0 );
-	iL.AddWinAndEnable( &styleDefButton, 2, 1 );
-	iL.AddWinAndEnable( &styleBlackButton,  3, 1 );
-	iL.AddWinAndEnable( &styleWhiteButton,  4, 1 );
+
+	iL.AddWinAndEnable( &styleList, 2, 1 );
+
 	iL.AddWinAndEnable( &showStatic,  5, 0 );
 	iL.AddWinAndEnable( &showToolbarButton, 6, 1 );
 	iL.AddWinAndEnable( &showButtonbarButton,  7, 1 );
@@ -1987,12 +1984,20 @@ StyleOptDialog::StyleOptDialog( NCDialogParent* parent, ccollect<Node>* p )
 	AddLayout( &iL );
 	SetEnterCmd( CMD_OK );
 
-	styleDefButton.SetFocus();
+	auto styles = GetColorStyles();
+	for ( auto style : styles )
+	{
+		styleList.Append( style.c_str() );
+	}
+
+	auto it = std::find( styles.begin(), styles.end(), g_WcmConfig.styleColorTheme);
+	int index = it == styles.end() ? 0 : (int) std::distance(styles.begin(), it);
+
+	styleList.MoveCurrent( index );
+	styleList.SetFocus();
 
 	order.append( &styleShow3DUIButton );
-	order.append( &styleDefButton );
-	order.append( &styleBlackButton );
-	order.append( &styleWhiteButton );
+	order.append( &styleList );
 	order.append( &showToolbarButton );
 	order.append( &showButtonbarButton );
 	order.append( &showButtonbarIconsButton );
@@ -2130,20 +2135,8 @@ bool DoStyleConfigDialog( NCDialogParent* parent )
 
 	if ( dlg.DoModal() == CMD_OK )
 	{
-		if ( dlg.styleBlackButton.IsSet() )
-		{
-			g_WcmConfig.styleColorMode = 1;
-		}
-		else if ( dlg.styleWhiteButton.IsSet() )
-		{
-			g_WcmConfig.styleColorMode = 2;
-		}
-		else
-		{
-			g_WcmConfig.styleColorMode = 0;
-		}
-
-		SetColorStyle( g_WcmConfig.styleColorMode );
+		g_WcmConfig.styleColorTheme = dlg.styleList.GetTextStr();
+		SetColorStyle( g_WcmConfig.styleColorTheme);
 
 		g_WcmConfig.styleShow3DUI = dlg.styleShow3DUIButton.IsSet();
 		g_WcmConfig.styleShowToolBar = dlg.showToolbarButton.IsSet( );

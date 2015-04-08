@@ -53,44 +53,10 @@ public:
 	Node* Last() { return last; }
 };
 
-struct VFCNode
+struct VFCNode: public iIntrusiveCounter
 {
-	static Mutex mutex;
-	int useCount;
 	unsigned char data[CACHE_BLOCK_SIZE];
-	VFCNode(): useCount( 0 ) {}
 };
-
-wal::Mutex VFCNode::mutex;
-
-class VDataPtr
-{
-	VFCNode* ptr;
-	void Clear()
-	{
-		if ( ptr )
-		{
-			MutexLock lock( &VFCNode::mutex );
-			ptr->useCount--;
-
-			if ( ptr->useCount <= 0 )
-			{
-				lock.Unlock(); //!!!
-				delete ptr;
-			}
-
-			ptr = 0;
-		}
-	};
-public:
-	VDataPtr(): ptr( 0 ) {}
-	VDataPtr( VFCNode* p ): ptr( p ) { if ( p ) { ptr->useCount++; } }
-	VDataPtr( const VDataPtr& a ): ptr( a.ptr ) { if ( ptr ) { MutexLock lock( &VFCNode::mutex ); ptr->useCount++; } }
-	VDataPtr& operator = ( const VDataPtr& a ) { Clear(); ptr = a.ptr; if ( ptr ) { MutexLock lock( &VFCNode::mutex ); ptr->useCount++; } return *this; }
-	const unsigned char* Data() { return ptr ? ptr->data : 0; }
-	~VDataPtr() { Clear(); }
-};
-
 
 class VFile;
 
@@ -152,7 +118,7 @@ class VFile
 	struct Node
 	{
 		long bn;
-		VDataPtr data;
+		clPtr<VFCNode> data;
 		Node* next;
 
 		Node* queueNext;
@@ -163,10 +129,10 @@ class VFile
 	CacheQueue<Node> queue;
 
 	void CacheNormalize();
-	VDataPtr CacheGet( long bn );
-	VDataPtr CacheSet( long bn, VDataPtr data );
+	clPtr<VFCNode> CacheGet( long bn );
+	clPtr<VFCNode> CacheSet( long bn, const clPtr<VFCNode>& data );
 	void CacheClear();
-	VDataPtr _Get( long bn, FSCInfo* info, bool lockMutex );
+	clPtr<VFCNode> _Get( long bn, FSCInfo* info, bool lockMutex );
 
 	void CheckOpen( FSCInfo* info );
 
@@ -174,7 +140,7 @@ class VFile
 public:
 	VFile();
 	VFile( clPtr<FS> _fs, FSPath _path, seek_t _size, int tabSize );
-	VDataPtr Get( long bn, FSCInfo* info ) { return _Get( bn, info, true ); }
+	clPtr<VFCNode> Get( long bn, FSCInfo* info ) { return _Get( bn, info, true ); }
 	bool CheckStat( FSCInfo* info );
 	seek_t Size() const { return _size; }
 	seek_t Align( seek_t offset, charset_struct* charset, FSCInfo* info );
@@ -303,7 +269,7 @@ VFile::~VFile()
 }
 
 
-VDataPtr VFile::CacheGet( long bn )
+clPtr<VFCNode> VFile::CacheGet( long bn )
 {
 
 	{
@@ -355,7 +321,7 @@ void VFile::CacheNormalize()
 	}
 }
 
-VDataPtr VFile::CacheSet( long bn, VDataPtr data )
+clPtr<VFCNode> VFile::CacheSet( long bn, const clPtr<VFCNode>& data )
 {
 	int n = bn % TABLESIZE;
 	Node* p;
@@ -406,16 +372,16 @@ void VFile::CheckOpen( FSCInfo* info )
 
 	fd = ret;
 
-	if ( info && info->Stopped() ) { throw_stop(); }
+	if ( info && info->IsStopped() ) { throw_stop(); }
 }
 
-VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
+clPtr<VFCNode> VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 {
 	MutexLock lock( &mutex, lockMutex );
 
-	VDataPtr ptr = CacheGet( bn );
+	clPtr<VFCNode> ptr = CacheGet( bn );
 
-	if ( ptr.Data() ) { return ptr; }
+	if ( ptr ) { return ptr; }
 
 	CheckOpen( info );
 
@@ -441,12 +407,12 @@ VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 
 		_offset = pos;
 
-		if ( info && info->Stopped() ) { throw_stop(); }
+		if ( info && info->IsStopped() ) { throw_stop(); }
 	}
 
 	ptr = new VFCNode;
 
-	const unsigned char* s = ptr.Data();
+	const unsigned char* s = reinterpret_cast<unsigned char*>( &(ptr->data) );
 	ASSERT( s );
 	memset( ( unsigned char* )s, 0, CACHE_BLOCK_SIZE );
 
@@ -477,7 +443,7 @@ VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 
 	CacheSet( bn, ptr );
 
-	if ( info && info->Stopped() ) { throw_stop(); }
+	if ( info && info->IsStopped() ) { throw_stop(); }
 
 	return ptr;
 }
@@ -633,7 +599,7 @@ int VFile::ReadBlock( seek_t offset, char* s, int count, FSCInfo* info )
 {
 	int bn = int( offset / CACHE_BLOCK_SIZE );
 	int pos = int( offset % CACHE_BLOCK_SIZE );
-	VDataPtr ptr = Get( bn, info );
+	clPtr<VFCNode> ptr = Get( bn, info );
 
 	if ( offset > _size ) { return 0; }
 
@@ -653,7 +619,7 @@ int VFile::ReadBlock( seek_t offset, char* s, int count, FSCInfo* info )
 
 		if ( n > 0 )
 		{
-			memcpy( s, ptr.Data() + pos, n );
+			memcpy( s, ptr->data + pos, n );
 			count -= n;
 			s += n;
 
@@ -1522,7 +1488,7 @@ void* ViewerThread( void* param )
 				while ( count > 0 )
 				{
 					unsigned char buf[0x100];
-					int n = count > sizeof( buf ) ? sizeof( buf ) : count;
+					long n = count > sizeof( buf ) ? sizeof( buf ) : (size_t) count;
 					n = file->ReadBlock( offset, ( char* )buf, n, &tData->info );
 
 					if ( n <= 0 ) { break; }
@@ -1530,7 +1496,7 @@ void* ViewerThread( void* param )
 					for ( int i = 0; i < n; i++, p++, attr++ )
 					{
 						*p = buf[i];
-						*attr = marker.In( offset + i ) ? 1 : 0;
+						*attr = marker.In( offset + i ) ? '\1' : '\0';
 					}
 
 					offset += n;

@@ -93,7 +93,7 @@ void FSSftp::WaitSocket( FSCInfo* info ) //throw int(errno) or int(-2) on stop
 {
 	while ( true )
 	{
-		if ( info && info->Stopped() ) { throw int( -2 ); } //stopped
+		if ( info && info->IsStopped() ) { throw int( -2 ); } //stopped
 
 		int dir = libssh2_session_block_directions( sshSession );
 

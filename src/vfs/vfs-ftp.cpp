@@ -22,7 +22,7 @@ static bool TcpStopChecker( void* p )
 {
 	if ( !p ) { return false; }
 
-	if ( ( ( FSCInfo* )p )->Stopped() )
+	if ( ( ( FSCInfo* )p )->IsStopped() )
 	{
 //printf("\nTCP stopped\n");
 		return true;

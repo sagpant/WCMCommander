@@ -6,15 +6,17 @@
 
 #pragma once
 
-#include <wal.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <atomic>
+
+#include "wal.h"
 #include "ncdialogs.h"
 
 #include "vfspath.h"
 #include "strconfig.h"
 #include "globals.h"
 
-#include <sys/stat.h>
-#include <time.h>
 
 #ifdef _WIN32
 class FSTime
@@ -594,23 +596,24 @@ class FSCInfo
 {
 public:
 	FSCInfo() {}
-	virtual bool Stopped();
+	virtual ~FSCInfo();
+	virtual bool IsStopped() const;
 	virtual bool SmbLogon( FSSmbParam* a );
 	virtual bool FtpLogon( FSFtpParam* a );
 	virtual bool Prompt( const unicode_t* header, const unicode_t* message, FSPromptData* p, int count );
-	virtual ~FSCInfo();
 };
 
 class FSCSimpleInfo: public FSCInfo
 {
 public:
-	Mutex mutex;
-	bool stopped;
-	FSCSimpleInfo(): stopped( false ) {}
-	void Reset() { MutexLock lock( &mutex ); stopped = false; }
-	void SetStop() { MutexLock lock( &mutex ); stopped = true; }
-	virtual bool Stopped();
+	std::atomic<bool> m_Stopped;
+	FSCSimpleInfo()
+	: m_Stopped( false )
+	{}
 	virtual ~FSCSimpleInfo();
+	void Reset() { m_Stopped = false; }
+	void SetStop() { m_Stopped = true; }
+	virtual bool IsStopped() const override;
 };
 
 
@@ -726,8 +729,11 @@ class FSSys: public FS
 	volatile int _drive;
 	FSSysHandles handles;
 public:
-	FSSys(): FS( FS::SYSTEM ) {}
-#endif
+	FSSys()
+	: _drive(-1)
+	, FS( FS::SYSTEM )
+	{}
+#endif // _WIN32
 public:
 #ifdef _WIN32
 	//0-'A'...'Z', -1 - network

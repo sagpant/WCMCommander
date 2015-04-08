@@ -516,7 +516,7 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 {
 	FREPARE_SMB_OPER( lock, info, &_param );
 
-	if ( info && info->Stopped() ) { return -2; }
+	if ( info && info->IsStopped() ) { return -2; }
 
 	list->Clear();
 
@@ -538,7 +538,7 @@ int FSSmb::ReadDir( FSList* list, FSPath& _path, int* err, FSCInfo* info )
 
 		while ( true )
 		{
-			if ( info && info->Stopped() )
+			if ( info && info->IsStopped() )
 			{
 				smbc_closedir( d );
 				return -2;
