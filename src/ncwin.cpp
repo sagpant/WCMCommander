@@ -1298,16 +1298,28 @@ void NCWin::ViewFile( clPtr<FS> Fs, FSPath& Path )
 		return;
 	}
 
+	clPtr<FS> LocalFs = Fs;
+	FSPath LocalPath = Path;
+	
+	if ( !(Fs->Flags() & FS::HAVE_SEEK) )
+	{
+		// try to load virtual system file to local temp file
+		if ( !LoadToTempFile( this, &LocalFs, &LocalPath ) )
+		{
+			return;
+		}
+	}
+
 	FSStat St;
 	int Err;
 	FSCInfo Info;
 
-	Fs->Stat( Path, &St, &Err, &Info );
+	LocalFs->Stat( LocalPath, &St, &Err, &Info );
 
 	SetBackgroundActivity( eBackgroundActivity_Viewer );
 	SetMode( VIEW );
 
-	_viewer.SetFile( Fs, Path, St.size );
+	_viewer.SetFile( LocalFs, LocalPath, St.size, Fs->Uri( Path ).GetUnicode() );
 
 	const int Pos = GetCreateFileViewPosHistory( &Fs, &Path );
 	if ( Pos >= 0 )
@@ -1347,15 +1359,6 @@ void NCWin::View( bool Secondary )
 
 		path.Push( p->name.PrimaryCS(), p->name.Get( p->name.PrimaryCS() ) );
 
-		if ( !(fs->Flags() & FS::HAVE_SEEK) )
-		{
-			// try to load to temp local file
-			if ( !LoadToTempFile( this, &fs, &path ) )
-			{
-				return;
-			}
-		}
-
 		ViewFile( fs, path );
 	}
 	catch ( cexception* ex )
@@ -1374,7 +1377,7 @@ void NCWin::ViewExit()
 		return;
 	}
 
-	UpdateFileViewPosHistory( new_unicode_str( _viewer.Uri().GetUnicode() ), _viewer.GetCol() );
+	UpdateFileViewPosHistory( _viewer.GetHistoryUri(), _viewer.GetCol() );
 
 	//...
 	_viewer.ClearFile();
@@ -2260,7 +2263,7 @@ void NCWin::EditExit()
 		FSPath path;
 		_editor.GetPath( path );
 		
-		UpdateFileEditPosHistory( new_unicode_str( fs->Uri( path ).GetUnicode() ), _editor.GetScrollCtx() );
+		UpdateFileEditPosHistory( fs->Uri( path ).GetUnicode(), _editor.GetScrollCtx() );
 	}
 
 	if ( _editor.Changed() )

@@ -15,9 +15,9 @@ void LoadViewHistory();
 void SaveViewHistory();
 
 int GetCreateFileViewPosHistory( clPtr<FS>* Fs, FSPath* Path );
-void UpdateFileViewPosHistory( std::vector<unicode_t> Name, const int Pos );
+void UpdateFileViewPosHistory( const unicode_t* Name, const int Pos );
 
 bool GetCreateFileEditPosHistory( clPtr<FS>* Fs, FSPath* Path, sEditorScrollCtx& Ctx );
-void UpdateFileEditPosHistory( std::vector<unicode_t> Name, const sEditorScrollCtx& Ctx );
+void UpdateFileEditPosHistory( const unicode_t* Name, const sEditorScrollCtx& Ctx );
 
 bool ViewHistoryDlg( NCDialogParent* Parent, clPtr<FS>* Fs, FSPath* Path, bool* IsEdit );

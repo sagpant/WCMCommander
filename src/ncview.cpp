@@ -2375,8 +2375,10 @@ void ViewWin::CalcScroll()
 }
 
 
-void ViewWin::SetFile( clPtr<FS> fsp, FSPath& path, seek_t size )
+void ViewWin::SetFile( clPtr<FS> fsp, FSPath& path, seek_t size, const unicode_t* HistoryUri )
 {
+	m_HistoryUri = new_unicode_str( HistoryUri );
+
 	ClearFile();
 	VFilePtr vf = new VFile( fsp, path, size, g_WcmConfig.editTabSize );
 	threadData =  new ViewerThreadData( vf );
