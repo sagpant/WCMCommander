@@ -47,6 +47,7 @@
 #include "strmasks.h"
 #include "dlg-ctrl-l.h"
 #include "drive-dlg.h"
+#include "file-util.h"
 #include "usermenu.h"
 #include "vfs-tmp.h"
 
@@ -1346,11 +1347,14 @@ void NCWin::View( bool Secondary )
 
 		path.Push( p->name.PrimaryCS(), p->name.Get( p->name.PrimaryCS() ) );
 
-		if ( !( fs->Flags() & FS::HAVE_SEEK ) )
+		if ( !(fs->Flags() & FS::HAVE_SEEK) )
 		{
-			NCMessageBox( this, _LT( "View" ), _LT( "Can`t start viewer in this filesystem" ), true );
-			return;
-		};
+			// try to load to temp local file
+			if ( !LoadToTempFile( this, &fs, &path ) )
+			{
+				return;
+			}
+		}
 
 		ViewFile( fs, path );
 	}

@@ -40,6 +40,11 @@ void NCDialog::CloseDialog( int cmd )
 	EndModal( cmd );
 }
 
+void NCDialog::OnCancel()
+{
+	CloseDialog( CMD_CANCEL );
+}
+
 
 cfont* NCDialog::GetChildFont( Win* w, int fontId )
 {
@@ -50,7 +55,15 @@ bool NCDialog::Command( int id, int subId, Win* win, void* data )
 {
 	if ( id && win && win->UiGetClassId() == uiClassButton )
 	{
-		CloseDialog( id );
+		if ( id == CMD_CANCEL )
+		{
+			OnCancel();
+		}
+		else
+		{
+			CloseDialog( id );
+		}
+		
 		return true;
 	}
 
@@ -319,7 +332,7 @@ bool NCDialog::EventKey( cevent_key* pEvent )
 {
 	if ( pEvent->Type() == EV_KEYDOWN && pEvent->Key() == VK_ESCAPE )
 	{
-		CloseDialog( CMD_CANCEL );
+		OnCancel();
 		return true;
 	};
 
@@ -341,10 +354,11 @@ bool NCDialog::EventChildKey( Win* child, cevent_key* pEvent )
 		//dbg_printf("key=0x%x\n",pEvent->Key());
 		if ( pEvent->Key() == VK_ESCAPE )
 		{
-			CloseDialog( CMD_CANCEL );
+			OnCancel();
 			return true;
 		}
-		else if ( pEvent->Key() == VK_TAB )
+		
+		if ( pEvent->Key() == VK_TAB )
 		{
 			if ( ( pEvent->Mod() & KM_SHIFT ) != 0 )
 			{
