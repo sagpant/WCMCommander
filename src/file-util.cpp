@@ -4,11 +4,73 @@
  * walcommander@linderdaum.com
  */
 
+#ifdef _WIN32
+#	define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "file-util.h"
 #include "string-util.h"
 #include "vfs.h"
 #include "vfs-uri.h"
 #include "fileopers.h"
+
+#include <inttypes.h>  // for PRIX64 macro (and INT64_C macro from stdint.h)
+#include <unordered_map>
+
+
+/// Next Temp directory ID, incremented each time a new Temp directory is created
+static int g_NextTempDirId = 1;
+
+/// Temp directories ID to URI global list
+static std::unordered_map<int, std::vector<unicode_t>> g_TempDirUriList;
+
+
+bool DeleteDirR( FS* fs, FSPath path );
+
+bool DeleteListR( FS* fs, FSPath path, FSList& list )
+{
+	const int cnt = path.Count();
+	int ret_err;
+
+	for ( FSNode* node = list.First(); node; node = node->next )
+	{
+		if ( node->extType )
+		{
+			continue;
+		}
+
+		path.SetItemStr( cnt, node->Name() );
+
+		if ( node->IsDir() && !node->st.IsLnk() )
+		{
+			if ( !DeleteDirR( fs, path ) )
+			{
+				return false;
+			}
+		}
+		else if ( fs->Delete( path, &ret_err, nullptr ) != 0 )
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/// Deletes dir recursively
+bool DeleteDirR( FS* fs, FSPath path )
+{
+	FSList list;
+	int ret_err;
+	int ret = fs->ReadDir( &list, path, &ret_err, nullptr );
+	if ( ret == 0 )
+	{
+		DeleteListR( fs, path, list );
+		return ( fs->RmDir( path, &ret_err, nullptr ) == 0 );
+	}
+
+	return false;
+}
 
 
 #ifdef _WIN32
@@ -36,8 +98,7 @@ bool GetSysTempDir( clPtr<FS>* fs, FSPath* path )
 
 	if ( TempUri.data() )
 	{
-		const std::vector<clPtr<FS>> checkFS;
-		*fs = ParzeURI( TempUri.data(), *path, checkFS );
+		*fs = ParzeURI( TempUri.data(), *path, std::vector<clPtr<FS>>() );
 		
 		return !fs->IsNull();
 	}
@@ -57,17 +118,50 @@ bool GetSysTempDir( clPtr<FS>* fs, FSPath* path )
 #endif
 }
 
-bool CreateWcmTempDir( clPtr<FS>* fs, FSPath* path )
+int CreateWcmTempDir( clPtr<FS>* fs, FSPath* path )
 {
 	if ( !GetSysTempDir( fs, path ) )
 	{
-		return false;
+		return 0;
 	}
 
-	path->Push( CS_UTF8, "WCM.tmp" );
+	const int Id = g_NextTempDirId++;
+
+	time_t TimeInSeconds = time( 0 ); // get time now
+
+	// convert current time from int64 to hex form
+	// got from here: http://stackoverflow.com/questions/7240391/decimal-to-hex-for-int64-in-c
+	char Buf[128];
+	sprintf( Buf, "WCM%"PRIX64".%d", TimeInSeconds, Id );
+
+	path->Push( CS_UTF8, Buf );
 	
 	int ret_err;
-	return ( fs->Ptr()->MkDir( *path, 0777, &ret_err, nullptr ) == 0 );
+	if ( fs->Ptr()->MkDir( *path, 0777, &ret_err, nullptr ) == 0 )
+	{
+		// store created temp dir for later cleanup
+		g_TempDirUriList[Id] = new_unicode_str( (*fs)->Uri( *path ).GetUnicode() );
+	}
+
+	return Id;
+}
+
+void RemoveWcmTempDir( const int Id )
+{
+	auto iter = g_TempDirUriList.find( Id );
+
+	if ( iter != g_TempDirUriList.end() )
+	{
+		std::vector<unicode_t> TempUri = iter->second;
+
+		if ( TempUri.data() )
+		{
+			FSPath path;
+			clPtr<FS> fs = ParzeURI( TempUri.data(), path, std::vector<clPtr<FS>>() );
+			
+			DeleteDirR( fs.Ptr(), path );
+		}
+	}
 }
 
 
@@ -279,27 +373,32 @@ void LoadFileDataThreadDlg::OperThreadStopped()
 }
 
 
-bool LoadToTempFile( NCDialogParent* parent, clPtr<FS>* fs, FSPath* path )
+int LoadToTempFile( NCDialogParent* parent, clPtr<FS>* fs, FSPath* path )
 {
-	clPtr<FS> dstFs;
-	FSPath dstPath;
-	if ( !CreateWcmTempDir( &dstFs, &dstPath ) )
+	clPtr<FS> TempFs;
+	FSPath TempPath;
+	const int TempId = CreateWcmTempDir( &TempFs, &TempPath );
+	if ( !TempId )
 	{
-		return false;
+		return 0;
 	}
 
 	// append file name to the created temp dir
-	dstPath.Push( CS_UTF8, path->GetItem( path->Count() - 1 )->GetUtf8() );
+	FSPath DstPath = TempPath;
+	DstPath.Push( CS_UTF8, path->GetItem( path->Count() - 1 )->GetUtf8() );
 
-	LoadFileDataThreadDlg dlg( parent, *fs, *path, dstFs, dstPath );
-	dlg.RunNewThread( "Load file", LoadFileDataThreadFunc, &dlg.m_Data ); //throw
+	LoadFileDataThreadDlg dlg( parent, *fs, *path, TempFs, DstPath );
+	dlg.RunNewThread( "Load file", LoadFileDataThreadFunc, &dlg.m_Data );
 	dlg.DoModal();
 	
-	if ( dlg.m_Data.m_Success )
+	if ( !dlg.m_Data.m_Success )
 	{
-		*fs = dstFs;
-		*path = dstPath;
+		// cleanup created temp dir
+		RemoveWcmTempDir( TempId );
+		return 0;
 	}
-
-	return dlg.m_Data.m_Success;
+	
+	*fs = TempFs;
+	*path = DstPath;
+	return TempId;
 }

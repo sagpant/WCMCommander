@@ -1300,11 +1300,13 @@ void NCWin::ViewFile( clPtr<FS> Fs, FSPath& Path )
 
 	clPtr<FS> LocalFs = Fs;
 	FSPath LocalPath = Path;
+	int TempDirId = 0;
 	
 	if ( !(Fs->Flags() & FS::HAVE_SEEK) )
 	{
 		// try to load virtual system file to local temp file
-		if ( !LoadToTempFile( this, &LocalFs, &LocalPath ) )
+		TempDirId = LoadToTempFile( this, &LocalFs, &LocalPath );
+		if ( !TempDirId )
 		{
 			return;
 		}
@@ -1319,7 +1321,7 @@ void NCWin::ViewFile( clPtr<FS> Fs, FSPath& Path )
 	SetBackgroundActivity( eBackgroundActivity_Viewer );
 	SetMode( VIEW );
 
-	_viewer.SetFile( LocalFs, LocalPath, St.size, Fs->Uri( Path ).GetUnicode() );
+	_viewer.SetFile( LocalFs, LocalPath, St.size, Fs->Uri( Path ).GetUnicode(), TempDirId );
 
 	const int Pos = GetCreateFileViewPosHistory( &Fs, &Path );
 	if ( Pos >= 0 )
@@ -1379,9 +1381,11 @@ void NCWin::ViewExit()
 
 	UpdateFileViewPosHistory( _viewer.GetHistoryUri(), _viewer.GetCol() );
 
-	//...
 	_viewer.ClearFile();
 	SetMode( PANEL );
+
+	// clean up
+	RemoveWcmTempDir( _viewer.GetTempDirId() );
 }
 
 bool NCWin::EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT, bool CheckBackgroundActivity )
