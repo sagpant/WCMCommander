@@ -138,6 +138,20 @@ public:
 	FSPath& GetPath() { return !m_Stack.empty() ? m_Stack.back().path : m_EmptyPath; }
 	const FSPath& GetPath( ) const { return !m_Stack.empty( ) ? m_Stack.back( ).path : m_EmptyPath; }
 	const char* GetCurrent() const { return !m_Stack.empty() ? m_Stack.back().current.c_str() : 0; }
+	std::string GetLastPersistentPath()
+	{
+		FS* pfs = 0;
+		FSPath* path = 0;
+		for (Node& n : m_Stack)
+		{
+			if (n.fsPtr->IsPersistent())
+			{
+				pfs = n.fsPtr.ptr();
+				path = &n.path;
+			}
+		}
+		return pfs ? pfs->Uri(*path).GetUtf8() : "";
+	}
 };
 
 class PanelWin: public NCDialogParent
@@ -239,6 +253,8 @@ public:
 	clPtr<FS> GetFSPtr() const { return _place.GetFSPtr(); }
 
 	FSStatVfs StatVfs() const { return _vst; }
+
+	std::string GetLastPersistentPath() { return _place.GetLastPersistentPath(); } // UTF8 path of last location on FS that IsPersistent(). For saving into registry
 
 	FSString UriOfDir();
 	FSString UriOfCurrent();

@@ -57,7 +57,7 @@ public:
 	//
 	// FS interface
 	//
-
+	virtual bool IsPersistent() override { return false; }
 	virtual unsigned Flags() override
 		{ return baseFS->Flags(); }
 	virtual bool IsEEXIST(int err) override
