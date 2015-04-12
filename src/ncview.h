@@ -176,7 +176,7 @@ public:
 	void SetCol( int Col );
 
 	const unicode_t* GetHistoryUri() const { return m_HistoryUri.data(); }
-	int ViewWin::GetTempDirId() const { return m_TempDirId; }
+	int GetTempDirId() const { return m_TempDirId; }
 
 	FSString Uri();
 	bool Search( const unicode_t* str, bool sensitive );

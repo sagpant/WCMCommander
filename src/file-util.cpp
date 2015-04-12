@@ -109,7 +109,7 @@ bool GetSysTempDir( clPtr<FS>* fs, FSPath* path )
 	const sys_char_t* Temp = (sys_char_t*) getenv( "TMPDIR" );
 	if ( !Temp )
 	{
-		return;
+		return false;
 	}
 
 	path->Set( sys_charset_id, Temp );
@@ -132,7 +132,7 @@ int CreateWcmTempDir( clPtr<FS>* fs, FSPath* path )
 	// convert current time from int64 to hex form
 	// got from here: http://stackoverflow.com/questions/7240391/decimal-to-hex-for-int64-in-c
 	char Buf[128];
-	sprintf( Buf, "WCM%"PRIX64".%d", TimeInSeconds, Id );
+	sprintf( Buf, "WCM%" PRIx64 ".%d", (int64_t)TimeInSeconds, Id );
 
 	path->Push( CS_UTF8, Buf );
 	
@@ -181,12 +181,12 @@ public:
 	
 	LoadFileDataThreadData( NCDialogParent* p, clPtr<FS>& srcFs, FSPath& srcPath, clPtr<FS>& dstFs, FSPath& dstPath )
 		: OperData( p )
-		, m_Success( false )
 		, m_SrcFs( srcFs )
 		, m_SrcPath( srcPath )
 		, m_DstFs( dstFs )
 		, m_DstPath( dstPath )
 		, m_ErrorString( "" )
+		, m_Success( false )
 	{
 	}
 };
