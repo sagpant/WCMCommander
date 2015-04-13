@@ -1505,8 +1505,10 @@ void clWcmConfig::Save( NCWin* nc )
 {
 	if ( nc )
 	{
-		leftPanelPath = nc->GetLeftPanel( )->UriOfDir().GetUtf8();
-		rightPanelPath = nc->GetRightPanel( )->UriOfDir( ).GetUtf8();
+		// do not save locations on non-persistent FS
+		leftPanelPath = nc->GetLeftPanel()->GetLastPersistentPath();
+		rightPanelPath = nc->GetRightPanel()->GetLastPersistentPath();
+
 		crect Rect = nc->ScreenRect();
 		windowX = Rect.top;
 		windowY = Rect.left;

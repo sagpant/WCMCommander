@@ -1249,7 +1249,7 @@ void NCWin::CreateDirectory()
 
 	GetOtherPanel()->Reread();
 
-	_panel->Reread( false, FSString( dir.data() ) );
+	_panel->Reread( false, unicode_to_utf8(dir.data()).c_str() );
 }
 
 void NCWin::QuitQuestion()
@@ -1897,11 +1897,11 @@ void NCWin::Move( bool shift )
 		pathEqual(_panel->GetCurrentFileName(), list->First()->GetUnicodeName()) &&
 		file1HasPath2(destPath, srcPath))
 	{
-		const unicode_t* destName = destPath.GetItem(destPath.Count()-1)->GetUnicode();
+		const char* destName = destPath.GetItem(destPath.Count()-1)->GetUtf8();
 		_panel->Reread(true, destName);
 	}
 	else
-	  _panel->Reread();
+		_panel->Reread();
 	GetOtherPanel()->Reread();
 }
 
@@ -2006,7 +2006,7 @@ void NCWin::Search()
 		{
 			pfs->AddNode(*it, FSTmp::rootPathName);
 		}
-		GetOtherPanel()->LoadPath(fs, FSTmp::rootPathName, 0, 0, PanelWin::SET);
+		GetOtherPanel()->LoadPath(fs, FSTmp::rootPathName, 0, 0, PanelWin::PUSH);
 	}
 }
 

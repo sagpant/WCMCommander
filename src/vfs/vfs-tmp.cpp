@@ -156,7 +156,7 @@ bool FSTmpNode::Add(FSTmpNode* fsTmpNode)
 }
 
 FSTmp::FSTmp(clPtr<FS> _baseFS)
-  : FS(TMP)
+	: FS(TMP)
 {
 	// to prevent build FSTmp on top of another FSTmp
 	if (_baseFS->Type() == FS::TMP)
@@ -168,6 +168,20 @@ FSTmp::FSTmp(clPtr<FS> _baseFS)
 int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 {
 	list->Clear();
+
+	// Adding the ".." node to root dir even if it is disabled in config 
+	// to address CR #436: "Temporary panel should have .. item to go back to last directory"
+	if (!g_WcmConfig.panelShowDotsInRoot)
+	{
+		if (path.Count() == 1) // i.e. on root level
+		{
+			clPtr<FSNode> pNode = new FSNode();
+			pNode->name = std::string("..");
+			pNode->st.mode = S_IFDIR;
+			list->Append(pNode);
+		}
+	}
+
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (!n || n->nodeType != FSTmpNode::NODE_DIR)
 	{
@@ -248,7 +262,7 @@ int FSTmp::OpenCreate(FSPath& path, bool overwrite, int mode, int flags, int* er
 	else
 	{
 		int ret = baseFS->OpenCreate(n->baseFSPath, overwrite, mode, flags, err, info);
-		if (ret)
+		if ( ret < 0 )
 			Delete(path, err, info);
 		return ret;
 	}

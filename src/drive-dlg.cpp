@@ -439,7 +439,7 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 		case ID_DEV_TMP:
 		{
 			clPtr<FSTmp> fs = new FSTmp( OtherPanel->GetFS() );
-			p->LoadPath( fs, FSTmp::rootPathName, 0, 0, PanelWin::SET );
+			p->LoadPath( fs, FSTmp::rootPathName, 0, 0, PanelWin::PUSH );
 		}
 		break;
 	};

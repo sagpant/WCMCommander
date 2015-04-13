@@ -1820,7 +1820,10 @@ void PanelWin::OperThreadStopped()
 				break;
 
 			case PUSH:
-				_place.Set( _operData.fs, _operData.path, true );
+			{
+				FSNode* fsNodeCurrent = GetCurrent();
+				_place.Set( _operData.fs, _operData.path, true, fsNodeCurrent ? fsNodeCurrent->Name().GetUtf8() : 0);
+			}
 				break;
 
 			default:
@@ -1892,7 +1895,12 @@ void PanelWin::OperThreadStopped()
 	Invalidate();
 }
 
-void PanelWin::Reread( bool resetCurrent, const FSString& Name )
+// Re-read current folder 
+// Usage:
+// Reread() - keeps cusror at current location
+// Reread(true) - puts cursor to the beginning
+// Reread(true, anItemName) - puts cursor to the Item, or as close to it as possible
+void PanelWin::Reread( bool resetCurrent, const char* newCurrentNameUtf8 )
 {
 	clPtr<cstrhash<bool, unicode_t> > sHash = _list.GetSelectedHash();
 //	bool Root = HideDotsInDir();
@@ -1901,9 +1909,9 @@ void PanelWin::Reread( bool resetCurrent, const FSString& Name )
 
 	FSString* StrPtr = node ? &s : 0;
 
-	if ( !Name.IsEmpty() )
+	if (newCurrentNameUtf8)
 	{
-		s = Name;
+		s = newCurrentNameUtf8;
 		StrPtr = &s;
 	}
 	else if ( node ) { s.Copy( node->Name() ); }
@@ -2079,7 +2087,8 @@ bool PanelWin::DirUp()
 				{
 					if ( _place.Pop() )
 					{
-						Reread( true );
+						Reread(true, _place.GetCurrent());
+						return true;
 					}
 
 					return false;
@@ -2096,7 +2105,8 @@ bool PanelWin::DirUp()
 	{
 		if ( _place.Pop() )
 		{
-			Reread( true );
+			Reread(true, _place.GetCurrent());
+			return true;
 		}
 
 		return false;
@@ -2117,7 +2127,7 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 {
 	if ( _place.IsEmpty() ) { return; }
 	
-	if ( !HideDotsInDir() && !Current() )
+	if ( !Current() )
 	{
 		if ( OpenInExplorer )
 		{

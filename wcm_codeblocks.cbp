@@ -295,6 +295,7 @@
 		<Unit filename="src/strmasks.cpp" />
 		<Unit filename="src/swl/swl.h" />
 		<Unit filename="src/swl/swl_button.cpp" />
+		<Unit filename="src/swl/swl_combobox.cpp" />
 		<Unit filename="src/swl/swl_editline.cpp" />
 		<Unit filename="src/swl/swl_layout.cpp" />
 		<Unit filename="src/swl/swl_menubox.cpp" />
