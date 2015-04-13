@@ -3342,6 +3342,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				CopyPanelCurrentFileURI( _panel );
 				break;
 
+#if defined( __APPLE__)
+				
+			case FC( VK_C, KM_CTRL ):
+#endif
 			case FC( VK_INSERT, KM_CTRL ):
 			{
 				ClipboardText ct;
