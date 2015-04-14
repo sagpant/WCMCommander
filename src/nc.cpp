@@ -32,6 +32,7 @@
 #include "ltext.h"
 #include "globals.h"
 #include "eloadsave.h"
+#include "file-util.h"
 
 #include "internal_icons.inc"
 
@@ -459,6 +460,9 @@ int main( int argc, char** argv )
 		g_Applets.clear();
 
 		AppRun();
+
+		// clean up
+		RemoveAllWcmTempDirs();
 
 		dbg_printf( "App Quit!!!\n" );
 

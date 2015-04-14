@@ -15,5 +15,8 @@ class FSPath;
 /// Removes WCM Temp directory by the given Id
 void RemoveWcmTempDir( const int Id );
 
+/// Removes all created WCM Temp directories
+void RemoveAllWcmTempDirs();
+
 /// Loads to local temp file, returns local FS and Path back
 int LoadToTempFile( NCDialogParent* parent, clPtr<FS>* fs, FSPath* path );

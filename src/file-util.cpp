@@ -164,6 +164,22 @@ void RemoveWcmTempDir( const int Id )
 	}
 }
 
+void RemoveAllWcmTempDirs()
+{
+	for ( auto &iter : g_TempDirUriList )
+	{
+		std::vector<unicode_t> TempUri = iter.second;
+
+		if ( TempUri.data() )
+		{
+			FSPath path;
+			clPtr<FS> fs = ParzeURI( TempUri.data(), path, std::vector<clPtr<FS>>() );
+
+			DeleteDirRecursively( fs.Ptr(), path );
+		}
+	}
+}
+
 
 //////////////////////////////// Load file data
 
