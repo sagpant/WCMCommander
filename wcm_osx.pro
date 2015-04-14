@@ -66,6 +66,7 @@ SOURCES += src/nc.cpp \
     src/view-history.cpp \
     src/drive-dlg.cpp \
     src/file-util.cpp \
+    src/file-exec.cpp \
     src/nceditline.cpp \
     src/smblogon.cpp \
     src/strconfig.cpp \
@@ -147,6 +148,7 @@ HEADERS += \
     src/view-history.h \
     src/drive-dlg.h \
     src/file-util.h \
+    src/file-exec.h \
     src/nceditline.h \
     src/smblogon.h \
     src/strconfig.h \

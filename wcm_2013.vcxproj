@@ -272,6 +272,7 @@
     <ClCompile Include="src\view-history.cpp" />
     <ClCompile Include="src\drive-dlg.cpp" />
     <ClCompile Include="src\file-util.cpp" />
+    <ClCompile Include="src\file-exec.cpp" />
     <ClCompile Include="src\path-list.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -350,6 +351,7 @@
     <ClInclude Include="src/view-history.h" />
     <ClInclude Include="src/drive-dlg.h" />
     <ClInclude Include="src/file-util.h" />
+    <ClInclude Include="src/file-exec.h" />
     <ClInclude Include="src/path-list.h" />
   </ItemGroup>
   <ItemGroup>
