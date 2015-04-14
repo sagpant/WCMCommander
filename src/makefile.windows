@@ -91,7 +91,7 @@ OBJS = \
 	$(OBJDIR)/dircalc.o \
 	$(OBJDIR)/dlg-ctrl-l.o \
 	$(OBJDIR)/eloadsave.o \
-	$(OBJDIR)/ext-app.o \
+	$(OBJDIR)/ext-app-win.o \
 	$(OBJDIR)/fileassociations.o \
 	$(OBJDIR)/fileattributes.o \
 	$(OBJDIR)/filehighlighting.o \
@@ -202,8 +202,8 @@ $(OBJDIR)/ftplogon.o: $(HW) $(HS) $(HN) src/ftplogon.cpp
 $(OBJDIR)/sftpdlg.o: $(HW) $(HS) $(HN) src/sftpdlg.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/sftpdlg.cpp -o $(OBJDIR)/sftpdlg.o
 	
-$(OBJDIR)/ext-app.o: $(HW) $(HS) $(HN) src/ext-app.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/ext-app.cpp -o $(OBJDIR)/ext-app.o
+$(OBJDIR)/ext-app-win.o: $(HW) $(HS) $(HN) src/ext-app-win.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/ext-app-win.cpp -o $(OBJDIR)/ext-app-win.o
 
 $(OBJDIR)/operthread.o: $(HW) $(HS) $(HN) src/operthread.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/operthread.cpp -o $(OBJDIR)/operthread.o

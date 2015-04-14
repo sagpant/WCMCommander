@@ -86,7 +86,7 @@ ENDIF(MSVC)
 # sources
 IF(MINGW OR MSVC)
 	SET(wcm_PLATFORM_SOURCES
-		ext-app.cpp
+		ext-app-win.cpp
 		swl/swl_wincoreMS.cpp
 		w32cons.cpp
 		w32util.cpp

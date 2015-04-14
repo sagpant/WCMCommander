@@ -258,8 +258,8 @@ $(OBJDIR)/ftplogon.o: $(HW) $(HS) $(HN) src/ftplogon.cpp
 $(OBJDIR)/sftpdlg.o: $(HW) $(HS) $(HN) src/sftpdlg.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/sftpdlg.cpp -o $(OBJDIR)/sftpdlg.o
 	
-$(OBJDIR)/ext-app.o: $(HW) $(HS) $(HN) src/ext-app.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/ext-app.cpp -o $(OBJDIR)/ext-app.o
+$(OBJDIR)/ext-app-win.o: $(HW) $(HS) $(HN) src/ext-app-win.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/ext-app-win.cpp -o $(OBJDIR)/ext-app-win.o
 
 $(OBJDIR)/ext-app-ux.o: $(HW) $(HS) $(HN) src/ext-app-ux.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/ext-app-ux.cpp -o $(OBJDIR)/ext-app-ux.o

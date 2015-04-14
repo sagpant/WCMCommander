@@ -32,7 +32,7 @@ SOURCES += src/nc.cpp \
     src/globals.cpp \
     src/eloadsave.cpp \
     src/ext-app-ux.cpp \
-    src/ext-app.cpp \
+    src/ext-app-win.cpp \
     src/fileassociations.cpp \
     src/fileattributes.cpp \
     src/filehighlighting.cpp \

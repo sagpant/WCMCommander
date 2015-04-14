@@ -190,7 +190,7 @@
     <ClCompile Include="src/dircalc.cpp" />
     <ClCompile Include="src/dlg-ctrl-l.cpp" />
     <ClCompile Include="src/eloadsave.cpp" />
-    <ClCompile Include="src/ext-app.cpp" />
+    <ClCompile Include="src/ext-app-win.cpp" />
     <ClCompile Include="src/globals.cpp" />
     <ClCompile Include="src/fileassociations.cpp" />
     <ClCompile Include="src/fileattributes.cpp" />
