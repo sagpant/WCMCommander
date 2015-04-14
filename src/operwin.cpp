@@ -47,6 +47,15 @@ void OperThreadWin::DBGPrintStoppingList()
 	}
 }
 
+void OperThreadWin::SetStopFlag()
+{
+	if ( tNode )
+	{
+		MutexLock lockNode( &tNode->mutex );
+		tNode->stopped = true;
+	}
+}
+
 void OperThreadWin::StopThread()
 {
 	MutexLock lock( &operMutex );
@@ -131,9 +140,14 @@ void* __123___OperThread( void* param )
 	else
 	{
 		ASSERT( pTp->node->win );
-		pTp->node->win->tNode = 0; //!!!
 	}
 
+	if ( pTp->node->win )
+	{
+		// reset pointer to the Node in corresponding ThreadWin since we are going to delete it
+		pTp->node->win->tNode = nullptr;
+	}
+	
 	pTp->node->stopped = true; //!!!
 	lockNode.Unlock(); //!!!
 

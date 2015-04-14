@@ -80,6 +80,7 @@ public:
 	virtual void OperThreadStopped();
 
 	void StopThread();
+	void SetStopFlag();
 
 	static void DBGPrintStoppingList();
 

@@ -47,6 +47,7 @@
 #include "strmasks.h"
 #include "dlg-ctrl-l.h"
 #include "drive-dlg.h"
+#include "file-util.h"
 #include "usermenu.h"
 #include "vfs-tmp.h"
 
@@ -1297,16 +1298,30 @@ void NCWin::ViewFile( clPtr<FS> Fs, FSPath& Path )
 		return;
 	}
 
+	clPtr<FS> LocalFs = Fs;
+	FSPath LocalPath = Path;
+	int TempDirId = 0;
+	
+	if ( !(Fs->Flags() & FS::HAVE_SEEK) )
+	{
+		// try to load virtual system file to local temp file
+		TempDirId = LoadToTempFile( this, &LocalFs, &LocalPath );
+		if ( !TempDirId )
+		{
+			return;
+		}
+	}
+
 	FSStat St;
 	int Err;
 	FSCInfo Info;
 
-	Fs->Stat( Path, &St, &Err, &Info );
+	LocalFs->Stat( LocalPath, &St, &Err, &Info );
 
 	SetBackgroundActivity( eBackgroundActivity_Viewer );
 	SetMode( VIEW );
 
-	_viewer.SetFile( Fs, Path, St.size );
+	_viewer.SetFile( LocalFs, LocalPath, St.size, Fs->Uri( Path ).GetUnicode(), TempDirId );
 
 	const int Pos = GetCreateFileViewPosHistory( &Fs, &Path );
 	if ( Pos >= 0 )
@@ -1346,12 +1361,6 @@ void NCWin::View( bool Secondary )
 
 		path.Push( p->name.PrimaryCS(), p->name.Get( p->name.PrimaryCS() ) );
 
-		if ( !( fs->Flags() & FS::HAVE_SEEK ) )
-		{
-			NCMessageBox( this, _LT( "View" ), _LT( "Can`t start viewer in this filesystem" ), true );
-			return;
-		};
-
 		ViewFile( fs, path );
 	}
 	catch ( cexception* ex )
@@ -1370,11 +1379,13 @@ void NCWin::ViewExit()
 		return;
 	}
 
-	UpdateFileViewPosHistory( new_unicode_str( _viewer.Uri().GetUnicode() ), _viewer.GetCol() );
+	UpdateFileViewPosHistory( _viewer.GetHistoryUri(), _viewer.GetCol() );
 
-	//...
 	_viewer.ClearFile();
 	SetMode( PANEL );
+
+	// clean up
+	RemoveWcmTempDir( _viewer.GetTempDirId() );
 }
 
 bool NCWin::EditFile( clPtr<FS> Fs, FSPath& Path, bool IgnoreENOENT, bool CheckBackgroundActivity )
@@ -2256,7 +2267,7 @@ void NCWin::EditExit()
 		FSPath path;
 		_editor.GetPath( path );
 		
-		UpdateFileEditPosHistory( new_unicode_str( fs->Uri( path ).GetUnicode() ), _editor.GetScrollCtx() );
+		UpdateFileEditPosHistory( fs->Uri( path ).GetUnicode(), _editor.GetScrollCtx() );
 	}
 
 	if ( _editor.Changed() )

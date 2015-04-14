@@ -173,7 +173,22 @@ public:
 	bool SelectWrite( int timeoutSec = -1 )  { return __Select( false, timeoutSec ); }
 	int Select2( bool r, bool w, int timeoutSec = -1 ) { return __Select2( r, w, timeoutSec ); }
 	void Connect( unsigned ip, int port ) { Sin sin( ip, port ); if ( connect( sock, ( struct sockaddr* )&sin, sizeof( sin ) ) ) { throw int( errno ); } }
-	void Shutdown()            { if ( sock >= 0 && shutdown( sock, SHUT_RD ) ) { throw int( errno ); } }
+	
+	void Shutdown()
+	{
+		if ( sock >= 0 && shutdown( sock, SHUT_RD ) )
+		{
+			int err = int( errno );
+			
+			// ignore ennoying ENOTCONN when shutdown on Unix, seems like safe
+			// got from here: http://stackoverflow.com/questions/900042/what-causes-the-enotconn-error
+			if ( err != ENOTCONN )
+			{
+				throw err;
+			}
+		}
+	}
+	
 	void Close( bool aborted = false ) { if ( sock >= 0 ) { if ( close( sock ) && !aborted ) { throw int( errno ); } sock = -1; }; }
 	void Listen()           { if ( listen( sock, 16 ) ) { throw int( errno ); } }
 	int Read( void* buf, int size )    { int bytes = read( sock, buf, size ); if ( bytes < 0 ) { throw int( errno ); } return bytes; }

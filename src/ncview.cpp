@@ -1689,16 +1689,17 @@ void* ViewerThread( void* param )
 
 
 ViewWin::ViewWin( Win* parent )
-	:   Win( WT_CHILD, 0, parent, 0, 0 ),
-	    _lo( 5, 5 ),
-	    threadData( 0 ),
-	    vscroll( 0, this, true, false ),
-	    hscroll( 0, this, false, true ),
-	    charset( charset_table[GetFirstOperCharsetId()] ),
-	    wrap( true ),
-	    hex( false ),
-	    loadingText( utf8_to_unicode( " ... Loading ... " ) ),
-	    drawLoading( false )
+	: Win( WT_CHILD, 0, parent, 0, 0 )
+	, _lo( 5, 5 )
+	, threadData( 0 )
+	, vscroll( 0, this, true, false )
+	, hscroll( 0, this, false, true )
+	, charset( charset_table[GetFirstOperCharsetId()] )
+	, wrap( true )
+	, hex( false )
+	, loadingText( utf8_to_unicode( " ... Loading ... " ) )
+	, drawLoading( false )
+	, m_TempDirId( 0 )
 {
 	vscroll.Enable();
 	vscroll.Show();
@@ -2374,9 +2375,11 @@ void ViewWin::CalcScroll()
 	}
 }
 
-
-void ViewWin::SetFile( clPtr<FS> fsp, FSPath& path, seek_t size )
+void ViewWin::SetFile( clPtr<FS> fsp, FSPath& path, seek_t size, const unicode_t* HistoryUri, int TempDirId )
 {
+	m_HistoryUri = new_unicode_str( HistoryUri );
+	m_TempDirId = TempDirId;
+
 	ClearFile();
 	VFilePtr vf = new VFile( fsp, path, size, g_WcmConfig.editTabSize );
 	threadData =  new ViewerThreadData( vf );

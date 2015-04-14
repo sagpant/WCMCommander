@@ -66,6 +66,10 @@ class NCDialog: public OperThreadWin
 protected:
 	Win* GetDownButton();
 	int GetFocusButtonNum();
+
+	/// Called when pressed Cancel button or ESC key
+	virtual void OnCancel();
+
 public:
 	NCDialog( bool child, int nId, NCDialogParent* parent, const unicode_t* headerText, ButtonDataNode* blist );
 	void MaximizeIfChild( bool x = true, bool y = true ); //чтоб делать большие дочерние диалоги (типа поиска файлов и тд)

@@ -97,7 +97,7 @@ int GetCreateFileViewPosHistory( clPtr<FS>* Fs, FSPath* Path )
 	return 0;
 }
 
-void UpdateFileViewPosHistory( std::vector<unicode_t> Name, const int Pos )
+void UpdateFileViewPosHistory( const unicode_t* Name, const int Pos )
 {
 	if ( !g_WcmConfig.editSavePos )
 	{
@@ -105,7 +105,7 @@ void UpdateFileViewPosHistory( std::vector<unicode_t> Name, const int Pos )
 	}
 	
 	// check if item already exists in the list
-	const int Index = g_ViewList.FindByName( Name.data() );
+	const int Index = g_ViewList.FindByName( Name );
 	if ( Index != -1 )
 	{
 		// copy current data
@@ -159,7 +159,7 @@ bool GetCreateFileEditPosHistory( clPtr<FS>* Fs, FSPath* Path, sEditorScrollCtx&
 	return false;
 }
 
-void UpdateFileEditPosHistory( std::vector<unicode_t> Name, const sEditorScrollCtx& Ctx )
+void UpdateFileEditPosHistory( const unicode_t* Name, const sEditorScrollCtx& Ctx )
 {
 	if ( !g_WcmConfig.editSavePos )
 	{
@@ -167,7 +167,7 @@ void UpdateFileEditPosHistory( std::vector<unicode_t> Name, const sEditorScrollC
 	}
 	
 	// check if item already exists in the list
-	const int Index = g_ViewList.FindByName( Name.data() );
+	const int Index = g_ViewList.FindByName( Name );
 	if ( Index != -1 )
 	{
 		// copy current data

@@ -141,6 +141,7 @@ SET(wcm_COMMON_SOURCES
 	folder-history.cpp
 	view-history.cpp
 	drive-dlg.cpp
+	file-util.cpp
 	nceditline.cpp
 	smblogon.cpp
 	strconfig.cpp
@@ -225,6 +226,7 @@ SET(wcm_HEADERS
 	folder-history.h
 	view-history.h
 	drive-dlg.h
+	file-util.h
 	nceditline.h
 	smblogon.h
 	strconfig.h
