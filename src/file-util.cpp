@@ -25,9 +25,9 @@ static int g_NextTempDirId = 1;
 static std::unordered_map<int, std::vector<unicode_t>> g_TempDirUriList;
 
 
-bool DeleteDirR( FS* fs, FSPath path );
+bool DeleteDirRecursively( FS* fs, FSPath path );
 
-bool DeleteListR( FS* fs, FSPath path, FSList& list )
+bool DeleteListRecursively( FS* fs, FSPath path, FSList& list )
 {
 	const int cnt = path.Count();
 	int ret_err;
@@ -43,7 +43,7 @@ bool DeleteListR( FS* fs, FSPath path, FSList& list )
 
 		if ( node->IsDir() && !node->st.IsLnk() )
 		{
-			if ( !DeleteDirR( fs, path ) )
+			if ( !DeleteDirRecursively( fs, path ) )
 			{
 				return false;
 			}
@@ -58,14 +58,14 @@ bool DeleteListR( FS* fs, FSPath path, FSList& list )
 }
 
 /// Deletes dir recursively
-bool DeleteDirR( FS* fs, FSPath path )
+bool DeleteDirRecursively( FS* fs, FSPath path )
 {
 	FSList list;
 	int ret_err;
 	int ret = fs->ReadDir( &list, path, &ret_err, nullptr );
 	if ( ret == 0 )
 	{
-		DeleteListR( fs, path, list );
+		DeleteListRecursively( fs, path, list );
 		return ( fs->RmDir( path, &ret_err, nullptr ) == 0 );
 	}
 
@@ -159,7 +159,7 @@ void RemoveWcmTempDir( const int Id )
 			FSPath path;
 			clPtr<FS> fs = ParzeURI( TempUri.data(), path, std::vector<clPtr<FS>>() );
 			
-			DeleteDirR( fs.Ptr(), path );
+			DeleteDirRecursively( fs.Ptr(), path );
 		}
 	}
 }
