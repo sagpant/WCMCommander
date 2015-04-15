@@ -534,20 +534,20 @@ NCWin::NCWin()
 	_mdRight.AddCmd( ID_PANEL_FULL_ACCESS_R,   _LT( "Full (&access)" ),      "Ctrl-6" );
 	_mdRight.AddSplit();
 
-	_mdLeftSort.AddCmd( ID_SORT_BY_NAME_L,   _LT( "SM>Name", "&Name" ) );
-	_mdLeftSort.AddCmd( ID_SORT_BY_EXT_L,   _LT( "SM>Extension", "&Extension" ) );
-	_mdLeftSort.AddCmd( ID_SORT_BY_MODIF_L,  _LT( "SM>Modif. Time", "Modif. &Time" ) );
-	_mdLeftSort.AddCmd( ID_SORT_BY_SIZE_L,   _LT( "SM>Size", "&Size" ) );
-	_mdLeftSort.AddCmd( ID_UNSORT_L,  _LT( "SM>Unsorted", "&Unsorted" ) );
+	_mdLeftSort.AddCmd( ID_SORT_BY_NAME_L,   _LT( "SM>Name", "&Name" ), "Ctrl-F3" );
+	_mdLeftSort.AddCmd( ID_SORT_BY_EXT_L,   _LT( "SM>Extension", "&Extension" ), "Ctrl-F4" );
+	_mdLeftSort.AddCmd( ID_SORT_BY_MODIF_L,  _LT( "SM>Modif. Time", "Modif. &Time" ), "Ctrl-F5" );
+	_mdLeftSort.AddCmd( ID_SORT_BY_SIZE_L,   _LT( "SM>Size", "&Size" ), "Ctrl-F6" );
+	_mdLeftSort.AddCmd( ID_UNSORT_L,  _LT( "SM>Unsorted", "&Unsorted" ), "Ctrl-F7" );
 
 	_mdLeft.AddSub( _LT( "&Sort mode" ) , &_mdLeftSort );
 	_mdLeft.AddCmd( ID_DEV_SELECT_LEFT, _LT( "Change &drive" ),  "Shift-F1" );
 
-	_mdRightSort.AddCmd( ID_SORT_BY_NAME_R,  _LT( "SM>Name", "&Name" ) );
-	_mdRightSort.AddCmd( ID_SORT_BY_EXT_R,  _LT( "SM>&xtension", "&Extension" ) );
-	_mdRightSort.AddCmd( ID_SORT_BY_MODIF_R, _LT( "SM>Modif. Time", "Modif. &Time" ) );
-	_mdRightSort.AddCmd( ID_SORT_BY_SIZE_R,  _LT( "SM>Size", "&Size" ) );
-	_mdRightSort.AddCmd( ID_UNSORT_R, _LT( "SM>Unsorted", "&Unsorted" ) );
+	_mdRightSort.AddCmd( ID_SORT_BY_NAME_R,  _LT( "SM>Name", "&Name" ), "Ctrl-F3" );
+	_mdRightSort.AddCmd( ID_SORT_BY_EXT_R,  _LT( "SM>&Extension", "&Extension" ), "Ctrl-F4" );
+	_mdRightSort.AddCmd( ID_SORT_BY_MODIF_R, _LT( "SM>Modif. Time", "Modif. &Time" ), "Ctrl-F5" );
+	_mdRightSort.AddCmd( ID_SORT_BY_SIZE_R,  _LT( "SM>Size", "&Size" ), "Ctrl-F6" );
+	_mdRightSort.AddCmd( ID_UNSORT_R, _LT( "SM>Unsorted", "&Unsorted" ), "Ctrl-F7" );
 
 	_mdRight.AddSub( _LT( "&Sort mode" ), &_mdRightSort );
 	_mdRight.AddCmd( ID_DEV_SELECT_RIGHT, _LT( "Change &drive" ), "Shift-F2" );
