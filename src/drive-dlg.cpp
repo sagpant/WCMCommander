@@ -13,6 +13,10 @@
 #include "vfs-tmp.h"
 #include "ftplogon.h"
 
+#if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
+#  include "sftpdlg.h"
+#endif
+
 #ifndef _WIN32
 #  include "ux_util.h"
 #else
