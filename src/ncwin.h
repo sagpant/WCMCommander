@@ -8,12 +8,6 @@
 
 #include "swl.h"
 #include "panel.h"
-#ifdef _WIN32
-#  include "w32cons.h"
-#else
-#  include "termwin.h"
-#endif
-
 #include "ncview.h"
 #include "ncedit.h"
 #include "nchistory.h"
@@ -21,6 +15,7 @@
 #include "ext-app.h"
 #include "toolbar.h"
 #include "fileassociations.h"
+#include "file-exec.h"
 
 using namespace wal;
 
@@ -211,12 +206,8 @@ private:
 	void UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand );
 
 	NCCommandLine m_Edit;
-#ifdef _WIN32
-	W32Cons
-#else
-	TerminalWin
-#endif
-	_terminal;
+
+	TerminalWin_t _terminal;
 
 	eBackgroundActivity m_BackgroundActivity;
 
@@ -246,6 +237,8 @@ private:
 	NCHistory _history;
 
 	LPanelSelectionType _shiftSelectType;
+
+	FileExecutor m_FileExecutor;
 
 	void SetMode( MODE m );
 	void ShowPanels( bool show )
@@ -351,9 +344,6 @@ private:
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
 
 	clPtr<FSList> GetPanelList();
-
-	int _execId;
-	unicode_t _execSN[64];
 
 	std::vector<unicode_t> FetchAndClearCommandLine();
 

@@ -13,9 +13,6 @@
 #     define NOMINMAX
 #  endif
 #  include <winsock2.h>
-#else
-#  include <signal.h>
-#  include <sys/wait.h>
 #endif
 
 #include "globals.h"
@@ -439,10 +436,8 @@ NCWin::NCWin()
 	, _panelVisible( true )
 	, _mode( PANEL )
 	, _shiftSelectType( LPanelSelectionType_NotDefined )
-	, _execId( -1 )
+	, m_FileExecutor( this, _terminal )
 {
-	_execSN[0] = 0;
-
 	_editPref.Show();
 	_editPref.Enable();
 	_leftPanel.OnTop();
@@ -1046,55 +1041,13 @@ void NCWin::RightButtonPressed( cpoint point )
 
 void NCWin::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path )
 {
-#ifdef _WIN32
-	_history.Put( cmd );
-
-	if ( _terminal.Execute( this, 1, cmd, 0, fs->Uri( path ).GetUnicode() ) )
+	if ( m_FileExecutor.StartExecute( _editPref.Get(), cmd, fs, path ) )
 	{
+		_history.Put( cmd );
 		SetMode( TERMINAL );
 	}
-
-#else
 	
-	_history.Put( cmd );
-	const unicode_t* pref = _editPref.Get();
-	static unicode_t empty[] = {0};
-
-	if ( !pref ) { pref = empty; }
-
-	_terminal.TerminalReset();
-	unsigned fg_pref = 0xB;
-	unsigned fg_cmd = 0xF;
-	unsigned bg = 0;
-	static unicode_t newLine[] = {'\n', 0};
-	_terminal.TerminalPrint( newLine, fg_pref, bg );
-	_terminal.TerminalPrint( pref, fg_pref, bg );
-	_terminal.TerminalPrint( cmd, fg_cmd, bg );
-	_terminal.TerminalPrint( newLine, fg_cmd, bg );
-
-	int l = unicode_strlen( cmd );
-	int i;
-
-	if ( l >= 64 )
-	{
-		for ( i = 0; i < 64 - 1; i++ ) { _execSN[i] = cmd[i]; }
-
-		_execSN[60] = '.';
-		_execSN[61] = '.';
-		_execSN[62] = '.';
-		_execSN[63] = 0;
-	}
-	else
-	{
-		for ( i = 0; i < l; i++ ) { _execSN[i] = cmd[i]; }
-
-		_execSN[l] = 0;
-	}
-
-	_terminal.Execute( this, 1, cmd, ( sys_char_t* )path.GetString( sys_charset_id ) );
-	SetMode( TERMINAL );
-#endif
-	ReturnToDefaultSysDir(); //!!!
+	ReturnToDefaultSysDir();
 }
 
 void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
@@ -3738,37 +3691,16 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			}
 
 			case FC( VK_INSERT, KM_SHIFT ):
-				if ( pressed ) { _terminal.Paste(); }
-
-				return true;
-#ifdef _WIN32
-
-			case FC( VK_C, KM_ALT | KM_CTRL ):
-			{
-				if ( NCMessageBox( this, _LT( "Stop" ), _LT( "Drop current console?" ) , false, bListOkCancel ) == CMD_OK )
+				if ( pressed )
 				{
-					_terminal.DropConsole();
+					_terminal.Paste();
 				}
-			}
-
-			return true;
-#else
+				return true;
 
 			case FC( VK_C, KM_ALT | KM_CTRL ):
 				HideAutoComplete();
-				if ( _execId > 0 )
-				{
-					int ret = KillCmdDialog( this, _execSN );
-
-					if ( _execId > 0 )
-					{
-						if ( ret == CMD_KILL_9 ) { kill( _execId, SIGKILL ); }
-						else if ( ret == CMD_KILL ) { kill( _execId, SIGTERM ); }
-					}
-				}
-
+				m_FileExecutor.StopExecute();
 				return true;
-#endif
 		}
 
 #ifdef _WIN32
@@ -3934,13 +3866,13 @@ bool NCWin::EventKey( cevent_key* pEvent )
 
 void NCWin::ThreadSignal( int id, int data )
 {
-	if ( id == 1 ) { _execId = data; }
+	m_FileExecutor.ThreadSignal( id, data );
 }
 
 void NCWin::ThreadStopped( int id, void* data )
 {
-	_execId = -1;
-	_execSN[0] = 0;
+	m_FileExecutor.ThreadStopped( id, data );
+	
 	SetMode( PANEL );
 	_leftPanel.Reread();
 	_rightPanel.Reread();
