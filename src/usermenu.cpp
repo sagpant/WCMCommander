@@ -40,6 +40,7 @@ public:
 		m_Layout.AddWinAndEnable( &m_DescriptionEdit, 3, 0 );
 		m_Layout.AddWinAndEnable( &m_CommandText, 5, 0 );
 		m_Layout.AddWinAndEnable( &m_CommandEdit, 6, 0 );
+		m_DescriptionEdit.SetFocus();
 
 		AddLayout( &m_Layout );
 
