@@ -238,6 +238,7 @@ public:
 		order.append(&m_ChangeTime);
 #endif // HAS_CHANGETIME
 
+		SetEnterCmd( CMD_OK );
 		SetPosition();
 	}
 
@@ -379,7 +380,6 @@ private:
 bool FileAttributesDlg( NCDialogParent* Parent, PanelWin* Panel )
 {
 	clFileAttributesWin Dialog( Parent, Panel );
-	Dialog.SetEnterCmd( 0 );
 
 	if ( Dialog.DoModal( ) == CMD_OK )
 	{
