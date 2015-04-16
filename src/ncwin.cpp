@@ -3805,7 +3805,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				{
 					int n = GoToLineDialog( this );
 
-					if ( n > 0 ) { _editor.GoToLine( n - 1 ); }
+					_editor.GoToLine( std::max( n - 1, 0 ) );
 
 					break;
 				}
