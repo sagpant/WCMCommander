@@ -1,3 +1,30 @@
+0.19.1
+	Added #345: External color schemes
+	Added #375: File attributes: modification of creation/modification/access time
+	Added: history and autocomplete in all edit lines
+	Added: view history
+	Added: OS X volumes are shown in the Drive dialog
+	Hotkey: F4 on a folder opens the Attributes dialog
+	Improved #388: Do not discard editor undo history when saving a file
+	Improved #435: User menu: allow references to selected files
+	Improved: rendering of long file names is faster
+	Improved: Ctrl+G in the editor accepts any values
+	Fixed #319: Use antialiased fonts everywhere except the menubar
+	Fixed #400: When a command is executed, reset the 'last command' index for Ctrl-E/Ctrl-X
+	Fixed #401: Ctrl-Ins on a panel should copy all the selected file names to a clipboard
+	Fixed #402: Shift-Enter on folders
+	Fixed #407: 'Case sensitive' checkbox (in the Find dialog) is not always preserved
+	Fixed #436: Temporary panel shows ".." even if displaying of ".." is disabled in "Panel Settings"
+	Fixed #436: Cursor position is being retained after diving in, and returning back from a temp panel
+	Fixed #440: Parasitic key in the Ctrl+L dialog
+	Fixed #444: File disapears from the temp panel after editing
+	Fixed #458: OS X: CMD+C not working for command line in panel mode
+	Fixed: Recalculate layouts after closing the help dialog
+	Development: CMake generates proper folders for MSVC projects
+
+0.19.0.1
+	Fixed: crash on Linux/OSX if bad UTF-8 sequence is encountered in a file name
+
 0.19.0 GitHub Edition
 	Added: Shift+Enter opens a file/folder with the default OS application
 	Added: bookmarks in the editor (set via RightCtrl+digit, restore via LeftCtrl+digit)
