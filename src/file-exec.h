@@ -42,6 +42,9 @@ public:
 	FileExecutor( NCWin* NCWin, TerminalWin_t& terminal );
 	virtual ~FileExecutor() {}
 
+	/// Executes the given command as a separate process
+	void ExecNoTerminalProcess( const unicode_t* pref, const unicode_t* p, FS* fs, FSPath& path );
+
 	/// Start to execute the given command in the given dir
 	bool StartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path );
 	

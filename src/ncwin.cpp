@@ -897,17 +897,13 @@ void NCWin::PanelEnter(bool Shift)
 
 			if ( ret == CMD_OPEN_FILE )
 			{
-#ifndef _WIN32
-
 				if ( !terminal )
 				{
 					ExecNoTerminalProcess( cmd.data() );
 					return;
-				};
-
-#endif
+				}
+				
 				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
-
 				return;
 			}
 		}
@@ -924,7 +920,7 @@ void NCWin::PanelEnter(bool Shift)
 
 	if ( cmd.data() )
 	{
-#if !defined( _WIN32 )
+#ifndef _WIN32
 
 		if ( !terminal )
 		{
@@ -1226,7 +1222,7 @@ bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mo
 
 	if ( Cmd.data() && *Cmd.data() )
 	{
-#if !defined( _WIN32 )
+#ifndef _WIN32
 
 		if ( !Assoc->GetHasTerminal() )
 		{
@@ -2254,72 +2250,17 @@ void NCWin::ViewCharsetTable()
 	}
 }
 
-
 #ifndef _WIN32
 
 void NCWin::ExecNoTerminalProcess( const unicode_t* p )
 {
-	_history.Put( p );
-	const unicode_t* pref = _editPref.Get();
-	static unicode_t empty[] = {0};
-
-	if ( !pref ) { pref = empty; }
-
-	_terminal.TerminalReset();
-	unsigned fg = 0xB;
-	unsigned bg = 0;
-	static unicode_t newLine[] = {'\n', 0};
-	_terminal.TerminalPrint( newLine, fg, bg );
-	_terminal.TerminalPrint( pref, fg, bg );
-	_terminal.TerminalPrint( p, fg, bg );
-	_terminal.TerminalPrint( newLine, fg, bg );
-
 	SkipSpaces( p );
 
-	if ( !*p ) { return; }
-
-	char* dir = 0;
-	FSPath dirPath;
-
-
-	if ( _panel->GetFS() && _panel->GetFS()->Type() == FS::SYSTEM )
-	{
-		dirPath = _panel->GetPath();
-		dir = ( char* )dirPath.GetString( sys_charset_id );
-	}
-
-	FSString s = p;
-	sys_char_t* cmd = ( sys_char_t* ) s.Get( sys_charset_id );
-
-
-	pid_t pid = fork();
-
-	if ( pid < 0 ) { return; }
-
-	if ( pid )
-	{
-		waitpid( pid, 0, 0 );
-	}
-	else
-	{
-
-		if ( !fork() )
-		{
-//printf("exec: %s\n", cmd);
-			signal( SIGINT, SIG_DFL );
-			static char shell[] = "/bin/sh";
-			const char* params[] = {shell, "-c", cmd, NULL};
-
-			if ( dir ) if ( chdir( dir ) ) {};
-
-			execv( shell, ( char** ) params );
-
-			exit( 1 );
-		}
-
-		exit( 0 );
-	}
+	_history.Put( p );
+	
+	m_FileExecutor.ExecNoTerminalProcess( _editPref.Get(), p, _panel->GetFS(), _panel->GetPath() );
 }
+
 #endif
 
 void NCWin::Tab( bool forceShellTab )
