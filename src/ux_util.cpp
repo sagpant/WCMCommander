@@ -118,7 +118,7 @@ bool UxMntList( wal::ccollect< MntListNode >* pList )
 
 // for args in the command system("cmd args")
 // "My Document.txt" -> "My\ Document.txt"
-static void escShellStr(std::string& src)
+void escShellStr(std::string& src)
 {
 	std::string dest;
 
@@ -126,7 +126,7 @@ static void escShellStr(std::string& src)
 	{
         // we could safely escape every char here,
         // though this would obfuscate diagnostic messages
-		if( *s<'+' || ( *s >=';' && *s<='?' ) || ( *s >'Z' && *s < 'a' ) || ( *s >'z' ) )
+		if( *s<'+' || ( *s >=';' && *s<='?' ) || ( *s >'Z' && *s < 'a' ) || ( *s >'z' ) || ( *s > 127 ) || ( *s == '`' ) )
 		{
 
 			dest += "\\";
