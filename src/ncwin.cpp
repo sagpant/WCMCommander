@@ -47,12 +47,6 @@
 #include "usermenu.h"
 #include "vfs-tmp.h"
 
-#ifndef _WIN32
-#  include "ux_util.h"
-#else
-#	include "w32util.h"
-#endif
-
 #include <map>
 #include <vector>
 
@@ -213,9 +207,6 @@ ButtonWinData viewShiftButtons[] =
 	{"", 0},
 	{nullptr, 0}
 };
-
-static const int CMD_OPEN_FILE = 1000;
-static const int CMD_EXEC_FILE = 1001;
 
 static bool StrHaveSpace( const unicode_t* s )
 {
@@ -796,7 +787,10 @@ void NCWin::PanelCtrlPgDown()
 
 void NCWin::PanelEnter(bool Shift)
 {
-	if ( _mode != PANEL ) { return; }
+	if ( _mode != PANEL )
+	{
+		return;
+	}
 
 	FSNode* p =  _panel->GetCurrent();
 
@@ -806,75 +800,12 @@ void NCWin::PanelEnter(bool Shift)
 		return;
 	}
 
-	FS* pFs = _panel->GetFS();
-
-	if ( !pFs )
+	if ( !_panel->GetFS() )
 	{
 		return;
 	}
 
-	bool cmdChecked = false;
-	std::vector<unicode_t> cmd;
-	bool terminal = true;
-	const unicode_t* pAppName = 0;
-
-	if ( Shift )
-	{
-		ExecuteDefaultApplication( _panel->UriOfCurrent().GetUnicode() );
-		return;
-	}
-
-	if ( m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_Execute ) )
-	{
-		return;
-	}
-
-	if ( g_WcmConfig.systemAskOpenExec )
-	{
-		cmd = GetOpenCommand( _panel->UriOfCurrent().GetUnicode(), &terminal, &pAppName );
-		cmdChecked = true;
-	}
-
-	if ( p->IsExe() )
-	{
-#ifndef _WIN32
-
-		if ( g_WcmConfig.systemAskOpenExec && cmd.data() )
-		{
-
-			ButtonDataNode bListOpenExec[] = { {"&Open", CMD_OPEN_FILE}, {"&Execute", CMD_EXEC_FILE}, {"&Cancel", CMD_CANCEL}, {0, 0}};
-
-			static unicode_t emptyStr[] = {0};
-
-			if ( !pAppName ) { pAppName = emptyStr; }
-
-			int ret = NCMessageBox( this, "Open",
-			                        carray_cat<char>( "Executable file: ", p->name.GetUtf8(), "\ncan be opened by: ", unicode_to_utf8( pAppName ).data(), "\nExecute or Open?" ).data(),
-			                        false, bListOpenExec );
-
-			if ( ret == CMD_CANCEL ) { return; }
-
-			if ( ret == CMD_OPEN_FILE )
-			{
-				m_FileExecutor.StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath(), !terminal );
-				return;
-			}
-		}
-
-#endif
-		m_FileExecutor.ExecuteFile( _panel );
-		return;
-	}
-
-	if ( !cmdChecked )
-	{
-		cmd = GetOpenCommand( _panel->UriOfCurrent().GetUnicode(), &terminal, 0 );
-	}
-
-	if ( cmd.data() )
-	{
-		m_FileExecutor.StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath(), !terminal );
-	}
+	m_FileExecutor.ExecuteFileByEnter( _panel, Shift );
 }
 
 void NCWin::RightButtonPressed( cpoint point )

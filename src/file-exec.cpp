@@ -15,7 +15,11 @@
 #ifndef _WIN32
 #  include <signal.h>
 #  include <sys/wait.h>
+#  include "ux_util.h"
+#else
+#	include "w32util.h"
 #endif
+
 
 #define TERMINAL_THREAD_ID 1
 
@@ -41,6 +45,10 @@ enum
 	CMD_RC_RUN = 999,
 	CMD_RC_OPEN_0 = 1000
 };
+
+static const int CMD_OPEN_FILE = 1000;
+static const int CMD_EXEC_FILE = 1001;
+
 
 struct AppMenuData
 {
@@ -211,6 +219,79 @@ bool FileExecutor::StartFileAssociation( PanelWin* panel, eFileAssociation Mode 
 	}
 
 	return false;
+}
+
+void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
+{
+	FSNode* p = Panel->GetCurrent();
+
+	bool cmdChecked = false;
+	std::vector<unicode_t> cmd;
+	bool terminal = true;
+	const unicode_t* pAppName = 0;
+
+	if ( Shift )
+	{
+		ExecuteDefaultApplication( Panel->UriOfCurrent().GetUnicode() );
+		return;
+	}
+
+	if ( StartFileAssociation( Panel, eFileAssociation_Execute ) )
+	{
+		return;
+	}
+
+	if ( g_WcmConfig.systemAskOpenExec )
+	{
+		cmd = GetOpenCommand( Panel->UriOfCurrent().GetUnicode(), &terminal, &pAppName );
+		cmdChecked = true;
+	}
+
+	if ( p->IsExe() )
+	{
+#ifndef _WIN32
+
+		if ( g_WcmConfig.systemAskOpenExec && cmd.data() )
+		{
+			ButtonDataNode bListOpenExec[] = { { "&Open", CMD_OPEN_FILE }, { "&Execute", CMD_EXEC_FILE }, { "&Cancel", CMD_CANCEL }, { 0, 0 } };
+
+			static unicode_t emptyStr[] = { 0 };
+
+			if ( !pAppName )
+			{
+				pAppName = emptyStr;
+			}
+
+			int ret = NCMessageBox( this, "Open",
+				carray_cat<char>( "Executable file: ", p->name.GetUtf8(), "\ncan be opened by: ", unicode_to_utf8( pAppName ).data(), "\nExecute or Open?" ).data(),
+				false, bListOpenExec );
+
+			if ( ret == CMD_CANCEL )
+			{
+				return;
+			}
+
+			if ( ret == CMD_OPEN_FILE )
+			{
+				StartExecute( cmd.data(), Panel->GetFS(), Panel->GetPath(), !terminal );
+				return;
+			}
+		}
+
+#endif
+		ExecuteFile( Panel );
+		return;
+	}
+
+	if ( !cmdChecked )
+	{
+		cmd = GetOpenCommand( Panel->UriOfCurrent().GetUnicode(), &terminal, 0 );
+	}
+
+	if ( cmd.data() )
+	{
+		StartExecute( cmd.data(), Panel->GetFS(), Panel->GetPath(), !terminal );
+	}
 }
 
 void FileExecutor::ExecuteFile( PanelWin* panel )

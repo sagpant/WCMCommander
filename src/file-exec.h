@@ -60,8 +60,8 @@ public:
 	/// Starts to execute current file on the given panel using file associations
 	bool StartFileAssociation( PanelWin* panel, eFileAssociation Mode );
 
-	/// Executes selected runnable file (.exe, .bat, etc.) from the given panel
-	void ExecuteFile( PanelWin* panel );
+	/// Executes selected file when Enter key is pressed
+	void ExecuteFileByEnter( PanelWin* Panel, bool Shift );
 
 	/// Starts to execute the given command in the given dir
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
@@ -79,4 +79,7 @@ private:
 	bool StartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
 	
 	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
+
+	/// Executes selected runnable file (.exe, .bat, etc.) from the given panel
+	void ExecuteFile( PanelWin* panel );
 };
