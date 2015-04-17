@@ -23,6 +23,10 @@ class NCWin;
 class StringWin;
 class NCHistory;
 class PanelWin;
+
+class clNCFileAssociation;
+enum eFileAssociation;
+
 class FS;
 class FSPath;
 
@@ -47,10 +51,13 @@ public:
 	FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& history, TerminalWin_t& terminal );
 	virtual ~FileExecutor() {}
 
+	/// Starts to execute current file on the given panel using file associations
+	bool StartFileAssociation( PanelWin* panel, eFileAssociation Mode );
+
 	/// Executes selected runnable file (.exe, .bat, etc.) from the given panel
 	void ExecuteFile( PanelWin* panel );
 
-	/// Start to execute the given command in the given dir
+	/// Starts to execute the given command in the given dir
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
 
 	/// Stops current run process in terminal
@@ -64,4 +71,6 @@ public:
 
 private:
 	bool StartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
+	
+	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
 };

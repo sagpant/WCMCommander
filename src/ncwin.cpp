@@ -41,7 +41,6 @@
 #include "shell-tools.h"
 #include "dircalc.h"
 #include "ltext.h"
-#include "strmasks.h"
 #include "dlg-ctrl-l.h"
 #include "drive-dlg.h"
 #include "file-util.h"
@@ -792,7 +791,7 @@ void NCWin::PanelCtrlPgDown()
 		return;
 	}
 
-	StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_ExecuteSecondary );
+	m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_ExecuteSecondary );
 }
 
 void NCWin::PanelEnter(bool Shift)
@@ -825,7 +824,10 @@ void NCWin::PanelEnter(bool Shift)
 		return;
 	}
 
-	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) { return; }
+	if ( m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_Execute ) )
+	{
+		return;
+	}
 
 	if ( g_WcmConfig.systemAskOpenExec )
 	{
@@ -1132,23 +1134,6 @@ void NCWin::QuitQuestion()
 	}
 }
 
-bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode )
-{
-	const clNCFileAssociation* Assoc = this->FindFileAssociation( FileName );
-
-	if ( !Assoc ) { return false; }
-
-	std::vector<unicode_t> Cmd = MakeCommand( Assoc->Get( Mode ), FileName );
-
-	if ( Cmd.data() && *Cmd.data() )
-	{
-		m_FileExecutor.StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath(), !Assoc->GetHasTerminal() );
-		return true;
-	}
-
-	return false;
-}
-
 void NCWin::ViewFile( clPtr<FS> Fs, FSPath& Path )
 {
 	if ( !CheckEditorBackgroundActivity( false ) )
@@ -1196,7 +1181,7 @@ void NCWin::View( bool Secondary )
 
 	try
 	{
-		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) )
+		if ( m_FileExecutor.StartFileAssociation( _panel, Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) )
 		{
 			return;
 		}
@@ -1308,7 +1293,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 	try
 	{
-		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) )
+		if ( m_FileExecutor.StartFileAssociation( _panel, Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) )
 		{
 			return;
 		}
@@ -1641,22 +1626,6 @@ void NCWin::Copy( bool shift )
 
 	_leftPanel.Reread();
 	_rightPanel.Reread();
-}
-
-const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
-{
-	const auto& Assoc = g_Env.GetFileAssociations();
-
-	for ( const auto& i : Assoc )
-	{
-		std::vector<unicode_t> Mask = i.GetMask();
-
-		clMultimaskSplitter Splitter( Mask );
-
-		if ( Splitter.CheckAndFetchAllMasks( FileName ) ) { return &i; }
-	}
-
-	return NULL;
 }
 
 // XXX case sensitivity should be attribute of a file system, and not the OS. 

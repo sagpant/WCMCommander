@@ -9,6 +9,7 @@
 #include "ltext.h"
 #include "string-util.h"
 #include "panel.h"
+#include "strmasks.h"
 
 #ifndef _WIN32
 #  include <signal.h>
@@ -42,6 +43,47 @@ FileExecutor::FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& histor
 	, _execId( -1 )
 {
 	_execSN[0] = 0;
+}
+
+const clNCFileAssociation* FileExecutor::FindFileAssociation( const unicode_t* FileName ) const
+{
+	const auto& Assoc = g_Env.GetFileAssociations();
+
+	for ( const auto& i : Assoc )
+	{
+		std::vector<unicode_t> Mask = i.GetMask();
+
+		clMultimaskSplitter Splitter( Mask );
+
+		if ( Splitter.CheckAndFetchAllMasks( FileName ) )
+		{
+			return &i;
+		}
+	}
+
+	return nullptr;
+}
+
+bool FileExecutor::StartFileAssociation( PanelWin* panel, eFileAssociation Mode )
+{
+	const unicode_t* FileName = panel->GetCurrentFileName();
+
+	const clNCFileAssociation* Assoc = FindFileAssociation( FileName );
+
+	if ( !Assoc )
+	{
+		return false;
+	}
+
+	std::vector<unicode_t> Cmd = MakeCommand( Assoc->Get( Mode ), FileName );
+
+	if ( Cmd.data() && *Cmd.data() )
+	{
+		StartExecute( Cmd.data(), panel->GetFS(), panel->GetPath(), !Assoc->GetHasTerminal() );
+		return true;
+	}
+
+	return false;
 }
 
 void FileExecutor::ExecuteFile( PanelWin* panel )
