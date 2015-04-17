@@ -10,6 +10,7 @@
 #include "string-util.h"
 #include "panel.h"
 #include "strmasks.h"
+#include "ext-app.h"
 
 #ifndef _WIN32
 #  include <signal.h>
@@ -35,6 +36,56 @@ void ReturnToDefaultSysDir()
 }
 
 
+enum
+{
+	CMD_RC_RUN = 999,
+	CMD_RC_OPEN_0 = 1000
+};
+
+struct AppMenuData
+{
+	struct Node
+	{
+		unicode_t* cmd;
+		bool terminal;
+		Node() : cmd( 0 ), terminal( 0 ) {}
+		Node( unicode_t* c, bool t ) : cmd( c ), terminal( t ) {}
+	};
+	
+	ccollect<clPtr<MenuData>> mData;
+	ccollect<Node> nodeList;
+	MenuData* AppendAppList( AppList* list );
+};
+
+MenuData* AppMenuData::AppendAppList( AppList* list )
+{
+	if ( !list )
+	{
+		return 0;
+	}
+
+	clPtr<MenuData> p = new MenuData();
+
+	for ( int i = 0; i < list->Count(); i++ )
+	{
+		if ( list->list[i].sub.ptr() )
+		{
+			MenuData* sub = AppendAppList( list->list[i].sub.ptr() );
+			p->AddSub( list->list[i].name.data(), sub );
+		}
+		else
+		{
+			p->AddCmd( nodeList.count() + CMD_RC_OPEN_0, list->list[i].name.data() );
+			nodeList.append( Node( list->list[i].cmd.data(), list->list[i].terminal ) );
+		}
+	}
+
+	MenuData* ret = p.ptr();
+	mData.append( p );
+	return ret;
+}
+
+
 FileExecutor::FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& history, TerminalWin_t& terminal )
 	: m_NCWin( NCWin )
 	, _editPref( editPref )
@@ -43,6 +94,57 @@ FileExecutor::FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& histor
 	, _execId( -1 )
 {
 	_execSN[0] = 0;
+}
+
+void FileExecutor::ShowFileContextMenu( cpoint point, PanelWin* Panel )
+{
+	FSNode* p = Panel->GetCurrent();
+
+	if ( !p || p->IsDir() )
+	{
+		return;
+	}
+
+	clPtr<AppList> appList = GetAppList( Panel->UriOfCurrent().GetUnicode() );
+
+	//if (!appList.data()) return;
+
+	AppMenuData data;
+	MenuData mdRes, *md = data.AppendAppList( appList.ptr() );
+
+	if ( !md )
+	{
+		md = &mdRes;
+	}
+
+	if ( p->IsExe() )
+	{
+		md->AddCmd( CMD_RC_RUN, _LT( "Execute" ) );
+	}
+
+	if ( !md->Count() )
+	{
+		return;
+	}
+
+	int ret = DoPopupMenu( 0, m_NCWin, md, point.x, point.y );
+
+	m_NCWin->SetCommandLineFocus();
+
+	if ( ret == CMD_RC_RUN )
+	{
+		ExecuteFile( Panel );
+		return;
+	}
+
+	ret -= CMD_RC_OPEN_0;
+
+	if ( ret < 0 || ret >= data.nodeList.count() )
+	{
+		return;
+	}
+
+	StartExecute( data.nodeList[ret].cmd, Panel->GetFS(), Panel->GetPath(), !data.nodeList[ret].terminal );
 }
 
 void FileExecutor::ApplyCommand( const std::vector<unicode_t>& cmd, PanelWin* Panel )

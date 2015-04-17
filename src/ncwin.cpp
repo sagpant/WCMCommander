@@ -877,95 +877,14 @@ void NCWin::PanelEnter(bool Shift)
 	}
 }
 
-enum
-{
-	CMD_RC_RUN = 999,
-	CMD_RC_OPEN_0 = 1000
-};
-
-struct AppMenuData
-{
-	struct Node
-	{
-		unicode_t* cmd;
-		bool terminal;
-		Node(): cmd( 0 ), terminal( 0 ) {}
-		Node( unicode_t* c, bool t ): cmd( c ), terminal( t ) {}
-	};
-	ccollect<clPtr<MenuData> > mData;
-	ccollect<Node> nodeList;
-	MenuData* AppendAppList( AppList* list );
-};
-
-MenuData* AppMenuData::AppendAppList( AppList* list )
-{
-	if ( !list ) { return 0; }
-
-	clPtr<MenuData> p = new MenuData();
-
-	for ( int i = 0; i < list->Count(); i++ )
-	{
-		if ( list->list[i].sub.ptr() )
-		{
-			MenuData* sub = AppendAppList( list->list[i].sub.ptr() );
-			p->AddSub( list->list[i].name.data(), sub );
-		}
-		else
-		{
-			p->AddCmd( nodeList.count() + CMD_RC_OPEN_0, list->list[i].name.data() );
-			nodeList.append( Node( list->list[i].cmd.data(), list->list[i].terminal ) );
-		}
-	}
-
-	MenuData* ret = p.ptr();
-	mData.append( p );
-	return ret;
-}
-
 void NCWin::RightButtonPressed( cpoint point )
 {
-	if ( _mode != PANEL ) { return; }
-
-	FSNode* p =  _panel->GetCurrent();
-
-	if ( !p ) { return; }
-
-	if ( p->IsDir() ) { return; }
-
-	clPtr<AppList> appList = GetAppList( _panel->UriOfCurrent().GetUnicode() );
-
-	//if (!appList.data()) return;
-
-	AppMenuData data;
-	MenuData mdRes, *md = data.AppendAppList( appList.ptr() );
-
-	if ( !md ) { md = &mdRes; }
-
-	if ( p->IsExe() )
-	{
-		md->AddCmd( CMD_RC_RUN, _LT( "Execute" ) );
-	}
-
-	if ( !md->Count() ) { return; }
-
-	int ret = DoPopupMenu( 0, this, md, point.x, point.y );
-
-	m_Edit.SetFocus();
-
-	if ( ret == CMD_RC_RUN )
-	{
-		m_FileExecutor.ExecuteFile( _panel );
-		return;
-	}
-
-	ret -= CMD_RC_OPEN_0;
-
-	if ( ret < 0 || ret >= data.nodeList.count() )
+	if ( _mode != PANEL )
 	{
 		return;
 	}
 
-	m_FileExecutor.StartExecute( data.nodeList[ret].cmd, _panel->GetFS(), _panel->GetPath(), !data.nodeList[ret].terminal );
+	m_FileExecutor.ShowFileContextMenu( point, _panel );
 }
 
 void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )

@@ -51,6 +51,9 @@ public:
 	FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& history, TerminalWin_t& terminal );
 	virtual ~FileExecutor() {}
 
+	/// Shows context menu at the given position for the selected file
+	void ShowFileContextMenu( cpoint point, PanelWin* Panel );
+
 	/// Applies the given command to the selected files on the given panel
 	void ApplyCommand( const std::vector<unicode_t>& cmd, PanelWin* Panel );
 
