@@ -1033,28 +1033,6 @@ void NCWin::UserMenu()
 	UserMenuDlg( this, g_Env.GetUserMenuItemsPtr() );
 }
 
-void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
-{
-	if ( !cmd.data() ) { return; }
-
-	if ( !list.ptr() || list->Count() <= 0 ) { return; }
-
-	std::vector<FSNode*> nodes = list->GetArray();
-
-	SetMode( TERMINAL );
-
-	for ( auto i = nodes.begin(); i != nodes.end(); i++ )
-	{
-		FSNode* Node = *i;
-
-		const unicode_t* Name = Node->GetUnicodeName();
-
-		std::vector<unicode_t> Command = MakeCommand( cmd, Name );
-
-		m_FileExecutor.StartExecute( Command.data(), Panel->GetFS(), Panel->GetPath() );
-	}
-}
-
 void NCWin::ApplyCommand()
 {
 	if ( _mode != PANEL )
@@ -1072,7 +1050,7 @@ void NCWin::ApplyCommand()
 	}
 
 	command = str;
-	ApplyCommandToList( command, _panel->GetSelectedList(), _panel );
+	m_FileExecutor.ApplyCommand( command, _panel );
 }
 
 void NCWin::CreateDirectory()

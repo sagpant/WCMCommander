@@ -260,7 +260,6 @@ private:
 	void PanelEnter(bool Shift = false);
 	void PanelCtrlPgDown();
 
-	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
 	void ApplyCommand();
 	void CreateDirectory();
 	

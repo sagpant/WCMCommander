@@ -51,6 +51,9 @@ public:
 	FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& history, TerminalWin_t& terminal );
 	virtual ~FileExecutor() {}
 
+	/// Applies the given command to the selected files on the given panel
+	void ApplyCommand( const std::vector<unicode_t>& cmd, PanelWin* Panel );
+
 	/// Starts to execute current file on the given panel using file associations
 	bool StartFileAssociation( PanelWin* panel, eFileAssociation Mode );
 

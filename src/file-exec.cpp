@@ -45,6 +45,31 @@ FileExecutor::FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& histor
 	_execSN[0] = 0;
 }
 
+void FileExecutor::ApplyCommand( const std::vector<unicode_t>& cmd, PanelWin* Panel )
+{
+	clPtr<FSList> list = Panel->GetSelectedList();
+
+	if ( !cmd.data() || !list.ptr() || list->Count() <= 0 )
+	{
+		return;
+	}
+
+	std::vector<FSNode*> nodes = list->GetArray();
+
+	m_NCWin->SetMode( NCWin::TERMINAL );
+
+	for ( auto i = nodes.begin(); i != nodes.end(); i++ )
+	{
+		FSNode* Node = *i;
+
+		const unicode_t* Name = Node->GetUnicodeName();
+
+		std::vector<unicode_t> Command = MakeCommand( cmd, Name );
+
+		StartExecute( Command.data(), Panel->GetFS(), Panel->GetPath() );
+	}
+}
+
 const clNCFileAssociation* FileExecutor::FindFileAssociation( const unicode_t* FileName ) const
 {
 	const auto& Assoc = g_Env.GetFileAssociations();
