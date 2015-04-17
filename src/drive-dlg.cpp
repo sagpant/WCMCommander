@@ -458,21 +458,6 @@ void SelectDriveDlg( PanelWin* p, PanelWin* OtherPanel )
 	while ( RedoDialog );
 }
 
-void ReturnToDefaultSysDir()
-{
-#ifdef _WIN32
-	wchar_t buf[4096] = L"";
-
-	if ( GetSystemDirectoryW( buf, 4096 ) > 0 )
-	{
-		SetCurrentDirectoryW( buf );
-	}
-
-#else
-	chdir( "/" );
-#endif
-}
-
 void OpenHomeDir( PanelWin* p, PanelWin* OtherPanel )
 {
 #ifdef _WIN32

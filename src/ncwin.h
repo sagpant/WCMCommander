@@ -240,7 +240,6 @@ private:
 
 	FileExecutor m_FileExecutor;
 
-	void SetMode( MODE m );
 	void ShowPanels( bool show )
 	{
 		if ( _panelVisible == show ) { return; }
@@ -262,8 +261,6 @@ private:
 	void PanelCtrlPgDown();
 
 	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
-	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
-
 	void ApplyCommand();
 	void CreateDirectory();
 	
@@ -369,6 +366,7 @@ public:
 	
 	bool StartEditor( const std::vector<unicode_t> FileName, int Line, int Pos );
 	bool StartViewer( const std::vector<unicode_t> FileName, int Line );
+	void SetMode( MODE m );
 
 	EditWin* GetEditor() { return &_editor; }
 	NCHistory* GetHistory() { return &_history; }

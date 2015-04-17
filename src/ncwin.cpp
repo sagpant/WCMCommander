@@ -218,11 +218,6 @@ ButtonWinData viewShiftButtons[] =
 static const int CMD_OPEN_FILE = 1000;
 static const int CMD_EXEC_FILE = 1001;
 
-template <typename T> void SkipSpaces( T& p )
-{
-	while ( *p == ' ' ) { p++; }
-}
-
 static bool StrHaveSpace( const unicode_t* s )
 {
 	for ( ; *s; s++ )
@@ -436,7 +431,7 @@ NCWin::NCWin()
 	, _panelVisible( true )
 	, _mode( PANEL )
 	, _shiftSelectType( LPanelSelectionType_NotDefined )
-	, m_FileExecutor( this, _terminal )
+	, m_FileExecutor( this, _editPref, _history, _terminal )
 {
 	_editPref.Show();
 	_editPref.Enable();
@@ -787,8 +782,6 @@ void NCWin::SetMode( MODE m )
 
 void NCWin::ExecuteFile()
 {
-	if ( _mode != PANEL ) { return; }
-
 	FSNode* p =  _panel->GetCurrent();
 
 	if ( !p || p->IsDir() ) { return; }
@@ -804,10 +797,9 @@ void NCWin::ExecuteFile()
 			return;
 		}
 
-
 #ifdef _WIN32
 		static unicode_t w[2] = {'"', 0};
-		StartExecute( carray_cat<unicode_t>( w, _panel->UriOfCurrent( ).GetUnicode( ), w ).data( ), _panel->GetFS( ), _panel->GetPath( ) );
+		m_FileExecutor.StartExecute( carray_cat<unicode_t>( w, _panel->UriOfCurrent().GetUnicode(), w ).data(), _panel->GetFS(), _panel->GetPath() );
 		return;
 #else
 		const unicode_t*   fName = p->GetUnicodeName();
@@ -817,7 +809,7 @@ void NCWin::ExecuteFile()
 		cmd[1] = '/';
 		memcpy( cmd.data() + 2, fName, len * sizeof( unicode_t ) );
 		cmd[2 + len] = 0;
-		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
+		m_FileExecutor.StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
 		return;
 #endif
 	}
@@ -897,7 +889,7 @@ void NCWin::PanelEnter(bool Shift)
 
 			if ( ret == CMD_OPEN_FILE )
 			{
-				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath(), !terminal );
+				m_FileExecutor.StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath(), !terminal );
 				return;
 			}
 		}
@@ -914,7 +906,7 @@ void NCWin::PanelEnter(bool Shift)
 
 	if ( cmd.data() )
 	{
-		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath(), !terminal );
+		m_FileExecutor.StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath(), !terminal );
 	}
 }
 
@@ -1006,20 +998,7 @@ void NCWin::RightButtonPressed( cpoint point )
 		return;
 	}
 
-	StartExecute( data.nodeList[ret].cmd, _panel->GetFS(), _panel->GetPath(), !data.nodeList[ret].terminal );
-}
-
-void NCWin::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal )
-{
-	SkipSpaces( cmd );
-
-	if ( m_FileExecutor.StartExecute( _editPref.Get(), cmd, fs, path ) )
-	{
-		_history.Put( cmd );
-		SetMode( TERMINAL );
-	}
-	
-	ReturnToDefaultSysDir();
+	m_FileExecutor.StartExecute( data.nodeList[ret].cmd, _panel->GetFS(), _panel->GetPath(), !data.nodeList[ret].terminal );
 }
 
 void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
@@ -1105,7 +1084,7 @@ void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList>
 
 		std::vector<unicode_t> Command = MakeCommand( cmd, Name );
 
-		StartExecute( Command.data( ), Panel->GetFS( ), Panel->GetPath( ) );
+		m_FileExecutor.StartExecute( Command.data(), Panel->GetFS(), Panel->GetPath() );
 	}
 }
 
@@ -1198,7 +1177,7 @@ bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mo
 
 	if ( Cmd.data() && *Cmd.data() )
 	{
-		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath(), !Assoc->GetHasTerminal() );
+		m_FileExecutor.StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath(), !Assoc->GetHasTerminal() );
 		return true;
 	}
 
@@ -2610,7 +2589,7 @@ bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
 	if ( Path.empty() || !Path[0] )
 	{
 #if defined(_WIN32)
-		StartExecute( cmd, _panel->GetFS(), _panel->GetPath() );
+		m_FileExecutor.StartExecute( cmd, _panel->GetFS(), _panel->GetPath() );
 #else
 		OpenHomeDir( _panel, GetOtherPanel() );
 #endif
@@ -2746,7 +2725,7 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& CommandString, bool Forc
 
 			if ( fs && fs->Type() == FS::SYSTEM )
 			{
-				StartExecute( Command.data(), fs, _panel->GetPath(), NoTerminal );
+				m_FileExecutor.StartExecute( Command.data(), fs, _panel->GetPath(), NoTerminal );
 			}
 			else
 			{

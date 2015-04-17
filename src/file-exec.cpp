@@ -7,6 +7,7 @@
 #include "file-exec.h"
 #include "ncwin.h"
 #include "ltext.h"
+#include "string-util.h"
 
 #ifndef _WIN32
 #  include <signal.h>
@@ -16,12 +17,43 @@
 #define TERMINAL_THREAD_ID 1
 
 
-FileExecutor::FileExecutor( NCWin* NCWin, TerminalWin_t& terminal )
+void ReturnToDefaultSysDir()
+{
+#ifdef _WIN32
+	wchar_t buf[4096] = L"";
+
+	if ( GetSystemDirectoryW( buf, 4096 ) > 0 )
+	{
+		SetCurrentDirectoryW( buf );
+	}
+
+#else
+	chdir( "/" );
+#endif
+}
+
+
+FileExecutor::FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& history, TerminalWin_t& terminal )
 	: m_NCWin( NCWin )
+	, _editPref( editPref )
+	, _history( history )
 	, _terminal( terminal )
 	, _execId( -1 )
 {
 	_execSN[0] = 0;
+}
+
+void FileExecutor::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal )
+{
+	SkipSpaces( cmd );
+
+	if ( StartExecute( _editPref.Get(), cmd, fs, path ) )
+	{
+		_history.Put( cmd );
+		m_NCWin->SetMode( NCWin::TERMINAL );
+	}
+
+	ReturnToDefaultSysDir();
 }
 
 bool FileExecutor::StartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal )
