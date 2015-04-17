@@ -1039,7 +1039,7 @@ txt "Другие..."
 
 #fileopers.cpp:924
 #fileopers.cpp:1237
-id "Owerwrite  file?\n"
+id "Owerwrite file?\n"
 txt "Перезаписать файл?"
 
 #ncwin.cpp:231

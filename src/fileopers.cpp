@@ -1740,7 +1740,7 @@ int OperCFThread::MoveFile( FS* srcFs, FSPath& srcPath, FSNode* srcNode, FS* des
 	{
 		if ( !commitAll )
 		{
-			switch ( RedMessage( _LT( "Owerwrite  file?\n" ), destFs->Uri( destPath ).GetUtf8(),
+			switch ( RedMessage( _LT( "Owerwrite file?\n" ), destFs->Uri( destPath ).GetUtf8(),
 			                     bOkAllNoCancel,
 			                     destFs->StrError( ret_error ).GetUtf8() ) )
 			{
