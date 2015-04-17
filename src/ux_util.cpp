@@ -124,11 +124,17 @@ void escShellStr(std::string& src)
 
 	for ( const char *s = src.data(); *s; s++ )
 	{
+		unsigned char c = (unsigned char) *s;
         // we could safely escape every char here,
         // though this would obfuscate diagnostic messages
-		if( *s<'+' || ( *s >=';' && *s<='?' ) || ( *s >'Z' && *s < 'a' ) || ( *s >'z' ) || ( *s > 127 ) || ( *s == '`' ) )
+		bool mustEscape = *s<'+'
+						  || ( *s >= ';' && *s <= '?' )
+						  || ( *s > 'Z' && *s < 'a' )
+						  || ( *s >'z' )
+						  || ( c > 127 )
+						  || ( *s == '`' );
+		if(mustEscape)
 		{
-
 			dest += "\\";
 		}
 		dest += *s;

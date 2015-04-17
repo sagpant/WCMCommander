@@ -364,7 +364,7 @@ namespace wal
 	{
 		if ( !S ) { return; }
 
-		for ( auto i = 0; i != S->size(); i++ )
+		for ( size_t i = 0; i != S->size(); i++ )
 		{
 			unicode_t Ch = S->at( i );
 
