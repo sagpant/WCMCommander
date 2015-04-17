@@ -544,7 +544,7 @@ NCWin::NCWin()
 	_mdLeft.AddCmd( ID_DEV_SELECT_LEFT, _LT( "Change &drive" ),  "Shift-F1" );
 
 	_mdRightSort.AddCmd( ID_SORT_BY_NAME_R,  _LT( "SM>Name", "&Name" ), "Ctrl-F3" );
-	_mdRightSort.AddCmd( ID_SORT_BY_EXT_R,  _LT( "SM>&Extension", "&Extension" ), "Ctrl-F4" );
+	_mdRightSort.AddCmd( ID_SORT_BY_EXT_R,  _LT( "SM>Extension", "&Extension" ), "Ctrl-F4" );
 	_mdRightSort.AddCmd( ID_SORT_BY_MODIF_R, _LT( "SM>Modif. Time", "Modif. &Time" ), "Ctrl-F5" );
 	_mdRightSort.AddCmd( ID_SORT_BY_SIZE_R,  _LT( "SM>Size", "&Size" ), "Ctrl-F6" );
 	_mdRightSort.AddCmd( ID_UNSORT_R, _LT( "SM>Unsorted", "&Unsorted" ), "Ctrl-F7" );
