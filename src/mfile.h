@@ -86,9 +86,9 @@ public:
 
 	int NonReadedSize() const { return dataSize - readSize; }
 
-	int Read( char* s, int size )
+	size_t Read( char* s, int size )
 	{
-		int res = 0;
+		size_t res = 0;
 
 		while ( size > 0 )
 		{

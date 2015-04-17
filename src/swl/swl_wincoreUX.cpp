@@ -104,6 +104,10 @@ namespace wal
 		XWindowAttributes xwAttr;
 
 		Status ret = XGetWindowAttributes( display, DefaultRootWindow( display ), &xwAttr );
+		if ( ret == 0 )
+		{
+			throw_msg( "Error in XGetWindowAttributes/screen size" );
+		}
 		s.x = xwAttr.width;
 		s.y = xwAttr.height;
 
@@ -257,6 +261,10 @@ namespace wal
 			for ( i = 0; i < n; i++ )
 			{
 				int ret = XAllocColor( display, colorMap, &( xc[i] ) );
+				if ( ret == 0 )
+				{
+					throw_msg( "Error in XAllocColor" );
+				}
 			}
 
 		}
@@ -1293,8 +1301,10 @@ namespace wal
 			case ClientMessage:
 			{
 				Win* w = GetWinByID( event->xclient.window );
+				bool IsWMProtocols = event->xclient.message_type == atom_WM_PROTOCOLS;
+				bool IsWMDeleteWindow = (Atom) event->xclient.data.l[0] == atom_WM_DELETE_WINDOW;
 
-				if ( w && event->xclient.message_type == atom_WM_PROTOCOLS && event->xclient.data.l[0] == atom_WM_DELETE_WINDOW )
+				if ( w && IsWMProtocols && IsWMDeleteWindow )
 				{
 					cevent ev( EV_CLOSE );
 					w->Event( &ev );
@@ -2775,7 +2785,12 @@ stopped:
 		if ( type == SHOW_MAXIMIZE )
 		{
 			XWindowAttributes xwa;
-			XGetWindowAttributes( display, DefaultRootWindow(display), &xwa );
+			Status ret = XGetWindowAttributes( display, DefaultRootWindow(display), &xwa );
+			if ( ret == 0 )
+			{
+				throw_msg( "Error in XGetWindowAttributes" );
+			}
+
 			XMoveResizeWindow( display, GetID(), 0, 0, xwa.width, xwa.height );
 			return;
 		}
@@ -3648,7 +3663,49 @@ haveMask:
 	SCImage::~SCImage() { Destroy(); }
 
 
+	WthInternalEvent::WthInternalEvent(): signaled( false )
+	{
+		if ( pipe( const_cast<int*>( fd ) ) )
+		{
+			fprintf( stderr, "can`t create internal pipe (WthInternalEvent)\n" );
+			exit( 1 );
+		}
+	};
 
+	WthInternalEvent::~WthInternalEvent()
+	{
+		close( fd[0] );
+		close( fd[1] );
+	}
+
+	void WthInternalEvent::SetSignal()
+	{
+		MutexLock lock( &mutex );
+
+		if ( signaled ) { return; }
+
+		char c = 0;
+		ssize_t ret = write( fd[1], &c, sizeof( c ) );
+
+		if ( ret < 0 ) { throw_syserr( 0, "internal error WthInternalEvent" ); }
+
+		signaled = true;
+	}
+
+	int WthInternalEvent::SignalFD() { return fd[0]; }
+
+	void WthInternalEvent::ClearSignal()
+	{
+		MutexLock lock( &mutex );
+
+		if ( !signaled ) { return; }
+
+		char c;
+		ssize_t ret = read( fd[0], &c, sizeof( c ) );
+		signaled = false;
+
+		if ( ret < 0 ) { throw_syserr( 0, "internal error WthInternalEvent" ); }
+	};
 
 
 } // namespace wal

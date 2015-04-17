@@ -290,7 +290,7 @@ void OperSaveFileThread::Run()
 
 			lock.Unlock();
 
-			int r = file->Read( buf, count );
+			size_t r = file->Read( buf, count );
 
 			if ( r != count ) { throw_msg( "Unable to read\n" ); }
 
@@ -301,7 +301,7 @@ void OperSaveFileThread::Run()
 				throw_msg( "Can`t save file\n%s", fs->StrError( ret_error ).GetUtf8() );
 			}
 
-			if ( n != count )
+			if ( (size_t) n != count )
 			{
 				throw_msg( "Out of disk space\n" );
 			}

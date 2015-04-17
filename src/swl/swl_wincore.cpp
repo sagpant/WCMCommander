@@ -665,7 +665,7 @@ namespace wal
 	{
 		unsigned key = 0;
 
-		for ( auto i = 0; i < sizeof( th ); i++ ) { key += ( ( unsigned char* )&th )[i]; }
+		for ( size_t i = 0; i < sizeof( th ); i++ ) { key += ( ( unsigned char* )&th )[i]; }
 
 		return key;
 	}

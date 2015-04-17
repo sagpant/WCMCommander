@@ -52,7 +52,7 @@ namespace SHL
 	{
 		if ( s >= end ) { return false; }
 
-		int l = end - s;
+		size_t l = end - s;
 		char buf[0x100];
 		std::vector<char> buf2;
 		char* p;

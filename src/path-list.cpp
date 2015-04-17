@@ -149,7 +149,7 @@ void PathListWin::DrawItem(wal::GC& gc, int n, crect rect)
 
         unsigned bg = UiGetColor(uiBackground, uiItem, &ucl, 0xB0B000);
         unsigned color = UiGetColor(uiColor, uiItem, &ucl, 0);
-        unsigned fcColor = UiGetColor(uiFcColor, uiItem, &ucl, 0xFFFF);
+//        unsigned fcColor = UiGetColor(uiFcColor, uiItem, &ucl, 0xFFFF);
 
         gc.SetFillColor(bg);
         gc.FillRect(rect);

@@ -6,8 +6,8 @@ ELSE(MINGW)
 	FIND_PACKAGE(Threads)
 	FIND_PACKAGE(X11)
 
-	OPTION(WITH_FREETYPE "Enable freetype support" OFF)
-	OPTION(WITH_LIBSSH2 "Enable libssh2 support" OFF)
+	OPTION(WITH_FREETYPE "Enable freetype support" ON)
+	OPTION(WITH_LIBSSH2 "Enable libssh2 support" ON)
 	OPTION(WITH_SMBCLIENT "Enable samba support" OFF)
 
 	INCLUDE_DIRECTORIES(${X11_X11_INCLUDE_PATH})

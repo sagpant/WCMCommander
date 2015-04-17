@@ -201,9 +201,9 @@ private:
 	         _lpanel,
 	         _ledit;
 	ButtonWin _buttonWin;
-	PanelWin* _panel;
 	PanelWin _leftPanel,
 	         _rightPanel;
+	PanelWin* _panel;
 
 	NCAutocompleteList m_AutoCompleteList;
 	std::vector<unicode_t> m_PrevAutoCurrentCommand;

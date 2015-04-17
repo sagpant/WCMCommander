@@ -127,7 +127,7 @@ FontDialogX::FontDialogX( NCDialogParent* parent, bool fixed )
 
 		if ( ret )
 		{
-			for ( size_t i = 0; i < count; i++ ) { origList.emplace_back( ret[i] ); }
+			for ( int i = 0; i < count; i++ ) { origList.emplace_back( ret[i] ); }
 
 			for ( size_t i = 0; i < origList.size(); i++ ) { sortedList.emplace_back( origList[i] ); }
 

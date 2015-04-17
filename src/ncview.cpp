@@ -479,7 +479,7 @@ seek_t VFile::GetPrevLine( seek_t filePos,  int* pCols, charset_struct* charset,
 	if ( nlFound ) { *nlFound = false; }
 
 	char buf[0x100];
-	int n = int( filePos > sizeof( buf ) ? sizeof( buf ) : filePos );
+	int n = int( (size_t) filePos > sizeof( buf ) ? sizeof( buf ) : filePos );
 	filePos -= n;
 	int count = ReadBlock( filePos, buf, n, info );
 
@@ -1488,7 +1488,7 @@ void* ViewerThread( void* param )
 				while ( count > 0 )
 				{
 					unsigned char buf[0x100];
-					long n = count > sizeof( buf ) ? sizeof( buf ) : (size_t) count;
+					long n = (size_t) count > sizeof( buf ) ? sizeof( buf ) : (size_t) count;
 					n = file->ReadBlock( offset, ( char* )buf, n, &tData->info );
 
 					if ( n <= 0 ) { break; }
