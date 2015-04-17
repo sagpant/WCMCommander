@@ -897,13 +897,7 @@ void NCWin::PanelEnter(bool Shift)
 
 			if ( ret == CMD_OPEN_FILE )
 			{
-				if ( !terminal )
-				{
-					ExecNoTerminalProcess( cmd.data() );
-					return;
-				}
-				
-				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
+				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath(), !terminal );
 				return;
 			}
 		}
@@ -920,17 +914,7 @@ void NCWin::PanelEnter(bool Shift)
 
 	if ( cmd.data() )
 	{
-#ifndef _WIN32
-
-		if ( !terminal )
-		{
-			ExecNoTerminalProcess( cmd.data() );
-			return;
-		}
-
-#endif
-
-		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
+		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath(), !terminal );
 	}
 }
 
@@ -1017,26 +1001,18 @@ void NCWin::RightButtonPressed( cpoint point )
 
 	ret -= CMD_RC_OPEN_0;
 
-	if ( ret < 0 || ret >= data.nodeList.count() ) { return; }
-
-
-#ifndef _WIN32
-
-	if ( !data.nodeList[ret].terminal )
+	if ( ret < 0 || ret >= data.nodeList.count() )
 	{
-		ExecNoTerminalProcess( data.nodeList[ret].cmd );
 		return;
-	};
+	}
 
-#endif
-
-	StartExecute( data.nodeList[ret].cmd, _panel->GetFS(), _panel->GetPath() );
-
-	return;
+	StartExecute( data.nodeList[ret].cmd, _panel->GetFS(), _panel->GetPath(), !data.nodeList[ret].terminal );
 }
 
-void NCWin::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path )
+void NCWin::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal )
 {
+	SkipSpaces( cmd );
+
 	if ( m_FileExecutor.StartExecute( _editPref.Get(), cmd, fs, path ) )
 	{
 		_history.Put( cmd );
@@ -1222,18 +1198,7 @@ bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mo
 
 	if ( Cmd.data() && *Cmd.data() )
 	{
-#ifndef _WIN32
-
-		if ( !Assoc->GetHasTerminal() )
-		{
-			ExecNoTerminalProcess( Cmd.data() );
-			return true;
-		}
-
-#endif
-
-		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath() );
-
+		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath(), !Assoc->GetHasTerminal() );
 		return true;
 	}
 
@@ -2250,19 +2215,6 @@ void NCWin::ViewCharsetTable()
 	}
 }
 
-#ifndef _WIN32
-
-void NCWin::ExecNoTerminalProcess( const unicode_t* p )
-{
-	SkipSpaces( p );
-
-	_history.Put( p );
-	
-	m_FileExecutor.ExecNoTerminalProcess( _editPref.Get(), p, _panel->GetFS(), _panel->GetPath() );
-}
-
-#endif
-
 void NCWin::Tab( bool forceShellTab )
 {
 	HideAutoComplete();
@@ -2778,29 +2730,27 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& CommandString, bool Forc
 
 		if ( !ProcessBuiltInCommands( p ) )
 		{
-#ifndef _WIN32
+			bool NoTerminal = ( p[0] == '&' || ForceNoTerminal );
 
-			if ( p[0] == '&' || ForceNoTerminal )
+			if ( NoTerminal )
 			{
 				_history.Put( p );
 
-				if ( p[0] == '&' ) { p++; }
+				if ( p[0] == '&' )
+				{
+					p++;
+				}
+			}
 
-				ExecNoTerminalProcess( p );
+			FS* fs = _panel->GetFS();
+
+			if ( fs && fs->Type() == FS::SYSTEM )
+			{
+				StartExecute( Command.data(), fs, _panel->GetPath(), NoTerminal );
 			}
 			else
-#endif
 			{
-				FS* fs = _panel->GetFS();
-
-				if ( fs && fs->Type() == FS::SYSTEM )
-				{
-					StartExecute( Command.data(), _panel->GetFS(), _panel->GetPath() );
-				}
-				else
-				{
-					NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
-				}
+				NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
 			}
 		}
 	}

@@ -24,73 +24,7 @@ FileExecutor::FileExecutor( NCWin* NCWin, TerminalWin_t& terminal )
 	_execSN[0] = 0;
 }
 
-void FileExecutor::ExecNoTerminalProcess( const unicode_t* pref, const unicode_t* p, FS* fs, FSPath& path )
-{
-#ifndef _WIN32
-	static unicode_t empty[] = {0};
-	if ( !pref )
-	{
-		pref = empty;
-	}
-
-	_terminal.TerminalReset();
-	unsigned fg = 0xB;
-	unsigned bg = 0;
-	static unicode_t newLine[] = { '\n', 0 };
-	_terminal.TerminalPrint( newLine, fg, bg );
-	_terminal.TerminalPrint( pref, fg, bg );
-	_terminal.TerminalPrint( p, fg, bg );
-	_terminal.TerminalPrint( newLine, fg, bg );
-
-	if ( !*p )
-	{
-		return;
-	}
-
-	char* dir = 0;
-
-	if ( fs && fs->Type() == FS::SYSTEM )
-	{
-		dir = (char*) path.GetString( sys_charset_id );
-	}
-
-	FSString s = p;
-	sys_char_t* cmd = (sys_char_t*) s.Get( sys_charset_id );
-
-	pid_t pid = fork();
-	if ( pid < 0 )
-	{
-		return;
-	}
-
-	if ( pid )
-	{
-		waitpid( pid, 0, 0 );
-	}
-	else
-	{
-		if ( !fork() )
-		{
-			//printf("exec: %s\n", cmd);
-			signal( SIGINT, SIG_DFL );
-			static char shell[] = "/bin/sh";
-			const char* params[] = { shell, "-c", cmd, NULL };
-
-			if ( dir )
-			{
-				chdir( dir );
-			}
-
-			execv( shell, (char**) params );
-			exit( 1 );
-		}
-
-		exit( 0 );
-	}
-#endif
-}
-
-bool FileExecutor::StartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path )
+bool FileExecutor::StartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal )
 {
 #ifdef _WIN32
 
@@ -101,48 +35,110 @@ bool FileExecutor::StartExecute( const unicode_t* pref, const unicode_t* cmd, FS
 
 #else
 
-	static unicode_t empty[] = { 0 };
+	static unicode_t empty[] = {0};
+	static unicode_t newLine[] = { '\n', 0 };
+	
 	if ( !pref )
 	{
 		pref = empty;
 	}
 
-	_terminal.TerminalReset();
-	unsigned fg_pref = 0xB;
-	unsigned fg_cmd = 0xF;
-	unsigned bg = 0;
-	static unicode_t newLine[] = { '\n', 0 };
-	_terminal.TerminalPrint( newLine, fg_pref, bg );
-	_terminal.TerminalPrint( pref, fg_pref, bg );
-	_terminal.TerminalPrint( cmd, fg_cmd, bg );
-	_terminal.TerminalPrint( newLine, fg_cmd, bg );
-
-	int l = unicode_strlen( cmd );
-	int i;
-
-	if ( l >= 64 )
+	if ( !*cmd )
 	{
-		for ( i = 0; i < 64 - 1; i++ )
+		return false;
+	}
+
+	_terminal.TerminalReset();
+
+	if ( NoTerminal )
+	{
+		unsigned fg = 0xB;
+		unsigned bg = 0;
+		
+		_terminal.TerminalPrint( newLine, fg, bg );
+		_terminal.TerminalPrint( pref, fg, bg );
+		_terminal.TerminalPrint( cmd, fg, bg );
+		_terminal.TerminalPrint( newLine, fg, bg );
+
+		char* dir = 0;
+
+		if ( fs && fs->Type() == FS::SYSTEM )
 		{
-			_execSN[i] = cmd[i];
+			dir = (char*) path.GetString( sys_charset_id );
 		}
 
-		_execSN[60] = '.';
-		_execSN[61] = '.';
-		_execSN[62] = '.';
-		_execSN[63] = 0;
+		FSString s = cmd;
+		sys_char_t* SysCmd = (sys_char_t*) s.Get( sys_charset_id );
+
+		pid_t pid = fork();
+		if ( pid < 0 )
+		{
+			return false;
+		}
+
+		if ( pid )
+		{
+			waitpid( pid, 0, 0 );
+		}
+		else
+		{
+			if ( !fork() )
+			{
+				//printf("exec: %s\n", SysCmd);
+				signal( SIGINT, SIG_DFL );
+				static char shell[] = "/bin/sh";
+				const char* params[] = { shell, "-c", SysCmd, NULL };
+
+				if ( dir )
+				{
+					chdir( dir );
+				}
+
+				execv( shell, (char**) params );
+				exit( 1 );
+			}
+
+			exit( 0 );
+		}
 	}
 	else
 	{
-		for ( i = 0; i < l; i++ )
+		unsigned fg_pref = 0xB;
+		unsigned fg_cmd = 0xF;
+		unsigned bg = 0;
+		
+		_terminal.TerminalPrint( newLine, fg_pref, bg );
+		_terminal.TerminalPrint( pref, fg_pref, bg );
+		_terminal.TerminalPrint( cmd, fg_cmd, bg );
+		_terminal.TerminalPrint( newLine, fg_cmd, bg );
+
+		int l = unicode_strlen( cmd );
+		int i;
+
+		if ( l >= 64 )
 		{
-			_execSN[i] = cmd[i];
+			for ( i = 0; i < 64 - 1; i++ )
+			{
+				_execSN[i] = cmd[i];
+			}
+
+			_execSN[60] = '.';
+			_execSN[61] = '.';
+			_execSN[62] = '.';
+			_execSN[63] = 0;
+		}
+		else
+		{
+			for ( i = 0; i < l; i++ )
+			{
+				_execSN[i] = cmd[i];
+			}
+
+			_execSN[l] = 0;
 		}
 
-		_execSN[l] = 0;
+		_terminal.Execute( m_NCWin, TERMINAL_THREAD_ID, cmd, (sys_char_t*) path.GetString( sys_charset_id ) );
 	}
-
-	_terminal.Execute( m_NCWin, TERMINAL_THREAD_ID, cmd, (sys_char_t*) path.GetString( sys_charset_id ) );
 
 #endif
 

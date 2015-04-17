@@ -262,7 +262,7 @@ private:
 	void PanelCtrlPgDown();
 
 	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
-	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
+	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
 
 	void ApplyCommand();
 	void CreateDirectory();
@@ -336,10 +336,6 @@ private:
 	{
 		return panel == &_leftPanel ? &_rightPanel : &_leftPanel;
 	}
-
-#ifndef _WIN32
-	void ExecNoTerminalProcess( const unicode_t* p );
-#endif
 
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
 
