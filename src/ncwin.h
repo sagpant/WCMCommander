@@ -321,8 +321,6 @@ private:
 
 	void CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks );
 
-	void ExecuteFile();
-
 	const unicode_t* GetCurrentFileName() const;
 	PanelWin* GetOtherPanel()
 	{

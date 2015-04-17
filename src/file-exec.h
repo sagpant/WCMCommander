@@ -22,6 +22,7 @@ typedef TerminalWin TerminalWin_t;
 class NCWin;
 class StringWin;
 class NCHistory;
+class PanelWin;
 class FS;
 class FSPath;
 
@@ -45,6 +46,9 @@ private:
 public:
 	FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& history, TerminalWin_t& terminal );
 	virtual ~FileExecutor() {}
+
+	/// Executes selected runnable file (.exe, .bat, etc.) from the given panel
+	void ExecuteFile( PanelWin* panel );
 
 	/// Start to execute the given command in the given dir
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );

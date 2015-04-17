@@ -8,6 +8,7 @@
 #include "ncwin.h"
 #include "ltext.h"
 #include "string-util.h"
+#include "panel.h"
 
 #ifndef _WIN32
 #  include <signal.h>
@@ -41,6 +42,42 @@ FileExecutor::FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& histor
 	, _execId( -1 )
 {
 	_execSN[0] = 0;
+}
+
+void FileExecutor::ExecuteFile( PanelWin* panel )
+{
+	FSNode* p = panel->GetCurrent();
+
+	if ( !p || p->IsDir() || !p->IsExe() )
+	{
+		return;
+	}
+
+	FS* fs = panel->GetFS();
+
+	if ( !fs || fs->Type() != FS::SYSTEM )
+	{
+		NCMessageBox( m_NCWin, _LT( "Run" ), _LT( "Can`t execute file in not system fs" ), true );
+		return;
+	}
+
+#ifdef _WIN32
+	
+	static unicode_t w[2] = { '"', 0 };
+	StartExecute( carray_cat<unicode_t>( w, panel->UriOfCurrent().GetUnicode(), w ).data(), fs, panel->GetPath() );
+
+#else
+
+	const unicode_t*   fName = p->GetUnicodeName();
+	int len = unicode_strlen( fName );
+	std::vector<unicode_t> cmd( 2 + len + 1 );
+	cmd[0] = '.';
+	cmd[1] = '/';
+	memcpy( cmd.data() + 2, fName, len * sizeof( unicode_t ) );
+	cmd[2 + len] = 0;
+	StartExecute( cmd.data(), fs, panel->GetPath() );
+
+#endif
 }
 
 void FileExecutor::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal )

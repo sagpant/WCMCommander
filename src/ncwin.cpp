@@ -780,41 +780,6 @@ void NCWin::SetMode( MODE m )
 	RecalcLayouts();
 }
 
-void NCWin::ExecuteFile()
-{
-	FSNode* p =  _panel->GetCurrent();
-
-	if ( !p || p->IsDir() ) { return; }
-
-	if ( p->IsExe() )
-	{
-		FS* pFs = _panel->GetFS();
-
-		if ( !pFs || pFs->Type() != FS::SYSTEM )
-		{
-			NCMessageBox( this, _LT( "Run" ),
-			              _LT( "Can`t execute file in not system fs" ), true );
-			return;
-		}
-
-#ifdef _WIN32
-		static unicode_t w[2] = {'"', 0};
-		m_FileExecutor.StartExecute( carray_cat<unicode_t>( w, _panel->UriOfCurrent().GetUnicode(), w ).data(), _panel->GetFS(), _panel->GetPath() );
-		return;
-#else
-		const unicode_t*   fName = p->GetUnicodeName();
-		int len = unicode_strlen( fName );
-		std::vector<unicode_t> cmd( 2 + len + 1 );
-		cmd[0] = '.';
-		cmd[1] = '/';
-		memcpy( cmd.data() + 2, fName, len * sizeof( unicode_t ) );
-		cmd[2 + len] = 0;
-		m_FileExecutor.StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
-		return;
-#endif
-	}
-}
-
 void NCWin::PanelCtrlPgDown()
 {
 	if ( _mode != PANEL ) { return; }
@@ -895,7 +860,7 @@ void NCWin::PanelEnter(bool Shift)
 		}
 
 #endif
-		ExecuteFile();
+		m_FileExecutor.ExecuteFile( _panel );
 		return;
 	}
 
@@ -987,7 +952,7 @@ void NCWin::RightButtonPressed( cpoint point )
 
 	if ( ret == CMD_RC_RUN )
 	{
-		ExecuteFile();
+		m_FileExecutor.ExecuteFile( _panel );
 		return;
 	}
 
