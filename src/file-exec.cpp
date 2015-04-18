@@ -262,7 +262,7 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 				pAppName = emptyStr;
 			}
 
-			int ret = NCMessageBox( this, "Open",
+			int ret = NCMessageBox( m_NCWin, "Open",
 				carray_cat<char>( "Executable file: ", p->name.GetUtf8(), "\ncan be opened by: ", unicode_to_utf8( pAppName ).data(), "\nExecute or Open?" ).data(),
 				false, bListOpenExec );
 

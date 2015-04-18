@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "fileassociations.h"
+
 #ifdef _WIN32
 
 #include "w32cons.h"
@@ -23,9 +25,6 @@ class NCWin;
 class StringWin;
 class NCHistory;
 class PanelWin;
-
-class clNCFileAssociation;
-enum eFileAssociation;
 
 class FS;
 class FSPath;
