@@ -11,7 +11,9 @@
 #include "ltext.h"
 #include "vfs-ftp.h"
 #include "vfs-tmp.h"
+#include "vfs-smb.h"
 #include "ftplogon.h"
+#include "smblogon.h"
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 #  include "sftpdlg.h"

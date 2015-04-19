@@ -8,7 +8,7 @@ ELSE(MINGW)
 
 	OPTION(WITH_FREETYPE "Enable freetype support" ON)
 	OPTION(WITH_LIBSSH2 "Enable libssh2 support" ON)
-	OPTION(WITH_SMBCLIENT "Enable samba support" OFF)
+	OPTION(WITH_SMBCLIENT "Enable samba support" ON)
 
 	INCLUDE_DIRECTORIES(${X11_X11_INCLUDE_PATH})
 	SET(wcm_LIBS ${CMAKE_THREAD_LIBS_INIT} ${X11_X11_LIB})
