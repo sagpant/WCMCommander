@@ -1,4 +1,5 @@
 /*
+/*
  * Part of WCM Commander
  * https://github.com/corporateshark/WCMCommander
  * walcommander@linderdaum.com
@@ -242,7 +243,7 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 			}
 
 			char buf[64];
-			snprintf( buf, sizeof( buf ), "%i ", i + 1 );
+			snprintf( buf, sizeof( buf ), "%c. ", i + 'A' );
 
 			mData.Add( carray_cat<unicode_t>( utf8_to_unicode( buf ).data(), un.data() ).data(), ut.data(), nullptr, ID_MNT_UX0 + i );
 		}
