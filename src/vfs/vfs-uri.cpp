@@ -195,8 +195,7 @@ clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<clPtr<F
 
 	if (uri[0] == 't' && uri[1] == 'm' && uri[2] == 'p' && uri[3] == ':' && uri[4] == '/' && uri[5] == '/')
 	{
-		clPtr<FS> baseFS = ParzeURI( uri + 6, path, checkFS );
-		return new FSTmp(baseFS);
+		return FSTmp::ParzeURI(uri, path, checkFS);
 	}
 
 	if (uri[0] == 'f' && uri[1] == 'i' && uri[2] == 'l' && uri[3] == 'e' && uri[4] == ':' && uri[5] == '/' && uri[6] == '/')

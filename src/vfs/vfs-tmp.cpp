@@ -1,3 +1,4 @@
+#include "vfs-uri.h"
 #include "vfs-tmp.h"
 
 static const char rootStr[] = { DIR_SPLITTER , 0};
@@ -362,11 +363,59 @@ int FSTmp::SetFileTime(FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, i
 	}
 }
 
-FSString FSTmp::Uri(FSPath& path) 
-{ 
-	std::string uri(std::string("tmp://") + baseFS->Uri(path).GetUtf8());
-	return FSString(uri.c_str());
-};
+// The Uri/ParseURI funcion is used in two cases:
+// 1. Panel caption, to show folder/file - only Uri side of the pair
+// 2. Dialogs, registry - to combine FS and path into URI, and parse the URI back - both functions.
+// Approaches for Url-ParseURI implementations
+// 1. Delegate Uri to baseFS. No need to have ParseURI
+//    - copying to TMPFs does not work. 
+
+// 2. Delegate file Uri to baseBS. Folder Uri is tmp:///folder/name#baseFSRootUri
+//   - appears to work 
+FSString FSTmp::Uri(FSPath& path)
+{
+	FSTmpNode* n = rootDir.findByFsPath(&path);
+	if (n && n->nodeType == FSTmpNode::NODE_FILE)
+		return baseFS->Uri(n->baseFSPath);
+	else
+		return std::string("tmp://") + path.GetUtf8('/') + "#" + baseFS->Uri(FSPath(FSString("/"))).GetUtf8();
+}
+
+// Handles only folder URIs.
+// File URIs are not tmp://-based, but are baseFS-based
+// The URI is: tmp:///folder/name#baseFSRoot
+clPtr<FS> FSTmp::ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS)
+{
+	std::string	uriUtf8(unicode_to_utf8_string(uri));
+	if (uriUtf8.compare(0, 6, "tmp://") == 0)
+	{
+		int poundOffset = uriUtf8.find('#');
+		if (poundOffset != std::string::npos)
+		{
+			const char* baseFSRootUri = uriUtf8.c_str() + poundOffset + 1;
+			// Wow, too much ops for a simple conversion
+			std::string pathUtf8(uriUtf8.substr(6, poundOffset));
+			FSString pathFSstring(pathUtf8);
+			path = FSPath(pathFSstring);
+
+			FSPath rootFSPath(FSString("/"));
+			for (clPtr<FS> clPtrFs : checkFS)
+			{
+				if (clPtrFs->Type() == FS::TMP)
+				{
+					FSTmp* fsTmp = (FSTmp*) clPtrFs.ptr();
+					if (strcmp(fsTmp->baseFS->Uri(rootFSPath).GetUtf8(), baseFSRootUri) == 0)
+						return clPtrFs;
+				}
+			}
+			// no tmpFS ptr found among checkFS, create baseFS, and FSTmp on top of it.
+			FSPath tFSPath;
+			clPtr<FS> baseFS = ::ParzeURI(uri + poundOffset + 1, tFSPath, checkFS);
+			return new FSTmp(baseFS);
+		}
+	}
+	return new FSSys(-1);
+}
 
 bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath)
 {

@@ -99,6 +99,7 @@ public:
 		{ return baseFS->GetFileSystemFreeSpace(path, err); }
 
 	virtual FSString Uri(FSPath& path) override;
+	static clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS);
 
 	//
 	// FSTmp
