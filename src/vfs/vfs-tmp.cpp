@@ -3,6 +3,7 @@
 
 static const char rootStr[] = { DIR_SPLITTER , 0};
 static FSString rootFSStr(rootStr);
+
 FSPath FSTmp::rootPathName(rootFSStr);
 //beware, because of static scope the statement below to replace the above does not work:
 //FSPath FSTmp::rootPathName(FSString({ DIR_SPLITTER, 0 }));
@@ -378,7 +379,10 @@ FSString FSTmp::Uri(FSPath& path)
 	if (n && n->nodeType == FSTmpNode::NODE_FILE)
 		return baseFS->Uri(n->baseFSPath);
 	else
-		return std::string("tmp://") + path.GetUtf8('/') + "#" + baseFS->Uri(FSPath(FSString("/"))).GetUtf8();
+	{
+		std::string ret(std::string("tmp://") + path.GetUtf8('/') + "#" + baseFS->Uri(rootPathName).GetUtf8());
+		return FSString(ret.c_str());
+	}
 }
 
 // Handles only folder URIs.
@@ -398,13 +402,12 @@ clPtr<FS> FSTmp::ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<
 			FSString pathFSstring(pathUtf8);
 			path = FSPath(pathFSstring);
 
-			FSPath rootFSPath(FSString("/"));
 			for (clPtr<FS> clPtrFs : checkFS)
 			{
 				if (clPtrFs->Type() == FS::TMP)
 				{
 					FSTmp* fsTmp = (FSTmp*) clPtrFs.ptr();
-					if (strcmp(fsTmp->baseFS->Uri(rootFSPath).GetUtf8(), baseFSRootUri) == 0)
+					if (strcmp(fsTmp->baseFS->Uri(rootPathName).GetUtf8(), baseFSRootUri) == 0)
 						return clPtrFs;
 				}
 			}
@@ -414,7 +417,7 @@ clPtr<FS> FSTmp::ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<
 			return new FSTmp(baseFS);
 		}
 	}
-	return new FSSys(-1);
+	return new FSSys();
 }
 
 bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath)
