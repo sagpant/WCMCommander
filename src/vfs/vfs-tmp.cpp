@@ -196,8 +196,13 @@ int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 		clPtr<FSNode> pNode = new FSNode();
 
 		pNode->name=(std::string("") + tn.name.GetUtf8()).c_str();
-		pNode->st = tn.fsStat;
-
+		if (tn.nodeType == FSTmpNode::NODE_DIR)
+			pNode->st = tn.fsStat;
+		else
+		{
+			if (baseFS->Stat(tn.baseFSPath, & pNode->st, 0, 0) != 0)
+				pNode->st = tn.fsStat;
+		}
 		list->Append(pNode);
 	}
 	return 0;
