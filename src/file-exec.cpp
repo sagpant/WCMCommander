@@ -5,6 +5,7 @@
  */
 
 #include "file-exec.h"
+#include "file-util.h"
 #include "ncwin.h"
 #include "ltext.h"
 #include "string-util.h"
@@ -510,10 +511,36 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 	std::vector<unicode_t> cmd;
 	bool terminal = true;
 	const unicode_t* pAppName = 0;
+	clPtr<FS> LocalFs = Panel->GetFSPtr();
+	FSPath LocalPath = Panel->GetPath();
+
+	FSString Uri;
+
+	if ( !(LocalFs->Flags() & FS::HAVE_SEEK) )
+	{
+		// append file name to the path
+		LocalPath.Push( CS_UTF8, p->name.GetUtf8() );
+
+		// try to load virtual system file to local temp file
+		if ( !LoadToTempFile( m_NCWin, &LocalFs, &LocalPath ) )
+		{
+			return;
+		}
+
+		// get full URI to the loaded temp local file
+		Uri = LocalFs->Uri( LocalPath );
+		
+		// remove file name from the dir path
+		LocalPath.Pop();
+	}
+	else
+	{
+		Uri = Panel->UriOfCurrent();
+	}
 
 	if ( Shift )
 	{
-		ExecuteDefaultApplication( Panel->UriOfCurrent().GetUnicode() );
+		ExecuteDefaultApplication( Uri.GetUnicode() );
 		return;
 	}
 
@@ -524,7 +551,7 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 
 	if ( g_WcmConfig.systemAskOpenExec )
 	{
-		cmd = GetOpenCommand( Panel->UriOfCurrent().GetUnicode(), &terminal, &pAppName );
+		cmd = GetOpenCommand( Uri.GetUnicode(), &terminal, &pAppName );
 		cmdChecked = true;
 	}
 
@@ -554,7 +581,7 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 
 			if ( ret == CMD_OPEN_FILE )
 			{
-				StartExecute( cmd.data(), Panel->GetFS(), Panel->GetPath(), !terminal );
+				StartExecute( cmd.data(), LocalFs.ptr(), LocalPath, !terminal );
 				return;
 			}
 		}
@@ -566,12 +593,12 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 
 	if ( !cmdChecked )
 	{
-		cmd = GetOpenCommand( Panel->UriOfCurrent().GetUnicode(), &terminal, 0 );
+		cmd = GetOpenCommand( Uri.GetUnicode(), &terminal, 0 );
 	}
 
 	if ( cmd.data() )
 	{
-		StartExecute( cmd.data(), Panel->GetFS(), Panel->GetPath(), !terminal );
+		StartExecute( cmd.data(), LocalFs.ptr(), LocalPath, !terminal );
 	}
 }
 
