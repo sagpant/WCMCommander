@@ -96,12 +96,12 @@ MenuData* AppMenuData::AppendAppList( AppList* list )
 
 FileExecutor::FileExecutor( NCWin* NCWin, StringWin& editPref, NCHistory& history, TerminalWin_t& terminal )
 	: m_NCWin( NCWin )
-	, _editPref( editPref )
-	, _history( history )
-	, _terminal( terminal )
-	, _execId( -1 )
+	, m_EditPref( editPref )
+	, m_History( history )
+	, m_Terminal( terminal )
+	, m_ExecId( -1 )
 {
-	_execSN[0] = 0;
+	m_ExecSN[0] = 0;
 }
 
 void FileExecutor::ShowFileContextMenu( cpoint point, PanelWin* Panel )
@@ -259,7 +259,7 @@ bool FileExecutor::ProcessCommand_CD( const unicode_t* cmd, PanelWin* Panel )
 	unicode_t* p = copy.data();
 
 	//change dir
-	_history.Put( p );
+	m_History.Put( p );
 	p += 2;
 
 	SkipSpaces( p );
@@ -360,7 +360,7 @@ bool FileExecutor::ProcessCommand_CD( const unicode_t* cmd, PanelWin* Panel )
 
 bool FileExecutor::ProcessCommand_CLS( const unicode_t* cmd )
 {
-	_terminal.TerminalReset( true );
+	m_Terminal.TerminalReset( true );
 	return true;
 }
 
@@ -404,7 +404,7 @@ bool FileExecutor::StartCommand( const std::vector<unicode_t>& CommandString, Pa
 
 	if ( *p )
 	{
-		_history.ResetToLast();
+		m_History.ResetToLast();
 
 		if ( !ProcessBuiltInCommands( p, Panel ) )
 		{
@@ -412,7 +412,7 @@ bool FileExecutor::StartCommand( const std::vector<unicode_t>& CommandString, Pa
 
 			if ( NoTerminal )
 			{
-				_history.Put( p );
+				m_History.Put( p );
 
 				if ( p[0] == '&' )
 				{
@@ -615,9 +615,9 @@ void FileExecutor::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, boo
 {
 	SkipSpaces( cmd );
 
-	if ( DoStartExecute( _editPref.Get(), cmd, fs, path ) )
+	if ( DoStartExecute( m_EditPref.Get(), cmd, fs, path ) )
 	{
-		_history.Put( cmd );
+		m_History.Put( cmd );
 		m_NCWin->SetMode( NCWin::TERMINAL );
 	}
 
@@ -628,7 +628,7 @@ bool FileExecutor::DoStartExecute( const unicode_t* pref, const unicode_t* cmd, 
 {
 #ifdef _WIN32
 
-	if ( !_terminal.Execute( m_NCWin, TERMINAL_THREAD_ID, cmd, 0, fs->Uri( path ).GetUnicode() ) )
+	if ( !m_Terminal.Execute( m_NCWin, TERMINAL_THREAD_ID, cmd, 0, fs->Uri( path ).GetUnicode() ) )
 	{
 		return false;
 	}
@@ -648,17 +648,17 @@ bool FileExecutor::DoStartExecute( const unicode_t* pref, const unicode_t* cmd, 
 		return false;
 	}
 
-	_terminal.TerminalReset();
+	m_Terminal.TerminalReset();
 
 	if ( NoTerminal )
 	{
 		unsigned fg = 0xB;
 		unsigned bg = 0;
 		
-		_terminal.TerminalPrint( newLine, fg, bg );
-		_terminal.TerminalPrint( pref, fg, bg );
-		_terminal.TerminalPrint( cmd, fg, bg );
-		_terminal.TerminalPrint( newLine, fg, bg );
+		m_Terminal.TerminalPrint( newLine, fg, bg );
+		m_Terminal.TerminalPrint( pref, fg, bg );
+		m_Terminal.TerminalPrint( cmd, fg, bg );
+		m_Terminal.TerminalPrint( newLine, fg, bg );
 
 		char* dir = 0;
 
@@ -707,10 +707,10 @@ bool FileExecutor::DoStartExecute( const unicode_t* pref, const unicode_t* cmd, 
 		unsigned fg_cmd = 0xF;
 		unsigned bg = 0;
 		
-		_terminal.TerminalPrint( newLine, fg_pref, bg );
-		_terminal.TerminalPrint( pref, fg_pref, bg );
-		_terminal.TerminalPrint( cmd, fg_cmd, bg );
-		_terminal.TerminalPrint( newLine, fg_cmd, bg );
+		m_Terminal.TerminalPrint( newLine, fg_pref, bg );
+		m_Terminal.TerminalPrint( pref, fg_pref, bg );
+		m_Terminal.TerminalPrint( cmd, fg_cmd, bg );
+		m_Terminal.TerminalPrint( newLine, fg_cmd, bg );
 
 		int l = unicode_strlen( cmd );
 		int i;
@@ -719,25 +719,25 @@ bool FileExecutor::DoStartExecute( const unicode_t* pref, const unicode_t* cmd, 
 		{
 			for ( i = 0; i < 64 - 1; i++ )
 			{
-				_execSN[i] = cmd[i];
+				m_ExecSN[i] = cmd[i];
 			}
 
-			_execSN[60] = '.';
-			_execSN[61] = '.';
-			_execSN[62] = '.';
-			_execSN[63] = 0;
+			m_ExecSN[60] = '.';
+			m_ExecSN[61] = '.';
+			m_ExecSN[62] = '.';
+			m_ExecSN[63] = 0;
 		}
 		else
 		{
 			for ( i = 0; i < l; i++ )
 			{
-				_execSN[i] = cmd[i];
+				m_ExecSN[i] = cmd[i];
 			}
 
-			_execSN[l] = 0;
+			m_ExecSN[l] = 0;
 		}
 
-		_terminal.Execute( m_NCWin, TERMINAL_THREAD_ID, cmd, (sys_char_t*) path.GetString( sys_charset_id ) );
+		m_Terminal.Execute( m_NCWin, TERMINAL_THREAD_ID, cmd, (sys_char_t*) path.GetString( sys_charset_id ) );
 	}
 
 #endif
@@ -751,24 +751,24 @@ void FileExecutor::StopExecute()
 
 	if ( NCMessageBox( m_NCWin, _LT( "Stop" ), _LT( "Drop current console?" ), false, bListOkCancel ) == CMD_OK )
 	{
-		_terminal.DropConsole();
+		m_Terminal.DropConsole();
 	}
 
 #else
 
-	if ( _execId > 0 )
+	if ( m_ExecId > 0 )
 	{
-		int ret = KillCmdDialog( m_NCWin, _execSN );
+		int ret = KillCmdDialog( m_NCWin, m_ExecSN );
 
-		if ( _execId > 0 )
+		if ( m_ExecId > 0 )
 		{
 			if ( ret == CMD_KILL_9 )
 			{
-				kill( _execId, SIGKILL );
+				kill( m_ExecId, SIGKILL );
 			}
 			else if ( ret == CMD_KILL )
 			{
-				kill( _execId, SIGTERM );
+				kill( m_ExecId, SIGTERM );
 			}
 		}
 	}
@@ -780,7 +780,7 @@ void FileExecutor::ThreadSignal( int id, int data )
 {
 	if ( id == TERMINAL_THREAD_ID )
 	{
-		_execId = data;
+		m_ExecId = data;
 	}
 }
 
@@ -788,7 +788,7 @@ void FileExecutor::ThreadStopped( int id, void* data )
 {
 	if ( id == TERMINAL_THREAD_ID )
 	{
-		_execId = -1;
-		_execSN[0] = 0;
+		m_ExecId = -1;
+		m_ExecSN[0] = 0;
 	}
 }

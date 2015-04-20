@@ -36,12 +36,12 @@ class FileExecutor
 private:
 
 	NCWin* m_NCWin;
-	StringWin& _editPref;
-	NCHistory& _history;
-	TerminalWin_t& _terminal;
+	StringWin& m_EditPref;
+	NCHistory& m_History;
+	TerminalWin_t& m_Terminal;
 
-	int _execId;
-	unicode_t _execSN[64];
+	int m_ExecId;
+	unicode_t m_ExecSN[64];
 
 	FileExecutor( const FileExecutor& ) = delete;
 	FileExecutor& operator=(const FileExecutor&) = delete;
