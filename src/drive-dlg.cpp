@@ -11,12 +11,15 @@
 #include "ltext.h"
 #include "vfs-ftp.h"
 #include "vfs-tmp.h"
-#include "vfs-smb.h"
 #include "ftplogon.h"
-#include "smblogon.h"
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 #  include "sftpdlg.h"
+#endif
+
+#ifdef LIBSMBCLIENT_EXIST
+#  include "vfs-smb.h"
+#  include "smblogon.h"
 #endif
 
 #ifndef _WIN32
