@@ -17,6 +17,11 @@
 #  include "sftpdlg.h"
 #endif
 
+#ifdef LIBSMBCLIENT_EXIST
+#  include "vfs-smb.h"
+#  include "smblogon.h"
+#endif
+
 #ifndef _WIN32
 #  include "ux_util.h"
 #else
