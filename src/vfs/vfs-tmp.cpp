@@ -40,24 +40,24 @@ FSTmpNode::FSTmpNode(const unicode_t* _name, FSTmpNode* _parentDir)
 FSTmpNode* FSTmpNode::findByBasePath(FSPath* basePath, bool isRecursive)
 {
 	// first, try all file nodes in current dir
-	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+	for (FSTmpNode& n : content)
 	{
-		if ((*it).nodeType == FSTmpNode::NODE_FILE)
+		if (n.nodeType == FSTmpNode::NODE_FILE)
 		{
-			if ((*it).baseFSPath.Equals(basePath))
-				return &(*it);
+			if (n.baseFSPath.Equals(basePath))
+				return &n;
 		} 
 	}
 	// only if not found in current dir, try inside subdirs
 	if (isRecursive)
 	{
-		for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+		for (FSTmpNode& n : content )
 		{
-			if ((*it).nodeType == FSTmpNode::NODE_DIR)
+			if (n.nodeType == FSTmpNode::NODE_DIR)
 			{
-				FSTmpNode* n = (*it).findByBasePath(basePath, isRecursive);
-				if (n)
-					return n;
+				FSTmpNode* pn = n.findByBasePath(basePath, isRecursive);
+				if (pn)
+					return pn;
 			}
 		}
 	}
@@ -99,23 +99,23 @@ FSTmpNode* FSTmpNode::findByName(FSString* name, bool isRecursive)
 {
 	//dbg_printf("FSTmpNodeDir::findByName name=%s\n",name->GetUtf8());
 	// first, try all nodes in current	
-	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+	for (FSTmpNode& n : content)
 	{
 		//dbg_printf("FSTmpNodeDir::findByName *it.name=%s\n", (*it).name.GetUtf8());
 
-		if ((*it).name.Cmp(*name)==0)
-			return &(*it);
+		if (n.name.Cmp(*name)==0)
+			return &n;
 	}
 	// only if not found in current dir, try inside subdirs
 	if (isRecursive)
 	{
-		for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+		for (FSTmpNode& n : content)
 		{
-			if ((*it).nodeType == FSTmpNode::NODE_DIR)
+			if (n.nodeType == FSTmpNode::NODE_DIR)
 			{
-				FSTmpNode* n = (*it).findByName(name, isRecursive);
-				if (n)
-					return n;
+				FSTmpNode* pn = n.findByName(name, isRecursive);
+				if (pn)
+					return pn;
 			}
 		}
 	}
@@ -125,7 +125,7 @@ FSTmpNode* FSTmpNode::findByName(FSString* name, bool isRecursive)
 bool FSTmpNode::Remove(FSString* name, bool searchRecursive)
 {
 	// first, try all nodes in current dir
-	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+	for (auto it = content.begin(); it != content.end(); ++it)
 	{
 		if ((*it).name.Cmp(*name) == 0)
 		{
@@ -136,11 +136,11 @@ bool FSTmpNode::Remove(FSString* name, bool searchRecursive)
 	// only if not found in current dir, try inside subdirs
 	if (searchRecursive)
 	{
-		for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+		for (FSTmpNode& n : content)
 		{
-			if ((*it).nodeType == FSTmpNode::NODE_DIR)
+			if (n.nodeType == FSTmpNode::NODE_DIR)
 			{
-				bool ret = (*it).Remove(name, searchRecursive);
+				bool ret = n.Remove(name, searchRecursive);
 				if (ret)
 					return true;
 			}
@@ -191,12 +191,12 @@ int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 	}
 
-	for (std::list<FSTmpNode>::iterator it = n->content.begin(); it != n->content.end(); ++it)
+	for (FSTmpNode& tn : n->content)
 	{
 		clPtr<FSNode> pNode = new FSNode();
 
-		pNode->name=(std::string("") + (*it).name.GetUtf8()).c_str();
-		pNode->st = (*it).fsStat;
+		pNode->name=(std::string("") + tn.name.GetUtf8()).c_str();
+		pNode->st = tn.fsStat;
 
 		list->Append(pNode);
 	}
@@ -315,7 +315,7 @@ int FSTmp::Delete(FSPath& path, int* err, FSCInfo* info)
 		}
 		*/
 		// remove from tmpfs list
-		for (std::list<FSTmpNode>::iterator it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
+		for (auto it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
 		{ 
 			if ((*it).name.Cmp(*dName) == 0)
 			{
@@ -332,7 +332,7 @@ int FSTmp::RmDir(FSPath& path, int* err, FSCInfo* info)
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	FSString* dirName = path.GetItem(path.Count() - 1);
 
-	for (std::list<FSTmpNode>::iterator it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
+	for (auto it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
 	{
 		if ((*it).name.Cmp(*dirName) == 0)
 		{
