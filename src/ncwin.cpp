@@ -2244,259 +2244,9 @@ std::vector<unicode_t> NCWin::FetchAndClearCommandLine()
 	return txt;
 }
 
-bool IsCommand_CD( const unicode_t* p )
-{
-#ifdef _WIN32
-	return ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' );
-#else
-	return ( p[0] == 'c' && p[1] == 'd' && ( !p[2] || p[2] == ' ' ) );
-#endif
-}
-
-bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
-{
-	if ( !Out ) { return false; }
-
-	std::string Value = GetEnvVariable( EnvVarName );
-
-	if ( Value.empty() ) return false;
-
-	*Out = utf8_to_unicode( Value.c_str() );
-
-	return true;
-}
-
-// handle the "cd" command, convert its argument to a valid path, expand ~ and env variables
-std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
-{
-	std::vector<unicode_t> Out;
-
-	std::vector<unicode_t> Temp;
-
-	while ( p && *p )
-	{
-		unicode_t Ch = 0;
-
-		if ( *p == '~' )
-		{
-			if ( LookAhead( p, &Ch ) )
-			{
-				if ( ( IsPathSeparator( Ch ) || Ch == 0 ) && ApplyEnvVariable( "HOME", &Temp ) )
-				{
-					// replace ~ with the HOME path
-					Out.insert( Out.end(), Temp.begin(), Temp.end() );
-					PopLastNull( &Out );
-				}
-			}
-		}
-		else if ( *p == '$' )
-		{
-			// skip `$`
-			std::string EnvVarName = unicode_to_utf8( p + 1 );
-
-			for ( auto i = EnvVarName.begin(); i != EnvVarName.end(); i++ )
-			{
-				if ( IsPathSeparator( *i ) )
-				{
-					*i = 0;
-					break;
-				}
-			}
-
-			if ( ApplyEnvVariable( EnvVarName.data( ), &Temp ) )
-			{
-				// replace the var name with its value
-				Out.insert( Out.end(), Temp.begin(), Temp.end() );
-				PopLastNull( &Out );
-				// skip var name
-				p += strlen( EnvVarName.data() );
-			}
-		}
-		else if ( IsPathSeparator( *p ) )
-		{
-			if ( !LastCharEquals( Out, '/' ) && !LastCharEquals( Out, '\\' ) ) { Out.push_back( DIR_SPLITTER ); }
-		}
-		else
-		{
-			Out.push_back( *p );
-		}
-
-		p++;
-	}
-
-	Out.push_back( 0 );
-
-// debug
-//	std::vector<char> U = unicode_to_utf8( Out.data() );
-//	const char* UTF = U.data();
-
-	return Out;
-}
-
-bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
-{
-	// make a mutable copy
-	std::vector<unicode_t> copy = new_unicode_str( cmd );
-
-	unicode_t* p = copy.data();
-
-	//change dir
-	_history.Put( p );
-	p += 2;
-
-	SkipSpaces( p );
-
-	std::vector<unicode_t> Path = ConvertCDArgToPath( p );
-
-	if ( Path.empty() || !Path[0] )
-	{
-#if defined(_WIN32)
-		m_FileExecutor.StartExecute( cmd, _panel->GetFS(), _panel->GetPath() );
-#else
-		OpenHomeDir( _panel, GetOtherPanel() );
-#endif
-		return true;
-	}
-
-	p = Path.data();
-
-	unicode_t* lastNoSpace = nullptr;
-
-	for ( unicode_t* s = p; *s; s++ )
-	{
-		if ( *s != ' ' ) { lastNoSpace = s; }
-	}
-
-	if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
-
-	FSPath path = _panel->GetPath();
-
-	ccollect<unicode_t, 0x100> pre;
-	int sc = 0;
-
-	while ( *p )
-	{
-		if ( sc )
-		{
-			if ( *p == sc ) { sc = 0;  p++; continue; }
-		}
-		else if ( *p == '\'' || *p == '"' )
-		{
-			sc = *p;
-			p++;
-			continue;
-		}
-
-#ifndef _WIN32
-
-		if ( *p == '\\' && !sc ) { p++; }
-
-#endif
-
-		if ( !p ) { break; }
-
-		pre.append( *p );
-		p++;
-	}
-
-	pre.append( 0 );
-	p = pre.ptr();
-
-	const std::vector<clPtr<FS>> checkFS =
-	{
-		_panel->GetFSPtr(),
-		GetOtherPanel()->GetFSPtr()
-	};
-
-	clPtr<FS> fs = ParzeURI( p, path, checkFS );
-
-	if ( fs.IsNull() )
-	{
-		char buf[4096];
-		FSString name = p;
-		Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
-		NCMessageBox( this, "CD", buf, true );
-	}
-	else
-	{
-		_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
-	}
-
-	return true;
-}
-
-bool NCWin::ProcessCommand_CLS( const unicode_t* cmd )
-{
-	_terminal.TerminalReset( true );
-	return true;
-}
-
-bool NCWin::ProcessBuiltInCommands( const unicode_t* cmd )
-{
-#if defined( _WIN32 ) || defined( __APPLE__ )
-	bool CaseSensitive = false;
-#else
-	bool CaseSensitive = true;
-#endif
-
-	if ( IsEqual_Unicode_CStr( cmd, "cls", CaseSensitive ) )
-	{
-		ProcessCommand_CLS( cmd );
-		return true;
-	}
-	else if ( IsCommand_CD( cmd ) )
-	{
-		ProcessCommand_CD( cmd );
-		return true;
-	}
-
-	return false;
-}
-
 bool NCWin::StartCommand( const std::vector<unicode_t>& CommandString, bool ForceNoTerminal, bool ReplaceSpecialChars )
 {
-	std::vector<unicode_t> Command = ReplaceSpecialChars ? MakeCommand( CommandString, _panel->GetCurrentFileName() ) : CommandString;
-
-	const unicode_t* p = Command.data();
-
-	SkipSpaces( p );
-
-//	printf( "StartCommand %s, %i\n", (const char*)p, (int)ForceNoTerminal );
-
-	if ( !*p ) { return false; }
-
-	if ( *p )
-	{
-		_history.ResetToLast();
-
-		if ( !ProcessBuiltInCommands( p ) )
-		{
-			bool NoTerminal = ( p[0] == '&' || ForceNoTerminal );
-
-			if ( NoTerminal )
-			{
-				_history.Put( p );
-
-				if ( p[0] == '&' )
-				{
-					p++;
-				}
-			}
-
-			FS* fs = _panel->GetFS();
-
-			if ( fs && fs->Type() == FS::SYSTEM )
-			{
-				m_FileExecutor.StartExecute( Command.data(), fs, _panel->GetPath(), NoTerminal );
-			}
-			else
-			{
-				NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
-			}
-		}
-	}
-
-	return true;
+	return m_FileExecutor.StartCommand( CommandString, _panel, ForceNoTerminal, ReplaceSpecialChars );
 }
 
 void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const
@@ -2866,7 +2616,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 
 				case FC( VK_GRAVE, KM_CTRL ):
-					OpenHomeDir( _panel, GetOtherPanel() );
+					OpenHomeDir( _panel );
 					break;
 
 				case FC( VK_A, KM_CTRL ):
@@ -3138,7 +2888,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				if ( m_Edit.IsVisible() )
 				{
-					if ( StartCommand( FetchAndClearCommandLine(), true, false ) ) { break; }
+					if ( StartCommand( FetchAndClearCommandLine(), true, false ) )
+					{
+						break;
+					}
 				}
 
 				if ( _panelVisible ) { PanelEnter(true); }
@@ -3153,7 +2906,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				if ( m_Edit.IsVisible() )
 				{
-					if ( StartCommand( FetchAndClearCommandLine(), false, false ) ) { break; }
+					if ( StartCommand( FetchAndClearCommandLine(), false, false ) )
+					{
+						break;
+					}
 				}
 
 				if ( _panelVisible ) { PanelEnter(); }

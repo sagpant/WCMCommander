@@ -155,6 +155,287 @@ void FileExecutor::ShowFileContextMenu( cpoint point, PanelWin* Panel )
 	StartExecute( data.nodeList[ret].cmd, Panel->GetFS(), Panel->GetPath(), !data.nodeList[ret].terminal );
 }
 
+bool IsCommand_CD( const unicode_t* p )
+{
+#ifdef _WIN32
+	return (p[0] == 'c' || p[0] == 'C') && (p[1] == 'd' || p[1] == 'D') && (!p[2] || p[2] == ' ');
+#else
+	return (p[0] == 'c' && p[1] == 'd' && (!p[2] || p[2] == ' '));
+#endif
+}
+
+bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
+{
+	if ( !Out )
+	{
+		return false;
+	}
+
+	std::string Value = GetEnvVariable( EnvVarName );
+
+	if ( Value.empty() )
+	{
+		return false;
+	}
+
+	*Out = utf8_to_unicode( Value.c_str() );
+	return true;
+}
+
+// handle the "cd" command, convert its argument to a valid path, expand ~ and env variables
+std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
+{
+	std::vector<unicode_t> Out;
+	std::vector<unicode_t> Temp;
+
+	while ( p && *p )
+	{
+		unicode_t Ch = 0;
+
+		if ( *p == '~' )
+		{
+			if ( LookAhead( p, &Ch ) )
+			{
+				if ( (IsPathSeparator( Ch ) || Ch == 0) && ApplyEnvVariable( "HOME", &Temp ) )
+				{
+					// replace ~ with the HOME path
+					Out.insert( Out.end(), Temp.begin(), Temp.end() );
+					PopLastNull( &Out );
+				}
+			}
+		}
+		else if ( *p == '$' )
+		{
+			// skip `$`
+			std::string EnvVarName = unicode_to_utf8( p + 1 );
+
+			for ( auto i = EnvVarName.begin(); i != EnvVarName.end(); i++ )
+			{
+				if ( IsPathSeparator( *i ) )
+				{
+					*i = 0;
+					break;
+				}
+			}
+
+			if ( ApplyEnvVariable( EnvVarName.data(), &Temp ) )
+			{
+				// replace the var name with its value
+				Out.insert( Out.end(), Temp.begin(), Temp.end() );
+				PopLastNull( &Out );
+				// skip var name
+				p += strlen( EnvVarName.data() );
+			}
+		}
+		else if ( IsPathSeparator( *p ) )
+		{
+			if ( !LastCharEquals( Out, '/' ) && !LastCharEquals( Out, '\\' ) )
+			{
+				Out.push_back( DIR_SPLITTER );
+			}
+		}
+		else
+		{
+			Out.push_back( *p );
+		}
+
+		p++;
+	}
+
+	Out.push_back( 0 );
+
+	// debug
+	//	std::vector<char> U = unicode_to_utf8( Out.data() );
+	//	const char* UTF = U.data();
+
+	return Out;
+}
+
+bool FileExecutor::ProcessCommand_CD( const unicode_t* cmd, PanelWin* Panel )
+{
+	// make a mutable copy
+	std::vector<unicode_t> copy = new_unicode_str( cmd );
+
+	unicode_t* p = copy.data();
+
+	//change dir
+	_history.Put( p );
+	p += 2;
+
+	SkipSpaces( p );
+
+	std::vector<unicode_t> Path = ConvertCDArgToPath( p );
+
+	if ( Path.empty() || !Path[0] )
+	{
+#if defined(_WIN32)
+		StartExecute( cmd, Panel->GetFS(), Panel->GetPath() );
+#else
+		OpenHomeDir( Panel );
+#endif
+		return true;
+	}
+
+	p = Path.data();
+
+	unicode_t* lastNoSpace = nullptr;
+
+	for ( unicode_t* s = p; *s; s++ )
+	{
+		if ( *s != ' ' )
+		{
+			lastNoSpace = s;
+		}
+	}
+
+	if ( lastNoSpace )
+	{
+		lastNoSpace[1] = 0;
+	} //erase last spaces
+
+	FSPath path = Panel->GetPath();
+
+	ccollect<unicode_t, 0x100> pre;
+	int sc = 0;
+
+	while ( *p )
+	{
+		if ( sc )
+		{
+			if ( *p == sc )
+			{
+				sc = 0;  p++; continue;
+			}
+		}
+		else if ( *p == '\'' || *p == '"' )
+		{
+			sc = *p;
+			p++;
+			continue;
+		}
+
+#ifndef _WIN32
+
+		if ( *p == '\\' && !sc )
+		{
+			p++;
+		}
+
+#endif
+
+		if ( !p )
+		{
+			break;
+		}
+
+		pre.append( *p );
+		p++;
+	}
+
+	pre.append( 0 );
+	p = pre.ptr();
+
+	const std::vector<clPtr<FS>> checkFS =
+	{
+		Panel->GetFSPtr(),
+		m_NCWin->GetOtherPanel( Panel )->GetFSPtr()
+	};
+
+	clPtr<FS> fs = ParzeURI( p, path, checkFS );
+
+	if ( fs.IsNull() )
+	{
+		char buf[4096];
+		FSString name = p;
+		Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
+		NCMessageBox( m_NCWin, "CD", buf, true );
+	}
+	else
+	{
+		Panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
+	}
+
+	return true;
+}
+
+bool FileExecutor::ProcessCommand_CLS( const unicode_t* cmd )
+{
+	_terminal.TerminalReset( true );
+	return true;
+}
+
+bool FileExecutor::ProcessBuiltInCommands( const unicode_t* cmd, PanelWin* Panel )
+{
+#if defined( _WIN32 ) || defined( __APPLE__ )
+	bool CaseSensitive = false;
+#else
+	bool CaseSensitive = true;
+#endif
+
+	if ( IsEqual_Unicode_CStr( cmd, "cls", CaseSensitive ) )
+	{
+		ProcessCommand_CLS( cmd );
+		return true;
+	}
+	
+	if ( IsCommand_CD( cmd ) )
+	{
+		ProcessCommand_CD( cmd, Panel );
+		return true;
+	}
+
+	return false;
+}
+
+bool FileExecutor::StartCommand( const std::vector<unicode_t>& CommandString, PanelWin* Panel, bool ForceNoTerminal, bool ReplaceSpecialChars )
+{
+	std::vector<unicode_t> Command = ReplaceSpecialChars ? MakeCommand( CommandString, Panel->GetCurrentFileName() ) : CommandString;
+
+	const unicode_t* p = Command.data();
+
+	SkipSpaces( p );
+
+	//	printf( "StartCommand %s, %i\n", (const char*)p, (int)ForceNoTerminal );
+
+	if ( !*p )
+	{
+		return false;
+	}
+
+	if ( *p )
+	{
+		_history.ResetToLast();
+
+		if ( !ProcessBuiltInCommands( p, Panel ) )
+		{
+			bool NoTerminal = (p[0] == '&' || ForceNoTerminal);
+
+			if ( NoTerminal )
+			{
+				_history.Put( p );
+
+				if ( p[0] == '&' )
+				{
+					p++;
+				}
+			}
+
+			FS* fs = Panel->GetFS();
+
+			if ( fs && fs->Type() == FS::SYSTEM )
+			{
+				StartExecute( Command.data(), fs, Panel->GetPath(), NoTerminal );
+			}
+			else
+			{
+				NCMessageBox( m_NCWin, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
+			}
+		}
+	}
+
+	return true;
+}
+
 void FileExecutor::ApplyCommand( const std::vector<unicode_t>& cmd, PanelWin* Panel )
 {
 	clPtr<FSList> list = Panel->GetSelectedList();
@@ -334,7 +615,7 @@ void FileExecutor::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, boo
 {
 	SkipSpaces( cmd );
 
-	if ( StartExecute( _editPref.Get(), cmd, fs, path ) )
+	if ( DoStartExecute( _editPref.Get(), cmd, fs, path ) )
 	{
 		_history.Put( cmd );
 		m_NCWin->SetMode( NCWin::TERMINAL );
@@ -343,7 +624,7 @@ void FileExecutor::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, boo
 	ReturnToDefaultSysDir();
 }
 
-bool FileExecutor::StartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal )
+bool FileExecutor::DoStartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal )
 {
 #ifdef _WIN32
 

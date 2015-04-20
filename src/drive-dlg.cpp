@@ -315,7 +315,7 @@ bool SelectDriveInternal( PanelWin* p, PanelWin* OtherPanel )
 
 		case ID_DEV_HOME:
 		{
-			OpenHomeDir( p, OtherPanel );
+			OpenHomeDir( p );
 		}
 		break;
 

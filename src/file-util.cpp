@@ -196,7 +196,7 @@ void RemoveAllWcmTempDirs()
 	}
 }
 
-void OpenHomeDir( PanelWin* p, PanelWin* OtherPanel )
+void OpenHomeDir( PanelWin* p )
 {
 #ifdef _WIN32
 	std::vector<unicode_t> homeUri = GetHomeUriWin();
@@ -206,7 +206,7 @@ void OpenHomeDir( PanelWin* p, PanelWin* OtherPanel )
 		const std::vector<clPtr<FS>> checkFS =
 		{
 			p->GetFSPtr(),
-			OtherPanel->GetFSPtr()
+			g_MainWin->GetOtherPanel( p )->GetFSPtr()
 		};
 
 		FSPath path;

@@ -26,7 +26,7 @@ void RemoveAllWcmTempDirs();
 int LoadToTempFile( NCDialogParent* parent, clPtr<FS>* fs, FSPath* path );
 
 /// Opens HOME dir in the given panel
-void OpenHomeDir( PanelWin* p, PanelWin* OtherPanel );
+void OpenHomeDir( PanelWin* p );
 
 #ifdef _WIN32
 

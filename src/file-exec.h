@@ -53,6 +53,9 @@ public:
 	/// Shows context menu at the given position for the selected file
 	void ShowFileContextMenu( cpoint point, PanelWin* Panel );
 
+	/// Runs the given command on the given panel
+	bool StartCommand( const std::vector<unicode_t>& CommandString, PanelWin* Panel, bool ForceNoTerminal, bool ReplaceSpecialChars );
+
 	/// Applies the given command to the selected files on the given panel
 	void ApplyCommand( const std::vector<unicode_t>& cmd, PanelWin* Panel );
 
@@ -61,9 +64,6 @@ public:
 
 	/// Executes selected file when Enter key is pressed
 	void ExecuteFileByEnter( PanelWin* Panel, bool Shift );
-
-	/// Starts to execute the given command in the given dir
-	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
 
 	/// Stops current run process in terminal
 	void StopExecute();
@@ -75,10 +75,17 @@ public:
 	void ThreadStopped( int id, void* data );
 
 private:
-	bool StartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
-	
 	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
+
+	/// Starts to execute the given command in the given dir
+	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
+
+	bool DoStartExecute( const unicode_t* pref, const unicode_t* cmd, FS* fs, FSPath& path, bool NoTerminal = false );
 
 	/// Executes selected runnable file (.exe, .bat, etc.) from the given panel
 	void ExecuteFile( PanelWin* panel );
+
+	bool ProcessCommand_CD( const unicode_t* cmd, PanelWin* Panel );
+	bool ProcessCommand_CLS( const unicode_t* cmd );
+	bool ProcessBuiltInCommands( const unicode_t* cmd, PanelWin* Panel );
 };

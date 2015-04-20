@@ -323,12 +323,7 @@ private:
 	const unicode_t* GetCurrentFileName() const;
 	PanelWin* GetOtherPanel()
 	{
-		return _panel == &_leftPanel ? &_rightPanel : &_leftPanel;
-	}
-
-	PanelWin* GetOtherPanel( PanelWin* panel )
-	{
-		return panel == &_leftPanel ? &_rightPanel : &_leftPanel;
+		return GetOtherPanel( _panel );
 	}
 
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
@@ -355,6 +350,11 @@ public:
 	PanelWin* GetLeftPanel() { return &_leftPanel; }
 	PanelWin* GetRightPanel() { return &_rightPanel; }
 
+	PanelWin* GetOtherPanel( PanelWin* panel )
+	{
+		return panel == &_leftPanel ? &_rightPanel : &_leftPanel;
+	}
+
 	void HideAutoComplete();
 	void NotifyAutoComplete();
 	void NotifyAutoCompleteChange();
@@ -375,8 +375,5 @@ public:
 	void AdjustFontSize( std::string* FontURI, float Coef );
 
 private:
-	bool ProcessCommand_CD( const unicode_t* cmd );
-	bool ProcessCommand_CLS( const unicode_t* cmd );
-	bool ProcessBuiltInCommands( const unicode_t* cmd );
 	void DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const;
 };
