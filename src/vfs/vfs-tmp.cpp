@@ -1,7 +1,8 @@
 #include "vfs-uri.h"
 #include "vfs-tmp.h"
+#include "urlparser/LUrlParser.h"
 
-static const char rootStr[] = { DIR_SPLITTER , 0};
+static const char rootStr[] = { '/' , 0};
 static FSString rootFSStr(rootStr);
 
 FSPath FSTmp::rootPathName(rootFSStr);
@@ -391,31 +392,28 @@ FSString FSTmp::Uri(FSPath& path)
 clPtr<FS> FSTmp::ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS)
 {
 	std::string	uriUtf8(unicode_to_utf8_string(uri));
-	if (uriUtf8.compare(0, 6, "tmp://") == 0)
+	
+	LUrlParser::clParseURL clparseURL = LUrlParser::clParseURL::ParseURL(uriUtf8);
+	
+	if (clparseURL.IsValid() && clparseURL.m_Scheme == "tmp")
 	{
-		int poundOffset = uriUtf8.find('#');
-		if (poundOffset != std::string::npos)
-		{
-			const char* baseFSRootUri = uriUtf8.c_str() + poundOffset + 1;
-			// Wow, too much ops for a simple conversion
-			std::string pathUtf8(uriUtf8.substr(6, poundOffset));
-			FSString pathFSstring(pathUtf8);
-			path = FSPath(pathFSstring);
+		FSString pathFSstring(clparseURL.m_Path);
+		path = FSPath(pathFSstring);
 
-			for (clPtr<FS> clPtrFs : checkFS)
+		for (clPtr<FS> clPtrFs : checkFS)
+		{
+			if (clPtrFs->Type() == FS::TMP)
 			{
-				if (clPtrFs->Type() == FS::TMP)
-				{
-					FSTmp* fsTmp = (FSTmp*) clPtrFs.ptr();
-					if (strcmp(fsTmp->baseFS->Uri(rootPathName).GetUtf8(), baseFSRootUri) == 0)
-						return clPtrFs;
-				}
+				FSTmp* fsTmp = (FSTmp*) clPtrFs.ptr();
+				if (clparseURL.m_Fragment == fsTmp->baseFS->Uri(rootPathName).GetUtf8())
+					return clPtrFs;
 			}
-			// no tmpFS ptr found among checkFS, create baseFS, and FSTmp on top of it.
-			FSPath tFSPath;
-			clPtr<FS> baseFS = ::ParzeURI(uri + poundOffset + 1, tFSPath, checkFS);
-			return new FSTmp(baseFS);
 		}
+		// no tmpFS ptr found among checkFS, create baseFS, and FSTmp on top of it.
+		FSPath tFSPath;
+		FSString fragmentFSString(clparseURL.m_Fragment);
+		clPtr<FS> baseFS = ::ParzeURI(fragmentFSString.GetUnicode(), tFSPath, checkFS);
+		return new FSTmp(baseFS);
 	}
 	return new FSSys();
 }

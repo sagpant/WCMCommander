@@ -17,7 +17,7 @@
 					<Add option="-g" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m64" />
-					<Add option="-Isrc/swl -Isrc/wal -Isrc -Isrc/urlparser -Isrc/vfs" />
+					<Add option="-Isrc/swl -Isrc/wal -Isrc -Isrc/vfs" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -46,7 +46,7 @@
 					<Add option="-O3" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m64" />
-					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/urlparser -Isrc/vfs" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/vfs" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -75,7 +75,7 @@
 					<Add option="-g" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m32" />
-					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/urlparser -Isrc/vfs" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/vfs" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -104,7 +104,7 @@
 					<Add option="-O3" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m32" />
-					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/urlparser -Isrc/vfs" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/vfs" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -132,7 +132,7 @@
 					<Add option="-O3" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m32" />
-					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/urlparser -Isrc/vfs" />
+					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/vfs" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
@@ -166,7 +166,7 @@
 					<Add option="-O3" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m32" />
-					<Add option="-Isrc/swl -Isrc/wal" />
+					<Add option="-Isrc/swl -Isrc/wal -Isrc -Isrc/vfs" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSEFREETYPE" />
 					<Add option="-DLIBSMB40" />
