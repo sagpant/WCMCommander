@@ -15,8 +15,6 @@
 
 #include "eloadsave.h"
 #include "vfs-uri.h"
-#include "vfs-smb.h"
-#include "smblogon.h"
 #include "ext-app.h"
 #include "charsetdlg.h"
 #include "string-util.h"

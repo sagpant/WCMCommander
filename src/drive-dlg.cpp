@@ -22,15 +22,8 @@
 #include "vfs-tmp.h"
 #include "ftplogon.h"
 #include "sftpdlg.h"
+#include "smblogon.h"
 
-#if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
-#  include "sftpdlg.h"
-#endif
-
-#ifdef LIBSMBCLIENT_EXIST
-#  include "vfs-smb.h"
-#  include "smblogon.h"
-#endif
 
 #ifndef _WIN32
 #  include "ux_util.h"
