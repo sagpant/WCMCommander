@@ -5,6 +5,13 @@
  * wcm@linderdaum.com
  */
 
+#ifdef _WIN32
+#  if !defined( NOMINMAX )
+#     define NOMINMAX
+#  endif
+#  include <winsock2.h>
+#endif
+
 #include "drive-dlg.h"
 #include "file-util.h"
 #include "ncwin.h"
@@ -14,6 +21,7 @@
 #include "vfs-ftp.h"
 #include "vfs-tmp.h"
 #include "ftplogon.h"
+#include "sftpdlg.h"
 
 #if defined(LIBSSH_EXIST) || defined(LIBSSH2_EXIST)
 #  include "sftpdlg.h"
