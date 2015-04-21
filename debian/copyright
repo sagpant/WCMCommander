@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: wcm
-Source: https://github.com/corporateshark/WalCommander
+Source: https://github.com/corporateshark/WCMCommander
 
 Files: *
 Copyright: 2013-2014 Wal
@@ -11,7 +11,7 @@ Copyright (c) Wal (Валерий Горячев), 2013-2014
 walcommander.info@gmail.com
 
 Copyright (c) Sergey Kosarevsky, 2014-2015
-walcommander@linderdaum.com
+wcm@linderdaum.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

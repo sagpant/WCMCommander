@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Sergey Kosarevsky <sk@linderdaum.com>
 Build-Depends: debhelper (>= 8.0.0), libfreetype6-dev, libsmbclient-dev, libssh2-1-dev, libx11-dev, build-essential
 Standards-Version: 3.9.4
-Homepage: https://github.com/corporateshark/WalCommander
+Homepage: https://github.com/corporateshark/WCMCommander
 #Vcs-Git: git://git.debian.org/collab-maint/wcm.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/wcm.git;a=summary
 

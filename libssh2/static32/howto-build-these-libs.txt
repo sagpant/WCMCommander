@@ -1,4 +1,4 @@
-How to build libssh in all-static-linked 32-bit for WalCommander
+How to build libssh in all-static-linked 32-bit for WCM Commander
 
 ** Pre-requisites
 - Visual Studio C++ 2008 AKA VC9
