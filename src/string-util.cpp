@@ -20,10 +20,38 @@ std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::itera
 	return std::search( begin, end, SubStr.begin(), SubStr.end() );
 }
 
+// UTF8 version of the function is in ux_util.cpp
+void escShellStr(std::vector<unicode_t>& ustr, const unicode_t* src)
+{
+	std::vector<unicode_t> dest;
+	if(!src)
+		src=ustr.data();
+
+	for ( const unicode_t *s = src; *s; s++ )
+	{
+        // we could safely escape every char here,
+        // though this would obfuscate diagnostic messages
+		bool mustEscape = *s<'+'
+						  || ( *s >= ';' && *s <= '?' )
+						  || ( *s > 'Z' && *s < 'a' )
+						  || ( *s >'z' )
+						  || ( *s == '`' );
+		if(mustEscape)
+		{
+			dest.push_back('\\');
+		}
+		dest.push_back(*s);
+	}
+	dest.push_back(0);
+
+	ustr = dest;
+}
+
 std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const unicode_t* FileName )
 {
 	std::vector<unicode_t> Result( cmd );
 	std::vector<unicode_t> Name = new_unicode_str( FileName );
+	escShellStr(Name);
 
 //	bool HasSpaces = StrHaveSpace( Name.data() );
 

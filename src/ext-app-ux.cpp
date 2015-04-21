@@ -1157,17 +1157,22 @@ static int _GetAppList( const unicode_t* fileName, ccollect<AppNode*>& list )
 }
 
 
+// exec: AppName %U
+// uri: filename to execute (in unescaped format)
+// returns: command line in escaped format
 static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const unicode_t* uri )
 {
 	if ( !exec || !uri ) { return std::vector<unicode_t>(); }
 
-	std::vector<unicode_t> cmd;
-
+	
+	std::vector<unicode_t> vuri;
+	escShellStr(vuri,uri);
+	
 	const unicode_t* s = exec;
-
 
 	int uriInserted = 0;
 
+	std::vector<unicode_t> cmd;
 	while ( *s )
 	{
 		for ( ; *s && *s != '%'; s++ ) { cmd.push_back( *s ); }
@@ -1181,11 +1186,7 @@ static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const
 				case 'u':
 				case 'U':
 				{
-					cmd.push_back( '"' );
-
-					for ( const unicode_t* t = uri; *t; t++ ) { cmd.push_back( *t ); }
-
-					cmd.push_back( '"' );
+					for ( const unicode_t* t = vuri.data(); *t; t++ ) { cmd.push_back( *t ); }
 					uriInserted++;
 				}
 
@@ -1202,11 +1203,7 @@ static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const
 	if ( !uriInserted ) //все равно добавим
 	{
 		cmd.push_back( ' ' );
-		cmd.push_back( '"' );
-
-		for ( const unicode_t* t = uri; *t; t++ ) { cmd.push_back( *t ); }
-
-		cmd.push_back( '"' );
+		for ( const unicode_t* t = vuri.data(); *t; t++ ) { cmd.push_back( *t ); }
 	}
 
 	cmd.push_back( 0 );

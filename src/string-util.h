@@ -34,6 +34,9 @@ template <typename T> inline void SkipSpaces( T& p )
 	}
 }
 
+// if src==null, then escape dest in place. Otherwise, replace dest with escaped src
+void escShellStr(std::vector<unicode_t>& dest, const unicode_t* src=0);
+
 /// replace special symbols !.! in the command with the specified file name, return the resulting command
 std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& Command, const unicode_t* FileName );
 
