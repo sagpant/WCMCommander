@@ -1166,6 +1166,12 @@ namespace wal
 #ifndef _WIN32
 		static void SetIcon( const char** xpm );
 #endif
+#if defined _DEBUG
+		void dbg_dump(int indent=0);
+#else
+		void dbg_dump(){}
+#endif
+
 	};
 
 	bool WinThreadSignal( int data ); //signalize window from thread
@@ -1197,7 +1203,6 @@ namespace wal
 	void ClipboardSetText( Win* w, ClipboardText& text );
 	void ClipboardGetText( Win* w, ClipboardText* text );
 	void ClipboardClear();
-
 }; //namespace wal
 
 namespace wal

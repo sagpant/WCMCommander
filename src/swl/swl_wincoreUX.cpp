@@ -3707,5 +3707,10 @@ haveMask:
 		if ( ret < 0 ) { throw_syserr( 0, "internal error WthInternalEvent" ); }
 	};
 
+#if defined _DEBUG
+void Win::dbg_dump()
+{
+
+}
 
 } // namespace wal
