@@ -602,7 +602,6 @@ namespace wal
 		void DrawItem( GC& gc, int n );
 	public:
 		PopupMenu( int nId, Win* parent, MenuData* d, int x, int y, Win* _cmdOwner = 0 );
-		virtual bool Event(cevent* pEvent) override;
 		virtual bool EventMouse(cevent_mouse* pEvent) override;
 		virtual bool EventKey(cevent_key* pEvent) override;
 		virtual void Paint(GC& gc, const crect& paintRect) override;

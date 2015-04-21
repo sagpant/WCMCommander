@@ -440,19 +440,6 @@ namespace wal
 		return false;
 	}
 
-	bool PopupMenu::Event(cevent* pEvent)
-	{
-		// close menu after hit on win caption
-		if (pEvent->Type() == WM_NCACTIVATE)
-		{
-			if (Parent())
-			{
-				Parent()->Command(CMD_MENU_INFO, SCMD_MENU_CANCEL, this, 0);
-			}
-		}
-		return Win::Event(pEvent);
-	}
-
 	void PopupMenu::Paint( GC& gc, const crect& paintRect )
 	{
 		crect rect = ClientRect();

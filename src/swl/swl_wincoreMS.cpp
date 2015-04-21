@@ -193,7 +193,16 @@ namespace wal
 					// рамки всего дерева были либо активными либо нет одновременно
 					if ( !win ) { break; }
 
-					if ( win->IsOneParentWith( ( HWND )lParam ) ) { return TRUE; }
+					if (win->type & Win::WT_POPUP)
+					{
+						// then this message has been sent from the code below
+						// close the popup window, and break
+						if (win->Parent())
+							win->Parent()->Command(CMD_MENU_INFO, SCMD_MENU_CANCEL, win, 0);
+						break;
+					}
+
+					if (win->IsOneParentWith((HWND)lParam)) { return TRUE; }
 
 					if ( lParam == -1 ) { break; }
 
