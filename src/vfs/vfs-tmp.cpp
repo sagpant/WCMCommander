@@ -1,7 +1,10 @@
+#include "vfs-uri.h"
 #include "vfs-tmp.h"
+#include "urlparser/LUrlParser.h"
 
-static const char rootStr[] = { DIR_SPLITTER , 0};
+static const char rootStr[] = { '/' , 0};
 static FSString rootFSStr(rootStr);
+
 FSPath FSTmp::rootPathName(rootFSStr);
 //beware, because of static scope the statement below to replace the above does not work:
 //FSPath FSTmp::rootPathName(FSString({ DIR_SPLITTER, 0 }));
@@ -37,24 +40,24 @@ FSTmpNode::FSTmpNode(const unicode_t* _name, FSTmpNode* _parentDir)
 FSTmpNode* FSTmpNode::findByBasePath(FSPath* basePath, bool isRecursive)
 {
 	// first, try all file nodes in current dir
-	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+	for (FSTmpNode& n : content)
 	{
-		if ((*it).nodeType == FSTmpNode::NODE_FILE)
+		if (n.nodeType == FSTmpNode::NODE_FILE)
 		{
-			if ((*it).baseFSPath.Equals(basePath))
-				return &(*it);
+			if (n.baseFSPath.Equals(basePath))
+				return &n;
 		} 
 	}
 	// only if not found in current dir, try inside subdirs
 	if (isRecursive)
 	{
-		for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+		for (FSTmpNode& n : content )
 		{
-			if ((*it).nodeType == FSTmpNode::NODE_DIR)
+			if (n.nodeType == FSTmpNode::NODE_DIR)
 			{
-				FSTmpNode* n = (*it).findByBasePath(basePath, isRecursive);
-				if (n)
-					return n;
+				FSTmpNode* pn = n.findByBasePath(basePath, isRecursive);
+				if (pn)
+					return pn;
 			}
 		}
 	}
@@ -96,23 +99,23 @@ FSTmpNode* FSTmpNode::findByName(FSString* name, bool isRecursive)
 {
 	//dbg_printf("FSTmpNodeDir::findByName name=%s\n",name->GetUtf8());
 	// first, try all nodes in current	
-	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+	for (FSTmpNode& n : content)
 	{
 		//dbg_printf("FSTmpNodeDir::findByName *it.name=%s\n", (*it).name.GetUtf8());
 
-		if ((*it).name.Cmp(*name)==0)
-			return &(*it);
+		if (n.name.Cmp(*name)==0)
+			return &n;
 	}
 	// only if not found in current dir, try inside subdirs
 	if (isRecursive)
 	{
-		for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+		for (FSTmpNode& n : content)
 		{
-			if ((*it).nodeType == FSTmpNode::NODE_DIR)
+			if (n.nodeType == FSTmpNode::NODE_DIR)
 			{
-				FSTmpNode* n = (*it).findByName(name, isRecursive);
-				if (n)
-					return n;
+				FSTmpNode* pn = n.findByName(name, isRecursive);
+				if (pn)
+					return pn;
 			}
 		}
 	}
@@ -122,7 +125,7 @@ FSTmpNode* FSTmpNode::findByName(FSString* name, bool isRecursive)
 bool FSTmpNode::Remove(FSString* name, bool searchRecursive)
 {
 	// first, try all nodes in current dir
-	for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+	for (auto it = content.begin(); it != content.end(); ++it)
 	{
 		if ((*it).name.Cmp(*name) == 0)
 		{
@@ -133,11 +136,11 @@ bool FSTmpNode::Remove(FSString* name, bool searchRecursive)
 	// only if not found in current dir, try inside subdirs
 	if (searchRecursive)
 	{
-		for (std::list<FSTmpNode>::iterator it = content.begin(); it != content.end(); ++it)
+		for (FSTmpNode& n : content)
 		{
-			if ((*it).nodeType == FSTmpNode::NODE_DIR)
+			if (n.nodeType == FSTmpNode::NODE_DIR)
 			{
-				bool ret = (*it).Remove(name, searchRecursive);
+				bool ret = n.Remove(name, searchRecursive);
 				if (ret)
 					return true;
 			}
@@ -188,13 +191,18 @@ int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 		return FS::SetError(err, FSTMP_ERROR_FILE_NOT_FOUND);
 	}
 
-	for (std::list<FSTmpNode>::iterator it = n->content.begin(); it != n->content.end(); ++it)
+	for (FSTmpNode& tn : n->content)
 	{
 		clPtr<FSNode> pNode = new FSNode();
 
-		pNode->name=(std::string("") + (*it).name.GetUtf8()).c_str();
-		pNode->st = (*it).fsStat;
-
+		pNode->name=(std::string("") + tn.name.GetUtf8()).c_str();
+		if (tn.nodeType == FSTmpNode::NODE_DIR)
+			pNode->st = tn.fsStat;
+		else
+		{
+			if (baseFS->Stat(tn.baseFSPath, & pNode->st, 0, 0) != 0)
+				pNode->st = tn.fsStat;
+		}
 		list->Append(pNode);
 	}
 	return 0;
@@ -312,7 +320,7 @@ int FSTmp::Delete(FSPath& path, int* err, FSCInfo* info)
 		}
 		*/
 		// remove from tmpfs list
-		for (std::list<FSTmpNode>::iterator it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
+		for (auto it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
 		{ 
 			if ((*it).name.Cmp(*dName) == 0)
 			{
@@ -329,7 +337,7 @@ int FSTmp::RmDir(FSPath& path, int* err, FSCInfo* info)
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	FSString* dirName = path.GetItem(path.Count() - 1);
 
-	for (std::list<FSTmpNode>::iterator it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
+	for (auto it = n->parentDir->content.begin(); it != n->parentDir->content.end(); ++it)
 	{
 		if ((*it).name.Cmp(*dirName) == 0)
 		{
@@ -362,11 +370,58 @@ int FSTmp::SetFileTime(FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, i
 	}
 }
 
-FSString FSTmp::Uri(FSPath& path) 
-{ 
-	std::string uri(std::string("tmp://") + baseFS->Uri(path).GetUtf8());
-	return FSString(uri.c_str());
-};
+// The Uri/ParseURI funcion is used in two cases:
+// 1. Panel caption, to show folder/file - only Uri side of the pair
+// 2. Dialogs, registry - to combine FS and path into URI, and parse the URI back - both functions.
+// Approaches for Url-ParseURI implementations
+// 1. Delegate Uri to baseFS. No need to have ParseURI
+//    - copying to TMPFs does not work. 
+
+// 2. Delegate file Uri to baseBS. Folder Uri is tmp:///folder/name#baseFSRootUri
+//   - appears to work 
+FSString FSTmp::Uri(FSPath& path)
+{
+	FSTmpNode* n = rootDir.findByFsPath(&path);
+	if (n && n->nodeType == FSTmpNode::NODE_FILE)
+		return baseFS->Uri(n->baseFSPath);
+	else
+	{
+		std::string ret(std::string("tmp://") + path.GetUtf8('/') + "#" + baseFS->Uri(rootPathName).GetUtf8());
+		return FSString(ret.c_str());
+	}
+}
+
+// Handles only folder URIs.
+// File URIs are not tmp://-based, but are baseFS-based
+// The URI is: tmp:///folder/name#baseFSRoot
+clPtr<FS> FSTmp::ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS)
+{
+	std::string	uriUtf8(unicode_to_utf8_string(uri));
+	
+	LUrlParser::clParseURL clparseURL = LUrlParser::clParseURL::ParseURL(uriUtf8);
+	
+	if (clparseURL.IsValid() && clparseURL.m_Scheme == "tmp")
+	{
+		FSString pathFSstring(clparseURL.m_Path);
+		path = FSPath(pathFSstring);
+
+		for (clPtr<FS> clPtrFs : checkFS)
+		{
+			if (clPtrFs->Type() == FS::TMP)
+			{
+				FSTmp* fsTmp = (FSTmp*) clPtrFs.ptr();
+				if (clparseURL.m_Fragment == fsTmp->baseFS->Uri(rootPathName).GetUtf8())
+					return clPtrFs;
+			}
+		}
+		// no tmpFS ptr found among checkFS, create baseFS, and FSTmp on top of it.
+		FSPath tFSPath;
+		FSString fragmentFSString(clparseURL.m_Fragment);
+		clPtr<FS> baseFS = ::ParzeURI(fragmentFSString.GetUnicode(), tFSPath, checkFS);
+		return new FSTmp(baseFS);
+	}
+	return new FSSys();
+}
 
 bool FSTmp::AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath)
 {
