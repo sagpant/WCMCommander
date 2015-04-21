@@ -113,4 +113,6 @@ public:
 	bool AddNode(FSPath& srcPath, FSNode* fsNode, FSPath& destPath);
 	bool AddNode(FSPath& srcPath, FSPath& destDir);
 	bool baseFsIs(clPtr<FS> fs) { return baseFS == fs; }
+	
+	clPtr<FS> GetBaseFS() { return baseFS; }
 };
