@@ -213,13 +213,11 @@ namespace wal
 					while ( p->Parent() ) { p = p->Parent(); }
 
 					p->PopupTreeList( wl );
-			
 					for ( int i = 0; i < wl.count(); i++ )
 						if ( wl[i] != hWnd )
 						{
 							::SendMessage( wl[i], message, wParam, lParam );
 						}
-					
 					break;
 				}
 
