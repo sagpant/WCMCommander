@@ -17,6 +17,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #endif
+#ifdef _DEBUG
+// for typeid
+#include <typeinfo>
+#endif
 
 #if defined( __APPLE__ )
 const unsigned int MetaMask = 0x0010;
@@ -831,10 +835,67 @@ namespace wal
 
 	static void _ClipboardRequest( XEvent* event );
 
+#ifdef _DEBUG
+struct {int id; const char* name;} 
+eventNames[] ={
+{ KeyPress, "KeyPress"},
+{ KeyRelease, "KeyRelease"},
+{ ButtonPress, "ButtonPress"},
+{ ButtonRelease, "ButtonRelease"},
+{ MotionNotify, "MotionNotify"},
+{ EnterNotify, "EnterNotify"},
+{ LeaveNotify, "LeaveNotify"},
+{ FocusIn, "FocusIn"},
+{ FocusOut, "FocusOut"},
+{ KeymapNotify, "KeymapNotify"},
+{ Expose, "Expose"},
+{ GraphicsExpose, "GraphicsExpose"},
+{ NoExpose, "NoExpose"},
+{ VisibilityNotify, "VisibilityNotify"},
+{ CreateNotify, "CreateNotify"},
+{ DestroyNotify, "DestroyNotify"},
+{ UnmapNotify, "UnmapNotify"},
+{ MapNotify, "MapNotify"},
+{ MapRequest, "MapRequest"},
+{ ReparentNotify, "ReparentNotify"},
+{ ConfigureNotify, "ConfigureNotify"},
+{ ConfigureRequest, "ConfigureRequest"},
+{ GravityNotify, "GravityNotify"},
+{ ResizeRequest, "ResizeRequest"},
+{ CirculateNotify, "CirculateNotify"},
+{ CirculateRequest, "CirculateRequest"},
+{ PropertyNotify, "PropertyNotify"},
+{ SelectionClear, "SelectionClear"},
+{ SelectionRequest, "SelectionRequest"},
+{ SelectionNotify, "SelectionNotify"},
+{ ColormapNotify, "ColormapNotify"},
+{ ClientMessage, "ClientMessage"},
+{ MappingNotify, "MappingNotify"},
+{ GenericEvent, "GenericEvent"},
+};
+
+static const char* getEventName(int id)
+{
+  for(int i=0; i<sizeof(eventNames)/sizeof(eventNames[0]); i++)
+  {
+    if(id == eventNames[i].id)
+      return eventNames[i].name;
+  }
+  static char ret[32];
+  sprintf(ret, "Event_%d", id);
+  return ret;
+}
+
+#endif
+
 	int DoEvents( XEvent* event ) //return count of windows
 	{
-		//dbg_printf( "e(%i) ", event->type );
-		fflush( stdout );
+	#ifdef _DEBUG
+		//if(event->type!=MotionNotify)
+		//	if(event->type==FocusIn || event->type==FocusOut)
+		//		dbg_printf( "e(%s) ", getEventName(event->type) );
+		//fflush( stdout );
+	#endif
 
 		switch ( event->type )
 		{
@@ -1101,7 +1162,28 @@ namespace wal
 				{
 					break;
 				}
-
+				
+				{
+					// close all popups
+					Win* w = GetWinByID( activeWinId );
+					//dbg_printf("FocusOut %s\n", typeid(*w).name());
+					while(w->parent)
+						w=w->parent;
+					ccollect<WinID> wl;
+					w->PopupTreeList( wl );
+					//dbg_printf("PopupTreeList size=%d\n",wl.count());
+					for(int i=0;i<wl.count();i++)
+					{
+						Win* popup = GetWinByID( wl[i] );
+						if(popup)
+						{
+							//dbg_printf("Closing %s\n", typeid(*w).name());
+							if(popup->parent)
+								popup->Parent()->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, popup, 0 );
+						}
+						
+					}
+				}
 
 				if ( activeWinId == event->xany.window )
 				{
@@ -1261,7 +1343,7 @@ namespace wal
 					MovePopups( w, xDelta, yDelta );
 				}
 
-				dbg_printf( "ConfigureNotify above(%x)\n", event->xconfigure.above );
+				//dbg_printf( "ConfigureNotify above(%x)\n", event->xconfigure.above );
 			}
 			break; //   22
 
@@ -3708,9 +3790,9 @@ haveMask:
 	};
 
 #if defined _DEBUG
-void Win::dbg_dump()
+void Win::dbg_dump(int indent)
 {
 
 }
-
+#endif
 } // namespace wal
