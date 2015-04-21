@@ -1,7 +1,7 @@
 /*
  * Part of WCM Commander GitHub Edition
  * https://github.com/corporateshark/WCMCommander
- * walcommander@linderdaum.com
+ * wcm@linderdaum.com
  */
 
 #pragma once

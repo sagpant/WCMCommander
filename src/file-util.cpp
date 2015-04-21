@@ -1,7 +1,7 @@
 /*
  * Part of WCM Commander
  * https://github.com/corporateshark/WCMCommander
- * walcommander@linderdaum.com
+ * wcm@linderdaum.com
  */
 
 #ifdef _WIN32
@@ -9,6 +9,7 @@
 #endif
 
 #include "file-util.h"
+#include "ncwin.h"
 #include "string-util.h"
 #include "vfs.h"
 #include "vfs-uri.h"
@@ -74,6 +75,21 @@ bool DeleteDirRecursively( FS* fs, FSPath path )
 
 
 #ifdef _WIN32
+
+std::vector<unicode_t> GetHomeUriWin()
+{
+	wchar_t homeDrive[0x100];
+	wchar_t homePath[0x100];
+	int l1 = GetEnvironmentVariableW( L"HOMEDRIVE", homeDrive, 0x100 );
+	int l2 = GetEnvironmentVariableW( L"HOMEPATH", homePath, 0x100 );
+
+	if ( l1 > 0 && l1 < 0x100 && l2 > 0 && l2 < 0x100 )
+	{
+		return carray_cat<unicode_t>( Utf16ToUnicode( homeDrive ).data(), Utf16ToUnicode( homePath ).data() );
+	}
+
+	return std::vector<unicode_t>();
+}
 
 std::vector<unicode_t> GetTempUriWin()
 {
@@ -178,6 +194,47 @@ void RemoveAllWcmTempDirs()
 			DeleteDirRecursively( fs.Ptr(), path );
 		}
 	}
+}
+
+void OpenHomeDir( PanelWin* p )
+{
+#ifdef _WIN32
+	std::vector<unicode_t> homeUri = GetHomeUriWin();
+
+	if ( homeUri.data() )
+	{
+		const std::vector<clPtr<FS>> checkFS =
+		{
+			p->GetFSPtr(),
+			g_MainWin->GetOtherPanel( p )->GetFSPtr()
+		};
+
+		FSPath path;
+		clPtr<FS> fs = ParzeURI( homeUri.data(), path, checkFS );
+
+		if ( fs.IsNull() )
+		{
+			char buf[4096];
+			FSString name = homeUri.data();
+			Lsnprintf( buf, sizeof( buf ), "bad home path: %s\n", name.GetUtf8() );
+			NCMessageBox( g_MainWin, "Home", buf, true );
+		}
+		else
+		{
+			p->LoadPath( fs, path, 0, 0, PanelWin::SET );
+		}
+	}
+
+#else
+	const sys_char_t* home = (sys_char_t*) getenv( "HOME" );
+	if ( !home )
+	{
+		return;
+	}
+
+	FSPath path( sys_charset_id, home );
+	p->LoadPath( new FSSys(), path, 0, 0, PanelWin::SET );
+#endif
 }
 
 

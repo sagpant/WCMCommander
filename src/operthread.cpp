@@ -1,7 +1,7 @@
 /*
  * Part of WCM Commander
  * https://github.com/corporateshark/WCMCommander
- * walcommander@linderdaum.com
+ * wcm@linderdaum.com
  */
 
 #include "operthread.h"

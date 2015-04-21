@@ -34,4 +34,4 @@ Mac OS X installation way (refer to https://github.com/corporateshark/WCMCommand
 
 	Install Quartz from http://xquartz.macosforge.org/landing/
 	Install brew http://brew.sh/
-	brew install --HEAD https://gist.githubusercontent.com/KonstantinKuklin/9001d95fa30fecf3231c/raw/walcommander.rb
+	brew install https://raw.githubusercontent.com/corporateshark/homebrew-x11/wcm/wcm.rb

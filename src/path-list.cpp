@@ -1,7 +1,7 @@
 /*
  * Part of WCM Commander
  * https://github.com/corporateshark/WCMCommander
- * walcommander@linderdaum.com
+ * wcm@linderdaum.com
  */
 
 #ifdef _WIN32
@@ -13,6 +13,7 @@
 #include "vfs-ftp.h"
 #include "vfs-sftp.h"
 #include "vfs-smb.h"
+#include "vfs-tmp.h"
 #include "unicode_lc.h"
 
 
@@ -277,6 +278,23 @@ bool PathListFSToData(PathList::Data& data, clPtr<FS>* fs, FSPath* path)
 {
     clPtr<StrConfig> cfg = new StrConfig();
     
+	 clPtr<FS> TempFs;
+	 FSPath TempPath;
+	 if ( fs->ptr()->Type() == FS::TMP )
+	 {
+		 // if we are on Temp panel then use base FS
+		 TempFs = ((FSTmp*) fs->ptr())->GetBaseFS();
+		 fs = &TempFs;
+
+		 // path on Temp panel may starts with additional '\'
+		 const char* PathOnTemp = path->GetUtf8();
+		 if ( PathOnTemp && PathOnTemp[0] == '\\' )
+		 {
+			 TempPath.Set( CS_UTF8, ++PathOnTemp );
+			 path = &TempPath;
+		 }
+	 }
+
     if (fs[0]->Type() == FS::SYSTEM)
     {
         cfg->Set("TYPE", "SYSTEM");

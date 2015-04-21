@@ -1,19 +1,13 @@
 /*
  * Part of WCM Commander
  * https://github.com/corporateshark/WCMCommander
- * walcommander@linderdaum.com
+ * wcm@linderdaum.com
  */
 
 #pragma once
 
 #include "swl.h"
 #include "panel.h"
-#ifdef _WIN32
-#  include "w32cons.h"
-#else
-#  include "termwin.h"
-#endif
-
 #include "ncview.h"
 #include "ncedit.h"
 #include "nchistory.h"
@@ -21,6 +15,7 @@
 #include "ext-app.h"
 #include "toolbar.h"
 #include "fileassociations.h"
+#include "file-exec.h"
 
 using namespace wal;
 
@@ -211,12 +206,8 @@ private:
 	void UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand );
 
 	NCCommandLine m_Edit;
-#ifdef _WIN32
-	W32Cons
-#else
-	TerminalWin
-#endif
-	_terminal;
+
+	TerminalWin_t _terminal;
 
 	eBackgroundActivity m_BackgroundActivity;
 
@@ -247,7 +238,8 @@ private:
 
 	LPanelSelectionType _shiftSelectType;
 
-	void SetMode( MODE m );
+	FileExecutor m_FileExecutor;
+
 	void ShowPanels( bool show )
 	{
 		if ( _panelVisible == show ) { return; }
@@ -267,9 +259,6 @@ private:
 
 	void PanelEnter(bool Shift = false);
 	void PanelCtrlPgDown();
-
-	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
-	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
 
 	void ApplyCommand();
 	void CreateDirectory();
@@ -331,29 +320,15 @@ private:
 
 	void CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks );
 
-	void ExecuteFile();
-
 	const unicode_t* GetCurrentFileName() const;
 	PanelWin* GetOtherPanel()
 	{
-		return _panel == &_leftPanel ? &_rightPanel : &_leftPanel;
+		return GetOtherPanel( _panel );
 	}
-
-	PanelWin* GetOtherPanel( PanelWin* panel )
-	{
-		return panel == &_leftPanel ? &_rightPanel : &_leftPanel;
-	}
-
-#ifndef _WIN32
-	void ExecNoTerminalProcess( const unicode_t* p );
-#endif
 
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
 
 	clPtr<FSList> GetPanelList();
-
-	int _execId;
-	unicode_t _execSN[64];
 
 	std::vector<unicode_t> FetchAndClearCommandLine();
 
@@ -375,6 +350,11 @@ public:
 	PanelWin* GetLeftPanel() { return &_leftPanel; }
 	PanelWin* GetRightPanel() { return &_rightPanel; }
 
+	PanelWin* GetOtherPanel( PanelWin* panel )
+	{
+		return panel == &_leftPanel ? &_rightPanel : &_leftPanel;
+	}
+
 	void HideAutoComplete();
 	void NotifyAutoComplete();
 	void NotifyAutoCompleteChange();
@@ -383,12 +363,10 @@ public:
 	
 	bool StartEditor( const std::vector<unicode_t> FileName, int Line, int Pos );
 	bool StartViewer( const std::vector<unicode_t> FileName, int Line );
+	void SetMode( MODE m );
 
 	EditWin* GetEditor() { return &_editor; }
 	NCHistory* GetHistory() { return &_history; }
-
-	const clNCFileAssociation* FindFileAssociation( const unicode_t* FileName ) const;
-	bool StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode );
 
 	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal, bool ReplaceSpecialChars );
 
@@ -397,8 +375,5 @@ public:
 	void AdjustFontSize( std::string* FontURI, float Coef );
 
 private:
-	bool ProcessCommand_CD( const unicode_t* cmd );
-	bool ProcessCommand_CLS( const unicode_t* cmd );
-	bool ProcessBuiltInCommands( const unicode_t* cmd );
 	void DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const;
 };

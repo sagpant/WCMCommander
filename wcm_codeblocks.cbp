@@ -203,7 +203,7 @@
 			<Option target="Debug Linux32" />
 			<Option target="Release Linux32" />
 		</Unit>
-		<Unit filename="src/ext-app.cpp" />
+		<Unit filename="src/ext-app-win.cpp" />
 		<Unit filename="src/ext-app.h" />
 		<Unit filename="src/fileassociations.cpp" />
 		<Unit filename="src/fileattributes.cpp" />
@@ -219,7 +219,9 @@
 		<Unit filename="src/drive-dlg.cpp" />
 		<Unit filename="src/drive-dlg.h" />
 		<Unit filename="src/file-util.cpp" />
+		<Unit filename="src/file-exec.cpp" />
 		<Unit filename="src/file-util.h" />
+		<Unit filename="src/file-exec.h" />
 		<Unit filename="src/nceditline.cpp" />
 		<Unit filename="src/nceditline.h" />
 		<Unit filename="src/folder-shortcuts.cpp" />

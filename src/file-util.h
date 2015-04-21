@@ -1,15 +1,19 @@
 /*
  * Part of WCM Commander
  * https://github.com/corporateshark/WCMCommander
- * walcommander@linderdaum.com
+ * wcm@linderdaum.com
  */
 
 #pragma once
+
+#include "globals.h"
+
 
 template <class T> class clPtr;
 class NCDialogParent;
 class FS;
 class FSPath;
+class PanelWin;
 
 
 /// Removes WCM Temp directory by the given Id
@@ -20,3 +24,13 @@ void RemoveAllWcmTempDirs();
 
 /// Loads to local temp file, returns local FS and Path back
 int LoadToTempFile( NCDialogParent* parent, clPtr<FS>* fs, FSPath* path );
+
+/// Opens HOME dir in the given panel
+void OpenHomeDir( PanelWin* p );
+
+#ifdef _WIN32
+
+/// Returns HOME dir URL on Win32
+std::vector<unicode_t> GetHomeUriWin();
+
+#endif

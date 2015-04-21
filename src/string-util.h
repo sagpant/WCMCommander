@@ -1,7 +1,7 @@
 /*
  * Part of WCM Commander
  * https://github.com/corporateshark/WCMCommander
- * walcommander@linderdaum.com
+ * wcm@linderdaum.com
  */
 
 #pragma once
@@ -24,6 +24,15 @@
 
 /// return the position of the SubStr in a range
 std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr );
+
+/// Skips spaces at the beginning of the string
+template <typename T> inline void SkipSpaces( T& p )
+{
+	while ( *p == ' ' )
+	{
+		p++;
+	}
+}
 
 /// replace special symbols !.! in the command with the specified file name, return the resulting command
 std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& Command, const unicode_t* FileName );
