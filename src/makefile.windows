@@ -61,6 +61,7 @@ HN = \
 	src/view-history.h \
 	src/drive-dlg.h \
 	src/file-util.h \
+	src/file-exec.h \
 	src/nceditline.h \
 	src/fontdlg.h \
 	src/ncfonts.h \
@@ -91,7 +92,7 @@ OBJS = \
 	$(OBJDIR)/dircalc.o \
 	$(OBJDIR)/dlg-ctrl-l.o \
 	$(OBJDIR)/eloadsave.o \
-	$(OBJDIR)/ext-app.o \
+	$(OBJDIR)/ext-app-win.o \
 	$(OBJDIR)/fileassociations.o \
 	$(OBJDIR)/fileattributes.o \
 	$(OBJDIR)/filehighlighting.o \
@@ -123,6 +124,7 @@ OBJS = \
 	$(OBJDIR)/view-history.o \
 	$(OBJDIR)/drive-dlg.o \
 	$(OBJDIR)/file-util.o \
+	$(OBJDIR)/file-exec.o \
 	$(OBJDIR)/nceditline.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
@@ -202,8 +204,8 @@ $(OBJDIR)/ftplogon.o: $(HW) $(HS) $(HN) src/ftplogon.cpp
 $(OBJDIR)/sftpdlg.o: $(HW) $(HS) $(HN) src/sftpdlg.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/sftpdlg.cpp -o $(OBJDIR)/sftpdlg.o
 	
-$(OBJDIR)/ext-app.o: $(HW) $(HS) $(HN) src/ext-app.cpp 
-	$(CC) $(COPTS) -c $(CFLAGS) src/ext-app.cpp -o $(OBJDIR)/ext-app.o
+$(OBJDIR)/ext-app-win.o: $(HW) $(HS) $(HN) src/ext-app-win.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/ext-app-win.cpp -o $(OBJDIR)/ext-app-win.o
 
 $(OBJDIR)/operthread.o: $(HW) $(HS) $(HN) src/operthread.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/operthread.cpp -o $(OBJDIR)/operthread.o
@@ -249,6 +251,9 @@ $(OBJDIR)/drive-dlg.o: $(HW) $(HS) $(HN) src/drive-dlg.cpp
 
 $(OBJDIR)/file-util.o: $(HW) $(HS) $(HN) src/file-util.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/file-util.cpp -o $(OBJDIR)/file-util.o
+
+$(OBJDIR)/file-exec.o: $(HW) $(HS) $(HN) src/file-exec.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/file-exec.cpp -o $(OBJDIR)/file-exec.o
 
 $(OBJDIR)/nceditline.o: $(HW) $(HS) $(HN) src/nceditline.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/nceditline.cpp -o $(OBJDIR)/nceditline.o

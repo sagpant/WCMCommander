@@ -91,7 +91,7 @@ ENDIF(MSVC)
 # sources
 IF(MINGW OR MSVC)
 	SET(wcm_PLATFORM_SOURCES
-		ext-app.cpp
+		ext-app-win.cpp
 		swl/swl_wincoreMS.cpp
 		w32cons.cpp
 		w32util.cpp
@@ -147,6 +147,7 @@ SET(wcm_COMMON_SOURCES
 	view-history.cpp
 	drive-dlg.cpp
 	file-util.cpp
+	file-exec.cpp
 	nceditline.cpp
 	smblogon.cpp
 	strconfig.cpp
@@ -232,6 +233,7 @@ SET(wcm_HEADERS
 	view-history.h
 	drive-dlg.h
 	file-util.h
+	file-exec.h
 	nceditline.h
 	smblogon.h
 	strconfig.h

@@ -13,9 +13,6 @@
 #     define NOMINMAX
 #  endif
 #  include <winsock2.h>
-#else
-#  include <signal.h>
-#  include <sys/wait.h>
 #endif
 
 #include "globals.h"
@@ -44,18 +41,11 @@
 #include "shell-tools.h"
 #include "dircalc.h"
 #include "ltext.h"
-#include "strmasks.h"
 #include "dlg-ctrl-l.h"
 #include "drive-dlg.h"
 #include "file-util.h"
 #include "usermenu.h"
 #include "vfs-tmp.h"
-
-#ifndef _WIN32
-#  include "ux_util.h"
-#else
-#	include "w32util.h"
-#endif
 
 #include <map>
 #include <vector>
@@ -217,14 +207,6 @@ ButtonWinData viewShiftButtons[] =
 	{"", 0},
 	{nullptr, 0}
 };
-
-static const int CMD_OPEN_FILE = 1000;
-static const int CMD_EXEC_FILE = 1001;
-
-template <typename T> void SkipSpaces( T& p )
-{
-	while ( *p == ' ' ) { p++; }
-}
 
 static bool StrHaveSpace( const unicode_t* s )
 {
@@ -439,10 +421,8 @@ NCWin::NCWin()
 	, _panelVisible( true )
 	, _mode( PANEL )
 	, _shiftSelectType( LPanelSelectionType_NotDefined )
-	, _execId( -1 )
+	, m_FileExecutor( this, _editPref, _history, _terminal )
 {
-	_execSN[0] = 0;
-
 	_editPref.Show();
 	_editPref.Enable();
 	_leftPanel.OnTop();
@@ -790,44 +770,6 @@ void NCWin::SetMode( MODE m )
 	RecalcLayouts();
 }
 
-void NCWin::ExecuteFile()
-{
-	if ( _mode != PANEL ) { return; }
-
-	FSNode* p =  _panel->GetCurrent();
-
-	if ( !p || p->IsDir() ) { return; }
-
-	if ( p->IsExe() )
-	{
-		FS* pFs = _panel->GetFS();
-
-		if ( !pFs || pFs->Type() != FS::SYSTEM )
-		{
-			NCMessageBox( this, _LT( "Run" ),
-			              _LT( "Can`t execute file in not system fs" ), true );
-			return;
-		}
-
-
-#ifdef _WIN32
-		static unicode_t w[2] = {'"', 0};
-		StartExecute( carray_cat<unicode_t>( w, _panel->UriOfCurrent( ).GetUnicode( ), w ).data( ), _panel->GetFS( ), _panel->GetPath( ) );
-		return;
-#else
-		const unicode_t*   fName = p->GetUnicodeName();
-		int len = unicode_strlen( fName );
-		std::vector<unicode_t> cmd( 2 + len + 1 );
-		cmd[0] = '.';
-		cmd[1] = '/';
-		memcpy( cmd.data() + 2, fName, len * sizeof( unicode_t ) );
-		cmd[2 + len] = 0;
-		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
-		return;
-#endif
-	}
-}
-
 void NCWin::PanelCtrlPgDown()
 {
 	if ( _mode != PANEL ) { return; }
@@ -840,12 +782,15 @@ void NCWin::PanelCtrlPgDown()
 		return;
 	}
 
-	StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_ExecuteSecondary );
+	m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_ExecuteSecondary );
 }
 
 void NCWin::PanelEnter(bool Shift)
 {
-	if ( _mode != PANEL ) { return; }
+	if ( _mode != PANEL )
+	{
+		return;
+	}
 
 	FSNode* p =  _panel->GetCurrent();
 
@@ -855,246 +800,22 @@ void NCWin::PanelEnter(bool Shift)
 		return;
 	}
 
-	FS* pFs = _panel->GetFS();
-
-	if ( !pFs )
+	if ( !_panel->GetFS() )
 	{
 		return;
 	}
 
-	bool cmdChecked = false;
-	std::vector<unicode_t> cmd;
-	bool terminal = true;
-	const unicode_t* pAppName = 0;
-
-	if ( Shift )
-	{
-		ExecuteDefaultApplication( _panel->UriOfCurrent().GetUnicode() );
-		return;
-	}
-
-	if ( StartFileAssociation( _panel->GetCurrentFileName(), eFileAssociation_Execute ) ) { return; }
-
-	if ( g_WcmConfig.systemAskOpenExec )
-	{
-		cmd = GetOpenCommand( _panel->UriOfCurrent().GetUnicode(), &terminal, &pAppName );
-		cmdChecked = true;
-	}
-
-	if ( p->IsExe() )
-	{
-#ifndef _WIN32
-
-		if ( g_WcmConfig.systemAskOpenExec && cmd.data() )
-		{
-
-			ButtonDataNode bListOpenExec[] = { {"&Open", CMD_OPEN_FILE}, {"&Execute", CMD_EXEC_FILE}, {"&Cancel", CMD_CANCEL}, {0, 0}};
-
-			static unicode_t emptyStr[] = {0};
-
-			if ( !pAppName ) { pAppName = emptyStr; }
-
-			int ret = NCMessageBox( this, "Open",
-			                        carray_cat<char>( "Executable file: ", p->name.GetUtf8(), "\ncan be opened by: ", unicode_to_utf8( pAppName ).data(), "\nExecute or Open?" ).data(),
-			                        false, bListOpenExec );
-
-			if ( ret == CMD_CANCEL ) { return; }
-
-			if ( ret == CMD_OPEN_FILE )
-			{
-#ifndef _WIN32
-
-				if ( !terminal )
-				{
-					ExecNoTerminalProcess( cmd.data() );
-					return;
-				};
-
-#endif
-				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
-
-				return;
-			}
-		}
-
-#endif
-		ExecuteFile();
-		return;
-	}
-
-	if ( !cmdChecked )
-	{
-		cmd = GetOpenCommand( _panel->UriOfCurrent().GetUnicode(), &terminal, 0 );
-	}
-
-	if ( cmd.data() )
-	{
-#if !defined( _WIN32 )
-
-		if ( !terminal )
-		{
-			ExecNoTerminalProcess( cmd.data() );
-			return;
-		}
-
-#endif
-
-		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
-	}
-}
-
-enum
-{
-	CMD_RC_RUN = 999,
-	CMD_RC_OPEN_0 = 1000
-};
-
-struct AppMenuData
-{
-	struct Node
-	{
-		unicode_t* cmd;
-		bool terminal;
-		Node(): cmd( 0 ), terminal( 0 ) {}
-		Node( unicode_t* c, bool t ): cmd( c ), terminal( t ) {}
-	};
-	ccollect<clPtr<MenuData> > mData;
-	ccollect<Node> nodeList;
-	MenuData* AppendAppList( AppList* list );
-};
-
-MenuData* AppMenuData::AppendAppList( AppList* list )
-{
-	if ( !list ) { return 0; }
-
-	clPtr<MenuData> p = new MenuData();
-
-	for ( int i = 0; i < list->Count(); i++ )
-	{
-		if ( list->list[i].sub.ptr() )
-		{
-			MenuData* sub = AppendAppList( list->list[i].sub.ptr() );
-			p->AddSub( list->list[i].name.data(), sub );
-		}
-		else
-		{
-			p->AddCmd( nodeList.count() + CMD_RC_OPEN_0, list->list[i].name.data() );
-			nodeList.append( Node( list->list[i].cmd.data(), list->list[i].terminal ) );
-		}
-	}
-
-	MenuData* ret = p.ptr();
-	mData.append( p );
-	return ret;
+	m_FileExecutor.ExecuteFileByEnter( _panel, Shift );
 }
 
 void NCWin::RightButtonPressed( cpoint point )
 {
-	if ( _mode != PANEL ) { return; }
-
-	FSNode* p =  _panel->GetCurrent();
-
-	if ( !p ) { return; }
-
-	if ( p->IsDir() ) { return; }
-
-	clPtr<AppList> appList = GetAppList( _panel->UriOfCurrent().GetUnicode() );
-
-	//if (!appList.data()) return;
-
-	AppMenuData data;
-	MenuData mdRes, *md = data.AppendAppList( appList.ptr() );
-
-	if ( !md ) { md = &mdRes; }
-
-	if ( p->IsExe() )
+	if ( _mode != PANEL )
 	{
-		md->AddCmd( CMD_RC_RUN, _LT( "Execute" ) );
-	}
-
-	if ( !md->Count() ) { return; }
-
-	int ret = DoPopupMenu( 0, this, md, point.x, point.y );
-
-	m_Edit.SetFocus();
-
-	if ( ret == CMD_RC_RUN )
-	{
-		ExecuteFile();
 		return;
 	}
 
-	ret -= CMD_RC_OPEN_0;
-
-	if ( ret < 0 || ret >= data.nodeList.count() ) { return; }
-
-
-#ifndef _WIN32
-
-	if ( !data.nodeList[ret].terminal )
-	{
-		ExecNoTerminalProcess( data.nodeList[ret].cmd );
-		return;
-	};
-
-#endif
-
-	StartExecute( data.nodeList[ret].cmd, _panel->GetFS(), _panel->GetPath() );
-
-	return;
-}
-
-void NCWin::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path )
-{
-#ifdef _WIN32
-	_history.Put( cmd );
-
-	if ( _terminal.Execute( this, 1, cmd, 0, fs->Uri( path ).GetUnicode() ) )
-	{
-		SetMode( TERMINAL );
-	}
-
-#else
-	
-	_history.Put( cmd );
-	const unicode_t* pref = _editPref.Get();
-	static unicode_t empty[] = {0};
-
-	if ( !pref ) { pref = empty; }
-
-	_terminal.TerminalReset();
-	unsigned fg_pref = 0xB;
-	unsigned fg_cmd = 0xF;
-	unsigned bg = 0;
-	static unicode_t newLine[] = {'\n', 0};
-	_terminal.TerminalPrint( newLine, fg_pref, bg );
-	_terminal.TerminalPrint( pref, fg_pref, bg );
-	_terminal.TerminalPrint( cmd, fg_cmd, bg );
-	_terminal.TerminalPrint( newLine, fg_cmd, bg );
-
-	int l = unicode_strlen( cmd );
-	int i;
-
-	if ( l >= 64 )
-	{
-		for ( i = 0; i < 64 - 1; i++ ) { _execSN[i] = cmd[i]; }
-
-		_execSN[60] = '.';
-		_execSN[61] = '.';
-		_execSN[62] = '.';
-		_execSN[63] = 0;
-	}
-	else
-	{
-		for ( i = 0; i < l; i++ ) { _execSN[i] = cmd[i]; }
-
-		_execSN[l] = 0;
-	}
-
-	_terminal.Execute( this, 1, cmd, ( sys_char_t* )path.GetString( sys_charset_id ) );
-	SetMode( TERMINAL );
-#endif
-	ReturnToDefaultSysDir(); //!!!
+	m_FileExecutor.ShowFileContextMenu( point, _panel );
 }
 
 void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
@@ -1162,28 +883,6 @@ void NCWin::UserMenu()
 	UserMenuDlg( this, g_Env.GetUserMenuItemsPtr() );
 }
 
-void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
-{
-	if ( !cmd.data() ) { return; }
-
-	if ( !list.ptr() || list->Count() <= 0 ) { return; }
-
-	std::vector<FSNode*> nodes = list->GetArray();
-
-	SetMode( TERMINAL );
-
-	for ( auto i = nodes.begin(); i != nodes.end(); i++ )
-	{
-		FSNode* Node = *i;
-
-		const unicode_t* Name = Node->GetUnicodeName();
-
-		std::vector<unicode_t> Command = MakeCommand( cmd, Name );
-
-		StartExecute( Command.data( ), Panel->GetFS( ), Panel->GetPath( ) );
-	}
-}
-
 void NCWin::ApplyCommand()
 {
 	if ( _mode != PANEL )
@@ -1201,7 +900,7 @@ void NCWin::ApplyCommand()
 	}
 
 	command = str;
-	ApplyCommandToList( command, _panel->GetSelectedList(), _panel );
+	m_FileExecutor.ApplyCommand( command, _panel );
 }
 
 void NCWin::CreateDirectory()
@@ -1263,34 +962,6 @@ void NCWin::QuitQuestion()
 	}
 }
 
-bool NCWin::StartFileAssociation( const unicode_t* FileName, eFileAssociation Mode )
-{
-	const clNCFileAssociation* Assoc = this->FindFileAssociation( FileName );
-
-	if ( !Assoc ) { return false; }
-
-	std::vector<unicode_t> Cmd = MakeCommand( Assoc->Get( Mode ), FileName );
-
-	if ( Cmd.data() && *Cmd.data() )
-	{
-#if !defined( _WIN32 )
-
-		if ( !Assoc->GetHasTerminal() )
-		{
-			ExecNoTerminalProcess( Cmd.data() );
-			return true;
-		}
-
-#endif
-
-		StartExecute( Cmd.data(), _panel->GetFS(), _panel->GetPath() );
-
-		return true;
-	}
-
-	return false;
-}
-
 void NCWin::ViewFile( clPtr<FS> Fs, FSPath& Path )
 {
 	if ( !CheckEditorBackgroundActivity( false ) )
@@ -1338,7 +1009,7 @@ void NCWin::View( bool Secondary )
 
 	try
 	{
-		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) )
+		if ( m_FileExecutor.StartFileAssociation( _panel, Secondary ? eFileAssociation_ViewSecondary : eFileAssociation_View ) )
 		{
 			return;
 		}
@@ -1450,7 +1121,7 @@ void NCWin::Edit( bool enterFileName, bool Secondary )
 
 	try
 	{
-		if ( StartFileAssociation( _panel->GetCurrentFileName(), Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) )
+		if ( m_FileExecutor.StartFileAssociation( _panel, Secondary ? eFileAssociation_EditSecondary : eFileAssociation_Edit ) )
 		{
 			return;
 		}
@@ -1783,22 +1454,6 @@ void NCWin::Copy( bool shift )
 
 	_leftPanel.Reread();
 	_rightPanel.Reread();
-}
-
-const clNCFileAssociation* NCWin::FindFileAssociation( const unicode_t* FileName ) const
-{
-	const auto& Assoc = g_Env.GetFileAssociations();
-
-	for ( const auto& i : Assoc )
-	{
-		std::vector<unicode_t> Mask = i.GetMask();
-
-		clMultimaskSplitter Splitter( Mask );
-
-		if ( Splitter.CheckAndFetchAllMasks( FileName ) ) { return &i; }
-	}
-
-	return NULL;
 }
 
 // XXX case sensitivity should be attribute of a file system, and not the OS. 
@@ -2301,74 +1956,6 @@ void NCWin::ViewCharsetTable()
 	}
 }
 
-
-#ifndef _WIN32
-
-void NCWin::ExecNoTerminalProcess( const unicode_t* p )
-{
-	_history.Put( p );
-	const unicode_t* pref = _editPref.Get();
-	static unicode_t empty[] = {0};
-
-	if ( !pref ) { pref = empty; }
-
-	_terminal.TerminalReset();
-	unsigned fg = 0xB;
-	unsigned bg = 0;
-	static unicode_t newLine[] = {'\n', 0};
-	_terminal.TerminalPrint( newLine, fg, bg );
-	_terminal.TerminalPrint( pref, fg, bg );
-	_terminal.TerminalPrint( p, fg, bg );
-	_terminal.TerminalPrint( newLine, fg, bg );
-
-	SkipSpaces( p );
-
-	if ( !*p ) { return; }
-
-	char* dir = 0;
-	FSPath dirPath;
-
-
-	if ( _panel->GetFS() && _panel->GetFS()->Type() == FS::SYSTEM )
-	{
-		dirPath = _panel->GetPath();
-		dir = ( char* )dirPath.GetString( sys_charset_id );
-	}
-
-	FSString s = p;
-	sys_char_t* cmd = ( sys_char_t* ) s.Get( sys_charset_id );
-
-
-	pid_t pid = fork();
-
-	if ( pid < 0 ) { return; }
-
-	if ( pid )
-	{
-		waitpid( pid, 0, 0 );
-	}
-	else
-	{
-
-		if ( !fork() )
-		{
-//printf("exec: %s\n", cmd);
-			signal( SIGINT, SIG_DFL );
-			static char shell[] = "/bin/sh";
-			const char* params[] = {shell, "-c", cmd, NULL};
-
-			if ( dir ) if ( chdir( dir ) ) {};
-
-			execv( shell, ( char** ) params );
-
-			exit( 1 );
-		}
-
-		exit( 0 );
-	}
-}
-#endif
-
 void NCWin::Tab( bool forceShellTab )
 {
 	HideAutoComplete();
@@ -2657,261 +2244,9 @@ std::vector<unicode_t> NCWin::FetchAndClearCommandLine()
 	return txt;
 }
 
-bool IsCommand_CD( const unicode_t* p )
-{
-#ifdef _WIN32
-	return ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' );
-#else
-	return ( p[0] == 'c' && p[1] == 'd' && ( !p[2] || p[2] == ' ' ) );
-#endif
-}
-
-bool ApplyEnvVariable( const char* EnvVarName, std::vector<unicode_t>* Out )
-{
-	if ( !Out ) { return false; }
-
-	std::string Value = GetEnvVariable( EnvVarName );
-
-	if ( Value.empty() ) return false;
-
-	*Out = utf8_to_unicode( Value.c_str() );
-
-	return true;
-}
-
-// handle the "cd" command, convert its argument to a valid path, expand ~ and env variables
-std::vector<unicode_t> ConvertCDArgToPath( const unicode_t* p )
-{
-	std::vector<unicode_t> Out;
-
-	std::vector<unicode_t> Temp;
-
-	while ( p && *p )
-	{
-		unicode_t Ch = 0;
-
-		if ( *p == '~' )
-		{
-			if ( LookAhead( p, &Ch ) )
-			{
-				if ( ( IsPathSeparator( Ch ) || Ch == 0 ) && ApplyEnvVariable( "HOME", &Temp ) )
-				{
-					// replace ~ with the HOME path
-					Out.insert( Out.end(), Temp.begin(), Temp.end() );
-					PopLastNull( &Out );
-				}
-			}
-		}
-		else if ( *p == '$' )
-		{
-			// skip `$`
-			std::string EnvVarName = unicode_to_utf8( p + 1 );
-
-			for ( auto i = EnvVarName.begin(); i != EnvVarName.end(); i++ )
-			{
-				if ( IsPathSeparator( *i ) )
-				{
-					*i = 0;
-					break;
-				}
-			}
-
-			if ( ApplyEnvVariable( EnvVarName.data( ), &Temp ) )
-			{
-				// replace the var name with its value
-				Out.insert( Out.end(), Temp.begin(), Temp.end() );
-				PopLastNull( &Out );
-				// skip var name
-				p += strlen( EnvVarName.data() );
-			}
-		}
-		else if ( IsPathSeparator( *p ) )
-		{
-			if ( !LastCharEquals( Out, '/' ) && !LastCharEquals( Out, '\\' ) ) { Out.push_back( DIR_SPLITTER ); }
-		}
-		else
-		{
-			Out.push_back( *p );
-		}
-
-		p++;
-	}
-
-	Out.push_back( 0 );
-
-// debug
-//	std::vector<char> U = unicode_to_utf8( Out.data() );
-//	const char* UTF = U.data();
-
-	return Out;
-}
-
-bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
-{
-	// make a mutable copy
-	std::vector<unicode_t> copy = new_unicode_str( cmd );
-
-	unicode_t* p = copy.data();
-
-	//change dir
-	_history.Put( p );
-	p += 2;
-
-	SkipSpaces( p );
-
-	std::vector<unicode_t> Path = ConvertCDArgToPath( p );
-
-	if ( Path.empty() || !Path[0] )
-	{
-#if defined(_WIN32)
-		StartExecute( cmd, _panel->GetFS(), _panel->GetPath() );
-#else
-		OpenHomeDir( _panel, GetOtherPanel() );
-#endif
-		return true;
-	}
-
-	p = Path.data();
-
-	unicode_t* lastNoSpace = nullptr;
-
-	for ( unicode_t* s = p; *s; s++ )
-	{
-		if ( *s != ' ' ) { lastNoSpace = s; }
-	}
-
-	if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
-
-	FSPath path = _panel->GetPath();
-
-	ccollect<unicode_t, 0x100> pre;
-	int sc = 0;
-
-	while ( *p )
-	{
-		if ( sc )
-		{
-			if ( *p == sc ) { sc = 0;  p++; continue; }
-		}
-		else if ( *p == '\'' || *p == '"' )
-		{
-			sc = *p;
-			p++;
-			continue;
-		}
-
-#ifndef _WIN32
-
-		if ( *p == '\\' && !sc ) { p++; }
-
-#endif
-
-		if ( !p ) { break; }
-
-		pre.append( *p );
-		p++;
-	}
-
-	pre.append( 0 );
-	p = pre.ptr();
-
-	const std::vector<clPtr<FS>> checkFS =
-	{
-		_panel->GetFSPtr(),
-		GetOtherPanel()->GetFSPtr()
-	};
-
-	clPtr<FS> fs = ParzeURI( p, path, checkFS );
-
-	if ( fs.IsNull() )
-	{
-		char buf[4096];
-		FSString name = p;
-		Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
-		NCMessageBox( this, "CD", buf, true );
-	}
-	else
-	{
-		_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
-	}
-
-	return true;
-}
-
-bool NCWin::ProcessCommand_CLS( const unicode_t* cmd )
-{
-	_terminal.TerminalReset( true );
-	return true;
-}
-
-bool NCWin::ProcessBuiltInCommands( const unicode_t* cmd )
-{
-#if defined( _WIN32 ) || defined( __APPLE__ )
-	bool CaseSensitive = false;
-#else
-	bool CaseSensitive = true;
-#endif
-
-	if ( IsEqual_Unicode_CStr( cmd, "cls", CaseSensitive ) )
-	{
-		ProcessCommand_CLS( cmd );
-		return true;
-	}
-	else if ( IsCommand_CD( cmd ) )
-	{
-		ProcessCommand_CD( cmd );
-		return true;
-	}
-
-	return false;
-}
-
 bool NCWin::StartCommand( const std::vector<unicode_t>& CommandString, bool ForceNoTerminal, bool ReplaceSpecialChars )
 {
-	std::vector<unicode_t> Command = ReplaceSpecialChars ? MakeCommand( CommandString, _panel->GetCurrentFileName() ) : CommandString;
-
-	const unicode_t* p = Command.data();
-
-	SkipSpaces( p );
-
-//	printf( "StartCommand %s, %i\n", (const char*)p, (int)ForceNoTerminal );
-
-	if ( !*p ) { return false; }
-
-	if ( *p )
-	{
-		_history.ResetToLast();
-
-		if ( !ProcessBuiltInCommands( p ) )
-		{
-#ifndef _WIN32
-
-			if ( p[0] == '&' || ForceNoTerminal )
-			{
-				_history.Put( p );
-
-				if ( p[0] == '&' ) { p++; }
-
-				ExecNoTerminalProcess( p );
-			}
-			else
-#endif
-			{
-				FS* fs = _panel->GetFS();
-
-				if ( fs && fs->Type() == FS::SYSTEM )
-				{
-					StartExecute( Command.data(), _panel->GetFS(), _panel->GetPath() );
-				}
-				else
-				{
-					NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
-				}
-			}
-		}
-	}
-
-	return true;
+	return m_FileExecutor.StartCommand( CommandString, _panel, ForceNoTerminal, ReplaceSpecialChars );
 }
 
 void NCWin::DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const
@@ -3281,7 +2616,7 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					return true;
 
 				case FC( VK_GRAVE, KM_CTRL ):
-					OpenHomeDir( _panel, GetOtherPanel() );
+					OpenHomeDir( _panel );
 					break;
 
 				case FC( VK_A, KM_CTRL ):
@@ -3553,7 +2888,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				if ( m_Edit.IsVisible() )
 				{
-					if ( StartCommand( FetchAndClearCommandLine(), true, false ) ) { break; }
+					if ( StartCommand( FetchAndClearCommandLine(), true, false ) )
+					{
+						break;
+					}
 				}
 
 				if ( _panelVisible ) { PanelEnter(true); }
@@ -3568,7 +2906,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				if ( m_Edit.IsVisible() )
 				{
-					if ( StartCommand( FetchAndClearCommandLine(), false, false ) ) { break; }
+					if ( StartCommand( FetchAndClearCommandLine(), false, false ) )
+					{
+						break;
+					}
 				}
 
 				if ( _panelVisible ) { PanelEnter(); }
@@ -3738,37 +3079,16 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			}
 
 			case FC( VK_INSERT, KM_SHIFT ):
-				if ( pressed ) { _terminal.Paste(); }
-
-				return true;
-#ifdef _WIN32
-
-			case FC( VK_C, KM_ALT | KM_CTRL ):
-			{
-				if ( NCMessageBox( this, _LT( "Stop" ), _LT( "Drop current console?" ) , false, bListOkCancel ) == CMD_OK )
+				if ( pressed )
 				{
-					_terminal.DropConsole();
+					_terminal.Paste();
 				}
-			}
-
-			return true;
-#else
+				return true;
 
 			case FC( VK_C, KM_ALT | KM_CTRL ):
 				HideAutoComplete();
-				if ( _execId > 0 )
-				{
-					int ret = KillCmdDialog( this, _execSN );
-
-					if ( _execId > 0 )
-					{
-						if ( ret == CMD_KILL_9 ) { kill( _execId, SIGKILL ); }
-						else if ( ret == CMD_KILL ) { kill( _execId, SIGTERM ); }
-					}
-				}
-
+				m_FileExecutor.StopExecute();
 				return true;
-#endif
 		}
 
 #ifdef _WIN32
@@ -3934,13 +3254,13 @@ bool NCWin::EventKey( cevent_key* pEvent )
 
 void NCWin::ThreadSignal( int id, int data )
 {
-	if ( id == 1 ) { _execId = data; }
+	m_FileExecutor.ThreadSignal( id, data );
 }
 
 void NCWin::ThreadStopped( int id, void* data )
 {
-	_execId = -1;
-	_execSN[0] = 0;
+	m_FileExecutor.ThreadStopped( id, data );
+	
 	SetMode( PANEL );
 	_leftPanel.Reread();
 	_rightPanel.Reread();
