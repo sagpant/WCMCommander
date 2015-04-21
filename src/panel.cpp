@@ -2125,9 +2125,11 @@ bool PanelWin::DirUp()
 
 void PanelWin::DirEnter(bool OpenInExplorer)
 {
-	if ( _place.IsEmpty() ) { return; }
-	
-	if ( !Current() )
+	if (_place.IsEmpty()) { return; }
+
+	FSNode* node = GetCurrent();
+
+	if (!node || strcmp(node->name.GetUtf8(),"..")==0)
 	{
 		if ( OpenInExplorer )
 		{
@@ -2144,8 +2146,6 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 		return;
 	};
 	  
-	FSNode* node = GetCurrent();
-
 	if ( !node || !node->IsDir() ) { return; }
 
 	FSPath p = GetPath();
