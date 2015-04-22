@@ -268,7 +268,7 @@ bool ToolBar::EventMouse( cevent_mouse* pEvent )
 			ToolTipHide();
 			_curTip = _nextTip = 0;
 			DelAllTimers();
-
+			SetTimer(0,200);
 
 			if ( pEvent->Button() != MB_L ) { break; }
 

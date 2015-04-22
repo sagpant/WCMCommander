@@ -153,9 +153,10 @@ namespace wal
 	bool Button::EventKey( cevent_key* pEvent )
 	{
 		bool IsReturn = pEvent->Key() == VK_RETURN || pEvent->Key() == VK_NUMPAD_RETURN;
+		bool IsSpace = pEvent->Key() == VK_SPACE;
 		bool IsHotkey = m_Text.isHotkeyMatching( UnicodeUC( pEvent->Char() ) );
 
-		if ( IsReturn || IsHotkey )
+		if ( IsReturn || IsSpace || IsHotkey )
 		{
 			if ( pEvent->Type() == EV_KEYDOWN )
 			{
