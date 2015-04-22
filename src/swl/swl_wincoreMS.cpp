@@ -193,7 +193,16 @@ namespace wal
 					// рамки всего дерева были либо активными либо нет одновременно
 					if ( !win ) { break; }
 
-					if ( win->IsOneParentWith( ( HWND )lParam ) ) { return TRUE; }
+					if (win->type & Win::WT_POPUP)
+					{
+						// then this message has been sent from the code below
+						// close the popup window, and break
+						if (win->Parent())
+							win->Parent()->Command(CMD_MENU_INFO, SCMD_MENU_CANCEL, win, 0);
+						break;
+					}
+
+					if (win->IsOneParentWith((HWND)lParam)) { return TRUE; }
 
 					if ( lParam == -1 ) { break; }
 
@@ -204,13 +213,11 @@ namespace wal
 					while ( p->Parent() ) { p = p->Parent(); }
 
 					p->PopupTreeList( wl );
-
 					for ( int i = 0; i < wl.count(); i++ )
 						if ( wl[i] != hWnd )
 						{
 							::SendMessage( wl[i], message, wParam, lParam );
 						}
-
 					break;
 				}
 
@@ -380,6 +387,24 @@ namespace wal
 
 				case WM_SYSKEYDOWN:
 				case WM_KEYDOWN:
+#if 0
+//#ifdef _DEBUG
+					if (wParam == VK_F12)
+					{
+// this code is called from any place on F12 hit. Use it for dumping data structures
+						Win* rootWin = win;
+						while (rootWin->parent)
+							rootWin = rootWin->parent;
+						rootWin->dbg_dump();
+
+						ccollect<HWND> wl;
+						rootWin->PopupTreeList(wl);
+						dbg_printf("popup HWNDs:\n");
+						for (int i = 0; i < wl.count();  i++)
+							dbg_printf("%x\n", wl[i]);
+					}
+#endif
+
 					if ( KeyEvent( EV_KEYDOWN, win, wParam, lParam, false ) )
 					{
 						return 0;
@@ -1726,4 +1751,21 @@ namespace wal
 
 
 }; //namespace wal
+#if defined _DEBUG
+static void spaces(int indent)
+{
+	for (int i = 0; i < indent; i++)
+		dbg_printf("  ");
+}
+
+#include <typeinfo>
+void Win::dbg_dump(int indent)
+{
+	spaces(indent);
+	dbg_printf("%s %x %s\n", typeid(*this).name(), handle, type & WT_POPUP ? "POPUP" : "");
+	for (int i = 0; i < ChildCount(); i++)
+		GetChild(i)->dbg_dump(indent + 1);
+}
+
+#endif
 #endif

@@ -116,6 +116,7 @@ bool UxMntList( wal::ccollect< MntListNode >* pList )
 	return true;
 }
 
+// Unicode version of the function is in string-util.cpp
 // for args in the command system("cmd args")
 // "My Document.txt" -> "My\ Document.txt"
 void escShellStr(std::string& src)
@@ -154,7 +155,7 @@ void ExecuteDefaultApplication( const unicode_t* Path )
 #else
 	const std::string command = "xdg-open " + utf8;
 #endif
-
+//	dbg_printf("Executing: '%s'\n",command.data());
 	if ( !fork() )
 	{
 		signal( SIGINT, SIG_DFL );

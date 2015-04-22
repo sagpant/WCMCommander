@@ -440,7 +440,6 @@ namespace wal
 		return false;
 	}
 
-
 	void PopupMenu::Paint( GC& gc, const crect& paintRect )
 	{
 		crect rect = ClientRect();

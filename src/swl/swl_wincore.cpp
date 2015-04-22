@@ -465,13 +465,10 @@ namespace wal
 
 	void Win::PopupTreeList( ccollect<WinID>& list )
 	{
-		list.append( this->handle );
-
-		for ( int i = 0; i < childList.count(); i++ )
-			if ( childList[i]->type & Win::WT_POPUP )
-			{
-				childList[i]->PopupTreeList( list );
-			}
+		if (type & Win::WT_POPUP)
+			list.append(handle);
+		for (int i = 0; i < childList.count(); i++)
+			childList[i]->PopupTreeList(list);
 	}
 
 	Win* Win::FocusNPChild( bool next )
