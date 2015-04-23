@@ -387,6 +387,34 @@ bool IsRoot()
 #endif
 }
 
+static bool doLoadCurrentDir()
+{
+	// if explicitly asked not to do
+	if ( g_LoadCurrentDir == 0 )
+		return false;
+	else if ( g_LoadCurrentDir == 1 )
+		return true;
+	else // try to guess whether we are started from a command line terminal
+#if defined(_WIN32)
+		return GetEnvironmentVariable("TERM",0,0) != 0;  // to mute Microsoft paranoia of getenv()
+#else
+		return std::getenv("TERM")!=0;  
+#endif
+
+}
+
+static std::string getCwdUtf8()
+{
+	char cwd[MAX_PATH + 1];
+	return std::string(
+#ifdef _WIN32
+	GetCurrentDirectory(sizeof(cwd) - 1, cwd) != 0 
+#else
+	getcwd(cwd, sizeof(cwd) - 1) != 0
+#endif
+	? cwd : "");
+}
+
 NCWin::NCWin()
 	: NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect )
 	, _lo( 5, 1 )
@@ -621,7 +649,10 @@ NCWin::NCWin()
 //	printf( "Left = %s\n", g_WcmConfig.leftPanelPath.data() );
 //	printf( "Right = %s\n", g_WcmConfig.rightPanelPath.data() );
 
-	_leftPanel.LoadPathStringSafe( g_WcmConfig.leftPanelPath.data() );
+	if (doLoadCurrentDir())
+		_leftPanel.LoadPathStringSafe(getCwdUtf8().c_str());
+	else
+		_leftPanel.LoadPathStringSafe(g_WcmConfig.leftPanelPath.data());
 	_rightPanel.LoadPathStringSafe( g_WcmConfig.rightPanelPath.data() );
 }
 
