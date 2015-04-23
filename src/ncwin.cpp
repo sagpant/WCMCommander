@@ -37,6 +37,10 @@
 #include "usermenu.h"
 #include "vfs-tmp.h"
 
+#ifndef _WIN32
+#include <limits.h>	// PATH_MAX
+#endif
+
 #include <map>
 #include <vector>
 
@@ -405,14 +409,13 @@ static bool doLoadCurrentDir()
 
 static std::string getCwdUtf8()
 {
-	char cwd[MAX_PATH + 1];
-	return std::string(
 #ifdef _WIN32
-	GetCurrentDirectory(sizeof(cwd) - 1, cwd) != 0 
+	char cwd[MAX_PATH + 1];
+	return std::string(GetCurrentDirectory(sizeof(cwd) - 1, cwd) != 0 ? cwd : "");
 #else
-	getcwd(cwd, sizeof(cwd) - 1) != 0
+	char cwd[PATH_MAX + 1];
+	return std::string(getcwd(cwd, sizeof(cwd) - 1) != 0 ? cwd : "");
 #endif
-	? cwd : "");
 }
 
 NCWin::NCWin()
