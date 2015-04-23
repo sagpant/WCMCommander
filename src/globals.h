@@ -41,6 +41,7 @@ extern clPtr<cfont> g_HelpBoldFont;
 extern clPtr<cfont> g_HelpHeadFont;
 
 extern bool g_DebugKeyboard;
+extern int g_LoadCurrentDir;
 
 class clEnvironment
 {

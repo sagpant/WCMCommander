@@ -147,6 +147,10 @@ void ShowHelp()
 	printf( " --dlg                               Show dialogs as child windows (OS X/Linux only).\n\n" );
 	printf( " --debug-keyboard                    Write keypresses to stderr (OS X/Linux only).\n\n" );
 #endif
+	printf(" --load-current-dir                   Load current directory to active panel on startup.\n");
+	printf(" --dont-load-current-dir              Do not load current directory ....\n");
+	printf("                        (default is to load only when wcm is launched from command line.\n");
+
 	printf( " /e [<line>:<pos>] <filename>\n" );
 	printf( " -e [<line>:<pos>] <filename>\n" );
 	printf( " --edit [<line>:<pos>] <filename>    Edit the specified file.\n\n" );
@@ -275,6 +279,18 @@ bool ParseCommandLine( int argc, char** argv, NCWin* NcWin )
 		if ( !strcmp( argv[i], "--debug-keyboard" ) )
 		{
 			g_DebugKeyboard = true;
+			continue;
+		}
+
+		if (!strcmp(argv[i], "--dont-load-current-dir"))
+		{
+			g_LoadCurrentDir = 0;
+			continue;
+		}
+
+		if (!strcmp(argv[i], "--load-current-dir"))
+		{
+			g_LoadCurrentDir = 1;
 			continue;
 		}
 
