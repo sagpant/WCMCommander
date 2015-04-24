@@ -402,7 +402,7 @@ static bool doLoadCurrentDir()
 #if defined(_WIN32)
 		return GetEnvironmentVariable("TERM",0,0) != 0;  // to mute Microsoft paranoia of getenv()
 #else
-		return std::getenv("TERM")!=0;  
+		return getenv("TERM")!=0;  
 #endif
 
 }
