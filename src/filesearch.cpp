@@ -534,9 +534,6 @@ public:
 	virtual ~SearchListWin();
 };
 
-extern cicon folderIcon;
-extern cicon folderIconHi;
-
 int CenterIconHeight( const crect& rect, int IconHeight )
 {
 	return rect.top + ( rect.Height( ) - IconHeight ) / 2;
@@ -578,7 +575,7 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 			if ( m_ItemList[n].fsNode->IsDir() )
 			{
-				gc.DrawIcon( x, CenterIconHeight( rect, folderIcon.Height( ) ), &folderIcon );
+				gc.DrawIcon( x, CenterIconHeight( rect, PanelWin::folderIcon.Height ( ) ), &PanelWin::folderIcon );
 			}
 			else
 			{
@@ -610,11 +607,11 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 
 			const int FolderIconMargin = 10;
 
-			gc.DrawIcon( x + FolderIconMargin, CenterIconHeight( rect, folderIcon.Height( ) ), &folderIcon );
+			gc.DrawIcon( x + FolderIconMargin, CenterIconHeight( rect, PanelWin::folderIcon.Height( ) ), &PanelWin::folderIcon);
 			gc.SetLine( textColor );
 			gc.MoveTo( 0, rect.top + 1 );
 			gc.LineTo( rect.right, rect.top + 1 );
-			x += folderIcon.Width( ) + FolderIconMargin;
+			x += PanelWin::folderIcon.Width( ) + FolderIconMargin;
 		}
 
 		int textWidth = x;

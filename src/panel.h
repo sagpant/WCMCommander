@@ -344,4 +344,14 @@ public:
 	virtual bool Command( int id, int subId, Win* win, void* data );
 	virtual bool Broadcast( int id, int subId, Win* win, void* data );
 	virtual void OnChangeStyles();
+public:
+	static cicon folderIcon;
+	static cicon folderIconHi;
+private:
+	static cicon linkIcon;
+	static cicon executableIcon;
+	static cicon serverIcon;
+	static cicon workgroupIcon;
+	static cicon runIcon;
 };
+#define PANEL_ICON_SIZE 16

@@ -708,8 +708,10 @@ namespace wal
 		static void SetCmdIcon( int cmd, const char** s, int w = 16, int h = 16 );
 
 		static void ClearCmdIcons( int cmd );
-
 		~cicon() { Clear(); }
+	private:
+		static Mutex iconCopyMutex;
+		static Mutex iconListMutex;
 	};
 
 
