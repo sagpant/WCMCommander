@@ -26,15 +26,6 @@
 #	include "w32util.h"
 #endif
 
-#include "icons/folder3.xpm"
-#include "icons/folder.xpm"
-//#include "icons/executable.xpm"
-#include "icons/executable1.xpm"
-#include "icons/monitor.xpm"
-#include "icons/workgroup.xpm"
-#include "icons/run.xpm"
-#include "icons/link.xpm"
-
 #include "vfs-smb.h"
 #include "ltext.h"
 #include "folder-history.h"
@@ -797,16 +788,6 @@ static const int groupWidth = 16;
 static const int accessWidth = 13;
 
 
-#define PANEL_ICON_SIZE 16
-
-cicon folderIcon( xpm16x16_Folder, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
-cicon folderIconHi( xpm16x16_Folder_HI, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
-
-static cicon linkIcon( xpm16x16_Link, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
-static cicon executableIcon( xpm16x16_Executable, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
-static cicon serverIcon( xpm16x16_Monitor, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
-static cicon workgroupIcon( xpm16x16_Workgroup, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
-static cicon runIcon( xpm16x16_Run, PANEL_ICON_SIZE, PANEL_ICON_SIZE );
 
 bool panelIconsEnabled = true;
 
