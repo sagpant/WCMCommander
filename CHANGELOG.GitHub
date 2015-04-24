@@ -1,24 +1,38 @@
-0.19.1
+0.20.0
+	Project renamed to WCM Commander
 	Added #345: External color schemes
 	Added #375: File attributes: modification of creation/modification/access time
+	Added #462: Open files on non-local file systems
+	Added #379: Inheriting the current dir from a parent process (options --load-current-dir and --dont-load-current-dir)
 	Added: history and autocomplete in all edit lines
 	Added: view history
 	Added: OS X volumes are shown in the Drive dialog
 	Hotkey: F4 on a folder opens the Attributes dialog
+	Imrpoved #352: Space acts as Enter when a button has focus
 	Improved #388: Do not discard editor undo history when saving a file
 	Improved #435: User menu: allow references to selected files
 	Improved: rendering of long file names is faster
 	Improved: Ctrl+G in the editor accepts any values
+	Imrpoved: keyboard shortcuts for file sorting modes in the main menu
+	Fixed #306: Submenu detaches after Alt-Tab
+	Fixed #309: After clicking one tool button, all toolbuttons lose tooltips
 	Fixed #319: Use antialiased fonts everywhere except the menubar
 	Fixed #400: When a command is executed, reset the 'last command' index for Ctrl-E/Ctrl-X
 	Fixed #401: Ctrl-Ins on a panel should copy all the selected file names to a clipboard
 	Fixed #402: Shift-Enter on folders
 	Fixed #407: 'Case sensitive' checkbox (in the Find dialog) is not always preserved
+	Fixed #421: Files with single|double|back-quotes in the name should now open fine with 'Enter'
 	Fixed #436: Temporary panel shows ".." even if displaying of ".." is disabled in "Panel Settings"
 	Fixed #436: Cursor position is being retained after diving in, and returning back from a temp panel
 	Fixed #440: Parasitic key in the Ctrl+L dialog
+	Fixed #443: File view/edit history doesn't work for temp panel items
 	Fixed #444: File disapears from the temp panel after editing
 	Fixed #458: OS X: CMD+C not working for command line in panel mode
+	Fixed #471: Linux: Hotkeys conflict in select drive dialog
+	Fixed #472: Attribure-based coloring/icons are not rendered on temporary panel
+	Fixed #473: Cannot go into the first folder under the (S)FTP/SMB root folder
+	Fixed #476: Windows: SFTP entry is missing in drive dialog
+	Fixed #479: Windows: segfault on exit when launched from Cygwin/MinGW terminal (mintty)
 	Fixed: Recalculate layouts after closing the help dialog
 	Development: CMake generates proper folders for MSVC projects
 
