@@ -710,8 +710,8 @@ namespace wal
 		static void ClearCmdIcons( int cmd );
 		~cicon() { Clear(); }
 	private:
-		static Mutex cicon::iconCopyMutex;
-		static Mutex cicon::iconListMutex;
+		static Mutex iconCopyMutex;
+		static Mutex iconListMutex;
 	};
 
 
