@@ -214,7 +214,8 @@ void SetColorStyle( const std::string& style )
    }
    catch ( cexception* ex )
    {
-      fprintf( stderr, "%s\n", ex->message() );
+      if(style.length()>0)
+         fprintf( stderr, "%s\n", ex->message() );
       ex->destroy();
 
       SetDefaultColorStyle();
