@@ -1,6 +1,6 @@
 People contributed to WCM Commander (in alphabetical order by versions)
 
-0.19.1
+0.20.0
 	Oleg Panashchenko
 	Sergey Kosarevsky
 	Victor Sergienko

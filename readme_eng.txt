@@ -1,4 +1,4 @@
-                WCM Commander 0.19.1
+                WCM Commander 0.20.0
     https://github.com/corporateshark/WCMCommander
 =======================================================
 

@@ -1,6 +1,6 @@
 SetCompressor /SOLID /FINAL lzma
 
-Name "WCM Commander 0.19.1 (64-bit)"
+Name "WCM Commander 0.20.0 (64-bit)"
 
 ; The file to write
 OutFile "WCMCommanderGitHub-0.18.0-x64.exe"
