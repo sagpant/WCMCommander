@@ -286,9 +286,9 @@ bool PathListFSToData(PathList::Data& data, clPtr<FS>* fs, FSPath* path)
 		 TempFs = ((FSTmp*) fs->ptr())->GetBaseFS();
 		 fs = &TempFs;
 
-		 // path on Temp panel may starts with additional '\'
+		 // path on Temp panel may starts with additional '\' or '/'
 		 const char* PathOnTemp = path->GetUtf8();
-		 if ( PathOnTemp && PathOnTemp[0] == '\\' )
+		 if ( PathOnTemp && ( PathOnTemp[0] == '\\' || PathOnTemp[0] == '/' ) )
 		 {
 			 TempPath.Set( CS_UTF8, ++PathOnTemp );
 			 path = &TempPath;
