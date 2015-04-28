@@ -89,6 +89,7 @@ inline std::vector<wchar_t> new_wchar_str( const wchar_t* str )
 std::string ToString( uint64_t FromUInt64 );
 std::string ToString( int64_t FromInt64 );
 std::string ToString( int FromInt );
+std::string ToString( double FromDouble, int Digits );
 
 // convert unsigned integer 12345678 to "12 345 678"
 std::string ToStringGrouped( uint64_t FromUInt64, const char* GroupSeparator = " " );

@@ -235,6 +235,17 @@ std::string ToString( int FromInt )
 	return std::string( Buffer );
 }
 
+std::string ToString( double FromDouble, int Digits )
+{
+	char buf[ BUFFER ];
+
+	std::string Format = "%." + ToString( Digits ) + "f";
+
+	Lsnprintf( buf, BUFFER - 1, Format.c_str(), FromDouble );
+
+	return std::string( buf );
+}
+
 // convert unsigned integer 12345678 to "12 345 678"
 std::string ToStringGrouped( uint64_t FromUInt64, const char* GroupSeparator )
 {

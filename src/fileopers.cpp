@@ -15,6 +15,7 @@
 #include "sftpdlg.h"
 #include "ltext.h"
 #include "vfs-tmp.h"
+#include "string-util.h"
 
 enum
 {
@@ -1066,70 +1067,22 @@ public:
 #define MEG (int64_t(1024)*1024)
 #define KIL (int64_t(1024))
 
-static char* GetSmallPrintableSpeedStr( char buf[64], int64_t size )
+static std::string GetSmallPrintableSpeedStr( int64_t Speed )
 {
-	char str[16];
-	str[0] = 0;
-
-	int64_t num = size;
-	int mod = 0;
-
-	if ( num >= GIG ) //:)
+	if ( Speed >= GIG )
 	{
-		mod = ( num % GIG ) / ( GIG / 10 );
-		num /= GIG;
-		str[0] = ' ';
-		str[1] = 'G';
-		str[2] = 'b';
-		str[3] = '/';
-		str[4] = 's';
-		str[5] = 0;
+		return ToString( double(Speed)/double(GIG), 1 ) + " Gb/s";
 	}
-	else if ( num >= MEG )
+	else if ( Speed >= MEG )
 	{
-		mod = ( num % MEG ) / ( MEG / 10 );
-		num /= MEG;
-		str[0] = ' ';
-		str[1] = 'M';
-		str[2] = 'b';
-		str[3] = '/';
-		str[4] = 's';
-		str[5] = 0;
+		return ToString( double(Speed) / double(MEG), 1 ) + " Mb/s";
 	}
-	else if ( num >= KIL )
+	else if ( Speed >= KIL )
 	{
-		mod = ( num % KIL ) / ( KIL / 10 );
-		num /= KIL;
-		str[0] = ' ';
-		str[1] = 'K';
-		str[2] = 'b';
-		str[3] = '/';
-		str[4] = 's';
-		str[5] = 0;
-	}
-	else { mod = -1; }
-
-
-	char dig[64];
-	char* t = unsigned_to_char<int64_t>( num, dig );
-
-	if ( mod >= 0 ) { t--; t[0] = '.'; t[1] = mod + '0'; t[2] = 0; }
-
-	char* us = buf;
-
-	for ( char* s = dig; *s; s++ )
-	{
-		*( us++ ) = *s;
+		return ToString( double(Speed) / double(KIL), 1 ) + " Kb/s";
 	}
 
-	for ( char* t = str; *t; t++ )
-	{
-		*( us++ ) = *t;
-	}
-
-	*us = 0;
-
-	return buf;
+	return ToString( Speed ) + " Bytes/s";
 }
 
 void CopyDialog::EventTimer( int tid )
@@ -1184,8 +1137,7 @@ void CopyDialog::EventTimer( int tid )
 			speed = ( sumBytes * 1000 ) / sumMs;
 		}
 
-		char buf[64];
-		_speedStr.SetText( utf8_to_unicode( GetSmallPrintableSpeedStr( buf, speed ) ).data() );
+		_speedStr.SetText( utf8str_to_unicode( GetSmallPrintableSpeedStr( speed ) ).data() );
 
 		return;
 	}

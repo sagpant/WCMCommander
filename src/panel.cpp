@@ -1289,7 +1289,7 @@ bool PanelWin::SetCurrent( FSString& name )
 	return true;
 }
 
-void SplitNumber_3( char* src, char* dst )
+void SplitNumber_3( const char* src, char* dst )
 {
 	for ( int n = strlen( src ); n > 0; n-- )
 	{
@@ -1401,8 +1401,8 @@ void PanelWin::DrawFooter( wal::GC& gc )
 		PanelCounter filesCn = _list.FilesCounter( g_WcmConfig.panelSelectFolders );
 		int hiddenCount = _list.HiddenCounter().count;
 
-		char b1[64];
-		unsigned_to_char<long long>( selectedCn.count > 0 ? selectedCn.size : filesCn.size , b1 );
+		auto Str = ToString( selectedCn.count > 0 ? selectedCn.size : filesCn.size );
+		const char* b1 = Str.c_str();
 		char b11[100];
 		SplitNumber_3( b1, b11 );
 

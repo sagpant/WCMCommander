@@ -792,37 +792,4 @@ namespace wal
 
 }; //namespace wal
 
-template <class T> inline char* positive_to_char_decimal( T n, char* s )
-{
-	char c[32];
-	int i = 0;
-
-	for ( ; n > 0; i++, n /= 10 )
-	{
-		c[i] = char( n % 10 ) + '0';
-	}
-
-	for ( i--; i >= 0; i-- )
-	{
-		*( s++ ) = c[i];
-	}
-
-	return s;
-}
-
-template <class T>  char* unsigned_to_char( T n, char* s, char terminator = 0 )
-{
-	if ( n == 0 )
-	{
-		*( s++ ) = '0';
-	}
-	else
-	{
-		s = positive_to_char_decimal<T>( n, s );
-	}
-
-	*( s++ ) = terminator;
-	return s;
-}
-
 #endif
