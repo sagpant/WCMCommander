@@ -219,9 +219,13 @@
 		<Unit filename="src/drive-dlg.cpp" />
 		<Unit filename="src/drive-dlg.h" />
 		<Unit filename="src/file-util.cpp" />
-		<Unit filename="src/file-exec.cpp" />
 		<Unit filename="src/file-util.h" />
+		<Unit filename="src/file-exec.cpp" />
 		<Unit filename="src/file-exec.h" />
+		<Unit filename="src/plugin/plugin.cpp" />
+		<Unit filename="src/plugin/plugin.h" />
+		<Unit filename="src/plugin/plugin-archive.cpp" />
+		<Unit filename="src/plugin/plugin-archive.h" />
 		<Unit filename="src/nceditline.cpp" />
 		<Unit filename="src/nceditline.h" />
 		<Unit filename="src/folder-shortcuts.cpp" />

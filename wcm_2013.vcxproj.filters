@@ -84,6 +84,8 @@
     <ClCompile Include="src\drive-dlg.cpp" />
     <ClCompile Include="src\file-util.cpp" />
     <ClCompile Include="src\file-exec.cpp" />
+    <ClCompile Include="src\plugin\plugin.cpp" />
+    <ClCompile Include="src\plugin\plugin-archive.cpp" />
     <ClCompile Include="src\path-list.cpp" />
     <ClCompile Include="src\nceditline.cpp" />
   </ItemGroup>
@@ -162,6 +164,8 @@
     <ClInclude Include="src\drive-dlg.h" />
     <ClInclude Include="src\file-util.h" />
     <ClInclude Include="src\file-exec.h" />
+    <ClInclude Include="src\plugin\plugin.h" />
+    <ClInclude Include="src\plugin\plugin-archive.h" />
     <ClInclude Include="src\path-list.h" />
     <ClInclude Include="src\nceditline.h" />
   </ItemGroup>

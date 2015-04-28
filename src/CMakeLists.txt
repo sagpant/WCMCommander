@@ -148,6 +148,8 @@ SET(wcm_COMMON_SOURCES
 	drive-dlg.cpp
 	file-util.cpp
 	file-exec.cpp
+	plugin/plugin.cpp
+	plugin/plugin-archive.cpp
 	nceditline.cpp
 	smblogon.cpp
 	strconfig.cpp
@@ -234,6 +236,8 @@ SET(wcm_HEADERS
 	drive-dlg.h
 	file-util.h
 	file-exec.h
+	plugin/plugin.h
+	plugin/plugin-archive.h
 	nceditline.h
 	smblogon.h
 	strconfig.h
