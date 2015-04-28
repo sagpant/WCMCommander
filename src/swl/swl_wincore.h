@@ -1168,11 +1168,6 @@ namespace wal
 #ifndef _WIN32
 		static void SetIcon( const char** xpm );
 #endif
-#if defined _DEBUG
-		void dbg_dump(int indent=0);
-#else
-		void dbg_dump(){}
-#endif
 
 	};
 
