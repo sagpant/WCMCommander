@@ -1401,7 +1401,7 @@ void PanelWin::DrawFooter( wal::GC& gc )
 		PanelCounter filesCn = _list.FilesCounter( g_WcmConfig.panelSelectFolders );
 		int hiddenCount = _list.HiddenCounter().count;
 
-		auto Str = ToString( selectedCn.count > 0 ? selectedCn.size : filesCn.size );
+		auto Str = ToString( selectedCn.count > 0 ? int64_t(selectedCn.size) : int64_t(filesCn.size) );
 		const char* b1 = Str.c_str();
 		char b11[100];
 		SplitNumber_3( b1, b11 );
