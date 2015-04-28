@@ -1458,7 +1458,7 @@ namespace wal
 
 		HGLOBAL h = GlobalAlloc( GMEM_MOVEABLE | GMEM_DDESHARE, ( maxSize + rCount + 1 ) * sizeof( wchar_t ) );
 
-		if ( h == NULL ) { throw_oom(); }
+		if ( h == NULL ) return;
 
 		wchar_t* p = ( wchar_t* )GlobalLock( h );
 

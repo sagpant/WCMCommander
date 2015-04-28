@@ -31,34 +31,9 @@ namespace wal
 #  define vsnprintf _vsnprintf
 #endif
 
-#if defined(_WIN32) && !defined( __GNUC__ )
-	static int my_new_handler( size_t )
-	{
-		throw_oom();
-		return 0;
-	}
-#else
-	static void my_new_handler(  )
-	{
-		throw_oom();
-	}
-#endif
-
-
-	void init_exceptions()
-	{
-#if defined _WIN32 && !defined __GNUC__
-		_set_new_handler( my_new_handler );
-#else
-		set_new_handler( my_new_handler );
-#endif
-	}
-
-	static coom oom;
-
 	void cexception::destroy()
 	{
-		if ( this != &oom ) { delete this; }
+		delete this;
 	}
 
 	const char* cexception::message()
@@ -67,13 +42,6 @@ namespace wal
 	}
 
 	cexception::~cexception() { }
-
-	const char* coom::message()
-	{
-		return "out of memory";
-	}
-
-	coom::~coom() {}
 
 	const char* cstop_exception::message() { return "stop"; }
 	cstop_exception::~cstop_exception() {}
@@ -92,11 +60,6 @@ namespace wal
 	}
 
 	cmsg::~cmsg() {}
-
-	void throw_oom()
-	{
-		throw ( cexception* )( &oom );
-	}
 
 	void throw_stop()
 	{

@@ -61,14 +61,6 @@ namespace wal
 		virtual ~cexception();
 	};
 
-	class coom: public cexception
-	{
-	public:
-		coom() {};
-		virtual const char* message();
-		virtual ~coom();
-	};
-
 	class cmsg: public cexception
 	{
 		std::vector<char> _msg;
@@ -94,7 +86,6 @@ namespace wal
 		virtual ~cstop_exception();
 	};
 
-	void throw_oom();
 	void throw_msg( const char* format, ... );
 	void throw_syserr( int err = 0, const char* format = 0, ... );
 	void throw_stop();
