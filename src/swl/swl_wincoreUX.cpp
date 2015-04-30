@@ -1166,22 +1166,22 @@ static const char* getEventName(int id)
 				{
 					// close all popups
 					Win* w = GetWinByID( activeWinId );
-					//dbg_printf("FocusOut %s\n", typeid(*w).name());
-					while(w->parent)
-						w=w->parent;
-					ccollect<WinID> wl;
-					w->PopupTreeList( wl );
-					//dbg_printf("PopupTreeList size=%d\n",wl.count());
-					for(int i=0;i<wl.count();i++)
+					if( w ) 
 					{
-						Win* popup = GetWinByID( wl[i] );
-						if(popup)
+						while(w->parent)
+							w=w->parent;
+						ccollect<WinID> wl;
+						w->PopupTreeList( wl );
+						for(int i=0;i<wl.count();i++)
 						{
-							//dbg_printf("Closing %s\n", typeid(*w).name());
-							if(popup->parent)
-								popup->Parent()->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, popup, 0 );
+							Win* popup = GetWinByID( wl[i] );
+							if(popup)
+							{
+								if(popup->parent)
+									popup->Parent()->Command( CMD_MENU_INFO, SCMD_MENU_CANCEL, popup, 0 );
+							}
+							
 						}
-						
 					}
 				}
 
