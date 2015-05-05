@@ -642,7 +642,7 @@ void FileExecutor::StartExecute( const unicode_t* cmd, FS* fs, FSPath& path, boo
 {
 	SkipSpaces( cmd );
 
-	if ( DoStartExecute( m_EditPref.Get(), cmd, fs, path ) )
+	if ( DoStartExecute( m_EditPref.Get(), cmd, fs, path, NoTerminal ) )
 	{
 		m_History.Put( cmd );
 		m_NCWin->SetMode( NCWin::TERMINAL );
