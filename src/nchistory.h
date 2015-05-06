@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <deque>
 #include <wal.h>
 
 using namespace wal;
@@ -29,7 +30,7 @@ using namespace wal;
 #define EDIT_FIELD_SMB_USER				"smb-user"
 
 
-typedef std::vector<std::vector<unicode_t>> HistCollect_t;
+typedef std::deque<std::vector<unicode_t>> HistCollect_t;
 
 void LoadFieldsHistory();
 

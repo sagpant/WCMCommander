@@ -96,10 +96,8 @@ int FindHistElement( HistCollect_t* List, const unicode_t* Text )
 
 void AddFieldTextToHistory( const char* FieldName, const unicode_t* Txt )
 {
-	if ( !FieldName || !FieldName[0] || !Txt || !Txt[0] )
-	{
-		return;
-	}
+	if ( !FieldName  || !Txt ) return;
+	if ( !*FieldName || !*Txt ) return;
 	
 	std::vector<unicode_t> Str = new_unicode_str( Txt );
 	
@@ -109,17 +107,17 @@ void AddFieldTextToHistory( const char* FieldName, const unicode_t* Txt )
 	const int Index = FindHistElement( &List, Str.data() );
 	if ( Index != -1 )
 	{
-		// remove existing item
+		// remove the existing item
 		List.erase( List.begin() + Index );
 	}
 	
 	// add item to the begining of the list
-	List.insert( List.begin(), Str );
+	List.push_front( Str );
 	
 	// limit number of elements in the list
-	while ( List.size() > MAX_FIELD_HISTORY_COUNT )
+	if ( List.size() > MAX_FIELD_HISTORY_COUNT )
 	{
-		List.erase( List.end() );
+		List.resize( MAX_FIELD_HISTORY_COUNT );
 	}
 }
 
