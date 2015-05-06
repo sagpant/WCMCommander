@@ -2066,6 +2066,13 @@ void NCWin::NotifyCurrentPathInfo()
 		_editPref.Set( Info );
 		RecalcLayouts();
 	}
+
+	// hack: remove the trailing > character
+	Info.pop_back();
+	Info.pop_back();
+	Info.push_back( 0 );
+
+	this->SetName( Info.data() );
 }
 
 void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
