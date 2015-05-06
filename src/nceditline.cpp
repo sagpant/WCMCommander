@@ -142,5 +142,7 @@ bool clNCEditLine::OnOpenBox()
 
 void clNCEditLine::AddCurrentTextToHistory()
 {
-	AddFieldTextToHistory( m_FieldName, GetText().data() );
+	std::vector<unicode_t> Text = GetText();
+	
+	AddFieldTextToHistory( m_FieldName, Text.data() );
 }
