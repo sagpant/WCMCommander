@@ -51,7 +51,9 @@ std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const uni
 {
 	std::vector<unicode_t> Result( cmd );
 	std::vector<unicode_t> Name = new_unicode_str( FileName );
+#if !defined(__APPLE__)
 	escShellStr(Name);
+#endif
 
 //	bool HasSpaces = StrHaveSpace( Name.data() );
 

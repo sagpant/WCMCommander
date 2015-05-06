@@ -1166,8 +1166,12 @@ static std::vector<unicode_t> PrepareCommandString( const unicode_t* exec, const
 
 	
 	std::vector<unicode_t> vuri;
+#if defined(__APPLE__)
+	vuri = new_unicode_str( uri );
+#else
 	escShellStr(vuri,uri);
-	
+#endif
+
 	const unicode_t* s = exec;
 
 	int uriInserted = 0;
