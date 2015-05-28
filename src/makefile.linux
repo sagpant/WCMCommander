@@ -25,12 +25,14 @@ CFLAGS += -I /opt/X11/include
 CFLAGS += -Wno-logical-op-parentheses -Wno-bitwise-op-parentheses
 CFLAGS_FREETYPE = -I /opt/X11/include/freetype2 -D USEFREETYPE
 LIBFREETYPE = -l freetype
+LIBS = -L /usr/local/lib -L /opt/X11/lib -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 else
 CFLAGS += -pthread
 CFLAGS += -Wno-unused-parameter
 LIBSMB = -l smbclient
 LIBSSH = -l ssh2 
 LIBFREETYPE = -l freetype
+LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 ifeq ($(UNAME_S),OpenBSD)
 CFLAGS_FREETYPE = -I /usr/X11R6/include -I /usr/X11R6/include/freetype2 -D USEFREETYPE
 else
@@ -38,7 +40,6 @@ CFLAGS_FREETYPE = -I /usr/include/freetype2 -I /usr/local/include/freetype2 -D U
 endif
 endif
 
-LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 ifeq ($(UNAME_S),OpenBSD)
 LIBS += -l estdc++
 else
