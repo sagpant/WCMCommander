@@ -148,10 +148,11 @@ void ExecuteDefaultApplication( const unicode_t* Path )
 {
 	std::string utf8 = unicode_to_utf8( Path );
 
+	escShellStr( utf8 );
+
 #if defined( __APPLE__)
 	const std::string command = "open " + utf8;
 #else
-	escShellStr( utf8 );
 	const std::string command = "xdg-open " + utf8;
 #endif
 //	dbg_printf("Executing: '%s'\n",command.data());
