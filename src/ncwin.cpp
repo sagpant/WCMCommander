@@ -1308,14 +1308,22 @@ void NCWin::CtrlA()
 	if ( _mode != PANEL ) return;
 	if ( !_panel ) return;
 
-	if ( _panel->IsVisible() ) 
+	try
 	{
-		if ( FileAttributesDlg( this, _panel ) )
+		if ( _panel->IsVisible() ) 
 		{
-			_leftPanel.Reread();
-			_rightPanel.Reread();
+			if ( FileAttributesDlg( this, _panel ) )
+			{
+				_leftPanel.Reread();
+				_rightPanel.Reread();
+			}
 		}
 	}
+	catch ( cexception* ex )
+	{
+		NCMessageBox( this, _LT( "Attributes" ), ex->message(), true );
+		ex->destroy();
+	};
 }
 
 void NCWin::CtrlL()
