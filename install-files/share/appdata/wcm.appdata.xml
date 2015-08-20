@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+  <id type="desktop">wcm.desktop</id>
+  <metadata_license>CC0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>WCM Commander</name>
+  <summary>FAR-like file manager</summary>
+  <description>
+    <p>Multi-platform open source file manager for Windows, Linux, FreeBSD and OS X mimicking the look-n-feel of Far Manager.</p>
+  </description>
+  <url type="homepage">https://github.com/corporateshark/WCMCommander</url>
+  <url type="bugtracker">https://github.com/corporateshark/WCMCommander/issues</url>
+</application>
