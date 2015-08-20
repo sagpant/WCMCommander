@@ -83,7 +83,9 @@ static clPtr<FS> ParzeFtpURI( const unicode_t* uri, FSPath& path, const std::vec
 	param.anonymous = param.user.empty();
 	param.server = URL.m_Host;
 
-	URL.GetPort( &param.port );
+	int Port = 0;
+
+	if ( URL.GetPort( &Port ) ) param.port = Port;
 
 	std::vector<unicode_t> Path = utf8str_to_unicode( URL.m_Path );
 
@@ -123,7 +125,9 @@ static clPtr<FS> ParzeSftpURI( const unicode_t* uri, FSPath& path, const std::ve
 	param.user = URL.m_UserName;
 	param.server = URL.m_Host;
 
-	URL.GetPort( &param.port );
+	int Port = 0;
+
+	if ( URL.GetPort( &Port ) ) param.port = Port;
 
 	std::vector<unicode_t> Path = utf8str_to_unicode( URL.m_Path );
 
