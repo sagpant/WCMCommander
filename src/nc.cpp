@@ -360,7 +360,7 @@ std::string GetStartupDir( const char* ModulePath )
 {
 #if !defined(_WIN32)
 	char Buf[ PATH_MAX ];
-	
+
 	const char* Res = realpath( ModulePath, Buf );
 
 	return Res ? dirname( Buf ) : std::string();
@@ -441,7 +441,12 @@ int main( int argc, char** argv )
 
 #ifndef _WIN32
 #include "icons/wcm.xpm"
-		Win::SetIcon( wcm_xpm );
+#include "icons/wcmroot.xpm"
+        if (geteuid() == 0){
+            Win::SetIcon( wcmroot_xpm );
+        } else {
+            Win::SetIcon( wcm_xpm );
+        }
 #endif
 
 		InitFonts();
