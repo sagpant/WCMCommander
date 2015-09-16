@@ -807,12 +807,15 @@ void NCWin::PanelCtrlPgDown()
 		return;
 	}
 
-	clPtr<FS> LocalFs = _panel->GetFSPtr();
-	FSString Uri = _panel->UriOfCurrent();
-	
 	if ( !m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_ExecuteSecondary ) )
 	{
-		Plugin_OpenFileVFS( _panel, LocalFs, Uri );
+		clPtr<FS> LocalFs = _panel->GetFSPtr();
+		
+		// get path with filename
+		FSPath Path = _panel->GetPath();
+		Path.Push( CS_UTF8, p->name.GetUtf8() );
+		
+		Plugin_OpenFileVFS( _panel, LocalFs, Path );
 	}
 }
 

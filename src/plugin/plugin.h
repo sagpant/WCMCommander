@@ -12,16 +12,19 @@
 template <class T> class clPtr;
 class FS;
 class FSString;
+class FSPath;
+
+
+/// plugin internal interface
+
+bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSPath& Path );
 
 
 /// Abstract plugin factory
 class clPluginFactory
 {
-private:
-
-	clPluginFactory( const clPluginFactory& ) = delete;
-	clPluginFactory& operator=(const clPluginFactory&) = delete;
-
+	CLASS_COPY_PROTECTION( clPluginFactory );
+	
 public:
 	virtual ~clPluginFactory() { }
 
@@ -31,10 +34,5 @@ public:
 	/// Returns unique plugin id
 	virtual const char* GetPluginId() const = 0;
 	
-	virtual clPtr<FS> OpenFileVFS( const unicode_t* FileExt, clPtr<FS> fs, FSString& Uri ) const = 0;
+	virtual clPtr<FS> OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const std::string& FileExtLower ) const = 0;
 };
-
-
-// plugin internal interface
-
-bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSString& Uri );

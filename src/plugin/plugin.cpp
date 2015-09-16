@@ -7,8 +7,10 @@
 #include "plugin.h"
 #include "vfs.h"
 #include "panel.h"
+#include "string-util.h"
 
 #include <map>
+#include <algorithm>
 #include <string>
 
 
@@ -25,18 +27,23 @@ void clPluginFactory::Unregister( clPluginFactory* PluginFactory )
 	g_PluginRegistry.erase( std::string( PluginFactory->GetPluginId() ) );
 }
 
-bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSString& Uri )
+bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSPath& Path )
 {
-	const unicode_t* FileExt = Uri.GetUnicode();
+	std::string FileExtLower = GetFileExt( std::string( Path.GetItem( Path.Count() - 1 )->GetUtf8() ) );
+	std::transform(FileExtLower.begin(), FileExtLower.end(), FileExtLower.begin(), ::tolower);
+	if ( FileExtLower.length() > 0 )
+	{
+		// trim dot char at the beginning
+		FileExtLower = FileExtLower.substr( 1 );
+	}
+	
 	clPtr<FS> Vfs;
 	
-	printf( "path: %s\n", Uri.GetUtf8() );
-
 	for ( auto& iter : g_PluginRegistry )
 	{
 		const clPluginFactory* PluginFactory = iter.second;
 
-		Vfs = PluginFactory->OpenFileVFS( FileExt, Fs, Uri );
+		Vfs = PluginFactory->OpenFileVFS( Fs, Path, FileExtLower );
 
 		if ( Vfs.Ptr() != nullptr )
 		{
