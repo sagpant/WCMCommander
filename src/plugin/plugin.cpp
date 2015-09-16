@@ -6,6 +6,7 @@
 
 #include "plugin.h"
 #include "vfs.h"
+#include "panel.h"
 
 #include <map>
 #include <string>
@@ -24,8 +25,32 @@ void clPluginFactory::Unregister( clPluginFactory* PluginFactory )
 	g_PluginRegistry.erase( std::string( PluginFactory->GetPluginId() ) );
 }
 
-clPtr<FS> Plugin_OpenFileVFS( const unicode_t* FileExt, clPtr<FS> fs, FSPath& path )
+bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSString& Uri )
 {
-	clPtr<FS> vfs;
-	return vfs;
+	const unicode_t* FileExt = Uri.GetUnicode();
+	clPtr<FS> Vfs;
+	
+	printf( "path: %s\n", Uri.GetUtf8() );
+
+	for ( auto& iter : g_PluginRegistry )
+	{
+		const clPluginFactory* PluginFactory = iter.second;
+
+		Vfs = PluginFactory->OpenFileVFS( FileExt, Fs, Uri );
+
+		if ( Vfs.Ptr() != nullptr )
+		{
+			break;
+		}
+	}
+
+	if ( Vfs.Ptr() == nullptr )
+	{
+		return false;
+	}
+
+	FSString RootPath = FSString( "/" );
+	FSPath VfsPath = FSPath( RootPath );
+	Panel->LoadPath( Vfs, VfsPath, nullptr, nullptr, PanelWin::PUSH );
+	return true;
 }

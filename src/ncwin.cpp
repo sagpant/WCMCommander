@@ -36,6 +36,7 @@
 #include "file-util.h"
 #include "usermenu.h"
 #include "vfs-tmp.h"
+#include "plugin/plugin.h"
 
 #ifndef _WIN32
 #include <limits.h>	// PATH_MAX
@@ -806,7 +807,13 @@ void NCWin::PanelCtrlPgDown()
 		return;
 	}
 
-	m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_ExecuteSecondary );
+	clPtr<FS> LocalFs = _panel->GetFSPtr();
+	FSString Uri = _panel->UriOfCurrent();
+	
+	if ( !m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_ExecuteSecondary ) )
+	{
+		Plugin_OpenFileVFS( _panel, LocalFs, Uri );
+	}
 }
 
 void NCWin::PanelEnter(bool Shift)

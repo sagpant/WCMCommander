@@ -9,6 +9,11 @@
 #include "globals.h"
 
 
+template <class T> class clPtr;
+class FS;
+class FSString;
+
+
 /// Abstract plugin factory
 class clPluginFactory
 {
@@ -25,13 +30,11 @@ public:
 
 	/// Returns unique plugin id
 	virtual const char* GetPluginId() const = 0;
+	
+	virtual clPtr<FS> OpenFileVFS( const unicode_t* FileExt, clPtr<FS> fs, FSString& Uri ) const = 0;
 };
 
 
 // plugin internal interface
 
-template <class T> class clPtr;
-class FS;
-class FSPath;
-
-clPtr<FS> Plugin_OpenFileVFS( const unicode_t* FileExt, clPtr<FS> fs, FSPath& path );
+bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSString& Uri );

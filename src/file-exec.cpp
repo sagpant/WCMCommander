@@ -12,6 +12,7 @@
 #include "panel.h"
 #include "strmasks.h"
 #include "ext-app.h"
+#include "plugin/plugin.h"
 
 #ifndef _WIN32
 #  include <signal.h>
@@ -599,6 +600,10 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 	if ( cmd.data() )
 	{
 		StartExecute( cmd.data(), LocalFs.ptr(), LocalPath, !terminal );
+	}
+	else
+	{
+		Plugin_OpenFileVFS( Panel, LocalFs, Uri );
 	}
 }
 
