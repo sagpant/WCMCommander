@@ -377,3 +377,6 @@ public:
 private:
 	void DebugKeyboard( cevent_key* KeyEvent, bool Pressed, bool DebugEnabledFlag ) const;
 };
+
+
+bool IsRoot();

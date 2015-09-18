@@ -17,6 +17,7 @@
 					<Add option="-g" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m64" />
+					<Add option="-std=c++11" />
 					<Add option="-Isrc/swl -Isrc/wal -Isrc -Isrc/vfs" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSEFREETYPE" />
@@ -44,6 +45,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O3" />
+					<Add option="-std=c++11" />
 					<Add option="-I/usr/include/freetype2" />
 					<Add option="-m64" />
 					<Add option="-Isrc/swl -Isrc/wal  -Isrc -Isrc/vfs" />
@@ -149,12 +151,6 @@
 					<Add library="smbclient" />
 					<Add library="stdc++" />
 					<Add library="freetype" />
-					<Add library="X11" />
-					<Add library="pthread" />
-					<Add library="ssh2" />
-					<Add library="smbclient" />
-					<Add library="stdc++" />
-					<Add library="freetype" />
 				</Linker>
 			</Target>
 			<Target title="Release Win32">
@@ -186,6 +182,9 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+		</Compiler>
 		<Unit filename="src/ReadMe.txt" />
 		<Unit filename="src/Resource.h" />
 		<Unit filename="src/charsetdlg.cpp" />
@@ -195,6 +194,8 @@
 		<Unit filename="src/dircalc.cpp" />
 		<Unit filename="src/dircalc.h" />
 		<Unit filename="src/dlg-ctrl-l.cpp" />
+		<Unit filename="src/drive-dlg.cpp" />
+		<Unit filename="src/drive-dlg.h" />
 		<Unit filename="src/eloadsave.cpp" />
 		<Unit filename="src/eloadsave.h" />
 		<Unit filename="src/ext-app-ux.cpp">
@@ -205,6 +206,10 @@
 		</Unit>
 		<Unit filename="src/ext-app-win.cpp" />
 		<Unit filename="src/ext-app.h" />
+		<Unit filename="src/file-exec.cpp" />
+		<Unit filename="src/file-exec.h" />
+		<Unit filename="src/file-util.cpp" />
+		<Unit filename="src/file-util.h" />
 		<Unit filename="src/fileassociations.cpp" />
 		<Unit filename="src/fileattributes.cpp" />
 		<Unit filename="src/filehighlighting.cpp" />
@@ -214,16 +219,6 @@
 		<Unit filename="src/filesearch.h" />
 		<Unit filename="src/folder-history.cpp" />
 		<Unit filename="src/folder-history.h" />
-		<Unit filename="src/view-history.cpp" />
-		<Unit filename="src/view-history.h" />
-		<Unit filename="src/drive-dlg.cpp" />
-		<Unit filename="src/drive-dlg.h" />
-		<Unit filename="src/file-util.cpp" />
-		<Unit filename="src/file-exec.cpp" />
-		<Unit filename="src/file-util.h" />
-		<Unit filename="src/file-exec.h" />
-		<Unit filename="src/nceditline.cpp" />
-		<Unit filename="src/nceditline.h" />
 		<Unit filename="src/folder-shortcuts.cpp" />
 		<Unit filename="src/folder-shortcuts.h" />
 		<Unit filename="src/fontdlg.cpp">
@@ -251,6 +246,8 @@
 		<Unit filename="src/ncdialogs.h" />
 		<Unit filename="src/ncedit.cpp" />
 		<Unit filename="src/ncedit.h" />
+		<Unit filename="src/nceditline.cpp" />
+		<Unit filename="src/nceditline.h" />
 		<Unit filename="src/ncfonts.cpp" />
 		<Unit filename="src/ncfonts.h" />
 		<Unit filename="src/nchistory.cpp" />
@@ -368,6 +365,8 @@
 		<Unit filename="src/vfs/vfs.h" />
 		<Unit filename="src/vfs/vfspath.cpp" />
 		<Unit filename="src/vfs/vfspath.h" />
+		<Unit filename="src/view-history.cpp" />
+		<Unit filename="src/view-history.h" />
 		<Unit filename="src/w32cons.cpp">
 			<Option target="Release Win32" />
 			<Option target="Debug Win32" />

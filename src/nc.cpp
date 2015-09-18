@@ -442,7 +442,7 @@ int main( int argc, char** argv )
 #ifndef _WIN32
 #include "icons/wcm.xpm"
 #include "icons/wcmroot.xpm"
-        if (geteuid() == 0){
+        if ( IsRoot() ){
             Win::SetIcon( wcmroot_xpm );
         } else {
             Win::SetIcon( wcm_xpm );
