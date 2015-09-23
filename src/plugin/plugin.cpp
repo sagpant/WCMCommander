@@ -9,22 +9,35 @@
 #include "panel.h"
 #include "string-util.h"
 
-#include <map>
 #include <algorithm>
 #include <string>
 
+#include "plugin-archive.h"
 
-static std::map<std::string, clPluginFactory*> g_PluginRegistry;
+
+std::unordered_map<std::string, clPluginFactory*> clPluginFactory::s_Registry;
+
+//
+// Register VFS plugins
+//
+clArchPlugin g_ArchPlugin;
 
 
 void clPluginFactory::Register( clPluginFactory* PluginFactory )
 {
-	g_PluginRegistry[std::string( PluginFactory->GetPluginId() )] = PluginFactory;
+	std::string Id( PluginFactory->GetPluginId() );
+	s_Registry[Id] = PluginFactory;
 }
 
 void clPluginFactory::Unregister( clPluginFactory* PluginFactory )
 {
-	g_PluginRegistry.erase( std::string( PluginFactory->GetPluginId() ) );
+	std::string Id( PluginFactory->GetPluginId() );
+
+	auto iter = s_Registry.find( Id );
+	if ( iter != s_Registry.end() )
+	{
+		s_Registry.erase( iter );
+	}
 }
 
 bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSPath& Path )
@@ -38,13 +51,11 @@ bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSPath& Path )
 	}
 	
 	clPtr<FS> Vfs;
-	
-	for ( auto& iter : g_PluginRegistry )
+	for ( auto& iter : clPluginFactory::s_Registry )
 	{
 		const clPluginFactory* PluginFactory = iter.second;
 
 		Vfs = PluginFactory->OpenFileVFS( Fs, Path, FileExtLower );
-
 		if ( Vfs.Ptr() != nullptr )
 		{
 			break;

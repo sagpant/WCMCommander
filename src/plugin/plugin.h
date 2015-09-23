@@ -8,6 +8,8 @@
 
 #include "globals.h"
 
+#include <unordered_map>
+
 
 template <class T> class clPtr;
 class FS;
@@ -24,8 +26,12 @@ bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSPath& Path );
 class clPluginFactory
 {
 	CLASS_COPY_PROTECTION( clPluginFactory );
+
+public:
+	static std::unordered_map<std::string, clPluginFactory*> s_Registry;
 	
 public:
+	clPluginFactory() {}
 	virtual ~clPluginFactory() { }
 
 	static void Register( clPluginFactory* PluginFactory );
