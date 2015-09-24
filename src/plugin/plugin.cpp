@@ -20,7 +20,11 @@ std::unordered_map<std::string, clPluginFactory*> clPluginFactory::s_Registry;
 //
 // Register VFS plugins
 //
+#ifdef LIBARCHIVE_EXIST
+
 clArchPlugin g_ArchPlugin;
+
+#endif //LIBARCHIVE_EXIST
 
 
 void clPluginFactory::Register( clPluginFactory* PluginFactory )
@@ -40,8 +44,13 @@ void clPluginFactory::Unregister( clPluginFactory* PluginFactory )
 	}
 }
 
-bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSPath& Path )
+bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, const FSNode& Node )
 {
+	// get path with filename
+	FSPath Path = Panel->GetPath();
+	Path.Push( CS_UTF8, Node.name.GetUtf8() );
+
+	// get file extension
 	std::string FileExtLower = GetFileExt( std::string( Path.GetItem( Path.Count() - 1 )->GetUtf8() ) );
 	std::transform(FileExtLower.begin(), FileExtLower.end(), FileExtLower.begin(), ::tolower);
 	if ( FileExtLower.length() > 0 )
@@ -50,25 +59,19 @@ bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, FSPath& Path )
 		FileExtLower = FileExtLower.substr( 1 );
 	}
 	
-	clPtr<FS> Vfs;
 	for ( auto& iter : clPluginFactory::s_Registry )
 	{
 		const clPluginFactory* PluginFactory = iter.second;
 
-		Vfs = PluginFactory->OpenFileVFS( Fs, Path, FileExtLower );
+		clPtr<FS> Vfs = PluginFactory->OpenFileVFS( Fs, Path, Node, FileExtLower );
 		if ( Vfs.Ptr() != nullptr )
 		{
-			break;
+			FSString RootPath = FSString( "/" );
+			FSPath VfsPath = FSPath( RootPath );
+			Panel->LoadPath( Vfs, VfsPath, nullptr, nullptr, PanelWin::PUSH );
+			return true;
 		}
 	}
 
-	if ( Vfs.Ptr() == nullptr )
-	{
-		return false;
-	}
-
-	FSString RootPath = FSString( "/" );
-	FSPath VfsPath = FSPath( RootPath );
-	Panel->LoadPath( Vfs, VfsPath, nullptr, nullptr, PanelWin::PUSH );
-	return true;
+	return false;
 }

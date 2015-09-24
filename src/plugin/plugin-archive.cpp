@@ -4,14 +4,18 @@
  * wcm@linderdaum.com
  */
 
+#ifdef LIBARCHIVE_EXIST
+
 #include "plugin-archive.h"
 #include "vfs.h"
-
 #include "panel.h"
 #include "string-util.h"
 
 #include <list>
 #include <algorithm>
+
+#include <archive.h>
+#include <archive_entry.h>
 
 static const char g_ArchPluginId[] = "ArchPlugin";
 
@@ -34,7 +38,7 @@ struct FSArchNode
 	std::list<FSArchNode> content; // content of a dir node
 	
 	FSArchNode();
-	FSArchNode( const char* Name, FSStat& Stat )
+	FSArchNode( const char* Name, const FSStat& Stat )
 	: name( Name ), fsStat( Stat ), parentDir( nullptr ) {}
 	
 	FSArchNode* findByFsPath( FSPath& basePath, int basePathLevel = 0 );
@@ -66,9 +70,10 @@ private:
 	FSArch& operator = (const FSArch&) { return *this; };
 	
 	FSArchNode rootDir;
+	FSString FileName; // original file name
 	
 public:
-	FSArch( FSArchNode& RootDir ) : FS( ARCH ), rootDir( RootDir ) {}
+	FSArch( const FSArchNode& RootDir, const FSString& FileName ) : FS( ARCH ), rootDir( RootDir ), FileName( FileName ) {}
 	virtual ~FSArch() {}
 	
 	//
@@ -162,7 +167,7 @@ public:
 	
 	virtual FSString Uri( FSPath& path ) override
 	{
-		std::string ret(std::string("Archive://") + path.GetUtf8('/'));
+		std::string ret( FileName.GetUtf8() + std::string(":") + path.GetUtf8('/'));
 		return FSString(ret.c_str());
 	}
 };
@@ -172,18 +177,6 @@ FSArchNode::FSArchNode()
 	: parentDir( nullptr )
 {
 	fsStat.mode |= S_IFDIR;
-
-#ifdef _WIN32
-	fsStat.m_CreationTime = FSTime( FSTime::TIME_CURRENT );
-	fsStat.m_LastAccessTime = FSTime( FSTime::TIME_CURRENT );
-	fsStat.m_LastWriteTime = FSTime( FSTime::TIME_CURRENT );
-	fsStat.m_ChangeTime = FSTime( FSTime::TIME_CURRENT );
-#else
-	fsStat.m_CreationTime = time( 0 );
-	fsStat.m_LastAccessTime = time( 0 );
-	fsStat.m_LastWriteTime = time( 0 );
-	fsStat.m_ChangeTime = time( 0 );
-#endif
 }
 
 FSArchNode* FSArchNode::findByFsPath( FSPath& fsPath, int fsPathLevel )
@@ -314,11 +307,12 @@ int FSArch::ReadDir( FSList* list, FSPath& path, int* err, FSCInfo* info )
 {
 	list->Clear();
 
-	if ( path.Count() == 1 )
+	if ( path.Count() == 1 && !g_WcmConfig.panelShowDotsInRoot)
 	{
-		// Adding the ".." node to root dir
+		// Adding the ".." node to the root dir
 		clPtr<FSNode> pNode = new FSNode();
 		pNode->name = std::string( ".." );
+		pNode->st = rootDir.fsStat;
 		pNode->st.mode = S_IFDIR;
 		list->Append( pNode );
 	}
@@ -370,12 +364,13 @@ const char* clArchPlugin::GetPluginId() const
 	return g_ArchPluginId;
 }
 
-clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const std::string& FileExtLower ) const
+clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& Node, const std::string& FileExtLower ) const
 {
 	FSArchNode RootDir;
+	RootDir.fsStat = Node.st;
+	RootDir.fsStat.mode = S_IFDIR;
 	
 	FSStat Stat;
-
 	Stat.mode |= S_IFDIR;
 	Stat.size = 0;
 	FSArchNode* Dir1 = RootDir.Add( FSArchNode( "test dir 1", Stat ) );
@@ -389,5 +384,7 @@ clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const std::stri
 	FSArchNode File2( "test file 2", Stat );
 	RootDir.Add( File2 );
 
-	return new FSArch( RootDir );
+	return new FSArch( RootDir, Node.GetUtf8Name() );
 }
+
+#endif //LIBARCHIVE_EXIST

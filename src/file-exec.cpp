@@ -603,11 +603,7 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 	}
 	else
 	{
-		// get path with filename
-		FSPath Path = Panel->GetPath();
-		Path.Push( CS_UTF8, p->name.GetUtf8() );
-		
-		Plugin_OpenFileVFS( Panel, LocalFs, Path );
+		Plugin_OpenFileVFS( Panel, LocalFs, *p );
 	}
 }
 
