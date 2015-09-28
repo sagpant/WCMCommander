@@ -17,6 +17,8 @@
 #include <archive.h>
 #include <archive_entry.h>
 
+//#define dbg_printf printf
+
 static const char g_ArchPluginId[] = "ArchPlugin";
 
 
@@ -33,13 +35,16 @@ struct FSArchNode
 {
 	FSString name; // how it appears in panel
 	FSStat fsStat;
+	int64_t m_EntryOffset; // position of entry inside archive
 	
 	struct FSArchNode* parentDir;
 	std::list<FSArchNode> content; // content of a dir node
 	
-	FSArchNode();
+	FSArchNode()
+		: m_EntryOffset( 0 ), parentDir( nullptr ) { fsStat.mode |= S_IFDIR; }
+
 	FSArchNode( const char* Name, const FSStat& Stat )
-	: name( Name ), fsStat( Stat ), parentDir( nullptr ) {}
+		: name( Name ), fsStat( Stat ),  m_EntryOffset( 0 ), parentDir( nullptr ) {}
 	
 	FSArchNode* findByFsPath( FSPath& basePath, int basePathLevel = 0 );
 	FSArchNode* findByName( const FSString& name, bool isRecursive = true );
@@ -163,7 +168,7 @@ public:
 	virtual int Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info ) override {  return -1;  }
 	virtual int StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info ) override;
 	
-	virtual int64_t GetFileSystemFreeSpace( FSPath& path, int* err ) override { return 0; }
+	virtual int64_t GetFileSystemFreeSpace( FSPath& path, int* err ) override { return rootDir.m_EntryOffset; }
 	
 	virtual FSString Uri( FSPath& path ) override
 	{
@@ -172,12 +177,6 @@ public:
 	}
 };
 
-
-FSArchNode::FSArchNode()
-	: parentDir( nullptr )
-{
-	fsStat.mode |= S_IFDIR;
-}
 
 FSArchNode* FSArchNode::findByFsPath( FSPath& fsPath, int fsPathLevel )
 {
@@ -224,11 +223,13 @@ FSArchNode* FSArchNode::findByFsPath( FSPath& fsPath, int fsPathLevel )
 
 FSArchNode* FSArchNode::findByName( const FSString& name, bool isRecursive )
 {
-	//printf("FSArchNodeDir::findByName name=%s\n",name->GetUtf8());
+	dbg_printf( "FSArchNodeDir::findByName name=%s\n", name.GetUtf8() );
+	
 	// first, try all nodes in current
 	for ( FSArchNode& n : content )
 	{
-		//printf("FSArchNodeDir::findByName *it.name=%s\n", (*it).name.GetUtf8());
+		dbg_printf( "FSArchNodeDir::findByName n.name=%s\n", n.name.GetUtf8() );
+
 		if ( n.name.Cmp( (FSString&) name ) == 0 )
 		{
 			return &n;
@@ -337,7 +338,8 @@ int FSArch::ReadDir( FSList* list, FSPath& path, int* err, FSCInfo* info )
 
 int FSArch::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )
 {
-	//printf("FSArch::Stat ");
+	dbg_printf( "FSArch::Stat " );
+
 	FSArchNode* n = rootDir.findByFsPath( path );
 	if ( !n )
 	{
@@ -350,8 +352,13 @@ int FSArch::Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info )
 
 int FSArch::StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info )
 {
-	//printf("FSArch::StatVfs ");
-	*st = FSStatVfs();
+	dbg_printf( "FSArch::StatVfs " );
+
+	FSStatVfs StatVfs;
+	StatVfs.avail = 0;
+	StatVfs.size = rootDir.m_EntryOffset;
+
+	*st = StatVfs;
 	return 0;
 }
 
@@ -364,25 +371,132 @@ const char* clArchPlugin::GetPluginId() const
 	return g_ArchPluginId;
 }
 
+void ArchClose( struct archive* Arch )
+{
+	if ( Arch != nullptr )
+	{
+		int Res = archive_read_free( Arch );
+		if ( Res != ARCHIVE_OK )
+		{
+			printf( "Couldn't close archive reader: %s\n", archive_error_string( Arch ) );
+		}
+	}
+}
+
+struct archive* ArchOpen( const char* FileName )
+{
+	struct archive* Arch = archive_read_new();
+	if ( Arch != nullptr )
+	{
+		int Res = archive_read_support_filter_all( Arch );
+		if ( Res == ARCHIVE_OK )
+		{
+			Res = archive_read_support_format_all( Arch );
+			if ( Res == ARCHIVE_OK )
+			{
+				Res = archive_read_open_filename( Arch, FileName, 10240 );
+				if ( Res == ARCHIVE_OK )
+				{
+					return Arch;
+				}
+				
+				dbg_printf( "Couldn't open input archive: %s\n", archive_error_string( Arch ) );
+			}
+			else
+			{
+				dbg_printf( "Couldn't enable read formats\n" );
+			}
+		}
+		else
+		{
+			dbg_printf( "Couldn't enable decompression\n" );
+		}
+	}
+	else
+	{
+		dbg_printf( "Couldn't create archive reader\n" );
+	}
+	
+	ArchClose( Arch );
+	return nullptr;
+}
+
+FSArchNode* ArchGetParentDir( FSArchNode* CurrDir, FSPath& ItemPath, const FSStat& ItemStat )
+{
+	for ( int i = 0; i < ItemPath.Count() - 1; i++ )
+	{
+		FSString* Name = ItemPath.GetItem( i );
+		if ( i == 0 && ( Name->IsDot() || Name->IsEmpty() ) )
+		{
+			// skip root dir
+			continue;
+		}
+		
+		FSArchNode* Dir = CurrDir->findByName( *Name, false );
+		if ( Dir == nullptr )
+		{
+			FSStat Stat = ItemStat;
+			Stat.mode = S_IFDIR;
+			Stat.size = 0;
+			Dir = CurrDir->Add( FSArchNode( Name->GetUtf8(), Stat ) );
+		}
+		
+		CurrDir = Dir;
+	}
+	
+	return CurrDir;
+}
+
 clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& Node, const std::string& FileExtLower ) const
 {
+	struct archive* Arch = ArchOpen( Fs->Uri( Path ).GetUtf8() );
+	if ( Arch == nullptr )
+	{
+		return nullptr;
+	}
+
 	FSArchNode RootDir;
 	RootDir.fsStat = Node.st;
 	RootDir.fsStat.mode = S_IFDIR;
+
+	FSPath NodePath;
+	struct archive_entry* entry = archive_entry_new2( Arch );
 	
-	FSStat Stat;
-	Stat.mode |= S_IFDIR;
-	Stat.size = 0;
-	FSArchNode* Dir1 = RootDir.Add( FSArchNode( "test dir 1", Stat ) );
+	int Res;
+	while ( ( Res = archive_read_next_header2( Arch, entry ) ) == ARCHIVE_OK )
+	{
+		NodePath.Set( CS_UTF8, archive_entry_pathname( entry ) );
+
+		FSString* ItemName = NodePath.GetItem( NodePath.Count() - 1 );
+		if ( NodePath.Count() == 1 && ( ItemName->IsDot() || ItemName->IsEmpty() ) )
+		{
+			// skip root dir
+			continue;
+		}
+
+		const mode_t Mode = archive_entry_mode( entry );
+		const int64_t Size = archive_entry_size( entry );
+		RootDir.m_EntryOffset += Size;
+		
+		FSStat ItemStat;
+		ItemStat.mode = S_ISREG( Mode ) ? Mode : S_IFDIR;
+		ItemStat.size = Size;
+		ItemStat.m_CreationTime = archive_entry_ctime( entry );
+		ItemStat.m_LastAccessTime = archive_entry_atime( entry );
+		ItemStat.m_LastWriteTime = archive_entry_mtime( entry );
+
+		FSArchNode* Dir = ArchGetParentDir( &RootDir, NodePath, ItemStat );
+		FSArchNode* Item = Dir->Add( FSArchNode( ItemName->GetUtf8(), ItemStat ) );
+		Item->m_EntryOffset = archive_read_header_position( Arch );
+	}
 	
-	Stat.mode |= S_IFREG;
-	Stat.size = 1;
-	Dir1->Add( FSArchNode( "test file 1", Stat ) );
+	if ( Res != ARCHIVE_EOF )
+	{
+		dbg_printf( "Couldn't read archive entry: %s\n", archive_error_string( Arch ) );
+	}
 	
-	Stat.mode |= S_IFREG;
-	Stat.size = 2;
-	FSArchNode File2( "test file 2", Stat );
-	RootDir.Add( File2 );
+	archive_entry_free(entry);
+	ArchClose( Arch );
 
 	return new FSArch( RootDir, Node.GetUtf8Name() );
 }
