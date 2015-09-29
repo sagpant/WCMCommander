@@ -21,6 +21,9 @@
 
 static const char g_ArchPluginId[] = "ArchPlugin";
 
+/// Next archive fd, incremented each time a new file is opened
+static int g_NextArchFD = 1;
+
 
 #ifdef _WIN32
 #	define FSARCH_ERROR_FILE_EXISTS ERROR_FILE_EXISTS
@@ -31,6 +34,7 @@ static const char g_ArchPluginId[] = "ArchPlugin";
 #endif // _WIN32
 
 
+/// Describes archive entry
 struct FSArchNode
 {
 	FSString name; // how it appears in panel
@@ -75,10 +79,13 @@ private:
 	FSArch& operator = (const FSArch&) { return *this; };
 	
 	FSArchNode rootDir;
-	FSString FileName; // original file name
+	FSString m_Uri; // original file Uri
+	
+	/// Stores current open files
+	std::unordered_map<int, struct archive*> m_OpenFiles;
 	
 public:
-	FSArch( const FSArchNode& RootDir, const FSString& FileName ) : FS( ARCH ), rootDir( RootDir ), FileName( FileName ) {}
+	FSArch( const FSArchNode& RootDir, const FSString& Uri ) : FS( ARCH ), rootDir( RootDir ), m_Uri( Uri ) {}
 	virtual ~FSArch() {}
 	
 	//
@@ -86,7 +93,7 @@ public:
 	//
 	virtual bool IsPersistent() override { return false; }
 	
-	virtual unsigned Flags() override { return 0; }
+	virtual unsigned Flags() override { return HAVE_READ; }
 	
 	virtual bool IsEEXIST( int err ) override { return err == FSARCH_ERROR_FILE_EXISTS; }
 	
@@ -94,75 +101,76 @@ public:
 	
 	virtual bool IsEXDEV( int err ) override { return false; }
 	
-	virtual FSString StrError( int err ) override { return FSString( "" ); }
+	virtual FSString StrError( int err ) override { return FSString( "Operation is not supported" ); }
 	
 	virtual bool Equal( FS* fs ) override { return fs && fs->Type() == Type(); }
 	
-	virtual int OpenRead( FSPath& path, int flags, int* err, FSCInfo* info ) override
-	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
-	}
+	virtual int OpenRead( FSPath& path, int flags, int* err, FSCInfo* info ) override;
 	
 	virtual int OpenCreate( FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int Rename( FSPath&  oldpath, FSPath& newpath, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
-	virtual int Close( int fd, int* err, FSCInfo* info ) override
-	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
-	}
+	virtual int Close( int fd, int* err, FSCInfo* info ) override;
 	
-	virtual int Read( int fd, void* buf, int size, int* err, FSCInfo* info ) override
-	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
-	}
+	virtual int Read( int fd, void* buf, int size, int* err, FSCInfo* info ) override;
 	
 	virtual int Write( int fd, void* buf, int size, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int Seek( int fd, SEEK_FILE_MODE mode, seek_t pos, seek_t* pRet, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int MkDir( FSPath& path, int mode, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int Delete( FSPath& path, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int RmDir( FSPath& path, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int SetFileTime( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int ReadDir( FSList* list, FSPath& path, int* err, FSCInfo* info ) override;
 	virtual int Stat( FSPath& path, FSStat* st, int* err, FSCInfo* info ) override;
 	virtual int StatSetAttr( FSPath& path, const FSStat* st, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int FStat( int fd, FSStat* st, int* err, FSCInfo* info ) override
 	{
-		return FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
 	}
 	
 	virtual int Symlink( FSPath& path, FSString& str, int* err, FSCInfo* info ) override {  return -1;  }
@@ -172,7 +180,8 @@ public:
 	
 	virtual FSString Uri( FSPath& path ) override
 	{
-		std::string ret( FileName.GetUtf8() + std::string(":") + path.GetUtf8('/'));
+		FSPath FilePath( m_Uri );
+		std::string ret( FilePath.GetItem( FilePath.Count() - 1 )->GetUtf8() + std::string(":") + path.GetUtf8('/'));
 		return FSString(ret.c_str());
 	}
 };
@@ -362,15 +371,6 @@ int FSArch::StatVfs( FSPath& path, FSStatVfs* st, int* err, FSCInfo* info )
 	return 0;
 }
 
-//
-// clArchPlugin
-//
-
-const char* clArchPlugin::GetPluginId() const
-{
-	return g_ArchPluginId;
-}
-
 void ArchClose( struct archive* Arch )
 {
 	if ( Arch != nullptr )
@@ -421,6 +421,90 @@ struct archive* ArchOpen( const char* FileName )
 	return nullptr;
 }
 
+int FSArch::Close( int fd, int* err, FSCInfo* info )
+{
+	dbg_printf( "FSArch::Close\n" );
+	
+	auto iter = m_OpenFiles.find( fd );
+	if ( iter != m_OpenFiles.end() )
+	{
+		struct archive* Arch = iter->second;
+		ArchClose( Arch );
+	}
+
+	return 0;
+}
+
+int FSArch::OpenRead( FSPath& path, int flags, int* err, FSCInfo* info )
+{
+	dbg_printf( "FSArch::Open\n" );
+	
+	FSArchNode* Node = rootDir.findByFsPath( path );
+	if ( Node == nullptr )
+	{
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
+	}
+	
+	struct archive* Arch = ArchOpen( m_Uri.GetUtf8() );
+	if ( Arch == nullptr )
+	{
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
+	}
+	
+	// seek to the entry
+	struct archive_entry* entry = archive_entry_new2( Arch );
+	int Res;
+	while ( ( Res = archive_read_next_header2( Arch, entry ) ) == ARCHIVE_OK )
+	{
+		int64_t EntryOffset = archive_read_header_position( Arch );
+		if ( EntryOffset == Node->m_EntryOffset )
+		{
+			break;
+		}
+	}
+	
+	archive_entry_free( entry );
+	
+	if ( Res != ARCHIVE_OK )
+	{
+		dbg_printf( "Couldn't read archive entry: %s\n", archive_error_string( Arch ) );
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
+	}
+	
+	const int fd = g_NextArchFD++;
+	m_OpenFiles[ fd ] = Arch;
+	return fd;
+}
+
+int FSArch::Read( int fd, void* buf, int size, int* err, FSCInfo* info )
+{
+//	printf( "FSArch::Read\n" );
+	
+	auto iter = m_OpenFiles.find( fd );
+	if ( iter == m_OpenFiles.end() )
+	{
+		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
+		return -1;
+	}
+	
+	struct archive* Arch = iter->second;
+	
+	int Res = archive_read_data( Arch, buf, size );
+	return Res < 0 ? -1 : Res;
+}
+
+//
+// clArchPlugin
+//
+
+const char* clArchPlugin::GetPluginId() const
+{
+	return g_ArchPluginId;
+}
+
 FSArchNode* ArchGetParentDir( FSArchNode* CurrDir, FSPath& ItemPath, const FSStat& ItemStat )
 {
 	for ( int i = 0; i < ItemPath.Count() - 1; i++ )
@@ -449,7 +533,9 @@ FSArchNode* ArchGetParentDir( FSArchNode* CurrDir, FSPath& ItemPath, const FSSta
 
 clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& Node, const std::string& FileExtLower ) const
 {
-	struct archive* Arch = ArchOpen( Fs->Uri( Path ).GetUtf8() );
+	FSString Uri = Fs->Uri( Path );
+
+	struct archive* Arch = ArchOpen( Uri.GetUtf8() );
 	if ( Arch == nullptr )
 	{
 		return nullptr;
@@ -484,6 +570,7 @@ clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& N
 		ItemStat.m_CreationTime = archive_entry_ctime( entry );
 		ItemStat.m_LastAccessTime = archive_entry_atime( entry );
 		ItemStat.m_LastWriteTime = archive_entry_mtime( entry );
+		ItemStat.m_ChangeTime = ItemStat.m_LastWriteTime;
 
 		FSArchNode* Dir = ArchGetParentDir( &RootDir, NodePath, ItemStat );
 		FSArchNode* Item = Dir->Add( FSArchNode( ItemName->GetUtf8(), ItemStat ) );
@@ -498,7 +585,7 @@ clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& N
 	archive_entry_free(entry);
 	ArchClose( Arch );
 
-	return new FSArch( RootDir, Node.GetUtf8Name() );
+	return new FSArch( RootDir, Uri );
 }
 
 #endif //LIBARCHIVE_EXIST
