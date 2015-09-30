@@ -17,11 +17,11 @@
 class clArchPlugin : public clPluginFactory
 {
 	CLASS_COPY_PROTECTION( clArchPlugin );
-	
+
 public:
 	clArchPlugin() { Register( this ); }
 	virtual ~clArchPlugin() { Unregister( this ); }
-	
+
 	virtual const char* GetPluginId() const override;
 
 	virtual clPtr<FS> OpenFS( clPtr<FS> Fs, FSPath& Path ) const override;

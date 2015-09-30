@@ -38,6 +38,7 @@ void clPluginFactory::Unregister( clPluginFactory* PluginFactory )
 	std::string Id( PluginFactory->GetPluginId() );
 
 	auto iter = s_Registry.find( Id );
+
 	if ( iter != s_Registry.end() )
 	{
 		s_Registry.erase( iter );
@@ -54,6 +55,7 @@ clPtr<FS> Plugin_OpenFS( clPtr<FS> Fs, FSPath Path, const char* Name )
 		const clPluginFactory* PluginFactory = iter.second;
 
 		clPtr<FS> Vfs = PluginFactory->OpenFS( Fs, Path );
+
 		if ( Vfs.Ptr() != nullptr )
 		{
 			return Vfs;

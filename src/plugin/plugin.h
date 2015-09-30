@@ -30,7 +30,7 @@ class clPluginFactory
 
 public:
 	static std::unordered_map<std::string, clPluginFactory*> s_Registry;
-	
+
 public:
 	clPluginFactory() {}
 	virtual ~clPluginFactory() { }
@@ -40,6 +40,6 @@ public:
 
 	/// Returns unique plugin id
 	virtual const char* GetPluginId() const = 0;
-	
+
 	virtual clPtr<FS> OpenFS( clPtr<FS> Fs, FSPath& Path ) const = 0;
 };
