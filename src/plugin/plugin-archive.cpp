@@ -92,6 +92,7 @@ public:
 	// FS interface
 	//
 	virtual bool IsPersistent() override { return false; }
+	virtual bool IsShowDotsInRoot() override { return true; }
 	
 	virtual unsigned Flags() override { return HAVE_READ; }
 	
@@ -316,16 +317,6 @@ FSArchNode* FSArchNode::Add( const FSArchNode& fsArchNode )
 int FSArch::ReadDir( FSList* list, FSPath& path, int* err, FSCInfo* info )
 {
 	list->Clear();
-
-	if ( path.Count() == 1 && !g_WcmConfig.panelShowDotsInRoot)
-	{
-		// Adding the ".." node to the root dir
-		clPtr<FSNode> pNode = new FSNode();
-		pNode->name = std::string( ".." );
-		pNode->st = rootDir.fsStat;
-		pNode->st.mode = S_IFDIR;
-		list->Append( pNode );
-	}
 
 	FSArchNode* n = rootDir.findByFsPath( path );
 	if ( !n || !n->IsDir() )

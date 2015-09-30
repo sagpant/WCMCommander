@@ -637,6 +637,7 @@ public:
 	FS( int t ): _type( t ) { }
 	int Type() const { return _type; }
 	virtual bool IsPersistent() { return true; } // persistent FS location can be saved on app exit and restored on next startup
+	virtual bool IsShowDotsInRoot() { return g_WcmConfig.panelShowDotsInRoot; }
 
 	static int SetError(int* p, int err) { if (p) { *p = err; }; return err; }
 
