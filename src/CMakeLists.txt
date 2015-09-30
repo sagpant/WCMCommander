@@ -8,13 +8,12 @@ ELSE(MINGW)
 
 	OPTION(WITH_FREETYPE "Enable freetype support" ON)
 	OPTION(WITH_LIBSSH2 "Enable libssh2 support" ON)
+	OPTION(WITH_LIBARCHIVE "Enable LibArchive support" OFF)
 
 	IF(MSVC)
 		OPTION(WITH_SMBCLIENT "Enable samba support" OFF)
-		OPTION(WITH_LIBARCHIVE "Enable LibArchive support" OFF)
 	ELSE(MSVC)
 		OPTION(WITH_SMBCLIENT "Enable samba support" ON)
-		OPTION(WITH_LIBARCHIVE "Enable LibArchive support" ON)
 	ENDIF(MSVC)
 
 	INCLUDE_DIRECTORIES(${X11_X11_INCLUDE_PATH})
