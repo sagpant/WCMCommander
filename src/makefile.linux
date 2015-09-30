@@ -102,6 +102,8 @@ HN = \
 	src/drive-dlg.h \
 	src/file-util.h \
 	src/file-exec.h \
+	src/plugin/plugin.h \
+	src/plugin/plugin-archive.h \
 	src/nceditline.h \
 	src/fontdlg.h \
 	src/ncfonts.h \
@@ -167,6 +169,8 @@ OBJS = \
 	$(OBJDIR)/drive-dlg.o \
 	$(OBJDIR)/file-util.o \
 	$(OBJDIR)/file-exec.o \
+	$(OBJDIR)/plugin.o \
+	$(OBJDIR)/plugin-archive.o \
 	$(OBJDIR)/nceditline.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
@@ -318,6 +322,12 @@ $(OBJDIR)/file-util.o: $(HW) $(HS) $(HN) src/file-util.cpp
 
 $(OBJDIR)/file-exec.o: $(HW) $(HS) $(HN) src/file-exec.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/file-exec.cpp -o $(OBJDIR)/file-exec.o
+
+$(OBJDIR)/plugin.o: $(HW) $(HS) $(HN) src/plugin/plugin.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/plugin/plugin.cpp -o $(OBJDIR)/plugin.o
+
+$(OBJDIR)/plugin-archive.o: $(HW) $(HS) $(HN) src/plugin/plugin-archive.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/plugin/plugin-archive.cpp -o $(OBJDIR)/plugin-archive.o
 
 $(OBJDIR)/nceditline.o: $(HW) $(HS) $(HN) src/nceditline.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/nceditline.cpp -o $(OBJDIR)/nceditline.o

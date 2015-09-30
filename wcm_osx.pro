@@ -67,6 +67,8 @@ SOURCES += src/nc.cpp \
     src/drive-dlg.cpp \
     src/file-util.cpp \
     src/file-exec.cpp \
+    src/plugin/plugin.cpp \
+    src/plugin/plugin-archive.cpp \
     src/nceditline.cpp \
     src/smblogon.cpp \
     src/strconfig.cpp \
@@ -149,6 +151,8 @@ HEADERS += \
     src/drive-dlg.h \
     src/file-util.h \
     src/file-exec.h \
+    src/plugin/plugin.h \
+    src/plugin/plugin-archive.h \
     src/nceditline.h \
     src/smblogon.h \
     src/strconfig.h \

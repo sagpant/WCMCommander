@@ -12,6 +12,7 @@
 #include "panel.h"
 #include "strmasks.h"
 #include "ext-app.h"
+#include "plugin/plugin.h"
 
 #ifndef _WIN32
 #  include <signal.h>
@@ -599,6 +600,16 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 	if ( cmd.data() )
 	{
 		StartExecute( cmd.data(), LocalFs.ptr(), LocalPath, !terminal );
+	}
+	else
+	{
+		clPtr<FS> Vfs = Plugin_OpenFS( LocalFs, LocalPath, p->Name().GetUtf8() );
+		if ( Vfs.Ptr() != nullptr )
+		{
+			FSString RootPath = FSString( "/" );
+			FSPath VfsPath = FSPath( RootPath );
+			Panel->LoadPath( Vfs, VfsPath, nullptr, nullptr, PanelWin::PUSH );
+		}
 	}
 }
 

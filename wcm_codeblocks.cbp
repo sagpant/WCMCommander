@@ -268,6 +268,10 @@
 		<Unit filename="src/panel_list.h" />
 		<Unit filename="src/path-list.cpp" />
 		<Unit filename="src/path-list.h" />
+		<Unit filename="src/plugin/plugin.cpp" />
+		<Unit filename="src/plugin/plugin.h" />
+		<Unit filename="src/plugin/plugin-archive.cpp" />
+		<Unit filename="src/plugin/plugin-archive.h" />
 		<Unit filename="src/search-dlg.cpp" />
 		<Unit filename="src/search-dlg.h" />
 		<Unit filename="src/search-tools.cpp" />

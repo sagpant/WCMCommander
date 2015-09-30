@@ -628,7 +628,7 @@ public:
 class FS: public iIntrusiveCounter
 {
 public:
-	enum TYPES { SYSTEM = 0, SFTP = 1, SAMBA = 2, FTP = 3, WIN32NET = 4, TMP = 5 };
+	enum TYPES { SYSTEM = 0, SFTP = 1, SAMBA = 2, FTP = 3, WIN32NET = 4, TMP = 5, PLUGIN = 6 };
 	enum FLAGS { HAVE_READ = 1, HAVE_WRITE = 2, HAVE_SYMLINK = 4, HAVE_SEEK = 8 };
 	enum OPENFLAGS { SHARE_READ = 1, SHARE_WRITE = 2 };
 private:
@@ -637,6 +637,7 @@ public:
 	FS( int t ): _type( t ) { }
 	int Type() const { return _type; }
 	virtual bool IsPersistent() { return true; } // persistent FS location can be saved on app exit and restored on next startup
+	virtual bool IsShowDotsInRoot() { return g_WcmConfig.panelShowDotsInRoot; }
 
 	static int SetError(int* p, int err) { if (p) { *p = err; }; return err; }
 

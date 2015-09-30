@@ -2012,8 +2012,11 @@ bool PanelWin::HideDotsInDir() const
 
 	if ( _place.IsEmpty() ) { return HideDots; }
 
-#ifdef _WIN32
 	clPtr<FS> fs = GetFSPtr();
+
+	HideDots = !fs->IsShowDotsInRoot();
+	
+#ifdef _WIN32
 
 	if ( fs->Type() == FS::SYSTEM )
 	{

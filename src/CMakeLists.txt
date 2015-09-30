@@ -8,6 +8,7 @@ ELSE(MINGW)
 
 	OPTION(WITH_FREETYPE "Enable freetype support" ON)
 	OPTION(WITH_LIBSSH2 "Enable libssh2 support" ON)
+	OPTION(WITH_LIBARCHIVE "Enable LibArchive support" OFF)
 
 	IF(MSVC)
 		OPTION(WITH_SMBCLIENT "Enable samba support" OFF)
@@ -56,6 +57,19 @@ ELSE(MINGW)
 	ELSE(WITH_SMBCLIENT)
 		MESSAGE(STATUS "smbclient support disabled")
 	ENDIF(WITH_SMBCLIENT)
+
+	IF(WITH_LIBARCHIVE)
+		FIND_PACKAGE(LibArchive)
+		IF(NOT ${LibArchive_FOUND})
+			MESSAGE(FATAL_ERROR "LibArchive not found. You should either install it or disable WITH_LIBARCHIVE cmake option")
+		ENDIF(NOT ${LibArchive_FOUND})
+		ADD_DEFINITIONS(-DLIBARCHIVE_EXIST)
+		INCLUDE_DIRECTORIES(${LibArchive_INCLUDE_DIRS})
+		SET(wcm_LIBS ${wcm_LIBS} ${LibArchive_LIBRARIES})
+		MESSAGE(STATUS "LibArchive support enabled, VERSION=" ${LibArchive_VERSION})
+	ELSE(WITH_LIBARCHIVE)
+		MESSAGE(STATUS "LibArchive support disabled")
+	ENDIF(WITH_LIBARCHIVE)
 ENDIF(MINGW)
 
 # flags
@@ -148,6 +162,8 @@ SET(wcm_COMMON_SOURCES
 	drive-dlg.cpp
 	file-util.cpp
 	file-exec.cpp
+	plugin/plugin.cpp
+	plugin/plugin-archive.cpp
 	nceditline.cpp
 	smblogon.cpp
 	strconfig.cpp
@@ -234,6 +250,8 @@ SET(wcm_HEADERS
 	drive-dlg.h
 	file-util.h
 	file-exec.h
+	plugin/plugin.h
+	plugin/plugin-archive.h
 	nceditline.h
 	smblogon.h
 	strconfig.h
