@@ -20,7 +20,7 @@ struct FSNode;
 
 /// plugin internal interface
 
-bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, const FSNode& Node );
+clPtr<FS> Plugin_OpenFS( clPtr<FS> Fs, FSPath Path, const char* Name );
 
 
 /// Abstract plugin factory
@@ -41,5 +41,5 @@ public:
 	/// Returns unique plugin id
 	virtual const char* GetPluginId() const = 0;
 	
-	virtual clPtr<FS> OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& Node, const std::string& FileExtLower ) const = 0;
+	virtual clPtr<FS> OpenFS( clPtr<FS> Fs, FSPath& Path ) const = 0;
 };

@@ -44,34 +44,21 @@ void clPluginFactory::Unregister( clPluginFactory* PluginFactory )
 	}
 }
 
-bool Plugin_OpenFileVFS( PanelWin* Panel, clPtr<FS> Fs, const FSNode& Node )
+clPtr<FS> Plugin_OpenFS( clPtr<FS> Fs, FSPath Path, const char* Name )
 {
 	// get path with filename
-	FSPath Path = Panel->GetPath();
-	Path.Push( CS_UTF8, Node.name.GetUtf8() );
+	Path.Push( CS_UTF8, Name );
 
-	// get file extension
-	std::string FileExtLower = GetFileExt( std::string( Path.GetItem( Path.Count() - 1 )->GetUtf8() ) );
-	std::transform(FileExtLower.begin(), FileExtLower.end(), FileExtLower.begin(), ::tolower);
-	if ( FileExtLower.length() > 0 )
-	{
-		// trim dot char at the beginning
-		FileExtLower = FileExtLower.substr( 1 );
-	}
-	
 	for ( auto& iter : clPluginFactory::s_Registry )
 	{
 		const clPluginFactory* PluginFactory = iter.second;
 
-		clPtr<FS> Vfs = PluginFactory->OpenFileVFS( Fs, Path, Node, FileExtLower );
+		clPtr<FS> Vfs = PluginFactory->OpenFS( Fs, Path );
 		if ( Vfs.Ptr() != nullptr )
 		{
-			FSString RootPath = FSString( "/" );
-			FSPath VfsPath = FSPath( RootPath );
-			Panel->LoadPath( Vfs, VfsPath, nullptr, nullptr, PanelWin::PUSH );
-			return true;
+			return Vfs;
 		}
 	}
 
-	return false;
+	return clPtr<FS>();
 }

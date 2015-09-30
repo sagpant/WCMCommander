@@ -603,7 +603,13 @@ void FileExecutor::ExecuteFileByEnter( PanelWin* Panel, bool Shift )
 	}
 	else
 	{
-		Plugin_OpenFileVFS( Panel, LocalFs, *p );
+		clPtr<FS> Vfs = Plugin_OpenFS( LocalFs, LocalPath, p->Name().GetUtf8() );
+		if ( Vfs.Ptr() != nullptr )
+		{
+			FSString RootPath = FSString( "/" );
+			FSPath VfsPath = FSPath( RootPath );
+			Panel->LoadPath( Vfs, VfsPath, nullptr, nullptr, PanelWin::PUSH );
+		}
 	}
 }
 

@@ -51,7 +51,7 @@ struct FSArchNode
 		: name( Name ), fsStat( Stat ),  m_EntryOffset( 0 ), parentDir( nullptr ) {}
 	
 	FSArchNode* findByFsPath( FSPath& basePath, int basePathLevel = 0 );
-	FSArchNode* findByName( const FSString& name, bool isRecursive = true );
+	FSArchNode* findByName( const FSString& name, bool isRecursive = false );
 	
 	bool IsDir() const { return fsStat.IsDir(); }
 	
@@ -59,7 +59,7 @@ struct FSArchNode
 	bool Remove( const FSString& name, bool searchRecursive = true );
 	bool Rename( const FSString& oldName, const FSString& newName )
 	{
-		FSArchNode* n = findByName( newName, false );
+		FSArchNode* n = findByName( newName );
 		if ( !n )
 		{
 			return false;
@@ -75,7 +75,7 @@ class FSArch : public FS
 {
 	//CLASS_COPY_PROTECTION( FSArch );
 private:
-	FSArch(const FSArch&) : FS( ARCH ) {};
+	FSArch(const FSArch&) : FS( PLUGIN ) {};
 	FSArch& operator = (const FSArch&) { return *this; };
 	
 	FSArchNode rootDir;
@@ -85,7 +85,7 @@ private:
 	std::unordered_map<int, struct archive*> m_OpenFiles;
 	
 public:
-	FSArch( const FSArchNode& RootDir, const FSString& Uri ) : FS( ARCH ), rootDir( RootDir ), m_Uri( Uri ) {}
+	FSArch( const FSArchNode& RootDir, const FSString& Uri ) : FS( PLUGIN ), rootDir( RootDir ), m_Uri( Uri ) {}
 	virtual ~FSArch() {}
 	
 	//
@@ -209,7 +209,7 @@ FSArchNode* FSArchNode::findByFsPath( FSPath& fsPath, int fsPathLevel )
 		}
 
 		FSString* childName = fsPath.GetItem( fsPathLevel + 1 );
-		FSArchNode* n = findByName( *childName, false );
+		FSArchNode* n = findByName( *childName );
 		if ( n == nullptr )
 		{
 			return nullptr;
@@ -305,9 +305,9 @@ FSArchNode* FSArchNode::Add( const FSArchNode& fsArchNode )
 
 	content.push_back( fsArchNode );
 	
-	FSArchNode* Added = &content.back();
-	Added->parentDir = this;
-	return Added;
+	FSArchNode* Dir = &content.back();
+	Dir->parentDir = this;
+	return Dir;
 }
 
 //
@@ -507,7 +507,7 @@ FSArchNode* ArchGetParentDir( FSArchNode* CurrDir, FSPath& ItemPath, const FSSta
 			continue;
 		}
 		
-		FSArchNode* Dir = CurrDir->findByName( *Name, false );
+		FSArchNode* Dir = CurrDir->findByName( *Name );
 		if ( Dir == nullptr )
 		{
 			FSStat Stat = ItemStat;
@@ -522,7 +522,7 @@ FSArchNode* ArchGetParentDir( FSArchNode* CurrDir, FSPath& ItemPath, const FSSta
 	return CurrDir;
 }
 
-clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& Node, const std::string& FileExtLower ) const
+clPtr<FS> clArchPlugin::OpenFS( clPtr<FS> Fs, FSPath& Path ) const
 {
 	FSString Uri = Fs->Uri( Path );
 
@@ -533,7 +533,6 @@ clPtr<FS> clArchPlugin::OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& N
 	}
 
 	FSArchNode RootDir;
-	RootDir.fsStat = Node.st;
 	RootDir.fsStat.mode = S_IFDIR;
 
 	FSPath NodePath;

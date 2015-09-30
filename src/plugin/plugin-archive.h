@@ -24,7 +24,7 @@ public:
 	
 	virtual const char* GetPluginId() const override;
 
-	virtual clPtr<FS> OpenFileVFS( clPtr<FS> Fs, FSPath& Path, const FSNode& Node, const std::string& FileExtLower ) const override;
+	virtual clPtr<FS> OpenFS( clPtr<FS> Fs, FSPath& Path ) const override;
 };
 
 #endif //LIBARCHIVE_EXIST
