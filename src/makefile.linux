@@ -22,10 +22,10 @@ $(info $(UNAME_S))
 ifeq ($(UNAME_S),Darwin)
 # make it buildable with XQuartz
 CFLAGS += -I /opt/X11/include
-CFLAGS += -Wno-logical-op-parentheses -Wno-bitwise-op-parentheses
-CFLAGS_FREETYPE = -I /opt/X11/include/freetype2 -D USEFREETYPE
+CFLAGS += -Wno-logical-op-parentheses -Wno-bitwise-op-parentheses -Wno-inconsistent-missing-override
+CFLAGS_FREETYPE = -I /opt/X11/include/freetype2 -D USEFREETYPE -I /usr/local/opt/libarchive/include
 LIBFREETYPE = -l freetype
-LIBS = -L /usr/local/lib -L /opt/X11/lib -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
+LIBS = -L /usr/local/lib -L /opt/X11/lib -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE) -lz -lbz2 -lexpat /usr/local/opt/libarchive/lib/libarchive.a -liconv
 else
 CFLAGS += -pthread
 CFLAGS += -Wno-unused-parameter

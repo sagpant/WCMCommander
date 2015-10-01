@@ -4,6 +4,8 @@
  * wcm@linderdaum.com
  */
 
+#include "libconf.h"
+
 #ifdef LIBARCHIVE_EXIST
 
 #include "plugin-archive.h"
