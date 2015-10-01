@@ -1,3 +1,17 @@
+[HighlightingRules]
+ColorNormal0=2237106
+ColorNormalBackground0=8388608
+ColorSelected0=65535
+ColorSelectedBackground0=8388608
+ColorUnderCursorNormal0=128
+ColorUnderCursorNormalBackground0=8421376
+ColorUnderCursorSelected0=65535
+ColorUnderCursorSelectedBackground0=8421376
+Description0=Archive files
+Mask0=*.zip,*.rar,*.jar,*.tar,*.xar,*.cab,*.bz2,*.gz,*.ar,*.7z
+MaskEnabled0=0
+SizeAttribs0=Min = 0 Max = 0 Attribs = 0
+
 [fonts]
 dialog_font=+140:/usr/share/wcm/fonts/LiberationMono-Regular.ttf
 editor_font=+140:/usr/share/wcm/fonts/LiberationMono-Regular.ttf
