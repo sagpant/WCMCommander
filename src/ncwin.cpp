@@ -944,11 +944,13 @@ void NCWin::CreateDirectory()
 		return;
 	}
 
-	static std::vector<unicode_t> dir;
+	FSPath DestPath = _panel->GetPath();
 	try
 	{
-		std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_MAKE_FOLDER, this,
-																	  utf8_to_unicode( _LT( "Create new directory" ) ).data(), dir.data() );
+		static bool ProcessMultipleFolders = false;
+		static std::vector<unicode_t> dir;
+
+		std::vector<unicode_t> str = CreateDirDialog( this, &ProcessMultipleFolders, dir.data() );
 		if ( !str.data() )
 		{
 			return;
@@ -957,8 +959,7 @@ void NCWin::CreateDirectory()
 		dir = str;
 		const std::vector<clPtr<FS>> checkFS = { _panel->GetFSPtr(), GetOtherPanel()->GetFSPtr() };
 		
-		FSPath path = _panel->GetPath();
-		clPtr<FS> fs = ParzeURI( dir.data(), path, checkFS );
+		clPtr<FS> fs = ParzeURI( dir.data(), DestPath, checkFS );
 
 		if ( fs.IsNull() )
 		{
@@ -969,21 +970,27 @@ void NCWin::CreateDirectory()
 			return;
 		}
 
-		if ( !::MkDir( fs, path, this ) )
+		if ( !::MkDir( fs, _panel->GetPath(), DestPath, ProcessMultipleFolders, this ) )
 		{
 			return;
 		}
-
 	}
 	catch ( cexception* ex )
 	{
 		NCMessageBox( this, _LT( "Create directory" ), ex->message(), true );
 		ex->destroy();
-	};
+	}
 
+	const char* NewCurrentNameUtf8 = nullptr;
+	const int DirIndex = _panel->GetPath().GetFirstUnmatchedItem( DestPath );
+
+	if ( DirIndex >= 0 )
+	{
+		NewCurrentNameUtf8 = DestPath.GetItem( DirIndex )->GetUtf8();
+	}
+	
 	GetOtherPanel()->Reread();
-
-	_panel->Reread( false, unicode_to_utf8(dir.data()).c_str() );
+	_panel->Reread( false, NewCurrentNameUtf8 );
 }
 
 void NCWin::QuitQuestion()

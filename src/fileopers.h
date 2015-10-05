@@ -79,7 +79,7 @@ public:
 
 ///////////////////////////////// common file opers
 
-bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent );
+bool MkDir( clPtr<FS> f, FSPath& srcPath, FSPath& destPath, bool processMultipleFolders, NCDialogParent* parent );
 bool DeleteList( clPtr<FS> f, FSPath& p, clPtr<FSList> list, NCDialogParent* parent );
 clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );
 bool MoveFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent );

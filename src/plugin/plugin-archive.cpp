@@ -460,10 +460,10 @@ int FSArch::OpenRead( FSPath& path, int flags, int* err, FSCInfo* info )
 		return -1;
 	}
 
-	// seek to the entry
 	struct archive_entry* entry = archive_entry_new2( Arch );
 	int Res;
 
+	// seek to the entry
 	while ( ( Res = archive_read_next_header2( Arch, entry ) ) == ARCHIVE_OK )
 	{
 		int64_t EntryOffset = archive_read_header_position( Arch );
@@ -478,6 +478,8 @@ int FSArch::OpenRead( FSPath& path, int flags, int* err, FSCInfo* info )
 
 	if ( Res != ARCHIVE_OK )
 	{
+		ArchClose( Arch );
+		
 		dbg_printf( "Couldn't read archive entry: %s\n", archive_error_string( Arch ) );
 		FS::SetError( err, FSARCH_ERROR_FILE_NOT_FOUND );
 		return -1;
