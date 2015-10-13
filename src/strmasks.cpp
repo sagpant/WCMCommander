@@ -18,7 +18,7 @@ bool accmask_nocase( const unicode_t* name, const unicode_t* mask )
 		switch ( *mask )
 		{
 			case 0:
-				return true;
+				return *name == 0;
 
 			case '?':
 				break;
@@ -60,13 +60,7 @@ bool accmask( const unicode_t* name, const unicode_t* mask )
 		switch ( *mask )
 		{
 			case 0:
-				for ( ; *name ; name++ )
-					if ( *name != '*' )
-					{
-						return false;
-					}
-
-				return true;
+				return *name == 0;
 
 			case '?':
 				break;
