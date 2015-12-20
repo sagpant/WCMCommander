@@ -733,8 +733,11 @@ void NCWin::SetMode( MODE m )
 			m_Edit.Hide();
 			_terminal.Show();
 			_editPref.Hide();
+// workaround for crash "XIO:  fatal IO error 35 (Resource temporarily unavailable) on X server"
+#if !defined(__APPLE__)
 			_menu.Hide();
 			_toolBar.Hide();
+#endif
 		}
 		break;
 
