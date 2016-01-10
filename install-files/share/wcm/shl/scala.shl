@@ -1,0 +1,87 @@
+start newline;
+
+chars a [a-zA-Z]; 
+chars d [0-9];
+chars s [\t\ ];
+
+state newline default {
+	rule	<\n>	{ state = newline; };
+	rule	</\*!>	{ state=comment_attn_1; color=ATTN; };
+	rule	</\*>	{ state=comment_1; color=COMMENT; };
+	rule	<//!>	{ state=comment_attn_2; color=ATTN; };
+	rule	<//>	{ state=comment_2; color=COMMENT; };
+	rule	<$(s)+> ;
+	rule	<\">	{ state=string; color=STRING; };
+	rule	<\'>	{ state=char; color=STRING; };
+	
+	rule	<0x[0-9a-fA-F]+>	{ state = default; color = NUM; };
+	rule	<$(d)+[\.]*$(d)*[eE]*$(d)*>	{ state = default; color = NUM; };
+	
+	rule <[!~*+\-=|\>\<&\^?%]+> { state = default; color = OPER; };
+	
+	rule <[{}():;,]> { state = default;  color = KEYWORD; };
+	
+	rule	<[$(a)$(d)_]+>	{ 
+		state = default;  
+		words (KEYWORD) = {
+			'abstract','case','catch','class',
+			'def','do','else','extends',
+			'false','final','finally','for',
+			'forSome','if','implicit',
+			#'import',
+			'lazy','match','new','null','Nill','Unit',
+			'object','override','package','private','protected',
+			'return','sealed','super',
+			'this','throw','trait','true','try','type',
+			'var','val',
+			'while','with','yield'
+		};
+		
+		words (PRE) = {
+			'import',
+		};
+	};
+	
+#	rule 	<...> { color = KEYWORD; };
+};
+
+state newline {;
+	rule 	<[^$(s)]> { state=default; };
+};
+	
+state comment_1	{
+	color=COMMENT;
+	rule	<\*/>	{ state=default; };
+};
+
+state comment_attn_1	{
+	color = ATTN;
+	rule	<\*/>	{ state=default; };
+};
+
+	
+state comment_2	{
+	color = COMMENT;
+	rule	<\\\n>;
+	rule	<\n>	{state=newline;};
+};
+
+state comment_attn_2	{
+	color = ATTN;
+	rule	<\\\n>;
+	rule	<\n>	{state=newline;};
+};
+	
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=default;};
+};
+
+state char {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};
