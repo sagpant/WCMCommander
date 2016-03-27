@@ -212,6 +212,19 @@ bool FSPath::Equals(FSPath* that)
 	return true;
 }
 
+int FSPath::GetFirstUnmatchedItem( FSPath& otherPath )
+{
+	for ( int i = 0; i < otherPath.Count(); i++ )
+	{
+		if ( i >= Count() || GetItem( i )->Cmp( *otherPath.GetItem( i ) ) )
+		{
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
 FSPath::~FSPath() {}
 
 

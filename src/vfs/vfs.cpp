@@ -1113,9 +1113,12 @@ FSWin32Net::~FSWin32Net()
 // for statfs()
 #ifdef __linux__
 #  include <sys/statfs.h>
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 #  include <sys/param.h>
 #  include <sys/mount.h>
+#  if defined(__NetBSD__)
+#    define statfs statvfs
+#  endif
 #endif
 
 #ifdef __linux__

@@ -734,6 +734,61 @@ public:
 };
 
 
+class clCreateDirDialog : public clInputStrDialogBase
+{
+private:
+	Layout m_Layout;
+	clNCEditLine m_FieldEdit;
+	SButton m_MultipleButton;
+	
+public:
+	clCreateDirDialog( NCDialogParent* Parent, bool IsMultipleFolders, const unicode_t* Str )
+		: clInputStrDialogBase( Parent, utf8_to_unicode( _LT( "Create new directory" ) ).data() )
+		, m_Layout( 2, 9 )
+		, m_FieldEdit( EDIT_FIELD_MAKE_FOLDER, 0, (Win*)this, 0, 100, 7 )
+		, m_MultipleButton( 1, this, utf8_to_unicode( _LT( "Process multiple folders" ) ).data(), 0, IsMultipleFolders )
+	{
+		m_Layout.AddWinAndEnable( &m_FieldEdit, 0, 0, 0, 2 );
+		order.append( &m_FieldEdit );
+		
+		m_Layout.AddWinAndEnable( &m_MultipleButton, 1, 0, 1, 2 );
+		order.append( &m_MultipleButton );
+		
+		AddLayout( &m_Layout );
+		
+		if ( Str )
+		{
+			m_FieldEdit.SetText( Str, true );
+		}
+		
+		m_FieldEdit.SetFocus();
+		SetPosition();
+	}
+	virtual ~clCreateDirDialog() {}
+	
+	bool IsMultipleFolders() const
+	{
+		return m_MultipleButton.IsSet();
+	}
+	
+	virtual std::vector<unicode_t> GetText() const override
+	{
+		return m_FieldEdit.GetText();
+	}
+	
+	virtual std::vector<unicode_t> ShowDialog() override
+	{
+		std::vector<unicode_t> Res = clInputStrDialogBase::ShowDialog();
+		if ( Res.size() > 0 )
+		{
+			m_FieldEdit.AddCurrentTextToHistory();
+		}
+		
+		return Res;
+	}
+};
+
+
 std::vector<unicode_t> InputStringDialog( NCDialogParent* Parent, const unicode_t* Message, const unicode_t* Str )
 {
 	return InputStringDialog( nullptr, Parent, Message, Str );
@@ -749,6 +804,18 @@ std::vector<unicode_t> InputStringDialog( const char* FieldName, NCDialogParent*
 
 	clInputFieldDialog Dlg( FieldName, Parent, Message, Str );
 	return Dlg.ShowDialog();
+}
+
+std::vector<unicode_t> CreateDirDialog( NCDialogParent* Parent, bool* IsMultipleFolders, const unicode_t* Str )
+{
+	clCreateDirDialog Dlg( Parent, *IsMultipleFolders, Str );
+	std::vector<unicode_t> Res = Dlg.ShowDialog();
+	if ( Res.size() > 0 )
+	{
+		*IsMultipleFolders = Dlg.IsMultipleFolders();
+	}
+	
+	return Res;
 }
 
 int uiKillCmdDialog = GetUiID( "KillCmdDialog" );

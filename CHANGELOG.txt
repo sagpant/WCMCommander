@@ -109,8 +109,8 @@
 	Added: numpad keys support while NumLock is disabled
 	Added: option to turn on/off the 3D UI (buttons, etc)
 	Added: show '(Root)' in the window caption while running with root privileges
-	Added: show inner/trailing spaces in files/folders as the · character (option)
-	Added: show spaces in input fields as the · character
+	Added: show inner/trailing spaces in files/folders as the Â· character (option)
+	Added: show spaces in input fields as the Â· character
 	Added: xprop can report a class name for WCM windows
 	Hotkey: Ctrl+M to open "Open with" popup
 	Hotkey: Shift+Tab to switch between controls in dialogs

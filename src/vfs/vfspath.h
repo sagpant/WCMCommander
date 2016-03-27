@@ -224,6 +224,7 @@ public:
 	const char* GetUtf8( char delimiter = DIR_SPLITTER ) { return ( const char* ) GetString( CS_UTF8, delimiter ); }
 
 	bool Equals(FSPath* that);
+	int GetFirstUnmatchedItem( FSPath& otherPath );
 
 	void dbg_printf(const char* label)
 	{

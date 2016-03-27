@@ -335,6 +335,8 @@ public:
 
 	clPtr<FS> destFs; //??volatile
 	FSPath destPath; //??volatile
+	
+	bool processMultipleFolders;
 
 	FSString errorString; //??volatile
 	clPtr<cstrhash<bool, unicode_t> > resList; //??volatile
@@ -390,7 +392,7 @@ public:
 		_buffer = new char[BSIZE];
 	}
 
-	void CreateDirectory( FS* fs, FSPath& path ); //throws
+	void CreateDirectory( FS* fs, FSPath& srcPath, FSPath& destPath, bool processMultipleFolders ); //throws
 
 	bool Unlink ( FS* fs, FSPath& path, bool* skipAll = 0 );
 	bool RmDir  ( FS* fs, FSPath& path, bool* skipAll = 0 );
@@ -426,13 +428,39 @@ OperCFThread::~OperCFThread()
 	}
 }
 
-void OperCFThread::CreateDirectory( FS* fs, FSPath& path )
+void OperCFThread::CreateDirectory( FS* fs, FSPath& srcPath, FSPath& destPath, bool processMultipleFolders )
 {
-	int ret_err;
-
-	if ( fs->MkDir( path, 0777, &ret_err, Info() ) )
+	if ( processMultipleFolders )
 	{
-		throw_msg( "%s", fs->StrError( ret_err ).GetUtf8() );
+		const int DirIndex = srcPath.GetFirstUnmatchedItem( destPath );
+		FSPath Path;
+
+		for ( int i = 0; i < destPath.Count(); i++ )
+		{
+			// get next dir
+			Path.PushStr( *destPath.GetItem( i ) );
+			
+			int ret_err;
+
+			// try to create dir
+			if ( i >= DirIndex && fs->MkDir( Path, 0777, &ret_err, Info() ) )
+			{
+				// skip "already exists" error
+				if ( !fs->IsEEXIST( ret_err ) )
+				{
+					throw_msg( "%s", fs->StrError( ret_err ).GetUtf8() );
+				}
+			}
+		}
+	}
+	else
+	{
+		int ret_err;
+
+		if ( fs->MkDir( destPath, 0777, &ret_err, Info() ) )
+		{
+			throw_msg( "%s", fs->StrError( ret_err ).GetUtf8() );
+		}
 	}
 }
 
@@ -476,13 +504,15 @@ void MkDirThreadFunc( OperThreadNode* node )
 		OperCFThread thread( "create directory", data->Parent(), node );
 
 		clPtr<FS> fs = data->srcFs;
-		FSPath path = data->srcPath;
+		FSPath srcPath = data->srcPath;
+		FSPath destPath = data->destPath;
+		bool processMultipleFolders = data->processMultipleFolders;
 
 		lock.Unlock();//!!!
 
 		try
 		{
-			thread.CreateDirectory( fs.Ptr(), path );
+			thread.CreateDirectory( fs.Ptr(), srcPath, destPath, processMultipleFolders );
 		}
 		catch ( cexception* ex )
 		{
@@ -507,12 +537,14 @@ void MkDirThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent )
+bool MkDir( clPtr<FS> f, FSPath& srcPath, FSPath& destPath, bool processMultipleFolders, NCDialogParent* parent )
 {
 	SimpleCFThreadWin dlg( parent, _LT( "Create directory" ) );
 	dlg.threadData.Clear();
 	dlg.threadData.srcFs = f;
-	dlg.threadData.srcPath = p;
+	dlg.threadData.srcPath = srcPath;
+	dlg.threadData.destPath = destPath;
+	dlg.threadData.processMultipleFolders = processMultipleFolders;
 	dlg.RunNewThread( "Create directory", MkDirThreadFunc, &dlg.threadData ); //может быть исключение
 	dlg.Enable();
 	dlg.Show();

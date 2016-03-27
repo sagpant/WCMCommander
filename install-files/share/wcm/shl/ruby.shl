@@ -1,0 +1,143 @@
+# Ruby syntax highlighting
+# (C) 2015 Alexey Voskov
+# License: MIT License
+
+# This file supports some advanced features of Ruby syntax
+# 1) Multiline comments
+# 2) Expressions inside #{} in double quoted strings
+# 3) Escape sequences
+# 4) Heredoc-style string (<<EOS and <<-eos)
+# Known issues: regexps inside / / (no special highlighting)
+start default;
+
+chars a [a-zA-Z];
+chars d [0-9];
+chars s [\t\ ];
+chars k [\"\'\`?;:,.\[\]{}()|&\^\=\+\-\<\>\~\!\%\*\/_]
+
+state default {
+	rule	<#>	{ state=comment; color=COMMENT; };
+	rule  <=begin$(s)*\n> {state=comment_ml_newline; color=COMMENT; };
+	
+	rule	<\">	{ state=string1; color=STRING; };
+	rule	<\'>	{ state=string2; color=STRING; };
+	rule	<\`>	{ state=string3; color=STRING; };
+	rule  <<<EOS$(s)*\n> {state=string_eos_newline; color=STRING;};
+	rule  <<<-EOS$(s)*\n> {state=string_eos_newline; color=STRING;};
+
+	rule <...> { color=OPER; };
+	rule <..> { color=OPER; };
+
+	rule <[\^\=\+\-\<\>\~\!\%\*\/]> { color=OPER; };
+	rule <[?;:,.\[\]{}()|&]> { color=KEYWORD; };
+	
+	rule	<[A-Za-z\_]+[A-Za-z0-9\_]*[?!]*>	{ 
+		words(KEYWORD) =
+			{
+				'__ENCODING__', '__LINE__', '__FILE__', 'BEGIN', 'END',
+				'alias', 'and', 'begin', 'break', 'case', 'class', 'def',
+				'defined?', 'do', 'else', 'elsif', 'end', 'ensure', 'false',
+				'for', 'if', 'in', 'module', 'next', 'nil', 'not', 'or', 'redo',
+				'rescue', 'retry', 'return', 'self', 'super', 'then', 'true',
+				'undef', 'unless', 'until', 'when', 'while', 'yield'
+			};
+		};
+	rule	<0[xX][0-9a-fA-F]+>	{ state = default; color = NUM; }; # Hexadecimal numbers
+	rule  <0[bB][01]+> {state = default; color = NUM; }; # Binary numbers
+	rule  <0[oO][0-7]+> {state = default; color = NUM; }; # Octal numbers
+	rule	<$(d)+\.$(d)+[eE]*$(d)*>	{ state = default; color = NUM; }; # Real numbers
+	rule	<$(d)+[eE]*$(d)*>	{ state = default; color = NUM; }; # Real numbers
+};
+
+# Single-line comment
+state comment	{
+	color=COMMENT;
+	rule	<\\\n>	{state=comment;};
+	rule	<\n>	{state=default;};
+};
+
+# Multi-line comment (=begin..=end construction)
+state comment_ml {
+	color=COMMENT;
+	rule  <\n> {state = comment_ml_newline;};
+}
+
+state comment_ml_newline {
+	color=COMMENT;
+	rule  <=end$(s)*\n> {state = default;};
+	rule  <[$(k)$(d)$(s)$(a)]> {state = comment_ml;};
+}
+
+
+# String in double quote	
+state string1 {
+	color = STRING;
+	rule  <\\[tnb\\"'\?afrv]> {color=OPER;}; # Escapes chars
+	rule  <\\[0-7][0-7][0-7]> {color=OPER;}; # Octal chars codes
+	rule  <\\[0-7][0-7]> {color=OPER;};
+	rule  <\\[0-7]> {color=OPER;};
+	rule  <\\x[0-9A-Fa-f][0-9A-Fa-f]> {color=OPER;};
+	rule  <\\x[0-9A-Fa-f]> {color=OPER;};
+	rule  <#\{> {state=string1_expr; color=OPER;};
+	rule	<\">	{state=default;};
+};
+
+# String in double quotes: expression inside #{}
+state string1_expr {
+	color = DEF;
+	rule <\}> {state = string1; color=OPER;};
+}
+
+# String in single quotes
+state string2 {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};
+
+# String in `` quotes (for command line)
+state string3 {
+	color = STRING;
+	rule  <\\[tnb\\"'\?afrv]> {color=OPER;}; # Escapes chars
+	rule  <\\[0-7][0-7][0-7]> {color=OPER;}; # Octal chars codes
+	rule  <\\[0-7][0-7]> {color=OPER;}; # Octal chars codes
+	rule  <\\[0-7]> {color=OPER;}; # Octal chars codes
+	rule  <\\x[0-9A-Fa-f][0-9A-Fa-f]> {color=OPER;}; # Hex chars codes
+	rule  <\\x[0-9A-Fa-f]> {color=OPER;}; # Hex chars codes
+	rule	<\\\`>;
+	rule	<\`>	{state=default;};
+	rule  <#\{> {state=string3_expr; color=OPER;};
+};
+
+# String in `` quotes: expression inside #{}
+state string3_expr {
+	color = DEF;
+	rule <\}> {state = string3; color=OPER;};
+}
+
+# Multiline string with <<EOS tag (heredoc style)
+state string_eos {
+	color = STRING;
+	rule  <\n> {state = string_eos_newline;};
+	rule  <\\[tnb\\"'\?afrv]> {color=OPER;}; # Escapes chars
+	rule  <\\[0-7][0-7][0-7]> {color=OPER;}; # Octal chars codes
+	rule  <\\[0-7][0-7]> {color=OPER;}; # Octal chars codes
+	rule  <\\[0-7]> {color=OPER;}; # Octal chars codes
+	rule  <\\x[0-9A-Fa-f][0-9A-Fa-f]> {color=OPER;}; # Hex chars codes
+	rule  <\\x[0-9A-Fa-f]> {color=OPER;}; # Hex chars codes
+	rule	<\\\`>;
+	rule	<\`>	{state=default;};
+	rule  <#\{> {state=string_eos_expr; color=OPER;};
+}
+
+state string_eos_newline {
+	color = STRING;
+	rule  <EOS$(s)*\n> {state = default;};
+	rule  <[$(k)$(d)$(s)$(a)]> {state = string_eos;};
+}
+
+state string_eos_expr {
+	color = DEF;
+	rule <\}> {state = string_eos; color=OPER;};
+}

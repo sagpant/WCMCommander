@@ -97,16 +97,17 @@ bool PanelSearchWin::Command( int id, int subId, Win* win, void* data )
 {
 	if ( id == CMD_EDITLINE_INFO && subId == SCMD_EDITLINE_CHANGED )
 	{
-		std::vector<unicode_t> text = _edit.GetText();
+		std::vector<unicode_t> nameMask = _edit.GetText();
+		nameMask.insert( nameMask.end() - 1, '*' );
 
-		if ( !_parent->Search( text.data(), false ) )
+		if ( !_parent->Search( nameMask.data(), false ) )
 		{
 			unicode_t empty = 0;
 			_edit.SetText( oldMask.data() ? oldMask.data() : &empty );
 		}
 		else
 		{
-			oldMask = text;
+			oldMask = _edit.GetText();
 		}
 
 		this->Repaint();
@@ -2012,8 +2013,11 @@ bool PanelWin::HideDotsInDir() const
 
 	if ( _place.IsEmpty() ) { return HideDots; }
 
-#ifdef _WIN32
 	clPtr<FS> fs = GetFSPtr();
+
+	HideDots = !fs->IsShowDotsInRoot();
+	
+#ifdef _WIN32
 
 	if ( fs->Type() == FS::SYSTEM )
 	{

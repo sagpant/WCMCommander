@@ -1,0 +1,97 @@
+# MATLAB and GNU Octave syntax highlighting
+# (C) 2015 Alexey Voskov
+# License: MIT License
+start default;
+
+chars a [a-zA-Z];
+chars d [0-9];
+chars s [\t\ ];
+
+state default {
+	rule	<\%\{>	{ state=comment_ml; color=COMMENT; };
+	rule	<\%>	{ state=comment_sl; color=COMMENT; };
+	rule  <\#>  { state=comment_sl; color=COMMENT; };
+	rule	<$(s)+> { state=default; color=OPER; };
+	rule	<$(d)+[\.]*$(d)*[eE]*$(d)*[ij]*> { state = before_transpose; color = NUM; };
+
+	rule	<\'>	{ state=string; color=STRING; };	
+	rule	<\">	{ state=octave_string; color=STRING; };	
+	rule	<[a-zA-Z0-9_]+>	{ 
+		state = before_transpose;  
+		words (KEYWORD) = {
+			# a) MATLAB and GNU OCTAVE keywords
+			'break', 'case', 'catch', 'classdef', 'continue', 'else', 'elseif', 'end',
+			'for', 'function', 'global', 'if', 'otherwise', 'parfor', 'persistent',
+			'return', 'spmd', 'switch', 'try', 'while',
+			# b) GNU Octave keywords
+			'do', 'end_try_catch', 'end_unwind_protect', 'endclassdef', 'endnumeration',
+			'endevents', 'endfor', 'endfunction', 'endif', 'endmethods', 'endparfor',
+			'endproperties', 'endswitch', 'endwhile', 'enumeration', 'events','methods',
+			'properties', 'until', 'unwind_protect', 'unwind_protect_cleanup'};
+	};
+	rule <.[*\\\/^]> { state = default; color=OPER;};
+	rule <[.\,\(\[;]+> { state = default; color = KEYWORD;};
+	rule <[\)\]]+> { state = before_transpose; color=KEYWORD;};
+	rule <[*\\\/\-\+=\<\>|&^~]+> { state=default; color=OPER;};
+};
+
+# This state is created because ' (apostrophe) in MATLAB has two meanings
+# a) transposition operator
+# b) quotes for strings
+state before_transpose
+{
+	rule	<\%\{[ \t]*\n>	{ state=comment_ml; color=COMMENT; };
+	rule	<\%>	{ state=comment_sl; color=COMMENT; };
+	rule  <\#>  { state=comment_sl; color=COMMENT; };
+	rule	<$(s)+> { state=default; color=OPER; };
+	rule	<$(d)+[\.]*$(d)*[eE]*$(d)*[ij]*> { state = before_transpose; color = NUM; };
+
+	rule	<\">	{ state=octave_string; color=STRING; };	
+	rule	<\'>	{ state=default; color=OPER; };	
+	rule  <\.\'> { state=default; color=OPER; };
+	rule	<[a-zA-Z0-9_]+>	{ 
+		state = before_transpose;  
+		words (KEYWORD) = {
+			# a) MATLAB and GNU OCTAVE keywords
+			'break', 'case', 'catch', 'classdef', 'continue', 'else', 'elseif', 'end',
+			'for', 'function', 'global', 'if', 'otherwise', 'parfor', 'persistent',
+			'return', 'spmd', 'switch', 'try', 'while',
+			# b) GNU Octave keywords
+			'do', 'end_try_catch', 'end_unwind_protect', 'endclassdef', 'endnumeration',
+			'endevents', 'endfor', 'endfunction', 'endif', 'endmethods', 'endparfor',
+			'endproperties', 'endswitch', 'endwhile', 'enumeration', 'events','methods',
+			'properties', 'until', 'unwind_protect', 'unwind_protect_cleanup'};
+	};
+	rule <.[*\\\/^]> { state = default; color=OPER;};
+	rule <[.\,\(\[;]+> { state = default; color = KEYWORD;};
+	rule <[\)\]]+> { state = before_transpose; color=KEYWORD;};
+	rule <[*\\\/\-\+=\<\>|&^~]+> { state=default; color=OPER;};
+};
+	
+# Single-line comment
+state comment_sl	{
+	color = COMMENT;
+	rule	<\\\n>;
+	rule	<\n>	{state=default;};
+};
+
+# Multi-line comment
+state comment_ml {
+	color = COMMENT;
+	rule  <%\}[ \t]*\n> {state=default;};
+}
+	
+
+state string {
+	color = STRING;
+	rule	<\\\\>;
+	rule	<\\\'>;
+	rule	<\'>	{state=default;};
+};
+
+state octave_string {
+	color = STRING;
+	rule  <\\\\>;
+	rule	<\\\">;
+	rule	<\">	{state=before_transpose;};
+}

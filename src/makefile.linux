@@ -22,15 +22,17 @@ $(info $(UNAME_S))
 ifeq ($(UNAME_S),Darwin)
 # make it buildable with XQuartz
 CFLAGS += -I /opt/X11/include
-CFLAGS += -Wno-logical-op-parentheses -Wno-bitwise-op-parentheses
-CFLAGS_FREETYPE = -I /opt/X11/include/freetype2 -D USEFREETYPE
+CFLAGS += -Wno-logical-op-parentheses -Wno-bitwise-op-parentheses -Wno-inconsistent-missing-override
+CFLAGS_FREETYPE = -I /opt/X11/include/freetype2 -D USEFREETYPE -I /usr/local/opt/libarchive/include
 LIBFREETYPE = -l freetype
+LIBS = -L /usr/local/lib -L /opt/X11/lib -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE) -lz -lbz2 -lexpat /usr/local/opt/libarchive/lib/libarchive.a -liconv
 else
 CFLAGS += -pthread
 CFLAGS += -Wno-unused-parameter
 LIBSMB = -l smbclient
 LIBSSH = -l ssh2 
 LIBFREETYPE = -l freetype
+LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 ifeq ($(UNAME_S),OpenBSD)
 CFLAGS_FREETYPE = -I /usr/X11R6/include -I /usr/X11R6/include/freetype2 -D USEFREETYPE
 else
@@ -38,7 +40,6 @@ CFLAGS_FREETYPE = -I /usr/include/freetype2 -I /usr/local/include/freetype2 -D U
 endif
 endif
 
-LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
 ifeq ($(UNAME_S),OpenBSD)
 LIBS += -l estdc++
 else
@@ -101,6 +102,8 @@ HN = \
 	src/drive-dlg.h \
 	src/file-util.h \
 	src/file-exec.h \
+	src/plugin/plugin.h \
+	src/plugin/plugin-archive.h \
 	src/nceditline.h \
 	src/fontdlg.h \
 	src/ncfonts.h \
@@ -166,6 +169,8 @@ OBJS = \
 	$(OBJDIR)/drive-dlg.o \
 	$(OBJDIR)/file-util.o \
 	$(OBJDIR)/file-exec.o \
+	$(OBJDIR)/plugin.o \
+	$(OBJDIR)/plugin-archive.o \
 	$(OBJDIR)/nceditline.o \
 	$(OBJDIR)/smblogon.o \
 	$(OBJDIR)/strconfig.o \
@@ -317,6 +322,12 @@ $(OBJDIR)/file-util.o: $(HW) $(HS) $(HN) src/file-util.cpp
 
 $(OBJDIR)/file-exec.o: $(HW) $(HS) $(HN) src/file-exec.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/file-exec.cpp -o $(OBJDIR)/file-exec.o
+
+$(OBJDIR)/plugin.o: $(HW) $(HS) $(HN) src/plugin/plugin.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/plugin/plugin.cpp -o $(OBJDIR)/plugin.o
+
+$(OBJDIR)/plugin-archive.o: $(HW) $(HS) $(HN) src/plugin/plugin-archive.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) src/plugin/plugin-archive.cpp -o $(OBJDIR)/plugin-archive.o
 
 $(OBJDIR)/nceditline.o: $(HW) $(HS) $(HN) src/nceditline.cpp 
 	$(CC) $(COPTS) -c $(CFLAGS) src/nceditline.cpp -o $(OBJDIR)/nceditline.o

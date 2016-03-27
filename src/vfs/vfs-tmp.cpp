@@ -172,19 +172,6 @@ int FSTmp::ReadDir(FSList* list, FSPath& path, int* err, FSCInfo* info)
 {
 	list->Clear();
 
-	// Adding the ".." node to root dir even if it is disabled in config 
-	// to address CR #436: "Temporary panel should have .. item to go back to last directory"
-	if (!g_WcmConfig.panelShowDotsInRoot)
-	{
-		if (path.Count() == 1) // i.e. on root level
-		{
-			clPtr<FSNode> pNode = new FSNode();
-			pNode->name = std::string("..");
-			pNode->st.mode = S_IFDIR;
-			list->Append(pNode);
-		}
-	}
-
 	FSTmpNode* n = rootDir.findByFsPath(&path);
 	if (!n || n->nodeType != FSTmpNode::NODE_DIR)
 	{

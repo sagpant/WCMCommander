@@ -694,10 +694,13 @@ txt "Копирование файла"
 id "Create directory"
 txt "Создание папки"
 
-#ncwin.cpp:222
-#ncwin.cpp:900
+#ncdialogs.cpp:746
 id "Create new directory"
 txt "Создание новой папки"
+
+#ncdialogs.cpp:749
+id "Process multiple folders"
+txt "Обработка нескольких папок"
 
 #fileopers.cpp:28
 #fileopers.cpp:32

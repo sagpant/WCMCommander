@@ -36,6 +36,7 @@
 #include "file-util.h"
 #include "usermenu.h"
 #include "vfs-tmp.h"
+#include "plugin/plugin.h"
 
 #ifndef _WIN32
 #include <limits.h>	// PATH_MAX
@@ -732,8 +733,11 @@ void NCWin::SetMode( MODE m )
 			m_Edit.Hide();
 			_terminal.Show();
 			_editPref.Hide();
+// workaround for crash "XIO:  fatal IO error 35 (Resource temporarily unavailable) on X server"
+#if !defined(__APPLE__)
 			_menu.Hide();
 			_toolBar.Hide();
+#endif
 		}
 		break;
 
@@ -806,7 +810,16 @@ void NCWin::PanelCtrlPgDown()
 		return;
 	}
 
-	m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_ExecuteSecondary );
+	if ( !m_FileExecutor.StartFileAssociation( _panel, eFileAssociation_ExecuteSecondary ) )
+	{
+		clPtr<FS> Vfs = Plugin_OpenFS( _panel->GetFSPtr(), _panel->GetPath(), p->Name().GetUtf8() );
+		if ( Vfs.Ptr() != nullptr )
+		{
+			FSString RootPath = FSString( "/" );
+			FSPath VfsPath = FSPath( RootPath );
+			_panel->LoadPath( Vfs, VfsPath, nullptr, nullptr, PanelWin::PUSH );
+		}
+	}
 }
 
 void NCWin::PanelEnter(bool Shift)
@@ -934,11 +947,13 @@ void NCWin::CreateDirectory()
 		return;
 	}
 
-	static std::vector<unicode_t> dir;
+	FSPath DestPath = _panel->GetPath();
 	try
 	{
-		std::vector<unicode_t> str = InputStringDialog( EDIT_FIELD_MAKE_FOLDER, this,
-																	  utf8_to_unicode( _LT( "Create new directory" ) ).data(), dir.data() );
+		static bool ProcessMultipleFolders = false;
+		static std::vector<unicode_t> dir;
+
+		std::vector<unicode_t> str = CreateDirDialog( this, &ProcessMultipleFolders, dir.data() );
 		if ( !str.data() )
 		{
 			return;
@@ -947,8 +962,7 @@ void NCWin::CreateDirectory()
 		dir = str;
 		const std::vector<clPtr<FS>> checkFS = { _panel->GetFSPtr(), GetOtherPanel()->GetFSPtr() };
 		
-		FSPath path = _panel->GetPath();
-		clPtr<FS> fs = ParzeURI( dir.data(), path, checkFS );
+		clPtr<FS> fs = ParzeURI( dir.data(), DestPath, checkFS );
 
 		if ( fs.IsNull() )
 		{
@@ -959,21 +973,27 @@ void NCWin::CreateDirectory()
 			return;
 		}
 
-		if ( !::MkDir( fs, path, this ) )
+		if ( !::MkDir( fs, _panel->GetPath(), DestPath, ProcessMultipleFolders, this ) )
 		{
 			return;
 		}
-
 	}
 	catch ( cexception* ex )
 	{
 		NCMessageBox( this, _LT( "Create directory" ), ex->message(), true );
 		ex->destroy();
-	};
+	}
 
+	const char* NewCurrentNameUtf8 = nullptr;
+	const int DirIndex = _panel->GetPath().GetFirstUnmatchedItem( DestPath );
+
+	if ( DirIndex >= 0 )
+	{
+		NewCurrentNameUtf8 = DestPath.GetItem( DirIndex )->GetUtf8();
+	}
+	
 	GetOtherPanel()->Reread();
-
-	_panel->Reread( false, unicode_to_utf8(dir.data()).c_str() );
+	_panel->Reread( false, NewCurrentNameUtf8 );
 }
 
 void NCWin::QuitQuestion()
@@ -1308,14 +1328,22 @@ void NCWin::CtrlA()
 	if ( _mode != PANEL ) return;
 	if ( !_panel ) return;
 
-	if ( _panel->IsVisible() ) 
+	try
 	{
-		if ( FileAttributesDlg( this, _panel ) )
+		if ( _panel->IsVisible() ) 
 		{
-			_leftPanel.Reread();
-			_rightPanel.Reread();
+			if ( FileAttributesDlg( this, _panel ) )
+			{
+				_leftPanel.Reread();
+				_rightPanel.Reread();
+			}
 		}
 	}
+	catch ( cexception* ex )
+	{
+		NCMessageBox( this, _LT( "Attributes" ), ex->message(), true );
+		ex->destroy();
+	};
 }
 
 void NCWin::CtrlL()

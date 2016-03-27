@@ -130,6 +130,9 @@ std::vector<unicode_t> InputStringDialog( NCDialogParent* parent, const unicode_
 // input string dialog with history and auto complete support
 std::vector<unicode_t> InputStringDialog( const char* fieldName, NCDialogParent* parent, const unicode_t* message, const unicode_t* str = 0 );
 
+// create directory dialog with history and auto complete support
+std::vector<unicode_t> CreateDirDialog( NCDialogParent* Parent, bool* IsMultipleFolders, const unicode_t* Str = 0 );
+
 
 class CmdHistoryDialog: public NCDialog
 {
