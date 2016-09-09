@@ -1069,7 +1069,8 @@ void NCWin::View( bool Secondary )
 		{
 			if (p &&  list->Count() ==0 ) // no selection => calculate size of the folder under cursor
 				list->Append(p);
-			DirCalc(fs, path, list, this);
+			int64_t totalFileCount, totalFileSize;
+			DirCalc(fs, path, list, this, totalFileCount, totalFileSize);
 			_panel->Repaint();
 			return;
 		}

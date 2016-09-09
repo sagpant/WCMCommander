@@ -248,6 +248,16 @@ class DirCalcThreadWin: public NCDialog
 
 	void RefreshCounters();
 public:
+	// две функции для получения результатов работы
+	int64_t GetCurFileCount() {
+		return this->curFileCount;
+	};
+
+	int64_t GetCurSumSize() {
+		return this->curSumSize;
+	};
+
+
 	DirCalcThreadWin( NCDialogParent* parent, const char* name, OperDirCalcData* pD, const unicode_t* dirName )
 		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListOk ),
 		   pData( pD ),
@@ -460,7 +470,9 @@ void DirCalcThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent )
+bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent,  int64_t& curFileCount, int64_t& curSumSize)
+// параметры curFileCount и curSumSize возвращают подсчитанное количество файлов и общий их объём
+// используется для копирования
 {
 	bool doCurrentDir = list->Count() == 0;
 
@@ -474,6 +486,9 @@ bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* par
 
 	int cmd = dlg.DoModal();
 	dlg.StopThread();
+
+	curFileCount = dlg.GetCurFileCount();
+	curSumSize = dlg.GetCurSumSize();
 
 	if ( cmd != CMD_OK )
 	{

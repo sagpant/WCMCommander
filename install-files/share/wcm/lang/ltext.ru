@@ -895,6 +895,10 @@ txt "Найдено файлов:"
 id "Files processed"
 txt "Обработано файлов"
 
+#fileopers.cpp:1070
+id "Total progress"
+txt "Всего скопировано"
+
 #dircalc.cpp:187
 id "Files size:"
 txt "Размер файлов:"

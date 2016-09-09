@@ -10,4 +10,4 @@
 #include "ncdialogs.h"
 #include "operwin.h"
 
-bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent );
+bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent,  int64_t& curFileCount, int64_t& curSumSize);
