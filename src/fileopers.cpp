@@ -1206,7 +1206,7 @@ void CopyDialog::OperThreadSignal( int info )
 		{
 			_from.SetText( threadData.infoSrcUri.GetUnicode() );
 			_to.SetText( threadData.infoDstUri.GetUnicode() );
-			_countWin.SetText(utf8str_to_unicode(ToString(threadData.infoCount) + " / " + ToString(threadData.infoFilesAll)).data());
+			_countWin.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoCount) + " / " + ToStringGrouped(threadData.infoFilesAll)).data());
 			threadData.pathChanged = false;
 		}
 
@@ -1214,7 +1214,7 @@ void CopyDialog::OperThreadSignal( int info )
 		{
 			_progressWin.SetData( 0, threadData.infoSize, threadData.infoProgress );
 			_progressWinTotal.SetData( 0, threadData.infoBytesTotalAll, threadData.infoBytesTotal );  // отображаем общий индикатор копирования
-			_countSize.SetText(utf8str_to_unicode(ToString(threadData.infoBytesTotal) + " / " + ToString(threadData.infoBytesTotalAll)).data()); // текстовый счётчик объёма
+			_countSize.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoBytesTotal) + " / " + ToStringGrouped(threadData.infoBytesTotalAll)).data()); // текстовый счётчик объёма
 			threadData.progressChanged = false;
 		}
 	}
