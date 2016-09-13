@@ -1701,7 +1701,10 @@ void CopyThreadFunc( OperThreadNode* node )
 clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent )
 {
 	int64_t totalFileCount, totalFileSize;
-	DirCalc( srcFs, srcPath, list, parent, totalFileCount, totalFileSize);  // вычисляем общие объём и количество файлов для копирования
+	bool calcOK = DirCalc( srcFs, srcPath, list, parent, totalFileCount, totalFileSize, true);  // вычисляем общие объём и количество файлов для копирования
+	if (!calcOK) {
+		return nullptr;
+	}
 	CopyDialog dlg( parent );
 	dlg.threadData.Clear();
 	dlg.threadData.infoBytesTotalAll = totalFileSize;
