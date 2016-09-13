@@ -1102,8 +1102,10 @@ public:
 		_text4.Enable();
 		_countSize.Show();
 		_countSize.Enable();
-		_progressWinTotal.Show();
-		_progressWinTotal.Enable();
+		if ( g_WcmConfig.systemTotalProgressIndicator ) { // общий индикатор копирования
+			_progressWinTotal.Show();
+			_progressWinTotal.Enable();
+		}
 		_speedStr.Show();
 		_speedStr.Enable();
 		AddLayout( &_layout );
@@ -1206,15 +1208,23 @@ void CopyDialog::OperThreadSignal( int info )
 		{
 			_from.SetText( threadData.infoSrcUri.GetUnicode() );
 			_to.SetText( threadData.infoDstUri.GetUnicode() );
-			_countWin.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoCount) + " / " + ToStringGrouped(threadData.infoFilesAll)).data());
+			if ( g_WcmConfig.systemTotalProgressIndicator ) { // Если нужен общий индикатор -- то отображаем счетчик " / всего файлов"
+				_countWin.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoCount) + " / " + ToStringGrouped(threadData.infoFilesAll)).data());
+			} else {
+				_countWin.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoCount)).data());
+			}
 			threadData.pathChanged = false;
 		}
 
 		if ( threadData.progressChanged )
 		{
 			_progressWin.SetData( 0, threadData.infoSize, threadData.infoProgress );
-			_progressWinTotal.SetData( 0, threadData.infoBytesTotalAll, threadData.infoBytesTotal );  // отображаем общий индикатор копирования
-			_countSize.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoBytesTotal) + " / " + ToStringGrouped(threadData.infoBytesTotalAll)).data()); // текстовый счётчик объёма
+			if ( g_WcmConfig.systemTotalProgressIndicator ) { // Если нужен общий индикатор -- то отображаем счетчик " / всего байт и общий индикатор"
+				_progressWinTotal.SetData( 0, threadData.infoBytesTotalAll, threadData.infoBytesTotal );  // отображаем общий индикатор копирования
+				_countSize.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoBytesTotal) + " / " + ToStringGrouped(threadData.infoBytesTotalAll)).data()); // текстовый счётчик объёма
+			} else {
+				_countSize.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoBytesTotal)).data()); // текстовый счётчик объёма
+			}
 			threadData.progressChanged = false;
 		}
 	}
@@ -1700,10 +1710,12 @@ void CopyThreadFunc( OperThreadNode* node )
 
 clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent )
 {
-	int64_t totalFileCount, totalFileSize;
-	bool calcOK = DirCalc( srcFs, srcPath, list, parent, totalFileCount, totalFileSize, true);  // вычисляем общие объём и количество файлов для копирования
-	if (!calcOK) {
-		return nullptr;
+	int64_t totalFileCount = 0, totalFileSize = 0;
+	if ( g_WcmConfig.systemTotalProgressIndicator ) {  // если нужно показать общий индикатор копирования:
+		bool calcOK = DirCalc( srcFs, srcPath, list, parent, totalFileCount, totalFileSize, true);  // вычисляем общие объём и количество файлов для копирования
+		if (!calcOK) {
+			return nullptr;
+		}
 	}
 	CopyDialog dlg( parent );
 	dlg.threadData.Clear();
