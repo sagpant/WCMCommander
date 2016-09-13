@@ -1069,7 +1069,8 @@ void NCWin::View( bool Secondary )
 		{
 			if (p &&  list->Count() ==0 ) // no selection => calculate size of the folder under cursor
 				list->Append(p);
-			DirCalc(fs, path, list, this);
+			int64_t totalFileCount, totalFileSize;
+			DirCalc(fs, path, list, this, totalFileCount, totalFileSize, false);
 			_panel->Repaint();
 			return;
 		}
@@ -1499,9 +1500,11 @@ void NCWin::Copy( bool shift )
 
 	clPtr<cstrhash<bool, unicode_t> > resList = CopyFiles( srcFs, srcPath, list, destFs, destPath, this );
 
-	if ( resList.ptr() )
-	{
-		_panel->ClearSelection( resList.ptr() );
+	if (resList!=nullptr) {  // не снимать выделение если была нажата отмена на этапе подсчёта кол-ва байт и файлов для копирования
+		if ( resList.ptr() )
+		{
+			_panel->ClearSelection( resList.ptr() );
+		}
 	}
 
 	_leftPanel.Reread();

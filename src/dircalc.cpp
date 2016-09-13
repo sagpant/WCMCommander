@@ -234,6 +234,7 @@ class DirCalcThreadWin: public NCDialog
 	int64_t curFolderCount;
 	int64_t curSumSize;
 	int64_t curBadDirs;
+	bool serviceMode;  // служебный режим окна -- true если окно используется только для подсчета размеров из других функций и должно быть закрыто автоматически сразу после подсчета
 
 	StaticLine dirString;
 
@@ -248,8 +249,23 @@ class DirCalcThreadWin: public NCDialog
 
 	void RefreshCounters();
 public:
+	// установка сервисного режима окна
+	void SetServiceMode() {
+		serviceMode = true;
+	}
+
+	// две функции для получения результатов работы
+	int64_t GetCurFileCount() {
+		return this->curFileCount;
+	};
+
+	int64_t GetCurSumSize() {
+		return this->curSumSize;
+	};
+
+
 	DirCalcThreadWin( NCDialogParent* parent, const char* name, OperDirCalcData* pD, const unicode_t* dirName )
-		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListOk ),
+		:  NCDialog( ::createDialogAsChild, 0, parent, utf8_to_unicode( name ).data(), bListCancel ),
 		   pData( pD ),
 		   lo( 12, 10 ),
 		   cPathWin( this ),
@@ -257,6 +273,7 @@ public:
 		   curFolderCount( -1 ),
 		   curSumSize( -1 ),
 		   curBadDirs( -1 ),
+		   serviceMode( false ),
 		   dirString( 0, this, ScanedDirString( dirName ).data() ),
 		   fileCountName( uiVariable, this, utf8_to_unicode( _LT( "Files:" ) ).data() ),
 		   fileCountNum( uiValue, this, utf8_to_unicode( "AAAAAAAAAA" ).data() ),
@@ -385,6 +402,9 @@ void DirCalcThreadWin::OperThreadStopped()
 {
 	cPathWin.SetText( utf8_to_unicode( _LT( "Scan done" ) ).data() );
 	RefreshCounters();
+	if (serviceMode) {
+		EndModal( CMD_OK );
+	};
 }
 
 bool DirCalcThreadWin::EventKey( cevent_key* pEvent )
@@ -460,7 +480,9 @@ void DirCalcThreadFunc( OperThreadNode* node )
 	}
 }
 
-bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent )
+bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* parent,  int64_t& curFileCount, int64_t& curSumSize, bool serviceMode)
+// параметры curFileCount и curSumSize возвращают подсчитанное количество файлов и общий их объём -- используется для копирования
+// serviceMode - если установлено в true то окно подсчёта закрывается сразу после окончания процесса -- используется в случае вызова из окна копирования
 {
 	bool doCurrentDir = list->Count() == 0;
 
@@ -469,11 +491,19 @@ bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* par
 
 	dlg.RunNewThread( "Folder calc", DirCalcThreadFunc, &data ); //может быть исключение
 
+	// если окно вызвано из функции копирования, то говорим ему, чтобы оно исчезло после подсчёта
+	if (serviceMode) {
+		dlg.SetServiceMode();
+	}
+
 	dlg.Enable();
 	dlg.Show();
 
 	int cmd = dlg.DoModal();
 	dlg.StopThread();
+
+	curFileCount = dlg.GetCurFileCount();
+	curSumSize = dlg.GetCurSumSize();
 
 	if ( cmd != CMD_OK )
 	{

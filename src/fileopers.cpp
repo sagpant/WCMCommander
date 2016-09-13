@@ -16,6 +16,7 @@
 #include "ltext.h"
 #include "vfs-tmp.h"
 #include "string-util.h"
+#include "dircalc.h"
 
 enum
 {
@@ -353,11 +354,15 @@ public:
 	volatile int64_t infoProgress;
 	volatile unsigned infoMs; //for calculating copy speed
 	volatile int64_t infoBytes; //
+	volatile int64_t infoBytesTotal; // всего обработано (скопировано) байт. Используется при копировании для вывода общего индикатора прогресса
+	volatile int64_t infoBytesTotalAll; // общее количество байт для обработки (копирования). Используется при копировании для вывода общего индикатора прогресса
+	volatile int64_t infoFilesAll; // общее количество файлов для копирования
 
 	OperCFData( NCDialogParent* p )
 		:  OperData( p ), executed( false ),
 		   pathChanged( false ), infoCount( 0 ), progressChanged( false ),
-		   infoSize( 0 ), infoProgress( 0 ), infoMs( 0 ), infoBytes( 0 ) {}
+		   infoSize( 0 ), infoProgress( 0 ), infoMs( 0 ), infoBytes( 0 ), infoBytesTotal( 0 ),
+		   infoBytesTotalAll(0), infoFilesAll(0) {}
 
 	void Clear()
 	{
@@ -804,6 +809,7 @@ bool OperCFThread::SendProgressInfo( int64_t size, int64_t progress, int64_t byt
 	data->infoSize = size;
 	data->infoProgress = progress;
 	data->infoBytes += bytes;
+	data->infoBytesTotal += bytes;
 	data->infoMs = GetTickMiliseconds();
 	data->progressChanged = true;
 
@@ -1031,8 +1037,11 @@ class CopyDialog: public SimpleCFThreadWin
 	StaticLine _text2;
 	StaticLine _text3;
 	OperFileNameWin _from, _to;
-	NCNumberWin _countWin;
+	StaticLine _countWin;
 	NCProgressWin _progressWin;
+	StaticLine _text4; // заголовок перед счётчиком общего размера
+	StaticLine _countSize;  // счётчик общего размера
+	NCProgressWin _progressWinTotal;
 	StaticLine _speedStr;
 	enum
 	{
@@ -1050,14 +1059,17 @@ class CopyDialog: public SimpleCFThreadWin
 public:
 	CopyDialog( NCDialogParent* parent, bool move = false )
 		:  SimpleCFThreadWin( parent, move ? _LT( "Move" ) : _LT( "Copy" ) ),
-		   _layout( 7, 2 ),
+		   _layout( 9, 2 ),
 		   _text1( 0, this, utf8_to_unicode( move ? _LT( "Moving the file" ) : _LT( "Copying the file" ) ).data() ),
 		   _text2( 0, this, utf8_to_unicode( _LT( "to" ) ).data() ),
 		   _text3( 0, this, utf8_to_unicode( _LT( "Files processed" ) ).data() ),
 		   _from( this ),
 		   _to( this ),
-		   _countWin( this ),
+		   _countWin( 0, this, utf8_to_unicode( "0 / 0" ).data() ),
 		   _progressWin( this ),
+		   _text4( 0, this, utf8_to_unicode( _LT( "Total progress" ) ).data() ),
+		   _countSize( 0, this, utf8_to_unicode( "0 / 0" ).data() ),
+		   _progressWinTotal( this ),
 		   _speedStr( uiValue, this, 0, 0, StaticLine::LEFT, 10 ),
 		   _lastMs( GetTickMiliseconds() )
 	{
@@ -1066,9 +1078,12 @@ public:
 		_layout.AddWin( &_text2, 2, 0, 2, 1 );
 		_layout.AddWin( &_to, 3, 0, 3, 1 );
 		_layout.AddWin( &_progressWin, 4, 0, 4, 1 );
-		_layout.AddWin( &_text3, 5, 0 );
-		_layout.AddWin( &_countWin, 5, 1 );
-		_layout.AddWin( &_speedStr, 6, 0 );
+		_layout.AddWin( &_text4, 5, 0 );
+		_layout.AddWin( &_countSize, 5, 1 );
+		_layout.AddWin( &_progressWinTotal, 6, 0, 6, 1 );
+		_layout.AddWin( &_text3, 7, 0 );
+		_layout.AddWin( &_countWin, 7, 1 );
+		_layout.AddWin( &_speedStr, 8, 0 );
 		_text1.Show();
 		_text1.Enable();
 		_text2.Show();
@@ -1083,6 +1098,14 @@ public:
 		_countWin.Enable();
 		_progressWin.Show();
 		_progressWin.Enable();
+		_text4.Show();
+		_text4.Enable();
+		_countSize.Show();
+		_countSize.Enable();
+		if ( g_WcmConfig.systemTotalProgressIndicator ) { // общий индикатор копирования
+			_progressWinTotal.Show();
+			_progressWinTotal.Enable();
+		}
 		_speedStr.Show();
 		_speedStr.Enable();
 		AddLayout( &_layout );
@@ -1185,13 +1208,23 @@ void CopyDialog::OperThreadSignal( int info )
 		{
 			_from.SetText( threadData.infoSrcUri.GetUnicode() );
 			_to.SetText( threadData.infoDstUri.GetUnicode() );
-			_countWin.SetNumber( threadData.infoCount );
+			if ( g_WcmConfig.systemTotalProgressIndicator ) { // Если нужен общий индикатор -- то отображаем счетчик " / всего файлов"
+				_countWin.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoCount) + " / " + ToStringGrouped(threadData.infoFilesAll)).data());
+			} else {
+				_countWin.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoCount)).data());
+			}
 			threadData.pathChanged = false;
 		}
 
 		if ( threadData.progressChanged )
 		{
 			_progressWin.SetData( 0, threadData.infoSize, threadData.infoProgress );
+			if ( g_WcmConfig.systemTotalProgressIndicator ) { // Если нужен общий индикатор -- то отображаем счетчик " / всего байт и общий индикатор"
+				_progressWinTotal.SetData( 0, threadData.infoBytesTotalAll, threadData.infoBytesTotal );  // отображаем общий индикатор копирования
+				_countSize.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoBytesTotal) + " / " + ToStringGrouped(threadData.infoBytesTotalAll)).data()); // текстовый счётчик объёма
+			} else {
+				_countSize.SetText(utf8str_to_unicode(ToStringGrouped(threadData.infoBytesTotal)).data()); // текстовый счётчик объёма
+			}
 			threadData.progressChanged = false;
 		}
 	}
@@ -1677,8 +1710,17 @@ void CopyThreadFunc( OperThreadNode* node )
 
 clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> destFs, FSPath& destPath, NCDialogParent* parent )
 {
+	int64_t totalFileCount = 0, totalFileSize = 0;
+	if ( g_WcmConfig.systemTotalProgressIndicator ) {  // если нужно показать общий индикатор копирования:
+		bool calcOK = DirCalc( srcFs, srcPath, list, parent, totalFileCount, totalFileSize, true);  // вычисляем общие объём и количество файлов для копирования
+		if (!calcOK) {
+			return nullptr;
+		}
+	}
 	CopyDialog dlg( parent );
 	dlg.threadData.Clear();
+	dlg.threadData.infoBytesTotalAll = totalFileSize;
+	dlg.threadData.infoFilesAll = totalFileCount;
 	dlg.threadData.srcFs = srcFs;
 	dlg.threadData.srcPath = srcPath;
 	dlg.threadData.srcList = list;

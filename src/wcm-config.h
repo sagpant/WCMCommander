@@ -147,6 +147,7 @@ public:
 	bool systemAutoSaveSetup;
 	bool systemShowHostName;
 	bool systemStorePasswords;
+	bool systemTotalProgressIndicator;
 	std::string systemLang; //"+" - auto "-" -internal eng.
 	#pragma endregion
 
