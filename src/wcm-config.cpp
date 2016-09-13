@@ -840,6 +840,7 @@ clWcmConfig::clWcmConfig()
 	, systemAutoSaveSetup( true )
 	, systemShowHostName( false )
 	, systemStorePasswords( false )
+	, systemTotalProgressIndicator(false)
 	, systemLang( "+" )
 
 	, panelShowHiddenFiles( true )
@@ -884,6 +885,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionSystem, "auto_save_setup", &systemAutoSaveSetup, systemAutoSaveSetup );
 	MapBool( sectionSystem, "show_hostname", &systemShowHostName, systemShowHostName );
 	MapBool( sectionSystem, "store_passwords", &systemStorePasswords, systemStorePasswords );
+	MapBool( sectionSystem, "store_passwords", &systemTotalProgressIndicator, systemTotalProgressIndicator );
 	MapStr( sectionSystem,  "lang", &systemLang );
 
 	MapBool( sectionSystem, "show_toolbar", &styleShowToolBar, styleShowToolBar );
@@ -2335,6 +2337,7 @@ public:
 	SButton  m_AutoSaveSetupButton;
 	SButton  m_ShowHostNameButton;
 	SButton  m_StorePasswordsButton;
+	SButton  m_TotalProgressIndicatorButton;
 
 	StaticLabel m_LangStatic;
 	StaticLine m_LangVal;
@@ -2386,6 +2389,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	, m_AutoSaveSetupButton( 0, this, utf8_to_unicode( _LT( "Auto &save setup" ) ).data(), 0, g_WcmConfig.systemAutoSaveSetup )
 	, m_ShowHostNameButton( 0, this, utf8_to_unicode( _LT( "Show &host name" ) ).data(), 0, g_WcmConfig.systemShowHostName )
 	, m_StorePasswordsButton( 0, this, utf8_to_unicode( _LT( "Store &passwords" ) ).data(), 0, g_WcmConfig.systemStorePasswords )
+	, m_TotalProgressIndicatorButton( 0, this, utf8_to_unicode( _LT( "Enable total progress indicator" ) ).data(), 0, g_WcmConfig.systemTotalProgressIndicator )
 	, m_LangStatic( 0, this, utf8_to_unicode( _LT( "&Language:" ) ).data( ), &m_LangButton )
 	, m_LangVal( 0, this, utf8_to_unicode( "______________________" ).data( ) )
 	, m_LangButton( 0, this, utf8_to_unicode( ">" ).data( ), 1000 )
@@ -2401,10 +2405,11 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	m_iL.AddWinAndEnable( &m_AutoSaveSetupButton, 5, 0, 5, 2 );
 	m_iL.AddWinAndEnable( &m_ShowHostNameButton, 6, 0, 6, 2 );
 	m_iL.AddWinAndEnable( &m_StorePasswordsButton, 7, 0, 7, 2 );
+	m_iL.AddWinAndEnable( &m_TotalProgressIndicatorButton, 8, 0, 8, 2 );
 
-	m_iL.AddWinAndEnable( &m_LangStatic, 8, 0 );
-	m_iL.AddWinAndEnable( &m_LangVal, 8, 2 );
-	m_iL.AddWinAndEnable( &m_LangButton, 8, 1 );
+	m_iL.AddWinAndEnable( &m_LangStatic, 9, 0 );
+	m_iL.AddWinAndEnable( &m_LangVal, 9, 2 );
+	m_iL.AddWinAndEnable( &m_LangButton, 9, 1 );
 
 	m_iL.SetColGrowth( 2 );
 
@@ -2422,6 +2427,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	order.append( &m_AutoSaveSetupButton );
 	order.append( &m_ShowHostNameButton );
 	order.append( &m_StorePasswordsButton );
+	order.append( &m_TotalProgressIndicatorButton );
 	order.append( &m_LangButton );
 
 	SetPosition();
@@ -2486,6 +2492,7 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 		g_WcmConfig.systemAutoSaveSetup = dlg.m_AutoSaveSetupButton.IsSet( );
 		g_WcmConfig.systemShowHostName = dlg.m_ShowHostNameButton.IsSet( );
 		g_WcmConfig.systemStorePasswords = dlg.m_StorePasswordsButton.IsSet( );
+		g_WcmConfig.systemTotalProgressIndicator = dlg.m_TotalProgressIndicatorButton.IsSet( );
 		const char* s = g_WcmConfig.systemLang.data();
 
 		if ( !s ) { s = "+"; }

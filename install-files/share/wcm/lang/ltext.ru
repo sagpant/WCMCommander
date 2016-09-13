@@ -214,6 +214,10 @@ txt "Автоматически сохранять настройки"
 id "Store &passwords"
 txt "Сохранять пароли"
 
+#wcm-config.cpp:2392
+id "Enable total progress indicator"
+txt "Показывать общий индикатор копирования"
+
 #ncwin.cpp:1291
 id "2. Home"
 txt "2. Домашний каталог"
