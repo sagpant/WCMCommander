@@ -885,7 +885,7 @@ clWcmConfig::clWcmConfig()
 	MapBool( sectionSystem, "auto_save_setup", &systemAutoSaveSetup, systemAutoSaveSetup );
 	MapBool( sectionSystem, "show_hostname", &systemShowHostName, systemShowHostName );
 	MapBool( sectionSystem, "store_passwords", &systemStorePasswords, systemStorePasswords );
-	MapBool( sectionSystem, "store_passwords", &systemTotalProgressIndicator, systemTotalProgressIndicator );
+	MapBool( sectionSystem, "total_progress_indicator", &systemTotalProgressIndicator, systemTotalProgressIndicator );
 	MapStr( sectionSystem,  "lang", &systemLang );
 
 	MapBool( sectionSystem, "show_toolbar", &styleShowToolBar, styleShowToolBar );
