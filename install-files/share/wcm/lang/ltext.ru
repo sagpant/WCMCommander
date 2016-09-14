@@ -1547,3 +1547,7 @@ txt "Выбрать"
 
 id "Save setup"
 txt "Сохранить настройки"
+
+#vfs.cpp:2169
+id "Folder"
+txt "Каталог"
