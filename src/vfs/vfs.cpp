@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include "unicode_lc.h"
 #include <algorithm>
+#include "unicode_lc.h"
+#include "ltext.h"
 
 #if defined( __APPLE__ )
 #  include <sys/param.h>
@@ -2164,6 +2166,11 @@ unicode_t* FSStat::GetPrintableSizeStr( unicode_t buf[64] )
 {
 	unicode_t str[10];
 	str[0] = 0;
+
+	if (IsDir()) {  // если директория, то её размер следует заменять словом "Folder"
+		utf8_to_unicode( buf, _LT( "Folder" ) );
+		return buf;
+	}
 
 	seek_t num = size;
 
