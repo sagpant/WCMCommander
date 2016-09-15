@@ -185,9 +185,11 @@ void OperDirCalcThread::Calc()
 			{
 				int64_t Size = CalcDir( fs.Ptr(), path);
 
-				if ( Size >= 0 && node && node->originNode ) { node->originNode->st.size = Size; }
+				if (Size >=0 && node && node->originNode ) {
+					node->originNode->st.size = Size;
+					node->originNode->st.dirCorrectSize = true;
+				}
 				CalcData->folderCount++;
-				node->st.size = Size;  // добавить найденный размер директории для отображения в панели
 			}
 			else
 			{
