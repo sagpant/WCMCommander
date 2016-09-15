@@ -187,6 +187,7 @@ void OperDirCalcThread::Calc()
 
 				if ( Size >= 0 && node && node->originNode ) { node->originNode->st.size = Size; }
 				CalcData->folderCount++;
+				node->st.size = Size;  // добавить найденный размер директории для отображения в панели
 			}
 			else
 			{
