@@ -196,6 +196,8 @@ struct FSStat
 	bool IsExe() const { return ( mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) != 0; }
 	bool IsBad() const { return ( mode & S_IFMT ) == 0; }
 	void SetBad() { mode = 0; }
+	void SetDirSize(int64_t Size) { if (IsDir()) {  size = Size; dirCorrectSize = true; } } // устанавливаем размер директории, если мы где-то его подсчитали
+	bool IsCorrectSize() const { return (IsDir() & dirCorrectSize) | !IsDir() ; } // false если размер (диретории) неизвестен
 
 	unicode_t* GetMTimeStr( unicode_t buf[64] );
 	unicode_t* GetModeStr( unicode_t buf[64] );

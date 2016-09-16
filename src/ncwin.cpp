@@ -1061,16 +1061,17 @@ void NCWin::View( bool Secondary )
 		FSPath path = _panel->GetPath();
 		clPtr<FS> fs = _panel->GetFSPtr();
 
-		clPtr<FSList> list = _panel->GetSelectedList();
-
 		FSNode* p =  _panel->GetCurrent();
+
+		int selectedItems =  _panel->GetSelectedCounter().count; // количество выбранных файлов
+		clPtr<FSList> list = _panel->GetSelectedList(); // выбранные файлы - или текущий если файлы не выбраны
+
 		// p==0 => no current item => cursor is on '..' => calculate size of current folder
 		if (!p || p->IsDir())
 		{
-			if (p &&  list->Count() ==0 ) // no selection => calculate size of the folder under cursor
-				list->Append(p);
 			int64_t totalFileCount, totalFileSize;
 			DirCalc(fs, path, list, this, totalFileCount, totalFileSize, false);
+			if (p && selectedItems < 1) { p->st.SetDirSize(totalFileSize); } // если не было выбрано файлов, устанавливаем размер каталога
 			_panel->Repaint();
 			return;
 		}

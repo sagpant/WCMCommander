@@ -2167,7 +2167,7 @@ unicode_t* FSStat::GetPrintableSizeStr( unicode_t buf[64] )
 	unicode_t str[10];
 	str[0] = 0;
 
-	if (IsDir() && !dirCorrectSize) {  // если директория с неизвестным размером, то её размер следует заменять словом "Folder"
+	if (!IsCorrectSize()) {  // если директория с неизвестным размером, то её размер следует заменять словом "Folder"
 		utf8_to_unicode( buf, _LT( "Folder" ) );
 		return buf;
 	}
