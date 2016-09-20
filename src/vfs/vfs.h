@@ -139,6 +139,7 @@ struct FSStat
 #endif
 	int mode;
 	int64_t size;
+	bool dirCorrectSize; // для директорий. Подсчитан (true) или нет (false) размер директории.
 	FSTime m_CreationTime;
 	FSTime m_LastAccessTime;
 	FSTime m_LastWriteTime;
@@ -154,12 +155,13 @@ struct FSStat
 #ifdef _WIN32
 		dwFileAttributes( 0 ),
 #endif
-		mode( 0 ), size( 0 ), m_CreationTime( 0 ), m_LastAccessTime( 0 ), m_LastWriteTime( 0 ), m_ChangeTime( 0 ), uid( -1 ), gid( -1 ), dev( 0 ), ino( 0 )
+		mode( 0 ), size( 0 ), dirCorrectSize(false), m_CreationTime( 0 ), m_LastAccessTime( 0 ), m_LastWriteTime( 0 ), m_ChangeTime( 0 ), uid( -1 ), gid( -1 ), dev( 0 ), ino( 0 )
 	{}
 
 	FSStat( const FSStat& a )
 	: mode( a.mode )
 	, size( a.size )
+	, dirCorrectSize( a.dirCorrectSize )
 	, m_CreationTime( a.m_CreationTime )
 	, m_LastAccessTime( a.m_LastAccessTime )
 	, m_LastWriteTime( a.m_LastWriteTime )
@@ -176,6 +178,7 @@ struct FSStat
 		link.Copy( a.link );
 		mode = a.mode;
 		size = a.size;
+		dirCorrectSize = a.dirCorrectSize;
 		m_CreationTime = a.m_CreationTime;
 		m_LastAccessTime = a.m_LastAccessTime;
 		m_LastWriteTime = a.m_LastWriteTime;
@@ -193,6 +196,8 @@ struct FSStat
 	bool IsExe() const { return ( mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) != 0; }
 	bool IsBad() const { return ( mode & S_IFMT ) == 0; }
 	void SetBad() { mode = 0; }
+	void SetDirSize(int64_t Size) { if (IsDir()) {  size = Size; dirCorrectSize = true; } } // устанавливаем размер директории, если мы где-то его подсчитали
+	bool IsCorrectSize() const { return (IsDir() & dirCorrectSize) | !IsDir() ; } // false если размер (диретории) неизвестен
 
 	unicode_t* GetMTimeStr( unicode_t buf[64] );
 	unicode_t* GetModeStr( unicode_t buf[64] );
