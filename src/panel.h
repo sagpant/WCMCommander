@@ -306,6 +306,7 @@ public:
 
 	int Count( ) const { return _list.Count( HideDotsInDir() ); }
 	const FSNode* Get( int n ) const { return _list.Get( n, HideDotsInDir() ); }
+	void RecalcSelectedSize() { _list.RecalcSelectedSize(); }  //  // для перерасчёта общего разверы отображаемого в футере: используется при изменении размеров файлов или директорий
 
 	//dir movies
 	/// returns true if the directory was changed

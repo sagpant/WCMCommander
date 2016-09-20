@@ -251,7 +251,7 @@ struct FSNode: public iIntrusiveCounter
 	{ isSelected = a.isSelected; extType = a.extType; st = a.st; next = 0; name.Copy( a.name ); originNode = a.originNode; return *this;}
 
 	FSString& Name() { return name; }
-	int64_t Size() const { return st.size; }
+	int64_t Size() const { return st.IsCorrectSize() ? st.size : 0 ; }
 	bool IsDir() const { return st.IsDir(); }
 	bool IsLnk() const { return st.IsLnk(); }
 	bool IsReg() const { return st.IsReg(); }

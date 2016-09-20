@@ -34,16 +34,16 @@ void PanelList::MakeList()
 			if ( showHidden || !p->IsHidden() )
 			{
 				list[ i++ ] = p;
-				filesCn.AddOne( p->st.size );
+				filesCn.AddOne( p->Size() );
 
-				if ( p->IsSelected() ) { selectedCn.AddOne( p->st.size ); }
+				if ( p->IsSelected() ) { selectedCn.AddOne( p->Size() ); }
 
-				if ( !p->IsDir() ) { filesCnNoDirs.AddOne( p->st.size ); }
+				if ( !p->IsDir() ) { filesCnNoDirs.AddOne( p->Size() ); }
 			}
 			else
 			{
 				p->ClearSelected();
-				hiddenCn.AddOne( p->st.size );
+				hiddenCn.AddOne( p->Size() );
 			}
 
 		listCount = i;
@@ -154,7 +154,7 @@ void PanelList::InvertSelection()
 			if ( !g_WcmConfig.panelSelectFolders && p->IsDir() ) { continue; }
 
 			p->SetSelected();
-			selectedCn.AddOne( p->st.size );
+			selectedCn.AddOne( p->Size() );
 		}
 	}
 };

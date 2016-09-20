@@ -180,7 +180,7 @@ public:
 				p->SetSelected();
 			}
 
-			if ( p->IsSelected() ) { selectedCn.AddOne( p->st.size ); }
+			if ( p->IsSelected() ) { selectedCn.AddOne( p->Size() ); }
 		}
 	}
 
@@ -198,7 +198,7 @@ public:
 				p->ClearSelected();
 			}
 
-			if ( p->IsSelected() ) { selectedCn.AddOne( p->st.size ); }
+			if ( p->IsSelected() ) { selectedCn.AddOne( p->Size() ); }
 		}
 	}
 
@@ -253,6 +253,20 @@ public:
 		{
 			p->SetSelected();
 			selectedCn.AddOne( p->Size() );
+		}
+
+	}
+
+	void RecalcSelectedSize() {  // для перерасчёта общего разверы отображаемого в футере: используется при изменении размеров файлов или директорий
+
+		int n = listCount;
+		selectedCn.Clear();
+
+		for ( int i = 0; i < n; i++ )
+		{
+			FSNode* p = list.data()[i];
+
+			if ( p->IsSelected() ) { selectedCn.AddOne( p->Size() ); }
 		}
 
 	}
