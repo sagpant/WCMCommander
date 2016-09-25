@@ -1072,6 +1072,7 @@ void NCWin::View( bool Secondary )
 			int64_t totalFileCount, totalFileSize;
 			DirCalc(fs, path, list, this, totalFileCount, totalFileSize, false);
 			if (p && selectedItems < 1) { p->st.SetDirSize(totalFileSize); } // если не было выбрано файлов, устанавливаем размер каталога
+			_panel->RecalcSelectedSize();  // пересчитаем размер выбранных элементов
 			_panel->Repaint();
 			return;
 		}
