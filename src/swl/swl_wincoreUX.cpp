@@ -98,6 +98,7 @@ namespace wal
 	static Atom atom_COMPOUND = 0;
 	static Atom atom_CDEST = 0;
 	static Atom atom_INCR = 0;
+	static Atom atom_ATOM = 0;
 
 	static Window clipboardWinId = 0;
 
@@ -129,6 +130,7 @@ namespace wal
 		atom_COMPOUND = XInternAtom( display, "COMPOUND_TEXT", False );
 		atom_CDEST = XInternAtom( display, "SWL_CLIPDEST", False );
 		atom_INCR = XInternAtom( display, "INCR", False );
+		atom_ATOM = XInternAtom( display, "ATOM", False );
 
 		XSetWindowAttributes attrs;
 
@@ -2015,7 +2017,7 @@ static const char* getEventName(int id)
 			XChangeProperty( display,
 			                 event->xselectionrequest.requestor,
 			                 event->xselectionrequest.property,
-			                 event->xselectionrequest.target,
+			                 atom_ATOM,
 			                 32, PropModeReplace,
 			                 ( unsigned char* ) possibleTargets,
 			                 2 ); //!!!
