@@ -2912,7 +2912,7 @@ stopped:
 		if ( type == WT_MAIN )
 		{
 			unicode_t u[100];
-			unicode_strncpy0( u, name, sizeof( u ) / sizeof( u[0] ) );
+			unicode_strncpy0( u, name, sizeof( u ) / sizeof( u[0] ) - 1);
 
 			char buf[400];
 			unicode_to_utf8( buf, u );
