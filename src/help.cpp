@@ -1026,10 +1026,6 @@ begin:
 					NextChar();
 					continue;
 			}
-
-			word.append( cchar );
-			NextChar();
-			continue;
 		}
 
 
@@ -1195,8 +1191,6 @@ clPtr<HelpNode> HelpParzer::ParzeTable()
 				pTable->Append( Parze() );
 				continue;
 		};
-
-		NextToken();
 	}
 
 	return ret;
