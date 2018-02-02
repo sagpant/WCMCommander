@@ -134,7 +134,7 @@ namespace wal
 	public:
 		Cond();
 		void Wait( Mutex* mutex );
-		void TimedWait( Mutex* mutex, timespec* t );
+		int TimedWait( Mutex* mutex, timespec* t );
 		void Signal();
 		void Broadcast();
 		~Cond();
@@ -297,9 +297,9 @@ namespace wal
 		cond_wait( &_cond, &( mutex->_mutex ) );
 	}
 
-	inline void Cond::TimedWait( Mutex* mutex, timespec* t )
+	inline int Cond::TimedWait( Mutex* mutex, timespec* t )
 	{
-		cond_timedwait( &_cond, &( mutex->_mutex ), t );
+		return cond_timedwait( &_cond, &( mutex->_mutex ), t );
 	}
 
 	inline void Cond::Signal()

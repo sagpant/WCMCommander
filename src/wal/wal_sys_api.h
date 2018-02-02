@@ -476,6 +476,7 @@ namespace wal
 	int cond_create( cond_t* c );
 	int cond_delete( cond_t* c );
 	int cond_wait( cond_t* c, mutex_t* m );
+	int cond_timedwait( cond_t* c, mutex_t* m, timespec* t );
 	int cond_signal( cond_t* c );
 	int cond_broadcast( cond_t* c );
 

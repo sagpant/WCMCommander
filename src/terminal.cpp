@@ -13,6 +13,7 @@
 #include <sys/ioctl.h>
 
 #include <unistd.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -446,10 +447,18 @@ void* TerminalOutputThreadFunc( void* data )
 
 			if ( bytes <= 0 )
 			{
-				timespec time;
-				time.tv_sec = 5;
-				terminal->_outputCond.TimedWait( &terminal->_outputMutex, &time );
+				struct timeval now;
+				struct timespec timeout;
+				gettimeofday(&now, NULL);
+		                timeout.tv_sec = now.tv_sec + 5;      // 5 sec
+                		timeout.tv_nsec = now.tv_usec * 1000; // nsec
+				int rc = terminal->_outputCond.TimedWait( &terminal->_outputMutex, &timeout );
+				if( rc == ETIMEDOUT )
+				{
+                		    dbg_printf( "Wait timed out!\n" );
+				}
 				terminal->_outputMutex.Unlock();
+				pthread_exit(NULL);
 				continue;
 			}
 
