@@ -13,6 +13,7 @@
 #include <sys/ioctl.h>
 
 #include <unistd.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -93,7 +94,10 @@ int TerminalStream::Read( char* buf, int size )
 	fd_set fr;
 	FD_ZERO( &fr );
 	FD_SET( _masterFd, &fr );
-	int n = select( _masterFd + 1, &fr, 0, 0, 0 );
+
+	timeval time;
+	time.tv_sec = 5;
+	int n = select( _masterFd + 1, &fr, 0, 0, &time );
 
 	if ( n < 0 ) { return n; }
 
@@ -112,7 +116,10 @@ int TerminalStream::Write( char* buf, int size )
 		fd_set fr;
 		FD_ZERO( &fr );
 		FD_SET( _masterFd, &fr );
-		int n = select( _masterFd + 1, 0, &fr, 0, 0 );
+
+		timeval time;
+		time.tv_sec = 5;
+		int n = select( _masterFd + 1, 0, &fr, 0, &time );
 
 		if ( n < 0 ) { return n; }
 
@@ -440,8 +447,18 @@ void* TerminalOutputThreadFunc( void* data )
 
 			if ( bytes <= 0 )
 			{
-				terminal->_outputCond.Wait( &terminal->_outputMutex );
+				struct timeval now;
+				struct timespec timeout;
+				gettimeofday(&now, NULL);
+		                timeout.tv_sec = now.tv_sec + 5;      // 5 sec
+                		timeout.tv_nsec = now.tv_usec * 1000; // nsec
+				int rc = terminal->_outputCond.TimedWait( &terminal->_outputMutex, &timeout );
+				if( rc == ETIMEDOUT )
+				{
+                		    dbg_printf( "Wait timed out!\n" );
+				}
 				terminal->_outputMutex.Unlock();
+				pthread_exit(NULL);
 				continue;
 			}
 
