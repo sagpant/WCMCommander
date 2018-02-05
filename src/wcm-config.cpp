@@ -706,12 +706,9 @@ bool RegReadBin( const char* sect, const char* what, const void* data, int size 
 		return false;
 	}
 
-	if ( lResult == ERROR_SUCCESS )
-	{
-		ASSERT( dwType == REG_BINARY );
-		lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,
-		                           ( LPBYTE )data, &dwCount );
-	}
+	ASSERT( dwType == REG_BINARY );
+	lResult = RegQueryValueEx( hsect, ( LPTSTR )what, NULL, &dwType,
+	                           ( LPBYTE )data, &dwCount );
 
 	RegCloseKey( hsect );
 	return ( lResult == ERROR_SUCCESS );
