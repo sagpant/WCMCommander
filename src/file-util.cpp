@@ -125,8 +125,14 @@ bool GetSysTempDir( clPtr<FS>* fs, FSPath* path )
 	const sys_char_t* Temp = (sys_char_t*) getenv( "TMPDIR" );
 	if ( !Temp )
 	{
-		return false;
+		/*
+		 * The Filesystem Hierarchy Standard version 3.0 says:
+		 * /tmp : Temporary files
+		 * The /tmp directory must be made available for programs that require temporary files.
+		 */
+		Temp = (sys_char_t*) "/tmp";
 	}
+
 
 	path->Set( sys_charset_id, Temp );
 	*fs = new FSSys();
